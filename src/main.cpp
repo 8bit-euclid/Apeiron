@@ -5,6 +5,8 @@
 #include "../include/Global.h"
 #include <Array/include/Array.h>
 
+using namespace Apeiron;
+
 void Foo()
 {
   DynamicArray<int> vect;
@@ -14,17 +16,16 @@ void Foo()
 
 int main()
 {
-//  FOR(i, 2) std::cout<<"Hello World!\n";
-  std::cout<<"Hello World: "<<ARGUMENT_COUNT()<<"\n";
-  std::cout<<"Hello World: "<<ARGUMENT_COUNT(x)<<"\n";
-  std::cout<<"Hello World: "<<ARGUMENT_COUNT(x, y)<<"\n";
-  std::cout<<"Hello World: "<<ARGUMENT_COUNT(x, y, z)<<"\n";
-  std::cout<<"Hello World: "<<ARGUMENT_COUNT(x, y, z, w)<<"\n";
+  DynamicArray<int> array0;
+  DynamicArray<int> array1(5);
+  DynamicArray<int> array2(5, 100);
+  DynamicArray<int> array3(array2.begin() + 1, array2.end());
+  DynamicArray<int> array4 = {1, 2, 3};
+  array4[3];
 
-//  if(0) 1;
-//  else if(1) FOR_REVERSE(ii, 10, 8) ERROR("Hello World!!!")
-
-  Foo();
+  StaticArray<int, 0> sarray0;
+  StaticArray<int, 10> sarray1;
+  sarray1[10];
 
   return 0;
 }

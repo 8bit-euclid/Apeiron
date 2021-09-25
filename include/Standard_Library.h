@@ -5,6 +5,7 @@
 #ifndef STL_HEADERS_H
 #define STL_HEADERS_H
 
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <cfloat>
