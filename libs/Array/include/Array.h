@@ -11,9 +11,9 @@ class DynamicArray : public std::vector<data_type>
 {
   private:
   /** Check if an index is in-range. */
-  void Index_Range_Check(const int _index) const
+  inline void Index_Range_Check(const int _index) const
   {
-    DEBUG_ASSERT(isBounded(_index, 0, this->size()), "The array index "<<_index<<" must be in the range [0, "<<this->size()<<").")
+    DEBUG_ASSERT(isBounded(_index, 0, this->size()), "The array index ", _index, " must be in the range [0, ", this->size(), ").")
   }
 
   public:
@@ -37,7 +37,11 @@ template <class data_type, int array_size>
 class StaticArray : public std::array<data_type, array_size>
 {
   private:
-  data_type Data[array_size];
+  /** Check if an index is in-range. */
+  inline void Index_Range_Check(const int _index) const
+  {
+    DEBUG_ASSERT(isBounded(_index, 0, this->size()), "The array index ", _index, " must be in the range [0, ", this->size(), ").")
+  }
 
   public:
   StaticArray() : std::array<data_type, array_size>() {}

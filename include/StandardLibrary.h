@@ -1,9 +1,5 @@
-//
-// Created by niran90 on 2021/09/24.
-//
-
-#ifndef STL_HEADERS_H
-#define STL_HEADERS_H
+#ifndef STANDARD_LIBRARY_H
+#define STANDARD_LIBRARY_H
 
 #include <array>
 #include <cassert>
@@ -14,16 +10,18 @@
 #include <fstream>
 #include <initializer_list>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sstream>
 #include <string>
 #include <unistd.h>
 #include <vector>
 
-#ifdef PARA
+#ifdef PARALLEL
 #include <mpi.h>
-#endif//PARA
+#endif//PARALLEL
 
-#endif //STL_HEADERS_H
+#endif //STANDARD_LIBRARY_H
