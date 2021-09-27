@@ -1,5 +1,4 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
 
 #include "StandardLibrary.h"
 
@@ -11,17 +10,14 @@
 #define STACK_TRACE_SIZE 10
 
 /** Dimension. */
-constexpr int nDim(2);
-
-namespace Apeiron
-{
+constexpr int Dim = 2;
 
 #include "Macros.h"
 #include "FloatingPoint.h"
+#include "Debug.h"
 #include "Loops.h"
 #include "Print.h"
-#include "Debug.h"
-
-}//Apeiron
-
-#endif //GLOBAL_H
+#include "BasicMath.h"
+#include "Constants.h"
+#include "Comparators.h"
+#include "Math.h"

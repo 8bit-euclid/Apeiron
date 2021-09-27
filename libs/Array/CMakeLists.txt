@@ -6,6 +6,5 @@ set(SOURCE_FILES
 
 set(LINK_LIBRARIES)
 
-
-add_library(Array_Library ${SOURCE_FILES})
-target_link_libraries(Array_Library ${LINK_LIBRARIES})
+add_library(ArrayLibrary ${SOURCE_FILES})
+target_link_libraries(ArrayLibrary ${LINK_LIBRARIES})

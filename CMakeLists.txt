@@ -44,11 +44,13 @@ include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Array)
 
 #***************************************************************************************************************************************************************
-# Apeiron Build Recipe.
+# Apeiron Binary Build Instructions.
 #***************************************************************************************************************************************************************
 
 set(APEIRON_SOURCE_FILES
+        include/BasicMath.h
         include/Comparators.h
+        include/Constants.h
         include/Debug.h
         include/FloatingPoint.h
         include/Global.h
@@ -60,7 +62,7 @@ set(APEIRON_SOURCE_FILES
         src/main.cpp)
 
 set(APEIRON_LINK_LIBRARIES
-        Array_Library)
+        ArrayLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})

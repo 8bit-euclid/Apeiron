@@ -1,9 +1,6 @@
-//
-// Created by niran90 on 2021/09/26.
-//
+#pragma once
 
-#ifndef DEBUG_H
-#define DEBUG_H
+namespace Apeiron{
 
 /***************************************************************************************************************************************************************
 * General Error Handling
@@ -42,7 +39,7 @@
 * Numerical Error Handling
 ***************************************************************************************************************************************************************/
 
-template <typename data_type>
+template<typename data_type>
 constexpr bool isNumber(const data_type& _value)
 {
   return (typeid(data_type) == typeid(int) || typeid(data_type) == typeid(Float) || typeid(data_type) == typeid(short int) ||
@@ -56,4 +53,4 @@ constexpr bool isNumber(const data_type& _value)
 
 #define ASSERT_VALID_NUMBER(_value) if(std::isnan(_value) || std::isinf(_value)) ERROR(std::fpclassify(ax) == 0 ? "NaN detected\n\t\t" : "Inf detected\n\t\t");
 
-#endif //DEBUG_H
+}//Apeiron

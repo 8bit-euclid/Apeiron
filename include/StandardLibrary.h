@@ -1,5 +1,4 @@
-#ifndef STANDARD_LIBRARY_H
-#define STANDARD_LIBRARY_H
+#pragma once
 
 #include <array>
 #include <cassert>
@@ -9,10 +8,12 @@
 #include <execinfo.h>
 #include <fstream>
 #include <initializer_list>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <random>
 #include <signal.h>
+#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
@@ -23,5 +24,3 @@
 #ifdef PARALLEL
 #include <mpi.h>
 #endif//PARALLEL
-
-#endif //STANDARD_LIBRARY_H
