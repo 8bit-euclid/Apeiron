@@ -52,7 +52,7 @@ constexpr bool isLargEqual(const Float& _a, const Float& _b, const Float& _relat
 
 /** Floating-point toleranced/exact boundedness check. */
 template<bool is_left_included = true, bool is_right_included = false, bool is_exact_comparison = false, typename data_type>
-inline bool isBounded(const data_type& _a, const data_type& _min, const data_type& _max, const data_type& _relative_tolerance = RelativeTolerance,
+constexpr bool isBounded(const data_type& _a, const data_type& _min, const data_type& _max, const data_type& _relative_tolerance = RelativeTolerance,
                       const Float& _absolute_tolerance = AbsoluteTolerance)
 {
   ASSERT_NUMBER(_a)

@@ -14,6 +14,7 @@
 #include <random>
 #include <signal.h>
 #include <stdexcept>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>

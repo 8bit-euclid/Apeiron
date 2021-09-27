@@ -81,13 +81,29 @@ constexpr Float Cube(const Float& _value)
 /** Newton-Raphson for constexpr Sqrt function. */
 constexpr Float SqrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
 {
-  return _value_curr == _value_prev ? _value_curr : SqrtNewtonRaphson(_value, 0.5*(_value_curr + _value/_value_curr), _value_curr);
+  return _value_curr == _value_prev ? _value_curr : SqrtNewtonRaphson(_value, Half*(_value_curr + _value/_value_curr), _value_curr);
 }
 
 /** Constexpr version of std::sqrt. */
 constexpr Float Sqrt(const Float& _value)
 {
-  return 0.0 <= _value && _value < std::numeric_limits<Float>::infinity() ? SqrtNewtonRaphson(_value, _value, 0.0) : std::numeric_limits<Float>::quiet_NaN();
+  return Zero <= _value && _value < Infinity ? SqrtNewtonRaphson(_value, _value, Zero) : std::numeric_limits<Float>::quiet_NaN();
+}
+
+/** Constexpr version of std::sqrt. */
+constexpr Float Hypot(const Float& _value0, const Float& _value1)
+{
+  return Sqrt(Square(_value0) + Square(_value1));
+}
+
+constexpr Float CbrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
+{
+  return _value_curr == _value_prev ? _value_curr : CbrtNewtonRaphson(_value, Third*(Two*_value_curr + _value/Square(_value_curr)), _value_curr);
+}
+
+constexpr Float Cbrt(const Float& _value)
+{
+  return CbrtNewtonRaphson(_value, One, Zero);
 }
 
 /***************************************************************************************************************************************************************
