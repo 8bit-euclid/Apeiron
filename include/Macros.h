@@ -1,5 +1,6 @@
-#ifndef MACROS_H
-#define MACROS_H
+#pragma once
+
+namespace Apeiron{
 
 /** Macro expansions. */
 #define EXPAND(x) x
@@ -11,4 +12,4 @@
 #define _MACRO(name, n) _MACRO_(name, n)
 #define MACRO(func, ...) _MACRO(func, ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
 
-#endif //MACROS_H
+}//Apeiron

@@ -1,9 +1,6 @@
-//
-// Created by niran90 on 2021/09/26.
-//
+#pragma once
 
-#ifndef FLOATING_POINT_H
-#define FLOATING_POINT_H
+namespace Apeiron{
 
 #define DOUBLE_PRECISION
 //#define LONG_DOUBLE_PRECISION
@@ -21,4 +18,4 @@ typedef long double FLOAT;
 #error No numerical precision defined.
 #endif
 
-#endif //FLOATING_POINT_H
+}//Apeiron
