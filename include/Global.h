@@ -17,7 +17,7 @@ constexpr int Dim = 2;
 #include "Debug.h"
 #include "Loops.h"
 #include "Print.h"
-#include "BasicMath.h"
 #include "Constants.h"
+#include "BasicMath.h"
 #include "Comparators.h"
 #include "Math.h"
