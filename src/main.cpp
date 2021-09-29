@@ -15,8 +15,8 @@ int main()
   Print(Divide(4, 3));
   Print(Modulo(4, 3));
 
-  Random rdInt(-1, 4);
-  Random rdFloat(-1.0, 4.0);
+  Random rdInt(0, 10);
+  Random rdFloat(Zero, 10.0);
   Print(rdInt.Get(), rdFloat.Get());
 //  Print(Abs(Exp(1) - e), Small, "isEqual:", isEqual(Abs(Exp(1) - e), Zero));
 
