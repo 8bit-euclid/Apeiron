@@ -3,9 +3,35 @@
 #include "Comparators.h"
 #include "Constants.h"
 #include "Debug.h"
-#include "FloatingPoint.h"
+#include "Types.h"
 
 namespace Apeiron{
+
+/***************************************************************************************************************************************************************
+* Math Support Functions
+***************************************************************************************************************************************************************/
+
+namespace MathSupport
+{
+
+/** Newton-Raphson for constexpr Sqrt function. */
+constexpr Float SqrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
+{
+  return _value_curr == _value_prev ? _value_curr : SqrtNewtonRaphson(_value, Half*(_value_curr + _value/_value_curr), _value_curr);
+}
+
+/** Newton-Raphson for constexpr Cbrt function. */
+constexpr Float CbrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
+{
+  return _value_curr == _value_prev ? _value_curr : CbrtNewtonRaphson(_value, Third*(Two*_value_curr + _value/(_value_curr*_value_curr)), _value_curr);
+}
+
+constexpr Float Exp(const Float& _value, const Float& _sum, const Float& n, const int _iteration, const Float& _delta_value)
+{
+  return _delta_value/n == Zero ? _sum : Exp(_value, _sum + _delta_value/n, n*_iteration, _iteration + 1, _delta_value*_value);
+}
+
+}//MathSupport
 
 /***************************************************************************************************************************************************************
 * General Arithmetic Functions
@@ -78,16 +104,15 @@ constexpr Float Cube(const Float& _value)
   return iPower(_value, 3);
 }
 
-/** Newton-Raphson for constexpr Sqrt function. */
-constexpr Float SqrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
-{
-  return _value_curr == _value_prev ? _value_curr : SqrtNewtonRaphson(_value, Half*(_value_curr + _value/_value_curr), _value_curr);
-}
-
 /** Constexpr version of std::sqrt. */
 constexpr Float Sqrt(const Float& _value)
 {
-  return Zero <= _value && _value < Infinity ? SqrtNewtonRaphson(_value, _value, Zero) : std::numeric_limits<Float>::quiet_NaN();
+  return Zero <= _value && _value < Infinity ? MathSupport::SqrtNewtonRaphson(_value, _value, Zero) : std::numeric_limits<Float>::quiet_NaN();
+}
+
+constexpr Float Cbrt(const Float& _value)
+{
+  return MathSupport::CbrtNewtonRaphson(_value, One, Zero);
 }
 
 /** Constexpr version of std::sqrt. */
@@ -96,14 +121,9 @@ constexpr Float Hypot(const Float& _value0, const Float& _value1)
   return Sqrt(Square(_value0) + Square(_value1));
 }
 
-constexpr Float CbrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
+constexpr Float Exp(Float _value)
 {
-  return _value_curr == _value_prev ? _value_curr : CbrtNewtonRaphson(_value, Third*(Two*_value_curr + _value/Square(_value_curr)), _value_curr);
-}
-
-constexpr Float Cbrt(const Float& _value)
-{
-  return CbrtNewtonRaphson(_value, One, Zero);
+  return MathSupport::Exp(_value, 1.0, 1.0, 2, _value);
 }
 
 /***************************************************************************************************************************************************************
