@@ -13,7 +13,7 @@
 constexpr int Dim = 2;
 
 #include "Macros.h"
-#include "FloatingPoint.h"
+#include "Types.h"
 #include "Debug.h"
 #include "Loops.h"
 #include "Print.h"
@@ -21,3 +21,4 @@ constexpr int Dim = 2;
 #include "BasicMath.h"
 #include "Comparators.h"
 #include "Math.h"
+#include "Random.h"

@@ -2,8 +2,9 @@
 # Configure Compile Settings
 #***************************************************************************************************************************************************************
 
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(Apeiron)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 option(OPTIMISER "Optimiser level 3" OFF)
 
 #***************************************************************************************************************************************************************
@@ -52,12 +53,13 @@ set(APEIRON_SOURCE_FILES
         include/Comparators.h
         include/Constants.h
         include/Debug.h
-        include/FloatingPoint.h
+        include/Types.h
         include/Global.h
         include/Loops.h
         include/Macros.h
         include/Math.h
         include/Print.h
+        include/Random.h
         include/StandardLibrary.h
         src/main.cpp)
 
@@ -66,3 +68,42 @@ set(APEIRON_LINK_LIBRARIES
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
+
+#***************************************************************************************************************************************************************
+# Google Test Build Instructions.
+#***************************************************************************************************************************************************************
+
+# Fetch GoogleTest directories
+include(FetchContent)
+FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
+FetchContent_MakeAvailable(GoogleTest)
+
+# Add unit test executables
+add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
+add_executable(ArrayUnitTest ${PROJECT_SOURCE_DIR}/libs/Array/test/ArrayUnitTest.cpp)
+
+# Link with gtest, gtest_main, and associated libraries.
+target_link_libraries(ApeironUnitTest gtest gtest_main)
+target_link_libraries(ArrayUnitTest gtest gtest_main)
+#add_test(ApeironUnitTest ApeironUnitTest)
+
+#include(CTest) # Note: This adds BUILD_TESTING, which defaults to ON.
+
+#enable_testing()
+#include(AddGoogleTest) # Could be in /tests/CMakeLists.txt
+#add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
+#add_gtest(ApeironUnitTest)
+
+#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+#add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
+
+#if(BUILD_TESTING)
+#    add_subdirectory(${PROJECT_SOURCE_DIR}/libs/ThirdParty/GoogleTest)
+#    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+#
+##    file(GLOB ApeironSourceFiles "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/include/*.h")
+#
+#    add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
+#
+##    target_link_libraries(ApeironUnitTest gtest gtest_main ClosedLibr)
+#endif()
