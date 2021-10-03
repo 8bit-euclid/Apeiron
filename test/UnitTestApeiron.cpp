@@ -6,13 +6,6 @@
 namespace Apeiron
 {
 
-///** Run all unit tests in this file. */
-//int main(int argc, char** argv)
-//{
-//  testing::InitGoogleTest(&argc, argv);
-//  return RUN_ALL_TESTS();
-//}
-
 class ApeironTest : public testing::Test
 {
   public:
@@ -26,6 +19,10 @@ class ApeironTest : public testing::Test
 //
 //  }
 };
+
+/***************************************************************************************************************************************************************
+* Test Basic Math Functions
+***************************************************************************************************************************************************************/
 
 /** Min: Test min function. */
 TEST_F(ApeironTest, Min)
@@ -158,6 +155,50 @@ TEST_F(ApeironTest, Round)
   EXPECT_EQ(Round(1.999), Two);
   EXPECT_EQ(Round(One), One);
 }
+
+/***************************************************************************************************************************************************************
+* Test Comparison Functions
+***************************************************************************************************************************************************************/
+
+/** isEqual: Test . */
+TEST_F(ApeironTest, isEqual)
+{
+
+}
+
+/** isLess: Test . */
+TEST_F(ApeironTest, isLess)
+{
+
+}
+
+/** isLessEqual: Test . */
+TEST_F(ApeironTest, isLessEqual)
+{
+
+}
+
+/** isLarger: Test . */
+TEST_F(ApeironTest, isLarger)
+{
+
+}
+
+/** isLargerEqual: Test . */
+TEST_F(ApeironTest, isLargerEqual)
+{
+
+}
+
+/** isBounded: Test . */
+TEST_F(ApeironTest, isBounded)
+{
+
+}
+
+/***************************************************************************************************************************************************************
+* Test Math Functions
+***************************************************************************************************************************************************************/
 
 }
 

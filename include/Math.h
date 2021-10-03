@@ -14,6 +14,20 @@ namespace Apeiron{
 namespace MathSupport
 {
 
+/** Modulo function for integer types. */
+template <typename data_type>
+constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::true_type, std::false_type)
+{
+  return _numerator % _denominator;
+}
+
+/** Modulo function for floating-point types. */
+template <typename data_type>
+constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::false_type, std::true_type)
+{
+  return std::fmod(_numerator, _denominator);
+}
+
 /** Newton-Raphson for constexpr Sqrt function. */
 constexpr Float SqrtNewtonRaphson(const Float& _value, const Float& _value_curr, const Float& _value_prev)
 {
@@ -37,6 +51,7 @@ constexpr Float Exp(const Float& _value, const Float& _sum, const Float& n, cons
 * General Arithmetic Functions
 ***************************************************************************************************************************************************************/
 
+/** Division function. */
 template <typename data_type>
 constexpr Float Divide(const data_type& _numerator, const data_type& _denominator)
 {
@@ -44,22 +59,11 @@ constexpr Float Divide(const data_type& _numerator, const data_type& _denominato
                                                             throw std::logic_error("Denominator must be non-zero during division.");
 }
 
-template <typename data_type>
-constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::true_type, std::false_type)
-{
-  return _numerator % _denominator;
-}
-
-template <typename data_type>
-constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::false_type, std::true_type)
-{
-  return std::fmod(_numerator, _denominator);
-}
-
+/** Modulo function. */
 template <typename data_type>
 constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator)
 {
-  return Modulo<data_type>(_numerator, _denominator, std::is_integral<data_type>(), std::is_floating_point<data_type>());
+  return MathSupport::Modulo<data_type>(_numerator, _denominator, std::is_integral<data_type>(), std::is_floating_point<data_type>());
 }
 
 /***************************************************************************************************************************************************************

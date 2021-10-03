@@ -41,8 +41,7 @@ class Timer
   inline void StopTimer()
   {
     StopTime = std::chrono::high_resolution_clock::now();
-    TotalNanoSecondsLapsed += std::chrono::time_point_cast<std::chrono::nanoseconds>(StopTime).time_since_epoch().count() -
-                              std::chrono::time_point_cast<std::chrono::nanoseconds>(StartTime).time_since_epoch().count();
+    TotalNanoSecondsLapsed += (Float)std::chrono::duration_cast<std::chrono::nanoseconds>(StopTime - StartTime).count();
     isRunning = false;
   }
 
