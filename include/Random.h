@@ -21,10 +21,11 @@ class RandomBase
   /** Virtual destructor. */
   virtual ~RandomBase() {};
 
-  /** Pure virtual random number generating method. */
-  virtual inline data_type Get() = 0;
+  /** Pure virtual () operator overload to generate a random number. */
+  virtual data_type operator()() = 0;
 };
 
+/** Forward declaration of specialised Random classes. */
 template <typename data_type, TypeCategory type_category = GetTypeCategory(data_type())>
 class Random;
 
@@ -36,11 +37,15 @@ class Random<data_type, TypeCategory::Integer> : public RandomBase<data_type, Ty
   std::uniform_int_distribution<data_type> Distribution;
 
   public:
-  Random() = delete;
   Random(const data_type& _min, const data_type& _max) : RandomBase<data_type, TypeCategory::Integer>(), Distribution(_min, _max) {}
+  Random() = delete;
   ~Random() = default;
 
-  inline data_type Get() { return Distribution(this->Generator); }
+  /** Overloaded () operator to generate a random integer. */
+  inline data_type operator()() { return Distribution(this->Generator); }
+
+  /** Reset min/max bounds for the distribution. */
+  void Reset(const data_type& _min, const data_type& _max) { *this = Random(_min, _max); }
 };
 
 /** Random floating-point class. */
@@ -51,11 +56,15 @@ class Random<data_type, TypeCategory::FloatingPoint> : public RandomBase<data_ty
   std::uniform_real_distribution<data_type> Distribution;
 
   public:
-  Random() = delete;
   Random(const data_type& _min, const data_type& _max) : RandomBase<data_type, TypeCategory::FloatingPoint>(), Distribution(_min, _max) {}
+  Random() = delete;
   ~Random() = default;
 
-  inline data_type Get() { return Distribution(this->Generator); }
+  /** Overloaded () operator to generate a random floating-point value. */
+  inline data_type operator()() { return Distribution(this->Generator); }
+
+  /** Reset min/max bounds for the distribution. */
+  void Reset(const data_type& _min, const data_type& _max) { *this = Random(_min, _max); }
 };
 
 /** Template deduction guide. */

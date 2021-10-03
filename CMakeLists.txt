@@ -43,6 +43,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}/bin)
 # Add Apeiron library directories
 include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Array)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
 
 #***************************************************************************************************************************************************************
 # Apeiron Binary Build Instructions.
@@ -64,7 +66,9 @@ set(APEIRON_SOURCE_FILES
         src/main.cpp)
 
 set(APEIRON_LINK_LIBRARIES
-        ArrayLibrary)
+        ArrayLibrary
+        BenchmarkLibrary
+        SortLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
@@ -79,12 +83,12 @@ FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive
 FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
-add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
-add_executable(ArrayUnitTest ${PROJECT_SOURCE_DIR}/libs/Array/test/ArrayUnitTest.cpp)
+add_executable(UnitTestApeiron ${PROJECT_SOURCE_DIR}/test/UnitTestApeiron.cpp)
+add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/Array/test/UnitTestArray.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
-target_link_libraries(ApeironUnitTest gtest gtest_main)
-target_link_libraries(ArrayUnitTest gtest gtest_main)
+target_link_libraries(UnitTestApeiron gtest gtest_main)
+target_link_libraries(UnitTestArray gtest gtest_main)
 #add_test(ApeironUnitTest ApeironUnitTest)
 
 #include(CTest) # Note: This adds BUILD_TESTING, which defaults to ON.

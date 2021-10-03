@@ -5,17 +5,17 @@
 namespace Apeiron{
 
 /***************************************************************************************************************************************************************
-* Minimum, Maximum, and Bounding Functions
+* LapTimeMin, LapTimeMax, and Bounding Functions
 ***************************************************************************************************************************************************************/
 
-/** Minimum value. */
+/** LapTimeMin value. */
 template <typename data_type>
 constexpr data_type Min(const data_type& _a, const data_type& _b)
 {
   return std::min(_a, _b);
 }
 
-/** Maximum value. */
+/** LapTimeMax value. */
 template <typename data_type>
 constexpr data_type Max(const data_type& _a, const data_type& _b)
 {
@@ -42,9 +42,15 @@ constexpr data_type Bound(const data_type& _a, const data_type& _min, const data
 
 /** Signum function. */
 template <typename data_type>
-constexpr data_type Sgn(const data_type& _value)
+constexpr data_type Sgn(const data_type& _value, const int _zero_sign = 1)
 {
-  return (static_cast<data_type>(0) < _value) - (_value < static_cast<data_type>(0));
+  switch(_zero_sign)
+  {
+    case -1: return _value > static_cast<data_type>(0) ? static_cast<data_type>(1) : static_cast<data_type>(-1);
+    case 0: return (static_cast<data_type>(0) < _value) - (_value < static_cast<data_type>(0));
+    case 1: return _value >= static_cast<data_type>(0) ? static_cast<data_type>(1) : static_cast<data_type>(-1);
+    default: ERROR("Unrecognised sign for zero.")
+  }
 }
 
 /** Absolute value. */
@@ -59,21 +65,21 @@ constexpr data_type Abs(const data_type& _value)
 ***************************************************************************************************************************************************************/
 
 /** Floor function. */
-template <typename integer_type = uint64_t>
+template <typename integer_type = int64_t>
 constexpr Float Floor(const Float& _value)
 {
   return static_cast<integer_type>(_value) - (static_cast<integer_type>(_value) > _value);
 }
 
 /** Ceiling function. */
-template <typename integer_type = uint64_t>
+template <typename integer_type = int64_t>
 constexpr Float Ceil(const Float& _value)
 {
   return static_cast<integer_type>(_value) + (static_cast<integer_type>(_value) < _value);
 }
 
 /** Rounding function. */
-template <typename integer_type = uint64_t>
+template <typename integer_type = int64_t>
 constexpr Float Round(const Float& _value)
 {
   return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value);
