@@ -8,17 +8,35 @@ enum class TypeCategory
   FloatingPoint
 };
 
+// Signed integer type definitions.
+typedef int Int;
+typedef long int LInt;
+typedef long long int LLInt;
+typedef int8_t Int8;
+typedef int16_t Int16;
+typedef int32_t Int32;
+typedef int64_t Int64;
+
+// Unsigned integer type definitions.
+typedef unsigned int UInt;
+typedef unsigned long int ULInt;
+typedef unsigned long long int ULLInt;
+typedef uint8_t UInt8;
+typedef uint16_t UInt16;
+typedef uint32_t UInt32;
+typedef uint64_t UInt64;
+
+// Machine epsion and definition of floating point accuracy.
 #define DOUBLE_PRECISION
 //#define LONG_DOUBLE_PRECISION
 
-// Machine epsion and defintion of floating point accuracy.
 #if defined(DOUBLE_PRECISION)
-typedef double Float;
+  typedef double Float;
 #elif defined(LONG_DOUBLE_PRECISION)
-typedef long double Float;
+  typedef long double Float;
 #else
   typedef double Float;
-#error No numerical precision defined.
+  #error No numerical precision defined.
 #endif
 
 constexpr Float Epsilon(std::numeric_limits<Float>::epsilon());
@@ -57,7 +75,7 @@ constexpr bool isInteger(const data_type& _value = data_type())
 template<typename data_type>
 constexpr bool isFloat(const data_type& _value = data_type())
 {
-  return isTypeSame<data_type, Float>();
+  return isTypeSame<data_type, Float>() || isTypeSame<data_type, float>() || isTypeSame<data_type, double>() || isTypeSame<data_type, long double>();
 }
 
 template<typename data_type>

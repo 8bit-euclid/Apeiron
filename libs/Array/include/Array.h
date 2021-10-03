@@ -1,5 +1,4 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#pragma once
 
 #include "../../../include/Global.h"
 
@@ -60,5 +59,3 @@ class StaticArray : public std::array<data_type, array_size>
 };
 
 }
-
-#endif //ARRAY_H

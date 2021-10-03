@@ -87,21 +87,21 @@ constexpr unsigned int Choose(const unsigned int _n, const unsigned int _r)
 ***************************************************************************************************************************************************************/
 
 template <typename data_type>
-constexpr data_type iPower(const data_type& _value, const unsigned int& _exponent)
+constexpr data_type iPow(const data_type& _value, const unsigned int& _exponent)
 {
-  return _exponent == 0 ? static_cast<data_type>(1) : _value*iPower(_value, _exponent - 1);
+  return _exponent == 0 ? static_cast<data_type>(1) : _value*iPow(_value, _exponent - 1);
 }
 
 /** Square of a value. */
 constexpr Float Square(const Float& _value)
 {
-  return iPower(_value, 2);
+  return iPow(_value, 2);
 }
 
 /** Cube of a value. */
 constexpr Float Cube(const Float& _value)
 {
-  return iPower(_value, 3);
+  return iPow(_value, 3);
 }
 
 /** Constexpr version of std::sqrt. */

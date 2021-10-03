@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <map>
 #include <random>
 #include <signal.h>
 #include <stdexcept>
@@ -19,7 +20,9 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <unistd.h>
+#include <unordered_map>
 #include <vector>
 
 #ifdef PARALLEL

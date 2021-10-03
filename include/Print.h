@@ -13,6 +13,9 @@ enum class PrintFormat
   Default
 };
 
+/** Macros */
+#define Setw(_width) std::setw(_width)
+
 /** Comma operator overload or output stream. */
 template <typename data_type>
 std::ostream& operator,(std::ostream& _out, const data_type& _data)
