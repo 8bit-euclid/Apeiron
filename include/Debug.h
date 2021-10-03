@@ -13,7 +13,7 @@ namespace Apeiron{
 #define PING {usleep(100); Print("\nPING from file:", __FILE__, "at line number:", __LINE__); Flush();};
 
 /** Assert a static condition. If false, throw an error and exit. */
-#define STATIC_ASSERT(_static_condition, error_Message) static_assert((_static_condition), (error_Message));
+#define STATIC_ASSERT(_static_condition, error_Message) static_assert((_static_condition), error_Message);
 
 /** Throw error and exit. */
 #define ERROR(_args...)\

@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 option(OPTIMISER "Optimiser level 3" OFF)
 
 #***************************************************************************************************************************************************************
-# Setup Compiler
+# Setup C++ Compiler
 #***************************************************************************************************************************************************************
 
 # Set compiler standard
@@ -21,7 +21,7 @@ if(OPTIMISER)
 endif()
 
 #***************************************************************************************************************************************************************
-# Build and Run Directory Setup
+# Setup Build and Run Directories
 #***************************************************************************************************************************************************************
 
 set(BUILD_DIRECTORY "${CMAKE_SOURCE_DIR}/build/")
@@ -37,7 +37,7 @@ set(CMAKE_LIBRARY_OUTPUT_PATH ${BUILD_DIRECTORY}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}/bin)
 
 #***************************************************************************************************************************************************************
-# Project Sub-directories.
+# Setup Project Sub-directories.
 #***************************************************************************************************************************************************************
 
 # Add Apeiron library directories
@@ -74,7 +74,7 @@ add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
 
 #***************************************************************************************************************************************************************
-# Google Test Build Instructions.
+# GoogleTest Build Instructions.
 #***************************************************************************************************************************************************************
 
 # Fetch GoogleTest directories
@@ -89,25 +89,3 @@ add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/Array/test/UnitTestArray
 # Link with gtest, gtest_main, and associated libraries.
 target_link_libraries(UnitTestApeiron gtest gtest_main)
 target_link_libraries(UnitTestArray gtest gtest_main)
-#add_test(ApeironUnitTest ApeironUnitTest)
-
-#include(CTest) # Note: This adds BUILD_TESTING, which defaults to ON.
-
-#enable_testing()
-#include(AddGoogleTest) # Could be in /tests/CMakeLists.txt
-#add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
-#add_gtest(ApeironUnitTest)
-
-#include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-#add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
-
-#if(BUILD_TESTING)
-#    add_subdirectory(${PROJECT_SOURCE_DIR}/libs/ThirdParty/GoogleTest)
-#    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-#
-##    file(GLOB ApeironSourceFiles "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/include/*.h")
-#
-#    add_executable(ApeironUnitTest ${PROJECT_SOURCE_DIR}/test/ApeironUnitTest.cpp)
-#
-##    target_link_libraries(ApeironUnitTest gtest gtest_main ClosedLibr)
-#endif()
