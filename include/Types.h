@@ -47,12 +47,14 @@ constexpr Float Infinity(std::numeric_limits<Float>::infinity());
 constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
 constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
+/** Check if two data types are the same. */
 template <typename data_type_a, typename data_type_b>
 constexpr bool isTypeSame()
 {
   return std::is_same_v<data_type_a, data_type_b>;
 }
 
+/** Check if the data type is an unsigned integer type. */
 template<typename data_type>
 constexpr bool isUnsignedInteger(const data_type& _value = data_type())
 {
@@ -60,34 +62,39 @@ constexpr bool isUnsignedInteger(const data_type& _value = data_type())
          isTypeSame<data_type, unsigned long int>() || isTypeSame<data_type, unsigned long long int>();
 }
 
+/** Check if the data type is an signed integer type. */
 template<typename data_type>
 constexpr bool isSignedInteger(const data_type& _value = data_type())
 {
   return isTypeSame<data_type, int>() || isTypeSame<data_type, short int>() || isTypeSame<data_type, long int>() || isTypeSame<data_type, long long int>();
 }
 
+/** Check if the data type is an integer type (either signed or unsigned). */
 template<typename data_type>
 constexpr bool isInteger(const data_type& _value = data_type())
 {
   return isSignedInteger(_value) || isUnsignedInteger(_value);
 }
 
+/** Check if the data type is a floating-point type. */
 template<typename data_type>
 constexpr bool isFloat(const data_type& _value = data_type())
 {
   return isTypeSame<data_type, Float>() || isTypeSame<data_type, float>() || isTypeSame<data_type, double>() || isTypeSame<data_type, long double>();
 }
 
+/** Check if the data type is a number type (floating-point or integer type). */
 template<typename data_type>
 constexpr bool isNumber(const data_type& _value = data_type())
 {
   return isInteger(_value) || isFloat(_value);
 }
 
+/** Get the type category of the given data type (integer, floating-point, etc.). */
 template<typename data_type>
 constexpr TypeCategory GetTypeCategory(const data_type& _value = data_type())
 {
-  return isInteger(_value) ? TypeCategory::Integer : isFloat(_value) ? TypeCategory::FloatingPoint : throw "Unrecognised type passed in.";
+  return isInteger(_value) ? TypeCategory::Integer : isFloat(_value) ? TypeCategory::FloatingPoint : throw "Passed type not yet supported for categoriation.";
 }
 
 }//Apeiron

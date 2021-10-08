@@ -57,7 +57,7 @@ inline void SetFormat(const PrintFormat _print_format)
   }
 }
 
-/** Set precision. */
+/** Set precision of the output. */
 inline void SetPrecision(const int _significant_figures)
 {
   std::cout<<std::setprecision(_significant_figures);
@@ -70,17 +70,18 @@ inline void Flush()
 }
 
 /** Print a new line. */
-template <char separator>
+template <char separator = ' '>
 inline void Print()
 {
   std::cout<<'\b',' ','\n';
 }
 
-/** Print an arbitrary number of arguments to screen. */
+/** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
 template <char separator = ' ', typename data_type, typename ...tail_data_type>
 inline void Print(const data_type& _data, tail_data_type... _tail_data)
 {
-  std::cout<<_data<<separator;
+  std::cout<<_data;
+  if(separator != '\0') std::cout<<separator;
   Print<separator>(_tail_data...);
 }
 
