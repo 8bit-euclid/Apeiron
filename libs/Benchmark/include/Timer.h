@@ -17,42 +17,53 @@ enum class TimeUnit
 /** Timer class. */
 class Timer
 {
-  private:
+  /***** Friend Classes *****/
+
+  friend class StopWatch;
+  friend class Benchmark;
+
+  /***** Member Variables *****/
+
   bool isRunning;
   Float TotalNanoSecondsLapsed;
   std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
   std::chrono::time_point<std::chrono::high_resolution_clock> StopTime;
 
-  friend class StopWatch;
-  friend class Benchmark;
+  /********** Constructors/Desctructors **********/
 
   public:
-  Timer() : isRunning(false) {}
+  /** Default constructor. */
+  Timer() : isRunning(false), TotalNanoSecondsLapsed(Zero) {}
+
+  /** Default destructor. */
   ~Timer() = default;
 
+  /********** Class Methods **********/
+
+  /** Reset timer. */
+  inline void Reset()
+  {
+    isRunning = false;
+    TotalNanoSecondsLapsed = Zero;
+  }
+
   /** Start timer. */
-  inline void StartTimer()
+  inline void Start()
   {
     isRunning = true;
     StartTime = std::chrono::high_resolution_clock::now();
   }
 
   /** Stop timer and accumulate total time. */
-  inline void StopTimer()
+  inline void Stop()
   {
     StopTime = std::chrono::high_resolution_clock::now();
     TotalNanoSecondsLapsed += (Float)std::chrono::duration_cast<std::chrono::nanoseconds>(StopTime - StartTime).count();
     isRunning = false;
   }
 
-  /** Reset timer. */
-  inline void ResetTimer()
-  {
-    *this = Timer();
-  }
-
   /** Get total time lapsed. */
-  inline Float TotalTimeLapsed(const TimeUnit& _time_units = TimeUnit::MilliSecond) const
+  inline Float TotalLapTime(const TimeUnit& _time_units = TimeUnit::MilliSecond) const
   {
     switch(_time_units)
     {
@@ -68,51 +79,71 @@ class Timer
 /** Stopwatch class. */
 class StopWatch : public Timer
 {
+  /********** Member Variables **********/
+
   public:
   bool isFinalised;
-  ULInt LapCount;
   Float LapTimeMin;
   Float LapTimeMax;
   Float LapTimeMean;
   Float LapTimeRMS;
   Float LapTimeStd;
-
   DynamicArray<Float> LapTimes;
 
-  StopWatch() : isFinalised(false), LapCount(0), LapTimeMin(FloatMax), LapTimeMax(FloatLowest), LapTimeMean(Zero), LapTimeRMS(Zero) { LapTimes.reserve(1e5); }
+  /********** Constructors/Destructors **********/
+
+  /** Default constructor. */
+  StopWatch() : isFinalised(false), LapTimeMin(FloatMax), LapTimeMax(FloatLowest), LapTimeMean(Zero), LapTimeRMS(Zero), LapTimeStd(Zero)
+  {
+    LapTimes.reserve(1e5);
+  }
+
+  /** Default destructor. */
   ~StopWatch() = default;
 
-  inline void Accumulate(const TimeUnit& _time_units = TimeUnit::MilliSecond)
+  /********** Class Methods **********/
+
+  /** Accumulate min, max, and lap times. */
+  inline void AccumulateLapTimes(const TimeUnit& _time_units = TimeUnit::MilliSecond)
   {
     ASSERT(!isRunning, "Cannot accumulate - the timer is still running.")
 
-    const Float total_time_lapsed = TotalTimeLapsed(_time_units);
-    LapCount++;
+    const Float total_time_lapsed = TotalLapTime(_time_units);
     LapTimeMin = Min(LapTimeMin, total_time_lapsed);
     LapTimeMax = Max(LapTimeMax, total_time_lapsed);
-    LapTimeMean += total_time_lapsed;
-    LapTimeRMS += iPow(total_time_lapsed, 2);
     LapTimes.push_back(total_time_lapsed);
   }
 
-  inline void Finalise()
+  /** Finalise the time metrics for the current lap. */
+  inline void FinaliseLap()
   {
     ASSERT(!isRunning, "Cannot finalise - the timer is still running.")
 
     if(isFinalised) return;
 
     // Finalise the mean and RMS.
-    LapTimeMean /= (Float)LapCount;
-    LapTimeRMS = Sqrt(LapTimeRMS/(Float)LapCount);
+    LapTimeMean = std::accumulate(LapTimes.begin(), LapTimes.end(), Zero); // Note: Last argument determines the type of the return value.
+    LapTimeMean /= (Float)LapTimes.size();
 
-    // Compute standard deviation from the mean and RMS.
+    // Finalise the RMS and standard deviation.
+    LapTimeRMS = Zero;
     LapTimeStd = Zero;
-    FOR_EACH(lap_time, LapTimes) LapTimeStd += LapTimeMean - Two*lap_time;
-    LapTimeStd *= LapTimeMean/(Float)LapCount;
-    LapTimeStd += LapTimeRMS;
-    LapTimeStd = Sqrt(LapTimeStd);
+    FOR_EACH(lap_time, LapTimes)
+    {
+      LapTimeRMS += iPow(lap_time, 2);
+      LapTimeStd += iPow(lap_time - LapTimeMean, 2);
+    }
+    LapTimeRMS = Sqrt(LapTimeRMS/(Float)LapTimes.size());
+    LapTimeStd = Sqrt(LapTimeStd/(Float)LapTimes.size());
 
     isFinalised = true;
+  }
+
+  /** Reset stopwatch to start a new lap. */
+  inline void Reset()
+  {
+    Timer::Reset();
+    isFinalised = false;
   }
 };
 
