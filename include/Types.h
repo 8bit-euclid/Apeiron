@@ -2,13 +2,36 @@
 
 namespace Apeiron{
 
+/** Type Categories. */
 enum class TypeCategory
 {
+  Boolean,
   Integer,
-  FloatingPoint
+  FloatingPoint,
+  String
 };
 
-// Signed integer type definitions.
+/***************************************************************************************************************************************************************
+* Boolean Type
+***************************************************************************************************************************************************************/
+
+class Bool
+{
+  private:
+  bool Value;
+
+  public:
+  Bool() : Value(false) {}
+  Bool(const bool _value) : Value(_value) {}
+
+  operator bool() const { return Value; }
+};
+
+/***************************************************************************************************************************************************************
+* Integral Types
+***************************************************************************************************************************************************************/
+
+/** Signed integer type definitions. */
 typedef int Int;
 typedef long int LInt;
 typedef long long int LLInt;
@@ -17,7 +40,7 @@ typedef int16_t Int16;
 typedef int32_t Int32;
 typedef int64_t Int64;
 
-// Unsigned integer type definitions.
+/** Unsigned integer type definitions. */
 typedef unsigned int UInt;
 typedef unsigned long int ULInt;
 typedef unsigned long long int ULLInt;
@@ -26,7 +49,11 @@ typedef uint16_t UInt16;
 typedef uint32_t UInt32;
 typedef uint64_t UInt64;
 
-// Machine epsion and definition of floating point accuracy.
+/***************************************************************************************************************************************************************
+* Floating-point Types
+***************************************************************************************************************************************************************/
+
+/** Machine epsion and definition of floating point accuracy. */
 #define DOUBLE_PRECISION
 //#define LONG_DOUBLE_PRECISION
 
@@ -47,54 +74,78 @@ constexpr Float Infinity(std::numeric_limits<Float>::infinity());
 constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
 constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
+/***************************************************************************************************************************************************************
+* Type Checking
+***************************************************************************************************************************************************************/
+
 /** Check if two data types are the same. */
-template <typename data_type_a, typename data_type_b>
+template <class data_type_a, class data_type_b>
 constexpr bool isTypeSame()
 {
   return std::is_same_v<data_type_a, data_type_b>;
 }
 
-/** Check if the data type is an unsigned integer type. */
-template<typename data_type>
-constexpr bool isUnsignedInteger(const data_type& _value = data_type())
+/** Check if the data types of a sequence of values are the same. */
+template <class t_data_type, class ...t_values>
+constexpr bool areAllTypesSame()
 {
-  return isTypeSame<data_type, unsigned int>() || isTypeSame<data_type, unsigned short int>() ||
-         isTypeSame<data_type, unsigned long int>() || isTypeSame<data_type, unsigned long long int>();
+  return (isTypeSame<t_data_type, t_values>() && ...);
 }
 
-/** Check if the data type is an signed integer type. */
-template<typename data_type>
-constexpr bool isSignedInteger(const data_type& _value = data_type())
+/** Check if the data type is a boolean type. */
+template<class t_data_type>
+constexpr bool isBoolean(const t_data_type& _value = t_data_type())
 {
-  return isTypeSame<data_type, int>() || isTypeSame<data_type, short int>() || isTypeSame<data_type, long int>() || isTypeSame<data_type, long long int>();
+  return isTypeSame<t_data_type, bool>() || isTypeSame<t_data_type, Bool>();
 }
 
-/** Check if the data type is an integer type (either signed or unsigned). */
-template<typename data_type>
-constexpr bool isInteger(const data_type& _value = data_type())
+/** Check if the data type is an integer type. Note: does not include booleans. */
+template<class t_data_type>
+constexpr bool isInteger(const t_data_type& _value = t_data_type())
 {
-  return isSignedInteger(_value) || isUnsignedInteger(_value);
+  return std::is_integral_v<t_data_type> && !isBoolean(_value);
 }
 
 /** Check if the data type is a floating-point type. */
-template<typename data_type>
-constexpr bool isFloat(const data_type& _value = data_type())
+template<class t_data_type>
+constexpr bool isFloat(const t_data_type& _value = t_data_type())
 {
-  return isTypeSame<data_type, Float>() || isTypeSame<data_type, float>() || isTypeSame<data_type, double>() || isTypeSame<data_type, long double>();
+  return std::is_floating_point_v<t_data_type>;
 }
 
 /** Check if the data type is a number type (floating-point or integer type). */
-template<typename data_type>
-constexpr bool isNumber(const data_type& _value = data_type())
+template<class t_data_type>
+constexpr bool isNumber(const t_data_type& _value = t_data_type())
 {
   return isInteger(_value) || isFloat(_value);
 }
 
-/** Get the type category of the given data type (integer, floating-point, etc.). */
-template<typename data_type>
-constexpr TypeCategory GetTypeCategory(const data_type& _value = data_type())
+/** Check if the data type is a number type (floating-point or integer type). */
+template<class t_data_type>
+constexpr bool isString(const t_data_type& _value = t_data_type())
 {
-  return isInteger(_value) ? TypeCategory::Integer : isFloat(_value) ? TypeCategory::FloatingPoint : throw "Passed type not yet supported for categoriation.";
+  return isTypeSame<t_data_type, char*>() || isTypeSame<t_data_type, std::string>();
+}
+
+/** Get the type category of the given data type (integer, floating-point, etc.). */
+template<class t_data_type>
+constexpr TypeCategory GetTypeCategory(const t_data_type& _value = t_data_type())
+{
+  return isBoolean(_value) ? TypeCategory::Boolean :
+         isInteger(_value) ? TypeCategory::Integer :
+         isFloat(_value) ? TypeCategory::FloatingPoint :
+         isString(_value) ? TypeCategory::String :
+         throw "Passed type not yet supported for categorisation.";
+}
+
+/** Initialise each type category. */
+template <class t_data_type, TypeCategory t_type_category = GetTypeCategory(t_data_type())>
+constexpr t_data_type InitialiseType()
+{
+  return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
+         t_type_category == TypeCategory::Integer ? static_cast<t_data_type>(-1) :
+         t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
+         t_data_type();
 }
 
 }//Apeiron

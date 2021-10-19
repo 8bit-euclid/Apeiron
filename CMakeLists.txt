@@ -2,7 +2,7 @@
 # Configure Compile Settings
 #***************************************************************************************************************************************************************
 
-cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
 project(Apeiron)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 option(OPTIMISER "Optimiser level 3" OFF)
@@ -12,7 +12,9 @@ option(OPTIMISER "Optimiser level 3" OFF)
 #***************************************************************************************************************************************************************
 
 # Set compiler standard
-add_compile_options(-std=c++2a)
+set(CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 20)
+#add_compile_options(-std=c++2a)
 
 # Set optimisation flags
 if(OPTIMISER)
@@ -42,9 +44,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}/bin)
 
 # Add Apeiron library directories
 include_directories(${PROJECT_SOURCE_DIR}/libs)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Array)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
 
 #***************************************************************************************************************************************************************
 # Apeiron Binary Build Instructions.
@@ -68,7 +72,9 @@ set(APEIRON_SOURCE_FILES
 set(APEIRON_LINK_LIBRARIES
         ArrayLibrary
         BenchmarkLibrary
-        SortLibrary)
+        FunctionalLibrary
+        SortLibrary
+        TensorLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
@@ -84,7 +90,7 @@ FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
 add_executable(UnitTestApeiron ${PROJECT_SOURCE_DIR}/test/UnitTestApeiron.cpp)
-add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/Array/test/UnitTestArray.cpp)
+add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainers/test/UnitTestArray.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
 target_link_libraries(UnitTestApeiron gtest gtest_main)

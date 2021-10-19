@@ -15,15 +15,15 @@ namespace MathSupport
 {
 
 /** Modulo function for integer types. */
-template <typename data_type>
-constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::true_type, std::false_type)
+template <typename t_data_type>
+constexpr t_data_type Modulo(const t_data_type& _numerator, const t_data_type& _denominator, std::true_type, std::false_type)
 {
   return _numerator % _denominator;
 }
 
 /** Modulo function for floating-point types. */
-template <typename data_type>
-constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator, std::false_type, std::true_type)
+template <typename t_data_type>
+constexpr t_data_type Modulo(const t_data_type& _numerator, const t_data_type& _denominator, std::false_type, std::true_type)
 {
   return std::fmod(_numerator, _denominator);
 }
@@ -45,25 +45,50 @@ constexpr Float Exp(const Float& _value, const Float& _sum, const Float& n, cons
   return _delta_value/n == Zero ? _sum : Exp(_value, _sum + _delta_value/n, n*_iteration, _iteration + 1, _delta_value*_value);
 }
 
-}//MathSupport
+}
+
+/***************************************************************************************************************************************************************
+* Sequences and Series
+***************************************************************************************************************************************************************/
+
+template <class t_type, t_type ...t_integer_sequence>
+constexpr t_type GetInteger(std::integer_sequence<t_type, t_integer_sequence...>, std::size_t _index)
+{
+  constexpr t_type sequence_array[] = {t_integer_sequence...};
+  return sequence_array[_index];
+}
 
 /***************************************************************************************************************************************************************
 * General Arithmetic Functions
 ***************************************************************************************************************************************************************/
 
+/** Sum the terms of a sequence together. */
+template <typename ...t_data_type>
+constexpr auto Sum(const t_data_type& ..._values)
+{
+  return (_values + ... + 0);
+}
+
+/** Multiply the terms of a sequence with each other. */
+template <typename ...t_data_type>
+constexpr auto Multiply(const t_data_type& ..._values)
+{
+  return (_values * ... * 1);
+}
+
 /** Division function. */
-template <typename data_type>
-constexpr Float Divide(const data_type& _numerator, const data_type& _denominator)
+template <typename t_data_type>
+constexpr Float Divide(const t_data_type& _numerator, const t_data_type& _denominator)
 {
   return !isEqual(static_cast<Float>(_denominator), Zero) ? static_cast<Float>(_numerator)/static_cast<Float>(_denominator) :
                                                             throw std::logic_error("Denominator must be non-zero during division.");
 }
 
 /** Modulo function. */
-template <typename data_type>
-constexpr data_type Modulo(const data_type& _numerator, const data_type& _denominator)
+template <typename t_data_type>
+constexpr t_data_type Modulo(const t_data_type& _numerator, const t_data_type& _denominator)
 {
-  return MathSupport::Modulo<data_type>(_numerator, _denominator, std::is_integral<data_type>(), std::is_floating_point<data_type>());
+  return MathSupport::Modulo<t_data_type>(_numerator, _denominator, std::is_integral<t_data_type>(), std::is_floating_point<t_data_type>());
 }
 
 /***************************************************************************************************************************************************************
@@ -90,10 +115,10 @@ constexpr unsigned int Choose(const unsigned int _n, const unsigned int _r)
 * Power Functions
 ***************************************************************************************************************************************************************/
 
-template <typename data_type>
-constexpr data_type iPow(const data_type& _value, const unsigned int& _exponent)
+template <typename t_data_type>
+constexpr t_data_type iPow(const t_data_type& _value, const unsigned int& _exponent)
 {
-  return _exponent == 0 ? static_cast<data_type>(1) : _value*iPow(_value, _exponent - 1);
+  return _exponent == 0 ? static_cast<t_data_type>(1) : _value*iPow(_value, _exponent - 1);
 }
 
 /** Square of a value. */

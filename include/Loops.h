@@ -3,22 +3,22 @@
 namespace Apeiron{
 
 /** For loop through dimensions. */
-#define FOR1(_ic) for(int (_ic) = 0; (_ic) < DIM; ++(_ic))
+#define FOR1(_ic) for(std::size_t (_ic) = 0; (_ic) < DIM; ++(_ic))
 
 /** For loop from the first index. */
-#define FOR2(_index, _n_index) for(int (_index) = 0; (_index) < (_n_index); ++(_index))
+#define FOR2(_index, _n_index) for(std::size_t (_index) = 0; (_index) < (_n_index); ++(_index))
 
 /** For loop from a starting index. */
-#define FOR3(_index, _start_index, _n_index) for(int (_index) = (_start_index); (_index) < (_n_index); ++(_index))
+#define FOR3(_index, _start_index, _n_index) for(std::size_t (_index) = (_start_index); (_index) < (_n_index); ++(_index))
 
 /** Generic for loop. */
 #define FOR(...) MACRO(FOR, __VA_ARGS__)
 
 /** For loop in reverse from a starting index to the first index. */
-#define FOR_REVERSE2(_index, _start_index) for(int _index = _start_index; _index >= 0; --_index)
+#define FOR_REVERSE2(_index, _start_index) for(std::size_t _index = _start_index; _index >= 0; --_index)
 
 /** For loop in reverse from a starting index. */
-#define FOR_REVERSE3(_index, _start_index, _end_index) for(int _index = _start_index; _index >= _end_index; --_index)
+#define FOR_REVERSE3(_index, _start_index, _end_index) for(std::size_t _index = _start_index; _index >= _end_index; --_index)
 
 /** Generic for loop in reverse. */
 #define FOR_REVERSE(...) MACRO(FOR_REVERSE, __VA_ARGS__)

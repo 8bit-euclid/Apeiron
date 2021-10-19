@@ -51,13 +51,13 @@ constexpr bool isLargerEqual(const Float& _a, const Float& _b, const Float& _rel
 }
 
 /** Floating-point toleranced/exact boundedness check. */
-template<bool is_left_included = true, bool is_right_included = false, bool is_exact_comparison = false, typename data_type>
-constexpr bool isBounded(const data_type& _a, const data_type& _min, const data_type& _max, const data_type& _relative_tolerance = RelativeTolerance,
+template<bool is_left_included = true, bool is_right_included = false, bool is_exact_comparison = false, typename t_data_type>
+constexpr bool isBounded(const t_data_type& _a, const t_data_type& _min, const t_data_type& _max, const t_data_type& _relative_tolerance = RelativeTolerance,
                       const Float& _zero_tolerance = ZeroTolerance)
 {
   ASSERT_NUMBER(_a)
 
-  if(typeid(data_type) != typeid(Float))
+  if(!isTypeSame<t_data_type, Float>())
   {
     switch(is_left_included)
     {
