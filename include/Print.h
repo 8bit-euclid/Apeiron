@@ -17,16 +17,16 @@ enum class PrintFormat
 #define Setw(_width) std::setw(_width)
 
 /** Comma operator overload or output stream. */
-template <typename data_type>
-std::ostream& operator,(std::ostream& _out, const data_type& _data)
+template <typename t_data_type>
+std::ostream& operator,(std::ostream& _out, const t_data_type& _data)
 {
   _out<<_data;
   return _out;
 }
 
 /** Convert to a string. */
-template <typename data_type>
-inline std::string To_Str(const data_type& atype)
+template <typename t_data_type>
+inline std::string To_Str(const t_data_type& atype)
 {
   std::stringstream str_buffer;
   str_buffer<<atype<<std::endl;
@@ -77,8 +77,8 @@ inline void Print()
 }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
-template <char separator = ' ', typename data_type, typename ...tail_data_type>
-inline void Print(const data_type& _data, tail_data_type... _tail_data)
+template <char separator = ' ', typename t_data_type, typename ...tail_data_type>
+inline void Print(const t_data_type& _data, tail_data_type... _tail_data)
 {
   std::cout<<_data;
   if(separator != '\0') std::cout<<separator;

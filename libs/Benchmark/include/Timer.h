@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../Array/include/Array.h"
+#include <DataContainers/include/Array.h>
 
 namespace Apeiron{
 

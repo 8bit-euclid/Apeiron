@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../Array/include/Array.h"
 #include "Timer.h"
+#include <DataContainers/include/Array.h>
 
 namespace Apeiron{
 
