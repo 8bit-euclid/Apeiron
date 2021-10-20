@@ -80,7 +80,7 @@ constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
 /** Check if two data types are the same. */
 template <class data_type_a, class data_type_b>
-constexpr bool isTypeSame()
+constexpr bool areTypesEqual()
 {
   return std::is_same_v<data_type_a, data_type_b>;
 }
@@ -89,14 +89,14 @@ constexpr bool isTypeSame()
 template <class t_data_type, class ...t_values>
 constexpr bool areAllTypesSame()
 {
-  return (isTypeSame<t_data_type, t_values>() && ...);
+  return (areTypesEqual<t_data_type, t_values>() && ...);
 }
 
 /** Check if the data type is a boolean type. */
 template<class t_data_type>
 constexpr bool isBoolean(const t_data_type& _value = t_data_type())
 {
-  return isTypeSame<t_data_type, bool>() || isTypeSame<t_data_type, Bool>();
+  return areTypesEqual<t_data_type, bool>() || areTypesEqual<t_data_type, Bool>();
 }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
@@ -124,7 +124,7 @@ constexpr bool isNumber(const t_data_type& _value = t_data_type())
 template<class t_data_type>
 constexpr bool isString(const t_data_type& _value = t_data_type())
 {
-  return isTypeSame<t_data_type, char*>() || isTypeSame<t_data_type, std::string>();
+  return areTypesEqual<t_data_type, char *>() || areTypesEqual<t_data_type, std::string>();
 }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */

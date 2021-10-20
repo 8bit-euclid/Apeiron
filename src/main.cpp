@@ -14,8 +14,9 @@ using namespace Apeiron;
 int main()
 {
 //  constexpr StaticArray<Float, 3> vect1(Five);
-//  constexpr StaticArray<Float, 3> vect2(vect1);
-  constexpr StaticArray<Float, 3> vect3({One, Two, Three});
+  constexpr StaticArray<Float, 3> vect2{One, Two, Three};
+  constexpr std::array<Float, 3> init{Two, Three, Four};
+  constexpr StaticArray<Float, 3> vect3(init.begin(), init.end());
 
 //  constexpr auto test = DataContainersSupport::InitStaticArray<Float, 3>({One, Two, Three});
 //  constexpr Float testValue = test[0];
