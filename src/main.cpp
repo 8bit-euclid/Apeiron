@@ -13,16 +13,14 @@ using namespace Apeiron;
 
 int main()
 {
-//  constexpr StaticArray<Float, 3> vect1(Five);
-  constexpr StaticArray<Float, 3> vect2{One, Two, Three};
-  constexpr std::array<Float, 3> init{Two, Three, Four};
-  constexpr StaticArray<Float, 3> vect3(init.begin(), init.end());
+  DynamicArray<Float> vect1(3, Four);
+  DynamicArray<Float> vect2 = vect1;
+  DynamicArray<Float> vect3 = {Two, Three, Four};
+  DynamicArray<Float> vect4(vect3.begin(), vect3.end());
 
-//  constexpr auto test = DataContainersSupport::InitStaticArray<Float, 3>({One, Two, Three});
-//  constexpr Float testValue = test[0];
-
-//  Print(test[0], test[1], test[2]);
-//  Print(vect2[0], vect2[1], vect2[2]);
+  Print(vect1[0], vect1[1], vect1[2]);
+  Print(vect2[0], vect2[1], vect2[2]);
   Print(vect3[0], vect3[1], vect3[2]);
+  Print(vect4[0], vect4[1], vect4[2]);
   return 0;
 }

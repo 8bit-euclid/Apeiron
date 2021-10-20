@@ -8,8 +8,6 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Array Abstract Base Class
 ***************************************************************************************************************************************************************/
-
-/** Array base class. */
 template <class t_derived_class, class t_data_type>
 class Array
 {
@@ -35,7 +33,6 @@ public:
   /*************************************************************************************************************************************************************
   * Size and Index Range-checking
   *************************************************************************************************************************************************************/
-
   /** Check if an index is in-range. */
   constexpr void IndexBoundCheck(const std::size_t _index) const
   {
@@ -51,7 +48,6 @@ public:
   /*************************************************************************************************************************************************************
   * Subscript Operator Overloads
   *************************************************************************************************************************************************************/
-
   constexpr t_data_type& operator[](const std::size_t _index)
   {
     IndexBoundCheck(_index);
@@ -67,7 +63,6 @@ public:
   /*************************************************************************************************************************************************************
   * Assignment Operator Overloads
   *************************************************************************************************************************************************************/
-
   constexpr t_derived_class& operator=(const t_data_type& _value) noexcept
   {
     FOR_EACH(entry, Derived()) entry = _value;
@@ -86,7 +81,6 @@ public:
 /***************************************************************************************************************************************************************
 * Ostream Operator Overloads
 ***************************************************************************************************************************************************************/
-
 //template <class t_derived_class, class t_data_type>
 //inline std::ostream& operator<<(std::ostream& _output_stream, const Array<t_derived_class, t_data_type>& _array_base)
 //{
@@ -98,22 +92,26 @@ public:
 /***************************************************************************************************************************************************************
 * Static Array Class
 ***************************************************************************************************************************************************************/
-
 template <class t_data_type, std::size_t t_array_size>
 class StaticArray : public std::array<t_data_type, t_array_size>, public Array<StaticArray<t_data_type, t_array_size>, t_data_type>
 {
+private:
   using Base = Array<StaticArray<t_data_type, t_array_size>, t_data_type>;
   friend Base;
 
-  public:
+public:
+  /** Default constructor. */
   constexpr StaticArray() : StaticArray(GetTypeInitValue<t_data_type>()) {}
 
+  /** Constructor from single initial value. */
   constexpr StaticArray(const t_data_type& _init_value) :
     std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_init_value)) {}
 
+  /** Constructor from an initializer list. */
   constexpr StaticArray(const std::initializer_list<t_data_type>& _initialiser_list) :
     std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_initialiser_list)) {};
 
+  /** Constructor from a first and last iterator. */
   template <class t_iterator>
   constexpr StaticArray(const t_iterator _first, const t_iterator _last) :
     std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_first, _last)) {}
@@ -128,7 +126,6 @@ class StaticArray : public std::array<t_data_type, t_array_size>, public Array<S
 /***************************************************************************************************************************************************************
 * Dynamic Array Class
 ***************************************************************************************************************************************************************/
-
 template <class t_data_type>
 class DynamicArray : public std::vector<t_data_type>, public Array<DynamicArray<t_data_type>, t_data_type>
 {
@@ -136,17 +133,21 @@ class DynamicArray : public std::vector<t_data_type>, public Array<DynamicArray<
   friend Base;
 
   public:
+  /** Default constructor. */
   DynamicArray() : std::vector<t_data_type>() {}
 
-  DynamicArray(const std::size_t _t_array_size) : std::vector<t_data_type>(_t_array_size) {}
+  /** Constructor based on given size. */
+  DynamicArray(const std::size_t _array_size) : DynamicArray(_array_size, GetTypeInitValue<t_data_type>()) {}
 
+  /** Constructor based on given size single initial value. */
   DynamicArray(const std::size_t _t_array_size, const t_data_type& _init_value) : std::vector<t_data_type>(_t_array_size, _init_value) {}
 
-  DynamicArray(const DynamicArray<t_data_type>& _array_to_copy) : std::vector<t_data_type>(_array_to_copy) {}
-
-  DynamicArray(typename std::vector<t_data_type>::iterator _first, typename std::vector<t_data_type>::iterator _last) : std::vector<t_data_type>(_first, _last) {}
-
+  /** Constructor from an initializer list. */
   DynamicArray(const std::initializer_list<t_data_type>& _initialiser_list) : std::vector<t_data_type>(_initialiser_list) {};
+
+  /** Constructor from a first and last iterator. */
+  template <class t_iterator>
+  DynamicArray(const t_iterator _first, const t_iterator _last) : std::vector<t_data_type>(_first, _last) {}
 
   /** Default destructor. */
   ~DynamicArray() = default;
