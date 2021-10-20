@@ -111,11 +111,12 @@ class StaticArray : public std::array<t_data_type, t_array_size>, public Array<S
   constexpr StaticArray(const t_data_type& _init_value) :
     std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_init_value)) {}
 
-  constexpr StaticArray(typename std::array<t_data_type, t_array_size>::iterator _first, typename std::array<t_data_type, t_array_size>::iterator _last) :
-    std::array<t_data_type, t_array_size>(_first, _last) {}
-
   constexpr StaticArray(const std::initializer_list<t_data_type>& _initialiser_list) :
     std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_initialiser_list)) {};
+
+  template <class t_iterator>
+  constexpr StaticArray(const t_iterator _first, const t_iterator _last) :
+    std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_first, _last)) {}
 
   /** Default destructor. */
   constexpr ~StaticArray() = default;

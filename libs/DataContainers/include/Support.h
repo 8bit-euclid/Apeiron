@@ -18,14 +18,6 @@ constexpr auto InitStaticArray(const t_data_type& _init_value)
   return initialised_array;
 }
 
-//template <class t_data_type, int t_array_size>
-//constexpr auto InitStaticArray(typename std::array<t_data_type, t_array_size>::iterator _first, typename std::array<t_data_type, t_array_size>::iterator _last)
-//{
-//  std::array<t_data_type, t_array_size> initialised_array;
-//  std::fill(initialised_array.begin(), initialised_array.end(), _init_value);
-//  return initialised_array;
-//}
-
 /** Initialise an std::array with an initializer list. */
 template <class t_data_type, std::size_t t_array_size>
 constexpr auto InitStaticArray(const std::initializer_list<t_data_type>& _initialiser_list)
@@ -36,25 +28,16 @@ constexpr auto InitStaticArray(const std::initializer_list<t_data_type>& _initia
   return initialised_array;
 }
 
-//template <typename t_data_type, std::size_t t_array_size, typename... Ts>
-//constexpr std::enable_if_t<(sizeof...(Ts) == t_array_size), std::array<t_data_type, t_array_size> >
-//GetArrayFromInitializerList(const t_data_type* const beg, const t_data_type* const end, const Ts ...xs)
-//{
-//  return std::array<t_data_type, t_array_size>{xs...};
-//}
-//
-//template <typename t_data_type, size_t t_array_size, typename... Ts>
-//constexpr std::enable_if_t<(sizeof...(Ts) < t_array_size), std::array<t_data_type, t_array_size> >
-//GetArrayFromInitializerList(const t_data_type *const beg, const t_data_type *const end, const Ts... xs)
-//{
-//  return GetArrayFromInitializerList<t_data_type, t_array_size>(beg + 1, end, *beg, xs...);
-//}
-//
-//template <typename t_data_type, std::size_t t_array_size>
-//constexpr auto InitStaticArray(std::initializer_list<t_data_type> _initialiser_list)
-//{
-//  return GetArrayFromInitializerList<t_data_type, t_array_size>(_initialiser_list.begin(), _initialiser_list.end());
-//}
+/** Initialise an std::array with a first and last iterator. */
+template <class t_data_type, std::size_t t_array_size, class t_iterator>
+constexpr auto InitStaticArray(const t_iterator _first, const t_iterator _last)
+{
+  areTypesEqual<t_data_type, typename std::iterator_traits<t_iterator>::value_type>() ? true : throw "The number of iterators must equal the array size.";
+  areSizesEqual(t_array_size, std::distance(_first, _last)) ? true : throw "The number of iterators must equal the array size.";
+  std::array<t_data_type, t_array_size> initialised_array;
+  std::copy(_first, _last, initialised_array.begin());
+  return initialised_array;
+}
 
 }
 }

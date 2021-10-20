@@ -43,7 +43,7 @@ constexpr bool isLessEqual(const Float& _a, const Float& _b, const Float& _relat
 /** Floating-point toleranced/exact 'is larger than' check. */
 template<bool is_exact_comparison = false>
 constexpr bool isLarger(const Float& _a, const Float& _b, const Float& _relative_tolerance = RelativeTolerance,
-                      const Float& _zero_tolerance = ZeroTolerance)
+                        const Float& _zero_tolerance = ZeroTolerance)
 {
   return !isLessEqual<is_exact_comparison>(_a, _b, _relative_tolerance, _zero_tolerance);
 }
@@ -51,7 +51,7 @@ constexpr bool isLarger(const Float& _a, const Float& _b, const Float& _relative
 /** Floating-point toleranced/exact 'is lesser than or equal to' check. */
 template<bool is_exact_comparison = false>
 constexpr bool isLargerEqual(const Float& _a, const Float& _b, const Float& _relative_tolerance = RelativeTolerance,
-                           const Float& _zero_tolerance = ZeroTolerance)
+                             const Float& _zero_tolerance = ZeroTolerance)
 {
   return !isLess<is_exact_comparison>(_a, _b, _relative_tolerance, _zero_tolerance);
 }
@@ -59,11 +59,11 @@ constexpr bool isLargerEqual(const Float& _a, const Float& _b, const Float& _rel
 /** Floating-point toleranced/exact boundedness check. */
 template<bool is_left_included = true, bool is_right_included = false, bool is_exact_comparison = false, typename t_data_type>
 constexpr bool isBounded(const t_data_type& _a, const t_data_type& _min, const t_data_type& _max, const t_data_type& _relative_tolerance = RelativeTolerance,
-                      const Float& _zero_tolerance = ZeroTolerance)
+                         const Float& _zero_tolerance = ZeroTolerance)
 {
   ASSERT_NUMBER(_a)
 
-  if(!isTypeSame<t_data_type, Float>())
+  if(!areTypesEqual<t_data_type, Float>())
   {
     switch(is_left_included)
     {
