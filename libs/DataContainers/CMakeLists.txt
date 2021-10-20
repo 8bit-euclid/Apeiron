@@ -3,7 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/DataContainers)
 set(SOURCE_FILES
         include/Array.h
         include/MultiArray.h
-        src/Array.cpp)
+        src/Array.cpp include/Support.h)
 
 set(LINK_LIBRARIES)
 

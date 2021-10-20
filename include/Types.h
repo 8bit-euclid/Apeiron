@@ -12,7 +12,7 @@ enum class TypeCategory
 };
 
 /***************************************************************************************************************************************************************
-* Boolean Type
+* Boolean Type Wrapper (for std::vector)
 ***************************************************************************************************************************************************************/
 
 class Bool
@@ -138,9 +138,9 @@ constexpr TypeCategory GetTypeCategory(const t_data_type& _value = t_data_type()
          throw "Passed type not yet supported for categorisation.";
 }
 
-/** Initialise each type category. */
+/** Get the initial value for each type category. */
 template <class t_data_type, TypeCategory t_type_category = GetTypeCategory(t_data_type())>
-constexpr t_data_type InitialiseType()
+constexpr t_data_type GetTypeInitValue()
 {
   return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
          t_type_category == TypeCategory::Integer ? static_cast<t_data_type>(-1) :
@@ -148,4 +148,4 @@ constexpr t_data_type InitialiseType()
          t_data_type();
 }
 
-}//Apeiron
+}
