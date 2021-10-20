@@ -10,6 +10,12 @@ namespace Apeiron{
 constexpr Float RelativeTolerance = Small;
 constexpr Float ZeroTolerance = Small;
 
+/** Container size equality check. */
+constexpr bool areSizesEqual(const std::size_t& _size0, const std::size_t& _size1)
+{
+  return _size0 == _size1;
+}
+
 /** Floating-point toleranced/exact equality check. */
 template<bool is_exact_comparison = false>
 constexpr bool isEqual(const Float& _a, const Float& _b, const Float& _relative_tolerance = RelativeTolerance,

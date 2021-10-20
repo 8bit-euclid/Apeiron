@@ -2,11 +2,10 @@
 
 #include "../../../include/Global.h"
 
-namespace Apeiron
-{
+namespace Apeiron{
 
-template <class t_data_type, int array_size>
-class StaticMultiArray : public std::array<t_data_type, array_size>
+template <class t_data_type, int t_array_size>
+class StaticMultiArray : public std::array<t_data_type, t_array_size>
 {
   private:
   /** Check if an index is in-range. */

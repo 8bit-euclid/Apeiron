@@ -2,8 +2,8 @@
 
 namespace Apeiron{
 
-//template <int array_size>
-//StaticArray<Bool, array_size>::StaticArray() : std::array<Bool, array_size>()
+//template <int t_array_size>
+//StaticArray<Bool, t_array_size>::StaticArray() : std::array<Bool, t_array_size>()
 //{
 //  std::fill(this->begin(), this->end(), false);
 //}
