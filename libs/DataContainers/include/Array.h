@@ -5,6 +5,9 @@
 
 namespace Apeiron{
 
+template <class t_derived_class, class t_data_type>
+class MultiArray;
+
 /***************************************************************************************************************************************************************
 * Array Abstract Base Class
 ***************************************************************************************************************************************************************/
@@ -12,6 +15,8 @@ template <class t_derived_class, class t_data_type>
 class Array
 {
 private:
+  friend MultiArray<t_derived_class, t_data_type>;
+
   constexpr t_derived_class& Derived() noexcept
   {
     return static_cast<t_derived_class&>(*this);

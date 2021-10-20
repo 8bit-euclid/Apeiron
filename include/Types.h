@@ -21,10 +21,10 @@ class Bool
   bool Value;
 
   public:
-  Bool() : Value(false) {}
-  Bool(const bool _value) : Value(_value) {}
+  constexpr Bool() : Bool(false) {}
+  constexpr Bool(const bool _value) : Value(_value) {}
 
-  operator bool() const { return Value; }
+  constexpr operator bool() const { return Value; }
 };
 
 /***************************************************************************************************************************************************************
@@ -145,7 +145,7 @@ constexpr t_data_type GetTypeInitValue()
   return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
          t_type_category == TypeCategory::Integer ? static_cast<t_data_type>(-1) :
          t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
-         t_data_type();
+         static_cast<t_data_type>(0.0);
 }
 
 }

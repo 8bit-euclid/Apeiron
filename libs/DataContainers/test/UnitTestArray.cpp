@@ -4,31 +4,28 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ArraySize = 10;
+constexpr std::size_t ArraySize = 20;
 
 namespace Apeiron
 {
 
 class ArrayTest : public testing::Test
 {
-  public:
+public:
 
   StaticArray<Bool, ArraySize> BoolStaticArray;
   StaticArray<int, ArraySize> IntStaticArray;
   StaticArray<Float, ArraySize> FloatStaticArray;
-  StaticArray<std::string, ArraySize> StringStaticArray;
 
   DynamicArray<Bool> BoolDynamicArray;
   DynamicArray<int> IntDynamicArray;
   DynamicArray<Float> FloatDynamicArray;
-  DynamicArray<std::string> StringDynamicArray;
 
   void SetUp() override
   {
     BoolDynamicArray.resize(ArraySize);
     IntDynamicArray.resize(ArraySize);
     FloatDynamicArray.resize(ArraySize);
-    StringDynamicArray.resize(ArraySize);
   }
 };
 
