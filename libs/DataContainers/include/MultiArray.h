@@ -13,70 +13,83 @@ template <class t_derived_class, class t_data_type>
 class MultiArray : public Array<t_derived_class, t_data_type>
 {
 protected:
-  /** Constructor. */
   constexpr MultiArray() {}
 
 public:
-  /** Destructor. */
-  ~MultiArray() = default;
+  constexpr ~MultiArray() = default;
 
   /*************************************************************************************************************************************************************
-  * Size and Index Range-checking
+  * Multi-dimensional Subscript Indexing
   *************************************************************************************************************************************************************/
-  /** Check if an index is in-range. */
-  constexpr void IndexBoundCheck(const std::size_t _index) const
+  constexpr std::size_t GetSingleIndex(const std::convertible_to<std::size_t> auto ..._multi_index) const
   {
-    DEBUG_ASSERT(isBounded(_index, std::size_t(0), this->Derived().size()), "The array index ", _index, " must be in the range [0, ", this->Derived().size() - 1, "].")
+//    DEBUG_ASSERT(areSizesEqual(sizeof...(_multi_index), this->Derived().Dimensions.size()), "Multi-index size mismatch.")
+
+    const auto& dimensions = this->Derived().Dimensions;
+    const auto& n_entries = this->Derived().nEntries;
+    const auto n_dimensions = dimensions.size();
+    const int multi_index[] = {_multi_index...};
+
+    std::size_t index(0), factor(1);
+    FOR(i, n_dimensions)
+    {
+//      DEBUG_ASSERT(multi_index[i] < dimensions[i], "Multi index component ", multi_index[i]," must be lesser than ", dimensions[i],".")
+      index += factor * multi_index[i];
+      factor *= dimensions[i];
+    }
+
+//    DEBUG_ASSERT(isBounded(index, 0, n_entries), "The computed index ", index, " should be in the range [0, ", n_entries, "].")
+    return index;
   }
 
-  /** Check that two array sizes are equal. */
-  constexpr void SizeCheck(const std::size_t _size0, const std::size_t _size1) const
-  {
-    DEBUG_ASSERT(areSizesEqual(_size0, _size1), "The array sizes ", _size0, " and ", _size1, " must be equal.")
-  }
+//StaticArray<std::size_t, sizeof...(t_dimensions)> ComputeMultiIndex(std::size_t _index)
+//{
+//  DEBUG_ASSERT(isBounded(_index, 0, Multiply(t_dimensions...)), "The passed index ", _index, " should be in the range [0, ", Multiply(t_dimensions...), "].")
+//
+//  constexpr std::size_t dimensions[] = {t_dimensions...};
+//  StaticArray<std::size_t, sizeof...(t_dimensions)> res;
+//
+//  std::size_t factor = Multiply(t_dimensions...);
+//  for (size_t i = sizeof...(t_dimensions); i != 0; --i) {
+//    factor /= dimensions[i - 1];
+//    res[i - 1] = _index / factor;
+//    assert(res[i - 1] < dimensions[i - 1]);
+//    _index -= res[i - 1] * factor;
+//  }
+//  return res;
+//}
 
   /*************************************************************************************************************************************************************
-  * Subscript Operator Overloads
+  * Multi-dimensional Subscript Operator Overloads
   *************************************************************************************************************************************************************/
-  constexpr t_data_type& operator[](const std::size_t _index)
+  constexpr const t_data_type& operator()(std::convertible_to<std::size_t> auto ..._multi_index) const
   {
-    IndexBoundCheck(_index);
-    return *(this->Derived().begin() + _index);
+//    DEBUG_ASSERT(areSizesEqual(sizeof...(_multi_index), this->Derived().nEntries), "Multi-index size mismatch.")
+    return this->Derived()[GetSingleIndex(_multi_index...)];
   }
 
-  constexpr const t_data_type& operator[](const std::size_t _index) const
+  constexpr t_data_type& operator()(std::convertible_to<std::size_t> auto ..._multi_index)
   {
-    IndexBoundCheck(_index);
-    return *(this->Derived().begin() + _index);
-  }
-
-  /*************************************************************************************************************************************************************
-  * Assignment Operator Overloads
-  *************************************************************************************************************************************************************/
-  constexpr t_derived_class& operator=(const t_data_type& _value) noexcept
-  {
-    FOR_EACH(entry, this->Derived()) entry = _value;
-    return this->Derived();
-  }
-
-  constexpr t_derived_class& operator=(const std::initializer_list<t_data_type>& _value_list)
-  {
-    SizeCheck(_value_list.size(), this->Derived().size());
-    std::size_t index(0);
-    FOR_EACH(entry, _value_list) this->Derived()[index++] = entry;
-    return this->Derived();
+//    DEBUG_ASSERT(areSizesEqual(sizeof...(_multi_index), this->Derived().nEntries), "Multi-index size mismatch.")
+    return this->Derived()[GetSingleIndex(_multi_index...)];
   }
 };
 
 /***************************************************************************************************************************************************************
 * Static Multi-dimensional Array Class
 ***************************************************************************************************************************************************************/
-template <class t_data_type, std::size_t t_array_size>
-class StaticMultiArray : public std::array<t_data_type, t_array_size>, public MultiArray<StaticMultiArray<t_data_type, t_array_size>, t_data_type>
+template <class t_data_type, std::size_t ...t_dimensions>
+class StaticMultiArray : public std::array<t_data_type, (t_dimensions * ...)>,
+                         public MultiArray<StaticMultiArray<t_data_type, t_dimensions...>, t_data_type>
 {
+  using BaseArray = Array<StaticMultiArray<t_data_type, t_dimensions...>, t_data_type>;
+  using BaseMultiArray = MultiArray<StaticMultiArray<t_data_type, t_dimensions...>, t_data_type>;
+  friend BaseArray;
+  friend BaseMultiArray;
+
 private:
-  using Base = MultiArray<StaticMultiArray<t_data_type, t_array_size>, t_data_type>;
-  friend Base;
+  constexpr static StaticArray<std::size_t, sizeof...(t_dimensions)> Dimensions{t_dimensions...};
+  constexpr static std::size_t nEntries = Multiply(Dimensions.begin(), Dimensions.end());
 
 public:
   /** Default constructor. */
@@ -84,22 +97,13 @@ public:
 
   /** Constructor from single initial value. */
   constexpr StaticMultiArray(const t_data_type& _init_value) :
-          std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_init_value)) {}
-
-  /** Constructor from an initializer list. */
-  constexpr StaticMultiArray(const std::initializer_list<t_data_type>& _initialiser_list) :
-          std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_initialiser_list)) {};
-
-  /** Constructor from a first and last iterator. */
-  template <class t_iterator>
-  constexpr StaticMultiArray(const t_iterator _first, const t_iterator _last) :
-          std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_first, _last)) {}
+    std::array<t_data_type, nEntries>(DataContainersSupport::InitStaticArray<t_data_type, nEntries>(_init_value)) {}
 
   /** Default destructor. */
   constexpr ~StaticMultiArray() = default;
 
-  using Base::operator[];
-  using Base::operator=;
+  using BaseArray::operator[];
+  using BaseArray::operator=;
 };
 
 /***************************************************************************************************************************************************************
@@ -108,31 +112,33 @@ public:
 template <class t_data_type>
 class DynamicMultiArray : public std::vector<t_data_type>, public MultiArray<DynamicMultiArray<t_data_type>, t_data_type>
 {
-  using Base = MultiArray<DynamicMultiArray<t_data_type>, t_data_type>;
-  friend Base;
+  using BaseArray = Array<DynamicMultiArray<t_data_type>, t_data_type>;
+  using BaseMultiArray = MultiArray<DynamicMultiArray<t_data_type>, t_data_type>;
+  friend BaseArray;
+  friend BaseMultiArray;
+
+private:
+  DynamicArray<std::size_t> Dimensions;
+  std::size_t nEntries;
 
 public:
   /** Default constructor. */
   DynamicMultiArray() : std::vector<t_data_type>() {}
 
   /** Constructor based on given size. */
+  template <std::size_t ...t_dimensions>
   DynamicMultiArray(const std::size_t _array_size) : DynamicMultiArray(_array_size, GetTypeInitValue<t_data_type>()) {}
 
   /** Constructor based on given size single initial value. */
-  DynamicMultiArray(const std::size_t _t_array_size, const t_data_type& _init_value) : std::vector<t_data_type>(_t_array_size, _init_value) {}
-
-  /** Constructor from an initializer list. */
-  DynamicMultiArray(const std::initializer_list<t_data_type>& _initialiser_list) : std::vector<t_data_type>(_initialiser_list) {};
-
-  /** Constructor from a first and last iterator. */
-  template <class t_iterator>
-  DynamicMultiArray(const t_iterator _first, const t_iterator _last) : std::vector<t_data_type>(_first, _last) {}
+  template <std::size_t ...t_dimensions>
+  DynamicMultiArray(const std::size_t _t_array_size, const t_data_type& _init_value) :
+    nEntries((t_dimensions * ...)), std::vector<t_data_type>(nEntries, _init_value) {}
 
   /** Default destructor. */
   ~DynamicMultiArray() = default;
 
-  using Base::operator[];
-  using Base::operator=;
+  using BaseArray::operator[];
+  using BaseArray::operator=;
 };
 
 }

@@ -9,24 +9,18 @@ namespace Apeiron{
 /** Benchmark class. */
 class Benchmark
 {
-  /********** Member Variables **********/
-
-  private:
+private:
   const int MaxStringLength;
   TimeUnit TimeUnits;
   std::unordered_map<std::string, StopWatch> StopWatchMap;
 
-  /********** Constructors/Destructors **********/
-
-  public:
-  /** Default constructor. */
+public:
   Benchmark(const TimeUnit& _time_units = TimeUnit::MilliSecond) : MaxStringLength(20), TimeUnits(_time_units) {};
-
-  /** Default destructor. */
   ~Benchmark() = default;
 
-  /********** Time benchmarking **********/
-
+  /*************************************************************************************************************************************************************
+  * Time Benchmarking Functions
+  *************************************************************************************************************************************************************/
   /** Start the timer for a particular stopwatch. */
   inline void StartTimer(const std::string& _timer_name)
   {

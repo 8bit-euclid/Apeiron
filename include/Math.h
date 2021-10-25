@@ -10,7 +10,6 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Math Support Functions
 ***************************************************************************************************************************************************************/
-
 namespace MathSupport
 {
 
@@ -50,7 +49,6 @@ constexpr Float Exp(const Float& _value, const Float& _sum, const Float& n, cons
 /***************************************************************************************************************************************************************
 * Sequences and Series
 ***************************************************************************************************************************************************************/
-
 template <class t_type, t_type ...t_integer_sequence>
 constexpr t_type GetInteger(std::integer_sequence<t_type, t_integer_sequence...>, std::size_t _index)
 {
@@ -61,7 +59,6 @@ constexpr t_type GetInteger(std::integer_sequence<t_type, t_integer_sequence...>
 /***************************************************************************************************************************************************************
 * General Arithmetic Functions
 ***************************************************************************************************************************************************************/
-
 /** Sum the terms of a sequence together. */
 template <typename ...t_data_type>
 constexpr auto Sum(const t_data_type& ..._values)
@@ -69,11 +66,27 @@ constexpr auto Sum(const t_data_type& ..._values)
   return (_values + ... + 0);
 }
 
+/** Sum the terms of a sequence between two iterators. */
+template <class t_iterator>
+constexpr auto Sum(const t_iterator _first, const t_iterator _last)
+{
+  typedef typename std::iterator_traits<t_iterator>::value_type data_type;
+  return std::accumulate(_first, _last, static_cast<data_type>(0));
+}
+
 /** Multiply the terms of a sequence with each other. */
 template <typename ...t_data_type>
 constexpr auto Multiply(const t_data_type& ..._values)
 {
   return (_values * ... * 1);
+}
+
+/** Multiply the terms of a sequence between two iterators. */
+template <class t_iterator>
+constexpr auto Multiply(const t_iterator _first, const t_iterator _last)
+{
+  typedef typename std::iterator_traits<t_iterator>::value_type data_type;
+  return std::accumulate(_first, _last, static_cast<data_type>(1), std::multiplies<data_type>());
 }
 
 /** Division function. */
@@ -88,37 +101,44 @@ constexpr Float Divide(const t_data_type& _numerator, const t_data_type& _denomi
 template <typename t_data_type>
 constexpr t_data_type Modulo(const t_data_type& _numerator, const t_data_type& _denominator)
 {
-  return MathSupport::Modulo<t_data_type>(_numerator, _denominator, std::is_integral<t_data_type>(), std::is_floating_point<t_data_type>());
+  return !isEqual(static_cast<Float>(_denominator), Zero) ?
+    MathSupport::Modulo<t_data_type>(_numerator, _denominator, std::is_integral<t_data_type>(), std::is_floating_point<t_data_type>()) :
+    throw std::logic_error("Denominator must be non-zero during modulo operation.");
 }
 
 /***************************************************************************************************************************************************************
 * Combinatorial Functions
 ***************************************************************************************************************************************************************/
-
+/** Factorial function. */
 constexpr unsigned int Factorial(const unsigned int _value)
 {
-  return 0 < _value ? _value*Factorial(_value - 1) : 1;
+  return _value <= 20 ? (0 < _value ? _value*Factorial(_value - 1) : 1) :
+         throw std::logic_error("Cannot currently compute the factorial of a number larger than 20.");
 }
 
-constexpr unsigned int FactorialDivision(const unsigned int _numerator, const unsigned int _denominator)
+/** Factorial quotient function. */
+constexpr unsigned int FactorialQuotient(const unsigned int _numerator, const unsigned int _denominator)
 {
-  return _denominator <= _numerator ? (_denominator < _numerator ? _numerator*FactorialDivision(_numerator - 1, _denominator) : 1) :
-         throw std::logic_error("Numerator must be larger than the denominator.");
+  return _numerator <= 20 && _denominator <= 20 ?
+         (_denominator <= _numerator ? (_denominator < _numerator ? _numerator * FactorialQuotient(_numerator - 1, _denominator) : 1) :
+         throw std::logic_error("Numerator must be larger than the denominator.")) :
+         throw std::logic_error("Cannot currently compute the factorial of a number larger than 20.");
 }
 
+/** Compination function ("n choose r"). */
 constexpr unsigned int Choose(const unsigned int _n, const unsigned int _r)
 {
-  return _r <= _n ? FactorialDivision(_n, _n - _r)/Factorial(_r) : throw std::logic_error("Numerator must be larger than the denominator.");
+  return _r <= _n ? FactorialQuotient(_n, _n - _r) / Factorial(_r) : throw std::logic_error("Numerator must be larger than the denominator.");
 }
 
 /***************************************************************************************************************************************************************
 * Power Functions
 ***************************************************************************************************************************************************************/
-
 template <typename t_data_type>
 constexpr t_data_type iPow(const t_data_type& _value, const unsigned int& _exponent)
 {
-  return _exponent == 0 ? static_cast<t_data_type>(1) : _value*iPow(_value, _exponent - 1);
+  return _exponent <= 30 ? (_exponent == 0 ? static_cast<t_data_type>(1) : _value*iPow(_value, _exponent - 1)) :
+         throw std::logic_error("Cannot currently compute the power with an exponent larger than 20.");
 }
 
 /** Square of a value. */

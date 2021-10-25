@@ -5,6 +5,7 @@
 #include <chrono>
 #include <cfloat>
 #include <cmath>
+#include <concepts>
 #include <execinfo.h>
 #include <fstream>
 #include <initializer_list>

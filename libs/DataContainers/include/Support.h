@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
+#include "Array.h"
 
 namespace Apeiron{
 namespace DataContainersSupport{
@@ -38,6 +39,10 @@ constexpr auto InitStaticArray(const t_iterator _first, const t_iterator _last)
   std::copy(_first, _last, initialised_array.begin());
   return initialised_array;
 }
+
+/***************************************************************************************************************************************************************
+* Multi-dimensional Array Support Functions
+***************************************************************************************************************************************************************/
 
 }
 }
