@@ -14,9 +14,9 @@ class MultiArray;
 template <class t_derived_class, class t_data_type>
 class Array
 {
-private:
   friend MultiArray<t_derived_class, t_data_type>;
 
+private:
   constexpr t_derived_class& Derived() noexcept
   {
     return static_cast<t_derived_class&>(*this);
@@ -28,12 +28,10 @@ private:
   }
 
 protected:
-  /** Constructor. */
   constexpr Array() {}
 
 public:
-  /** Destructor. */
-  ~Array() = default;
+  constexpr ~Array() = default;
 
   /*************************************************************************************************************************************************************
   * Size and Index Range-checking

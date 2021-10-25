@@ -7,31 +7,27 @@
 #include "../libs/Benchmark/include/Timer.h"
 #include "../libs/Functional/include/Explicit.h"
 #include <DataContainers/include/Array.h>
+#include <DataContainers/include/MultiArray.h>
 #include <Tensor/include/Tensor.h>
 
 using namespace Apeiron;
 
 int main()
 {
-  StaticArray<bool, 3> boolTest;
-  StaticArray<Bool, 3> BoolTest;
-  StaticArray<int, 3> intTest;
-  StaticArray<double, 3> doubleTest;
+  StaticMultiArray<Float, 3, 4, 5> tensor(One);
+  Float entry = tensor(1, 2, 3);
+  tensor(1, 2, 3) = 2;
+  Print(tensor(1, 2, 3));
 
-  Print(boolTest[0], BoolTest[0], intTest[0], doubleTest[0]);
-
-//  constexpr TypeGroup boolTest = GetTypeGroup<bool>();
-//  constexpr TypeGroup BoolTest = GetTypeGroup<Bool>();
-//  constexpr TypeGroup intTest = GetTypeGroup<int>();
-
-//  InitTypeValue<bool>();
-//  InitTypeValue<Bool>();
-//  InitTypeValue<int>();
-//  Print(, GetTypeGroup<Bool>(), GetTypeGroup<int>());
+//  constexpr StaticMultiDimArray<Float, 3, 4, 5> tensor(One);
+//  constexpr Float entry = tensor(1, 2, 3);
 
 
-//  Test<bool> boolTest;
-//  Test<Bool> BoolTest; // This does not compile
-//  Test<int> intTest;
-//  Test<double> floatTest;
+//  constexpr StaticMultiDimArray<double, 4, 5, 6> matrix2;
+////  DynamicMultiDimArray<double> matrix2;
+////  matrix2.Resize(2, 3, 4);
+//
+////  Print(matrix2.nEntries);
+//  Print(std::get<0>(matrix.Dimensions), std::get<1>(matrix.Dimensions), std::get<2>(matrix.Dimensions));
+//  Print(std::get<0>(matrix2.Dimensions), std::get<1>(matrix2.Dimensions), std::get<2>(matrix2.Dimensions));
 }

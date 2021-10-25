@@ -53,24 +53,6 @@ namespace Apeiron{
 //    STATIC_ASSERT(sizeof...(_multi_index) == Derived.Dimensions.size(), "The number of indices must equal the rank of the tensor.")
 //    return Derived.Entries[ComputeIndex(_multi_index...)];
 //  }
-//
-//  private:
-//  StaticArray<std::size_t, sizeof...(t_dimensions)> ComputeMultiIndex(std::size_t _index)
-//  {
-//    DEBUG_ASSERT(isBounded(_index, 0, Multiply(t_dimensions...)), "The passed index ", _index, " should be in the range [0, ", Multiply(t_dimensions...), "].")
-//
-//    constexpr std::size_t dimensions[] = {t_dimensions...};
-//    StaticArray<std::size_t, sizeof...(t_dimensions)> res;
-//
-//    std::size_t factor = Multiply(t_dimensions...);
-//    for (size_t i = sizeof...(t_dimensions); i != 0; --i) {
-//      factor /= dimensions[i - 1];
-//      res[i - 1] = _index / factor;
-//      assert(res[i - 1] < dimensions[i - 1]);
-//      _index -= res[i - 1] * factor;
-//    }
-//    return res;
-//  }
 //};
 //
 //template <class t_data_type, std::size_t ...t_dimensions>
@@ -124,8 +106,8 @@ namespace Apeiron{
 //    // Some code that operates on Entries.
 //  };
 //};
-
-
+//
+//
 //StaticTensor<Float, 3> test;
 //
 //template <class t_data_type, unsigned t_dimension>

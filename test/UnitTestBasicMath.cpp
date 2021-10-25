@@ -1,28 +1,10 @@
 #include <gtest/gtest.h>
 #include "../include/Global.h"
+#include "ApeironTest.h"
 
 #ifdef DEBUG_MODE
 
-namespace Apeiron
-{
-
-class ApeironTest : public testing::Test
-{
-  public:
-  Random<int> RandomInt;
-  Random<Float> RandomFloat;
-
-  ApeironTest() : RandomInt(-10, 10), RandomFloat(-Ten, Ten) {}
-
-//  void SetUp() override
-//  {
-//
-//  }
-};
-
-/***************************************************************************************************************************************************************
-* Test Basic Math Functions
-***************************************************************************************************************************************************************/
+namespace Apeiron{
 
 /** Min: Test min function. */
 TEST_F(ApeironTest, Min)
@@ -155,50 +137,6 @@ TEST_F(ApeironTest, Round)
   EXPECT_EQ(Round(1.999), Two);
   EXPECT_EQ(Round(One), One);
 }
-
-/***************************************************************************************************************************************************************
-* Test Comparison Functions
-***************************************************************************************************************************************************************/
-
-/** isEqual: Test . */
-TEST_F(ApeironTest, isEqual)
-{
-
-}
-
-/** isLess: Test . */
-TEST_F(ApeironTest, isLess)
-{
-
-}
-
-/** isLessEqual: Test . */
-TEST_F(ApeironTest, isLessEqual)
-{
-
-}
-
-/** isLarger: Test . */
-TEST_F(ApeironTest, isLarger)
-{
-
-}
-
-/** isLargerEqual: Test . */
-TEST_F(ApeironTest, isLargerEqual)
-{
-
-}
-
-/** isBounded: Test . */
-TEST_F(ApeironTest, isBounded)
-{
-
-}
-
-/***************************************************************************************************************************************************************
-* Test Math Functions
-***************************************************************************************************************************************************************/
 
 }
 

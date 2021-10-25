@@ -1,7 +1,6 @@
 #***************************************************************************************************************************************************************
 # Configure Compile Settings
 #***************************************************************************************************************************************************************
-
 cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
 project(Apeiron)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -10,11 +9,9 @@ option(OPTIMISER "Optimiser level 3" OFF)
 #***************************************************************************************************************************************************************
 # Setup C++ Compiler
 #***************************************************************************************************************************************************************
-
 # Set compiler standard
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
-#add_compile_options(-std=c++2a)
 
 # Set optimisation flags
 if(OPTIMISER)
@@ -23,10 +20,11 @@ if(OPTIMISER)
 endif()
 
 #***************************************************************************************************************************************************************
-# Setup Build and Run Directories
+# Setup Build, Library, and Binary Directories
 #***************************************************************************************************************************************************************
-
-set(BUILD_DIRECTORY "${CMAKE_SOURCE_DIR}/build/")
+set(BUILD_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
+set(LIB_DIRECTORY "${BUILD_DIRECTORY}/lib")
+set(BIN_DIRECTORY "${BUILD_DIRECTORY}/bin")
 
 # Set all compiler outputs to the build directory.
 set(DEFAULT_OUT_OF_SOURCE_FOLDER ${BUILD_DIRECTORY})
@@ -34,15 +32,13 @@ set(CMAKE_BUILD_FILES_DIRECTORY ${BUILD_DIRECTORY})
 set(CMAKE_BUILD_DIRECTORY ${BUILD_DIRECTORY})
 
 # Set cmake library and binary output folders
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}/lib)
-set(CMAKE_LIBRARY_OUTPUT_PATH ${BUILD_DIRECTORY}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIRECTORY}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 
 #***************************************************************************************************************************************************************
 # Setup Project Sub-directories.
 #***************************************************************************************************************************************************************
-
-# Add Apeiron library directories
 include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
@@ -53,7 +49,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
 #***************************************************************************************************************************************************************
 # Apeiron Binary Build Instructions.
 #***************************************************************************************************************************************************************
-
 set(APEIRON_SOURCE_FILES
         include/BasicMath.h
         include/Comparators.h
@@ -82,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
 #***************************************************************************************************************************************************************
 # GoogleTest Build Instructions.
 #***************************************************************************************************************************************************************
+enable_testing()
 
 # Fetch GoogleTest directories
 include(FetchContent)
@@ -89,9 +85,18 @@ FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive
 FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
-add_executable(UnitTestApeiron ${PROJECT_SOURCE_DIR}/test/UnitTestApeiron.cpp)
 add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainers/test/UnitTestArray.cpp)
+add_executable(UnitTestBasicMath ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
+add_executable(UnitTestComparators ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
+add_executable(UnitTestMath ${PROJECT_SOURCE_DIR}/test/UnitTestMath.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
-target_link_libraries(UnitTestApeiron gtest gtest_main)
 target_link_libraries(UnitTestArray gtest gtest_main)
+target_link_libraries(UnitTestBasicMath gtest gtest_main)
+target_link_libraries(UnitTestComparators gtest gtest_main)
+target_link_libraries(UnitTestMath gtest gtest_main)
+
+#add_test(UnitTestArray ${BIN_DIRECTORY}/UnitTestArray)
+#add_test(UnitTestBasicMath ${BIN_DIRECTORY}/UnitTestBasicMath)
+#add_test(UnitTestComparators ${BIN_DIRECTORY}/UnitTestComparators)
+#add_test(UnitTestMath ${BIN_DIRECTORY}/UnitTestMath)
