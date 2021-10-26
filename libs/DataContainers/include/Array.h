@@ -14,18 +14,10 @@ class MultiArray;
 template <class t_derived_class, class t_data_type>
 class Array
 {
-  friend MultiArray<t_derived_class, t_data_type>;
-
 private:
-  constexpr t_derived_class& Derived() noexcept
-  {
-    return static_cast<t_derived_class&>(*this);
-  }
+  constexpr t_derived_class& Derived() noexcept { return static_cast<t_derived_class&>(*this); }
 
-  constexpr const t_derived_class& Derived() const noexcept
-  {
-    return static_cast<const t_derived_class&>(*this);
-  }
+  constexpr const t_derived_class& Derived() const noexcept { return static_cast<const t_derived_class&>(*this); }
 
 protected:
   constexpr Array() {}
