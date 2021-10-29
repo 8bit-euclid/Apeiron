@@ -47,6 +47,22 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
 
 #***************************************************************************************************************************************************************
+# GLFW/GLEW Build Instructions for OpenGL.
+#***************************************************************************************************************************************************************
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+
+find_package(GLEW 2.2 REQUIRED)
+include_directories(${GLEW_INCLUDE_DIRS})
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/GLFW)
+set(OPENGL_LINK_LIBRARIES ${OPENGL_LIBRARIES} glfw ${GLEW_LIBRARIES} GLEW::GLEW)
+
+#***************************************************************************************************************************************************************
 # Apeiron Binary Build Instructions.
 #***************************************************************************************************************************************************************
 set(APEIRON_SOURCE_FILES
@@ -72,7 +88,7 @@ set(APEIRON_LINK_LIBRARIES
         TensorLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LINK_LIBRARIES})
 
 #***************************************************************************************************************************************************************
 # GoogleTest Build Instructions.
