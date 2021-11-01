@@ -5,17 +5,17 @@
 namespace Apeiron{
 
 /***************************************************************************************************************************************************************
-* LapTimeMin, LapTimeMax, and Bounding Functions
+* Min, Max, and Bounding Functions
 ***************************************************************************************************************************************************************/
 
-/** LapTimeMin value. */
+/** Min value. */
 template <typename t_data_type>
 constexpr t_data_type Min(const t_data_type& _a, const t_data_type& _b)
 {
   return std::min(_a, _b);
 }
 
-/** LapTimeMax value. */
+/** Max value. */
 template <typename t_data_type>
 constexpr t_data_type Max(const t_data_type& _a, const t_data_type& _b)
 {
@@ -49,7 +49,7 @@ constexpr t_data_type Sgn(const t_data_type& _value, const int _zero_sign = 1)
     case -1: return _value > static_cast<t_data_type>(0) ? static_cast<t_data_type>(1) : static_cast<t_data_type>(-1);
     case 0: return (static_cast<t_data_type>(0) < _value) - (_value < static_cast<t_data_type>(0));
     case 1: return _value >= static_cast<t_data_type>(0) ? static_cast<t_data_type>(1) : static_cast<t_data_type>(-1);
-    default: ERROR("Unrecognised sign for zero.")
+    default: EXIT("Unrecognised sign for zero.")
   }
 }
 
@@ -85,4 +85,4 @@ constexpr Float Round(const Float& _value)
   return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value);
 }
 
-}//Apeiron
+}

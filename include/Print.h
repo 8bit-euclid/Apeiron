@@ -53,7 +53,7 @@ inline void SetFormat(const PrintFormat _print_format)
       std::cout<<std::defaultfloat;
       break;
     default:
-      ERROR("Print format not recognised.")
+      EXIT("Print format not recognised.")
   }
 }
 
