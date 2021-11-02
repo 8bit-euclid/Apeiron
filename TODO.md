@@ -1,13 +1,10 @@
 **General**
 - [ ] Pre-compiled headers
 - [ ] Dependency list
-
-**DataContainers**
-- [x] Apeiron
-- [ ] Test1
-- [ ] Test2
+- [ ] Coverall statuses
 
 **Visualiser**
 - [ ] ParaView writer
+- [ ] OpenGL
 - [ ] Gnuplot writer
 - [ ] Pyplot writer
