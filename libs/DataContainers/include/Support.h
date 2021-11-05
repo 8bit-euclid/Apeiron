@@ -33,7 +33,7 @@ constexpr auto InitStaticArray(const std::initializer_list<t_data_type>& _initia
 template <class t_data_type, std::size_t t_array_size, class t_iterator>
 constexpr auto InitStaticArray(const t_iterator _first, const t_iterator _last)
 {
-  areTypesEqual<t_data_type, typename std::iterator_traits<t_iterator>::value_type>() ? true : throw "The number of iterators must equal the array size.";
+  isTypeEqual<t_data_type, typename std::iterator_traits<t_iterator>::value_type>() ? true : throw "The number of iterators must equal the array size.";
   areSizesEqual(t_array_size, std::distance(_first, _last)) ? true : throw "The number of iterators must equal the array size.";
   std::array<t_data_type, t_array_size> initialised_array;
   std::copy(_first, _last, initialised_array.begin());

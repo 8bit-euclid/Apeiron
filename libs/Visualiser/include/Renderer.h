@@ -1,24 +1,24 @@
 #pragma once
 
-#include "../../../include/Global.h"
 #include <GL/glew.h>
+#include "../../../include/Global.h"
+#include "Buffers.h"
+#include "Shader.h"
 
 namespace Apeiron{
 
-#ifdef DEBUG_MODE
-  #define GLCall(_function) GLClearErrors(); _function; GLLogCall(#_function, __FILE__, __LINE__)
-#else
-  #define GLCall(_function) _function
-#endif
-
-inline void GLClearErrors()
+class Renderer
 {
-  while(glGetError() != GL_NO_ERROR);
-}
+public:
+  inline void Draw(const VertexArray& _vertex_array, const IndexBuffer& _index_buffer, const Shader& _shader) const
+  {
+    _shader.Bind();
+    _vertex_array.Bind();
+    _index_buffer.Bind();
+    GLCall(glDrawElements(GL_TRIANGLES, _index_buffer.nIndices, GL_UNSIGNED_INT, nullptr));
+  }
 
-inline void GLLogCall(const char* _function, const char* _file, const int _line)
-{
-  if(GLenum error = glGetError()) EXIT_FROM(_file, _line, "OpenGL error (0x0", std::hex, error, std::dec, ") from call:\n\t", _function)
-}
+  inline void Clear() const { GLCall(glClear(GL_COLOR_BUFFER_BIT)); }
+};
 
 }

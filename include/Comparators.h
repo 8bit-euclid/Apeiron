@@ -57,7 +57,7 @@ constexpr bool isBounded(const t_data_type& _a, const t_data_type& _min, const t
 {
   ASSERT_NUMBER(_a)
 
-  if(!areTypesEqual<t_data_type, Float>())
+  if(!isTypeEqual<t_data_type, Float>())
   {
     switch(is_left_included)
     {
