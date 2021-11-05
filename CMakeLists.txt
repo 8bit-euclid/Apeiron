@@ -37,16 +37,6 @@ set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 
 #***************************************************************************************************************************************************************
-# Setup Project Sub-directories.
-#***************************************************************************************************************************************************************
-include_directories(${PROJECT_SOURCE_DIR}/libs)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
-
-#***************************************************************************************************************************************************************
 # GLFW/GLEW Build Instructions for OpenGL.
 #***************************************************************************************************************************************************************
 find_package(OpenGL REQUIRED)
@@ -61,6 +51,17 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/GLFW)
 set(OPENGL_LINK_LIBRARIES ${OPENGL_LIBRARIES} glfw ${GLEW_LIBRARIES} GLEW::GLEW)
+
+#***************************************************************************************************************************************************************
+# Setup Project Sub-directories.
+#***************************************************************************************************************************************************************
+include_directories(${PROJECT_SOURCE_DIR}/libs)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Visualiser)
 
 #***************************************************************************************************************************************************************
 # Apeiron Binary Build Instructions.
@@ -85,7 +86,8 @@ set(APEIRON_LINK_LIBRARIES
         BenchmarkLibrary
         FunctionalLibrary
         SortLibrary
-        TensorLibrary)
+        TensorLibrary
+        VisualiserLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LINK_LIBRARIES})

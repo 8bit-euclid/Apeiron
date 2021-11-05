@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+# Image files
+*.png
+*.jpg
+*.jpeg
+*.eps
+*.svg
+*.gif
+*.tiff
+*.bmp
+
+# Other
+*.iml
+*.idea

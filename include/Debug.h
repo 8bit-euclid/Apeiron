@@ -38,9 +38,9 @@ namespace Apeiron{
 
 /** Assert a condition in debug mode. If false, throw an error and exit. */
 #ifdef DEBUG_MODE
-#define DEBUG_ASSERT(_condition, _args...) ASSERT(_condition, _args);
+  #define DEBUG_ASSERT(_condition, _args...) ASSERT(_condition, _args);
 #else
-#define DEBUG_ASSERT(_condition, _args...) {};
+  #define DEBUG_ASSERT(_condition, _args...) {};
 #endif
 
 /***************************************************************************************************************************************************************

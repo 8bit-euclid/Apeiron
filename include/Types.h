@@ -31,6 +31,10 @@ class Bool
 * Integral Types
 ***************************************************************************************************************************************************************/
 
+/** Char type definitions. */
+typedef char Char;
+typedef unsigned char UChar;
+
 /** Signed integer type definitions. */
 typedef int Int;
 typedef long int LInt;
@@ -80,23 +84,23 @@ constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
 /** Check if two data types are the same. */
 template <class data_type_a, class data_type_b>
-constexpr bool areTypesEqual()
+constexpr bool isTypeEqual()
 {
   return std::is_same_v<data_type_a, data_type_b>;
 }
 
 /** Check if the data types of a sequence of values are the same. */
 template <class t_data_type, class ...t_values>
-constexpr bool areAllTypesSame()
+constexpr bool areAllTypesEqual()
 {
-  return (areTypesEqual<t_data_type, t_values>() && ...);
+  return (isTypeEqual<t_data_type, t_values>() && ...);
 }
 
 /** Check if the data type is a boolean type. */
 template<class t_data_type>
 constexpr bool isBoolean(const t_data_type& _value = t_data_type())
 {
-  return areTypesEqual<t_data_type, bool>() || areTypesEqual<t_data_type, Bool>();
+  return isTypeEqual<t_data_type, bool>() || isTypeEqual<t_data_type, Bool>();
 }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
@@ -124,7 +128,7 @@ constexpr bool isNumber(const t_data_type& _value = t_data_type())
 template<class t_data_type>
 constexpr bool isString(const t_data_type& _value = t_data_type())
 {
-  return areTypesEqual<t_data_type, char *>() || areTypesEqual<t_data_type, std::string>();
+  return isTypeEqual<t_data_type, char *>() || isTypeEqual<t_data_type, std::string>();
 }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
