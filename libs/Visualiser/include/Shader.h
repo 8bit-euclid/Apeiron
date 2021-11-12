@@ -1,10 +1,12 @@
 #pragma once
 
-//#include <GL/glew.h>
 #include "../../../include/Global.h"
-//#include "../../DataContainers/include/Array.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+//#include "../resources/external/glm/glm.hpp"
 
 namespace Apeiron {
 
@@ -33,7 +35,11 @@ public:
 
   void SetUniform1f(const std::string& _name, float _value);
 
+  void SetUniform2f(const std::string& _name, float _value0, float _value1);
+
   void SetUniform4f(const std::string& _name, float _value0, float _value1, float _value2, float _value3);
+
+  void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
 
 private:
   ShaderSourceCode Parse(const std::string& _file_path);

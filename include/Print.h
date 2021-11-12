@@ -85,18 +85,18 @@ inline void Print(const t_data_type& _data, tail_data_type... _tail_data)
   Print<separator>(_tail_data...);
 }
 
-/** Print the current stack trace to screen. */
-inline void PrintStack(const int _stack_size)
-{
-  void *array[_stack_size];
-  const int stack_size(backtrace(array, _stack_size));
-  char **strings(backtrace_symbols(array, stack_size));
-  if(strings != nullptr)
-  {
-    printf("Obtained %d stack frames.\n", stack_size);
-    FOR(ii, stack_size) printf("%s\n", strings[ii]);
-  }
-  free(strings);
-}
+///** Print the current stack trace to screen. */
+//inline void PrintStack(const int _stack_size)
+//{
+//  void *array[_stack_size];
+//  const int stack_size(backtrace(array, _stack_size));
+//  char **strings(backtrace_symbols(array, stack_size));
+//  if(strings != nullptr)
+//  {
+//    printf("Obtained %d stack frames.\n", stack_size);
+//    FOR(ii, stack_size) printf("%s\n", strings[ii]);
+//  }
+//  free(strings);
+//}
 
 }//Apeiron

@@ -2,22 +2,19 @@
 # Configure Compile Settings
 #***************************************************************************************************************************************************************
 cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
+
 project(Apeiron)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-option(OPTIMISER "Optimiser level 3" OFF)
+set(CMAKE_BUILD_TYPE Debug)
 
-#***************************************************************************************************************************************************************
-# Setup C++ Compiler
-#***************************************************************************************************************************************************************
 # Set compiler standard
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
-# Set optimisation flags
-if(OPTIMISER)
-    MESSAGE(STATUS "Setting optimiser flags")
-    set(OPTIMISER_FLAGS "-O3 -funroll-loops")
-endif()
+# Set default, debug, and release flags
+set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
 # Setup Build, Library, and Binary Directories
@@ -37,20 +34,32 @@ set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 
 #***************************************************************************************************************************************************************
-# GLFW/GLEW Build Instructions for OpenGL.
+# Build Instructions for OpenGL Tools.
 #***************************************************************************************************************************************************************
 find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-
 find_package(GLEW 2.2 REQUIRED)
+find_package(glm REQUIRED)
+#find_package(imgui REQUIRED)
+
+#find_path(STB_INCLUDE_DIRS "stb.h")
+
+include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${GLEW_INCLUDE_DIRS})
+include_directories(${GLM_INCLUDE_DIRS})
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/GLFW)
-set(OPENGL_LINK_LIBRARIES ${OPENGL_LIBRARIES} glfw ${GLEW_LIBRARIES} GLEW::GLEW)
+add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/GLFW)
+add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/glm)
+
+# Compile ImGui as static library
+set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/thirdparty/imgui)
+file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/backends/imgui_impl_glfw.cpp ${IMGUI_INCLUDE_DIRS}/backends/imgui_impl_opengl3.cpp)
+add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
+target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
+target_link_libraries(ImGui glfw)
 
 #***************************************************************************************************************************************************************
 # Setup Project Sub-directories.
@@ -67,18 +76,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Visualiser)
 # Apeiron Binary Build Instructions.
 #***************************************************************************************************************************************************************
 set(APEIRON_SOURCE_FILES
-        include/BasicMath.h
-        include/Comparators.h
-        include/Constants.h
-        include/Debug.h
-        include/Types.h
-        include/Global.h
-        include/Loops.h
-        include/Macros.h
-        include/Math.h
-        include/Print.h
-        include/Random.h
-        include/StandardLibrary.h
         src/main.cpp)
 
 set(APEIRON_LINK_LIBRARIES
@@ -90,7 +87,7 @@ set(APEIRON_LINK_LIBRARIES
         VisualiserLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LINK_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw glm ImGui)
 
 #***************************************************************************************************************************************************************
 # GoogleTest Build Instructions.

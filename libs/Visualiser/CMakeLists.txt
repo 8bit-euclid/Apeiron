@@ -6,6 +6,7 @@ set(SOURCE_FILES
         include/GLTypes.h
         include/Renderer.h
         include/Shader.h
+        include/Shapes.h
         include/Texture.h
         resources/external/stb_image/stb_image.h
         src/Shader.cpp
@@ -15,4 +16,5 @@ set(SOURCE_FILES
 set(LINK_LIBRARIES)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
+target_include_directories(VisualiserLibrary SYSTEM PRIVATE resources/external/stb_image)
 target_link_libraries(VisualiserLibrary ${LINK_LIBRARIES})
