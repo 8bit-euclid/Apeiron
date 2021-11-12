@@ -112,7 +112,8 @@ public:
     {
       const auto& element = elements[i];
       GLCall(glEnableVertexAttribArray(i));
-      GLCall(glVertexAttribPointer(i, element.nAttributes, element.Type, element.isNormalised, _layout.Stride, (const void*)(LInt)offset));
+      GLCall(glVertexAttribPointer(i, element.nAttributes, element.Type, element.isNormalised, _layout.Stride, reinterpret_cast<const void*>(offset)));
+//      GLCall(glVertexAttribPointer(i, element.nAttributes, element.Type, element.isNormalised, _layout.Stride, (const void*)(LInt)offset));
       offset += element.nAttributes * GLTypeSize(element.Type);
     }
   }

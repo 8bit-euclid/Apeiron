@@ -1,5 +1,7 @@
 #include "../include/Shader.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Apeiron{
 
 Shader::Shader(const std::string& _file_path)
@@ -24,9 +26,19 @@ void Shader::SetUniform1f(const std::string& _name, float _value)
   GLCall(glUniform1f(GetUniformLocation(_name), _value));
 }
 
+void Shader::SetUniform2f(const std::string& _name, float _value0, float _value1)
+{
+  GLCall(glUniform2f(GetUniformLocation(_name), _value0, _value1));
+}
+
 void Shader::SetUniform4f(const std::string& _name, float _value0, float _value1, float _value2, float _value3)
 {
   GLCall(glUniform4f(GetUniformLocation(_name), _value0, _value1, _value2, _value3));
+}
+
+void Shader::SetUniformMatrix4f(const std::string &_name, const glm::mat4& _proj_matrix)
+{
+  GLCall(glUniformMatrix4fv(GetUniformLocation(_name), 1, GL_FALSE, glm::value_ptr(_proj_matrix)));
 }
 
 ShaderSourceCode Shader::Parse(const std::string& _file_path)

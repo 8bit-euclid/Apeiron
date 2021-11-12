@@ -1,5 +1,6 @@
 #include "../include/Texture.h"
-#include "Visualiser/resources/external/stb_image/stb_image.h"
+
+#include "../resources/external/stb_image/stb_image.h"
 
 namespace Apeiron {
 
