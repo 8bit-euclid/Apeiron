@@ -19,7 +19,7 @@ struct ShaderSourceCode
 class Shader
 {
 private:
-  UInt RendererID;
+  GLuint ID;
   std::string FilePath;
   std::unordered_map<std::string, int> UniformLocationCache;
 
@@ -27,26 +27,30 @@ public:
   Shader(const std::string& _file_path);
   ~Shader();
 
-  inline void Bind() const { GLCall(glUseProgram(RendererID)); }
+  inline void Bind() const { GLCall(glUseProgram(ID)); }
 
   inline void Unbind() const { GLCall(glUseProgram(0)); }
 
-  void SetUniform1i(const std::string& _name, int _value);
+  void Delete();
 
-  void SetUniform1f(const std::string& _name, float _value);
+  void SetUniform1i(const std::string& _name, GLint _value);
 
-  void SetUniform2f(const std::string& _name, float _value0, float _value1);
+  void SetUniform1f(const std::string& _name, GLfloat _value);
 
-  void SetUniform4f(const std::string& _name, float _value0, float _value1, float _value2, float _value3);
+  void SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1);
+
+  void SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
 
   void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
 
 private:
   ShaderSourceCode Parse(const std::string& _file_path);
 
-  UInt Compile(UInt _type, const std::string& _source);
+  void Create(const std::string& vertex_shader, const std::string& fragment_shader);
 
-  UInt Create(const std::string& vertexShader, const std::string& fragmentShader);
+  GLuint Compile(GLuint _type, const std::string& _source);
+
+  void Attach(GLuint _program, GLuint _shader);
 
   int GetUniformLocation(const std::string& _name);
 };

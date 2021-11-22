@@ -4,8 +4,8 @@
 
 namespace Apeiron {
 
-Texture::Texture(const std::string& _file_path)
-  : RendererID(0), FilePath(_file_path), LocalBuffer(nullptr), Width(0), Height(0), BitsPerPixel(0)
+Texture::Texture(const std::string& _file_path, const std::string& _type)
+  : RendererID(0), Type(_type), FilePath(_file_path), LocalBuffer(nullptr), Width(0), Height(0), BitsPerPixel(0)
 {
   stbi_set_flip_vertically_on_load(1);
   LocalBuffer = stbi_load(_file_path.c_str(), &Width, &Height, &BitsPerPixel, 4);
@@ -20,6 +20,7 @@ Texture::Texture(const std::string& _file_path)
   GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
   GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, LocalBuffer));
+  GLCall(glGenerateMipmap(GL_TEXTURE_2D));
   Unbind();
 
   if(LocalBuffer) stbi_image_free(LocalBuffer);

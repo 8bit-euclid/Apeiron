@@ -85,4 +85,20 @@ constexpr Float Round(const Float& _value)
   return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value);
 }
 
+/***************************************************************************************************************************************************************
+* Mathematical Conversions
+***************************************************************************************************************************************************************/
+
+/** Convert degrees to radians. */
+constexpr Float ToRadians(const Float& _angle_degrees)
+{
+  return _angle_degrees * Pi / 180.0;
+}
+
+/** Convert radians to degrees. */
+constexpr Float ToDegrees(const Float& _angle_radians)
+{
+  return _angle_radians * 180.0 / Pi;
+}
+
 }

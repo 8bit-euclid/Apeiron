@@ -2,44 +2,56 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Apeiron{
+namespace Apeiron {
 
 Shader::Shader(const std::string& _file_path)
-  : RendererID(0), FilePath(_file_path)
+  : ID(0), FilePath(_file_path)
 {
+  // Create shader program
+  GLCall(ID = glCreateProgram());
+  ASSERT(ID, "Could not create shader program.")
+
   auto source = Parse(_file_path);
-  RendererID = Create(source.Vertex, source.Fragment);
+  Create(source.Vertex, source.Fragment);
 }
 
 Shader::~Shader()
 {
-  GLCall(glDeleteProgram(RendererID));
+  Delete();
 }
 
-void Shader::SetUniform1i(const std::string& _name, int _value)
+/***************************************************************************************************************************************************************
+* Setting Shader Uniforms
+***************************************************************************************************************************************************************/
+
+void Shader::SetUniform1i(const std::string& _name, GLint _value)
 {
   GLCall(glUniform1i(GetUniformLocation(_name), _value));
 }
 
-void Shader::SetUniform1f(const std::string& _name, float _value)
+void Shader::SetUniform1f(const std::string& _name, GLfloat _value)
 {
   GLCall(glUniform1f(GetUniformLocation(_name), _value));
 }
 
-void Shader::SetUniform2f(const std::string& _name, float _value0, float _value1)
+void Shader::SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1)
 {
   GLCall(glUniform2f(GetUniformLocation(_name), _value0, _value1));
 }
 
-void Shader::SetUniform4f(const std::string& _name, float _value0, float _value1, float _value2, float _value3)
+void Shader::SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3)
 {
   GLCall(glUniform4f(GetUniformLocation(_name), _value0, _value1, _value2, _value3));
 }
 
-void Shader::SetUniformMatrix4f(const std::string &_name, const glm::mat4& _proj_matrix)
+void Shader::SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix)
 {
   GLCall(glUniformMatrix4fv(GetUniformLocation(_name), 1, GL_FALSE, glm::value_ptr(_proj_matrix)));
 }
+
+/***************************************************************************************************************************************************************
+* Vertex Array Supporting Classes
+***************************************************************************************************************************************************************/
 
 ShaderSourceCode Shader::Parse(const std::string& _file_path)
 {
@@ -63,53 +75,78 @@ ShaderSourceCode Shader::Parse(const std::string& _file_path)
   return { string_stream[0].str(), string_stream[1].str() };
 }
 
-UInt Shader::Compile(unsigned int _type, const std::string& _source)
+void Shader::Create(const std::string& vertex_shader, const std::string& fragment_shader)
 {
-  unsigned int id = glCreateShader(_type);
-  const char* src = _source.c_str();
+  // Create and attach shaders
+  GLuint vs_id = Compile(GL_VERTEX_SHADER, vertex_shader);
+  GLuint fs_id = Compile(GL_FRAGMENT_SHADER, fragment_shader);
+  Attach(ID, vs_id);
+  Attach(ID, fs_id);
 
-  glShaderSource(id, 1, &src, nullptr);
-  glCompileShader(id);
+  GLint result = 0;
+  GLchar error_log[1024] = { 0 };
 
-  int result;
-  glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-  if(result == GL_FALSE)
+  // Link shader program
+  GLCall(glLinkProgram(ID));
+  GLCall(glGetProgramiv(ID, GL_LINK_STATUS, &result));
+  if(!result)
   {
-    int length;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-    char* message = (char*)alloca(length * sizeof(char));
-    glGetShaderInfoLog(id, length, &length, message);
-    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : "fragment"), " shader:\n", message);
+    GLCall(glGetProgramInfoLog(ID, sizeof(error_log), nullptr, error_log));
+    EXIT("Could not link shader program.")
   }
 
-  return id;
+  // Validate shader program
+  GLCall(glValidateProgram(ID));
+  GLCall(glGetProgramiv(ID, GL_VALIDATE_STATUS, &result));
+  if(!result)
+  {
+    GLCall(glGetProgramInfoLog(ID, sizeof(error_log), nullptr, error_log));
+    EXIT("Could not validate shader program.")
+  }
+
+  // Delete shaders
+  GLCall(glDeleteShader(vs_id));
+  GLCall(glDeleteShader(fs_id));
 }
 
-UInt Shader::Create(const std::string& vertexShader, const std::string& fragmentShader)
+UInt Shader::Compile(unsigned int _type, const std::string& _source)
 {
-  unsigned int program = glCreateProgram();
-  unsigned int vs = Compile(GL_VERTEX_SHADER, vertexShader);
-  unsigned int fs = Compile(GL_FRAGMENT_SHADER, fragmentShader);
+  GLCall(GLuint shader_ID = glCreateShader(_type));
+  const GLchar* src = _source.c_str();
 
-  glAttachShader(program, vs);
-  glAttachShader(program, fs);
-  glLinkProgram(program);
-  glValidateProgram(program);
+  GLCall(glShaderSource(shader_ID, 1, &src, nullptr));
+  GLCall(glCompileShader(shader_ID));
 
-  glDeleteShader(vs);
-  glDeleteShader(fs);
+  // Check that shader compiled
+  GLint result = 0;
+  GLchar error_log[1024] = { 0 };
+  GLCall(glGetShaderiv(shader_ID, GL_COMPILE_STATUS, &result));
+  if(!result)
+  {
+    GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
+    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : "fragment"), " shader:\n", error_log)
+  }
 
-  return program;
+  return shader_ID;
+}
+
+void Shader::Attach(GLuint _program, GLuint _shader)
+{
+  GLCall(glAttachShader(_program, _shader));
+}
+
+void Shader::Delete()
+{
+  GLCall(glDeleteProgram(ID));
 }
 
 int Shader::GetUniformLocation(const std::string& _name)
 {
   if(UniformLocationCache.contains(_name)) return UniformLocationCache[_name];
 
-  GLCall(int location = glGetUniformLocation(RendererID, _name.c_str()));
-//  if(location != -1) ERROR("Could not find location for uniform ", _name, ".")
-
+  GLCall(int location = glGetUniformLocation(ID, _name.c_str()));
   UniformLocationCache[_name] = location;
+
   return location;
 }
 

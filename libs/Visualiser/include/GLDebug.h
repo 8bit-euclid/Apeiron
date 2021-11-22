@@ -15,7 +15,7 @@ namespace Apeiron {
 /** Clear all errors OpenGL errors. */
 inline void GLClearErrors()
 {
-  while(glGetError() != GL_NO_ERROR);
+  while(glGetError() != GL_NO_ERROR) {}
 }
 
 /** Throw current OpenGL error and exit program. */

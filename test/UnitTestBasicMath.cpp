@@ -124,18 +124,22 @@ TEST_F(ApeironTest, Ceil)
   EXPECT_EQ(Ceil(One), One);
 }
 
-/** Round: Test the round function. */
-TEST_F(ApeironTest, Round)
+/** Round: Test conversion from degrees to radians. */
+TEST_F(ApeironTest, ToRadians)
 {
-  EXPECT_EQ(Round(-1.234), -One);
-  EXPECT_EQ(Round(-1.5), -One);
-  EXPECT_EQ(Round(-1.999), -Two);
-  EXPECT_EQ(Round(-Two), -Two);
+  EXPECT_DOUBLE_EQ(ToRadians(30.0), SixthPi);
+  EXPECT_DOUBLE_EQ(ToRadians(60.0), ThirdPi);
+  EXPECT_DOUBLE_EQ(ToRadians(90.0), HalfPi);
+  EXPECT_DOUBLE_EQ(ToRadians(180.0), Pi);
+}
 
-  EXPECT_EQ(Round(1.234), One);
-  EXPECT_EQ(Round(1.5), Two);
-  EXPECT_EQ(Round(1.999), Two);
-  EXPECT_EQ(Round(One), One);
+/** Round: Test conversion from radians to degrees. */
+TEST_F(ApeironTest, ToDegrees)
+{
+  EXPECT_DOUBLE_EQ(ToDegrees(SixthPi), 30.0);
+  EXPECT_DOUBLE_EQ(ToDegrees(ThirdPi), 60.0);
+  EXPECT_DOUBLE_EQ(ToDegrees(HalfPi), 90.0);
+  EXPECT_DOUBLE_EQ(ToDegrees(Pi), 180.0);
 }
 
 }
