@@ -45,7 +45,7 @@ public:
   {
 //    DEBUG_ASSERT(areSizesEqual(sizeof...(_multi_index), this->Derived().Dimensions.size()), "Multi-index size mismatch.")
 
-    const auto& dimensions = this->Derived().Dimensions;
+    const auto& dimensions = this->Derived().WindowDimensions;
     const auto& n_entries = this->Derived().nEntries;
     const auto n_dimensions = dimensions.size();
     const std::size_t multi_index[] = {static_cast<std::size_t>(_multi_index)...};

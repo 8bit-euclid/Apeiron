@@ -6,7 +6,10 @@ layout(std430, binding = 0) buffer TVertex
    vec4 vertex[];
 };
 
-uniform mat4  u_mvp;
+uniform mat4 u_model_matrix;
+uniform mat4 u_view_matrix;
+uniform mat4 u_projection_matrix;
+//uniform mat4  u_mvp;
 uniform vec2  u_resolution;
 uniform float u_thickness;
 
@@ -18,7 +21,7 @@ void main()
    vec4 va[4];
    for (int i=0; i<4; ++i)
    {
-       va[i] = u_mvp * vertex[line_i+i];
+       va[i] = u_projection_matrix * u_view_matrix * u_model_matrix * vertex[line_i + i];
        va[i].xyz /= va[i].w;
        va[i].xy = (va[i].xy + 1.0) * 0.5 * u_resolution;
    }
