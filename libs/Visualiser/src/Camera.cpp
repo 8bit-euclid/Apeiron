@@ -48,12 +48,26 @@ void Camera::SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& _field_
   }
 }
 
-void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys)
+void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time)
 {
-  if(_keys[GLFW_KEY_UP]) Position += Speed * Front;
-  if(_keys[GLFW_KEY_DOWN]) Position -= Speed * Front;
-  if(_keys[GLFW_KEY_LEFT]) Position -= Speed * Right;
-  if(_keys[GLFW_KEY_RIGHT]) Position += Speed * Right;
+  GLfloat displacement = Speed * _delta_time;
+
+  if(_keys[GLFW_KEY_UP]) Position += displacement * Front;
+  if(_keys[GLFW_KEY_DOWN]) Position -= displacement * Front;
+  if(_keys[GLFW_KEY_LEFT]) Position -= displacement * Right;
+  if(_keys[GLFW_KEY_RIGHT]) Position += displacement * Right;
+}
+
+// TODO - need to replace argument type with StaticVector, once it is implemented
+void Camera::MouseControl(const StaticArray<GLfloat, 2>& _cursor_displacement)
+{
+  // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
+  Yaw += Sensitivity * _cursor_displacement[0];
+  Pitch += Sensitivity * _cursor_displacement[1];
+  Pitch = Bound(Pitch, -89.0f, 89.0f);
+
+  // Update camera orientation
+  SetOrientation(Position, Pitch, Yaw);
 }
 
 void Camera::ComputeViewMatrix(glm::mat4& _view_matrix)

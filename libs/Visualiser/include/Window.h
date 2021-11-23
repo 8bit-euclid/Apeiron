@@ -33,19 +33,27 @@ public:
 
   const StaticArray<Bool, mKeys>& GetKeys() const { return Keys; }
 
-  std::pair<GLdouble, GLdouble> GetMouseDisplacement();
+  StaticArray<GLfloat, 2> GetMouseDisplacement();
 
   bool isViewPortModified();
 
   void SwapBuffers();
 
+  void ComputeDeltaTime();
+
+  GLfloat GetDeltaTime() { return DeltaTime; }
+
 private:
   GLFWwindow* pWindow;
+
+  GLfloat DeltaTime{0.0};
+  GLfloat LastTime{0.0};
+
   StaticArray<Bool, mKeys> Keys;
   StaticArray<GLint, 2> WindowDimensions;
   StaticArray<GLint, 2> ViewportDimensions;
-  StaticArray<GLdouble, 2> PreviousMousePosition;
-  StaticArray<GLdouble, 2> MouseDisplacement;
+  StaticArray<GLfloat, 2> PreviousMousePosition;
+  StaticArray<GLfloat, 2> MouseDisplacement;
   bool isFirstMouseMovement;
 
   void CreateCallBacks();

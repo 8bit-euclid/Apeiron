@@ -160,7 +160,8 @@ int main(void)
   {
     visualiser.BeginFrame();
 
-    visualiser.Cameras[0].KeyControl(visualiser.GetKeys());
+    visualiser.Cameras[0].KeyControl(visualiser.GetKeys(), visualiser.GetDeltaTime());
+    visualiser.Cameras[0].MouseControl(visualiser.GetMouseDisplacement());
 
     // If the viewport has been modified, update the view frustum
     if(visualiser.isViewPortModified)
