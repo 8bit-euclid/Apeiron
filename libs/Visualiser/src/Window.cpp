@@ -60,12 +60,13 @@ void Window::Open(GLint _width, GLint _height)
   glfwSetWindowUserPointer(pWindow, this);
 }
 
-std::pair<GLdouble, GLdouble> Window::GetMouseDisplacement()
+StaticArray<GLfloat, 2> Window::GetMouseDisplacement()
 {
-  GLdouble x_displacement = MouseDisplacement[0];
-  GLdouble y_displacement = MouseDisplacement[1];
+  GLfloat x_displacement = MouseDisplacement[0];
+  GLfloat y_displacement = MouseDisplacement[1];
   MouseDisplacement[0] = 0.0;
   MouseDisplacement[1] = 0.0;
+
   return {x_displacement, y_displacement};
 }
 
@@ -88,6 +89,13 @@ bool Window::isViewPortModified()
 void Window::SwapBuffers()
 {
   glfwSwapBuffers(pWindow);
+}
+
+void Window::ComputeDeltaTime()
+{
+  const GLfloat current_time = glfwGetTime();
+  DeltaTime = current_time - LastTime;
+  LastTime = current_time;
 }
 
 void Window::CreateCallBacks()

@@ -4,6 +4,9 @@ namespace Apeiron {
 
 void Visualiser::BeginFrame()
 {
+  // Compute delta time for previous frame
+  OpenGLWindow.ComputeDeltaTime();
+
   // Get and handle user inputs
   glfwPollEvents();
 

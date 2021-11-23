@@ -26,9 +26,10 @@ public:
 
   void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& _field_of_view = -1.0, const GLfloat& _near_plane = 0.0, const GLfloat& _far_plane = 0.0);
 
-  void KeyControl(const StaticArray<Bool, mKeys>& _keys);
+  void KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time);
 
-  void MouseControl();
+  // TODO - need to replace argument type with StaticVector, once it is implemented
+  void MouseControl(const StaticArray<GLfloat, 2>& _cursor_displacement);
 
   void ComputeViewMatrix(glm::mat4& _view_matrix);
 
@@ -41,8 +42,8 @@ private:
   glm::vec3 Right;
   constexpr static glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  constexpr static GLfloat Speed = 0.1f;
-  constexpr static GLfloat Sensitivity = 100.0f;
+  constexpr static GLfloat Speed = 5.0f;
+  constexpr static GLfloat Sensitivity = 0.2f;
   GLfloat Pitch;
   GLfloat Yaw;
   GLfloat AspectRatio;

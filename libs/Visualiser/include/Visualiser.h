@@ -37,11 +37,15 @@ public:
 
   const StaticArray<Bool, 1024>& GetKeys() const { return OpenGLWindow.GetKeys(); }
 
+  StaticArray<GLfloat, 2> GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
+
   inline std::pair<GLint, GLint> ViewportDimensions() { return OpenGLWindow.GetViewportDimensions(); }
 
   inline GLfloat ViewportAspectRatio() { return OpenGLWindow.GetViewportAspectRatio(); }
 
   void BeginFrame();
+
+  GLfloat GetDeltaTime() { return OpenGLWindow.GetDeltaTime(); }
 
   void EndFrame();
 

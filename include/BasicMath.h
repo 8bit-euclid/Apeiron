@@ -31,9 +31,9 @@ constexpr std::pair<t_data_type, t_data_type> MinMax(const t_data_type& _a, cons
 
 /** Bound value between a minimum and a maximum. */
 template <typename t_data_type>
-constexpr t_data_type Bound(const t_data_type& _a, const t_data_type& _min, const t_data_type& _max)
+constexpr t_data_type Bound(const t_data_type& _value, const t_data_type& _min, const t_data_type& _max)
 {
-  return _min < _max ? Max(Min(_a, _max), _min) : throw std::logic_error("The minimum bound must be lesser than the maximum bound.");
+  return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
 }
 
 /***************************************************************************************************************************************************************
