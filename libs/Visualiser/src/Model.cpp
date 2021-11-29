@@ -2,17 +2,17 @@
 
 namespace Apeiron {
 
-Model::Model(const DynamicArray<Vertex>& _vertices, const DynamicArray<GLuint>& _indices)
-  : VAO(), VBO(_vertices), IBO(_indices)
+void Model::Load()
 {
-  VertexBufferLayout layout;
-  layout.AddEntity<float>(2);
-  VAO.AddBuffer(VBO, layout);
-}
+  // Compute vertex normals
+  Geometry.ComputeVertexNormals();
 
-Model::~Model()
-{
-  Delete();
+  // Load vertex and index buffer objects
+  VBO.Init(Geometry.Vertices);
+  IBO.Init(Geometry.Indices);
+
+  // Add vertex buffer to vertex array object
+  VAO.AddBuffer(VBO, Geometry.GetVertexLayout());
 }
 
 void Model::Draw()

@@ -6,9 +6,10 @@ namespace Apeiron{
 enum class TypeCategory
 {
   Boolean,
-  Integer,
+  Integral,
   FloatingPoint,
-  String
+  String,
+  Other
 };
 
 /***************************************************************************************************************************************************************
@@ -108,14 +109,14 @@ constexpr bool isBoolean(const t_data_type& _value = t_data_type())
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
 template<class t_data_type>
-constexpr bool isInteger(const t_data_type& _value = t_data_type())
+constexpr bool isIntegral(const t_data_type& _value = t_data_type())
 {
   return std::is_integral_v<t_data_type> && !isBoolean(_value);
 }
 
 /** Check if the data type is a floating-point type. */
 template<class t_data_type>
-constexpr bool isFloat(const t_data_type& _value = t_data_type())
+constexpr bool isFloatingPoint(const t_data_type& _value = t_data_type())
 {
   return std::is_floating_point_v<t_data_type>;
 }
@@ -124,35 +125,48 @@ constexpr bool isFloat(const t_data_type& _value = t_data_type())
 template<class t_data_type>
 constexpr bool isNumber(const t_data_type& _value = t_data_type())
 {
-  return isInteger(_value) || isFloat(_value);
+  return isIntegral(_value) || isFloatingPoint(_value);
 }
 
 /** Check if the data type is a number type (floating-point or integer type). */
 template<class t_data_type>
 constexpr bool isString(const t_data_type& _value = t_data_type())
 {
-  return isTypeEqual<t_data_type, char *>() || isTypeEqual<t_data_type, std::string>();
+  return isTypeEqual<t_data_type, char*>() || isTypeEqual<t_data_type, std::string>();
 }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
 template<class t_data_type>
 constexpr TypeCategory GetTypeCategory(const t_data_type& _value = t_data_type())
 {
-  return isBoolean(_value) ? TypeCategory::Boolean :
-         isInteger(_value) ? TypeCategory::Integer :
-         isFloat(_value) ? TypeCategory::FloatingPoint :
-         isString(_value) ? TypeCategory::String :
-         throw "Passed type not yet supported for categorisation.";
+  return isBoolean<t_data_type>() ? TypeCategory::Boolean :
+         isIntegral<t_data_type>() ? TypeCategory::Integral :
+         isFloatingPoint<t_data_type>() ? TypeCategory::FloatingPoint :
+         isString<t_data_type>() ? TypeCategory::String :
+         TypeCategory::Other;
 }
 
 /** Get the initial value for each type category. */
-template <class t_data_type, TypeCategory t_type_category = GetTypeCategory(t_data_type())>
-constexpr t_data_type GetTypeInitValue()
+template <class t_data_type, TypeCategory t_type_category = GetTypeCategory<t_data_type>()>
+constexpr t_data_type GetStaticInitValue()
 {
   return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
-         t_type_category == TypeCategory::Integer ? static_cast<t_data_type>(-1) :
+         t_type_category == TypeCategory::Integral ? static_cast<t_data_type>(-1) :
          t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
-         static_cast<t_data_type>(0.0);
+         t_type_category == TypeCategory::Other ? t_data_type() :
+         throw std::invalid_argument("The passed type does not qualify for static initialisation.");
+}
+
+/** Get the initial value for each type category. */
+template <class t_data_type, TypeCategory t_type_category = GetTypeCategory<t_data_type>()>
+t_data_type GetDynamicInitValue()
+{
+  return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
+         t_type_category == TypeCategory::Integral ? static_cast<t_data_type>(-1) :
+         t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
+         t_type_category == TypeCategory::String ? static_cast<t_data_type>('\0') :
+         t_type_category == TypeCategory::Other ? t_data_type() :
+         throw std::invalid_argument("The passed type does not qualify for dynamic initialisation.");
 }
 
 }

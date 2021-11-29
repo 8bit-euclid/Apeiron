@@ -143,7 +143,7 @@ private:
 
 public:
   /** Default constructor. */
-  constexpr StaticMultiArray() : StaticMultiArray(GetTypeInitValue<t_data_type>()) {}
+  constexpr StaticMultiArray() : StaticMultiArray(GetStaticInitValue<t_data_type>()) {}
 
   /** Constructor from single initial value. */
   constexpr StaticMultiArray(const t_data_type& _init_value) :
@@ -175,7 +175,7 @@ public:
 
   /** Constructor based on given size. */
   template <std::size_t ...t_dimensions>
-  DynamicMultiArray(const std::size_t _array_size) : DynamicMultiArray(_array_size, GetTypeInitValue<t_data_type>()) {}
+  DynamicMultiArray(const std::size_t _array_size) : DynamicMultiArray(_array_size, GetDynamicInitValue<t_data_type>()) {}
 
   /** Constructor based on given size single initial value. */
   template <std::size_t ...t_dimensions>

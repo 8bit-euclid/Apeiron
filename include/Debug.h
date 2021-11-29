@@ -15,17 +15,26 @@ namespace Apeiron{
 /** Throw error without exiting from a given file and line. */
 #define ERROR_FROM(_file, _line, _args...)\
 {\
-  std::cerr<<"\n*************************************************************************************",\
-             "\n ERROR: ", _args,                                                               \
-             FILE_LINE(_file, _line),                                                                         \
-             "*************************************************************************************\n";\
+  std::cerr<<"\n*****************************************************************************************************************",\
+             "\n ERROR: ", _args, \
+             FILE_LINE(_file, _line), \
+             "*****************************************************************************************************************\n";\
 }
 
-/** Throw error without exiting from the current line and file. */
-#define ERROR(_args...) ERROR_FROM(__FILE__, __LINE__, _args)
+/** Throw warning without exiting from a given file and line. */
+#define WARNING_FROM(_file, _line, _args...)\
+{\
+  std::cerr<<"\n*****************************************************************************************************************",\
+             "\n WARNING: ", _args, \
+             FILE_LINE(_file, _line), \
+             "*****************************************************************************************************************\n";\
+}
+
+/** Throw warning without exiting from the current line and file. */
+#define WARNING(_args...) WARNING_FROM(__FILE__, __LINE__, _args)
 
 /** Throw error and exit. */
-#define EXIT(_args...) { ERROR(_args); exit(-1); }
+#define EXIT(_args...) { ERROR_FROM(__FILE__, __LINE__, _args); exit(-1); }
 
 /** Throw error from a given file and line, and exit. */
 #define EXIT_FROM(_file, _line, _args...) { ERROR_FROM(_file, _line, _args); exit(-1); }

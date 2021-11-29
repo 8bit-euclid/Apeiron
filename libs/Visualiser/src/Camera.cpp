@@ -48,6 +48,11 @@ void Camera::SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& _field_
   }
 }
 
+glm::vec3 Camera::GetPosition()
+{
+  return Position;
+}
+
 void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time)
 {
   GLfloat displacement = Speed * _delta_time;
@@ -59,7 +64,7 @@ void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _d
 }
 
 // TODO - need to replace argument type with StaticVector, once it is implemented
-void Camera::MouseControl(const StaticArray<GLfloat, 2>& _cursor_displacement)
+void Camera::MouseControl(const StaticArray<GLdouble, 2>& _cursor_displacement)
 {
   // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
   Yaw += Sensitivity * _cursor_displacement[0];

@@ -33,7 +33,7 @@ public:
 
   const StaticArray<Bool, mKeys>& GetKeys() const { return Keys; }
 
-  StaticArray<GLfloat, 2> GetMouseDisplacement();
+  StaticArray<GLdouble, 2> GetMouseDisplacement();
 
   bool isViewPortModified();
 
@@ -52,8 +52,8 @@ private:
   StaticArray<Bool, mKeys> Keys;
   StaticArray<GLint, 2> WindowDimensions;
   StaticArray<GLint, 2> ViewportDimensions;
-  StaticArray<GLfloat, 2> PreviousMousePosition;
-  StaticArray<GLfloat, 2> MouseDisplacement;
+  StaticArray<GLdouble, 2> PreviousMousePosition;
+  StaticArray<GLdouble, 2> MouseDisplacement;
   bool isFirstMouseMovement;
 
   void CreateCallBacks();

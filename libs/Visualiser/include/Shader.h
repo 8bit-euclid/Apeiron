@@ -39,6 +39,8 @@ public:
 
   void SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1);
 
+  void SetUniform3f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
+
   void SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
 
   void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);

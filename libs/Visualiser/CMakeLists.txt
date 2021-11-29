@@ -5,20 +5,22 @@ set(SOURCE_FILES
         include/Camera.h
         include/GLDebug.h
         include/GLTypes.h
+        include/Light.h
+        include/Mesh.h
         include/Model.h
         include/Shader.h
-        include/Shapes.h
         include/Texture.h
         include/Visualiser.h
         include/Window.h
         resources/external/stb_image/stb_image.h
         src/Camera.cpp
+        src/Mesh.cpp
         src/Model.cpp
         src/Shader.cpp
         src/Texture.cpp
         src/Visualiser.cpp
         src/Window.cpp
-        resources/external/stb_image/stb_image.cpp)
+        resources/external/stb_image/stb_image.cpp include/Material.h src/Light.cpp)
 
 set(LINK_LIBRARIES)
 

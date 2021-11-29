@@ -3,6 +3,8 @@
 #include "../../../include/Global.h"
 #include "../../DataContainers/include/Array.h"
 #include "Buffers.h"
+#include "Mesh.h"
+#include "Material.h"
 #include "Texture.h"
 
 #include <GL/glew.h>
@@ -13,9 +15,13 @@ namespace Apeiron {
 class Model
 {
 public:
-  Model(const DynamicArray<Vertex>& _vertices, const DynamicArray<GLuint>& _indices);
+  Mesh Geometry;
 
-  ~Model();
+  Model() : VAO(), VBO(), IBO(), SSBO() {}
+
+  ~Model() { Delete(); }
+
+  void Load();
 
   void Draw();
 
@@ -25,9 +31,10 @@ private:
   VertexArray VAO;
   VertexBuffer VBO;
   IndexBuffer IBO;
-//  ShaderStorageBuffer SSBO;
+  ShaderStorageBuffer SSBO;
 
   glm::mat4 ModelMatrix;
+  DynamicArray<Material> Materials;
   DynamicArray<Texture> Textures;
 };
 
