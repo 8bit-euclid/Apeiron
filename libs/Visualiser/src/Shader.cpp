@@ -39,6 +39,11 @@ void Shader::SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _va
   GLCall(glUniform2f(GetUniformLocation(_name), _value0, _value1));
 }
 
+void Shader::SetUniform3f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2)
+{
+  GLCall(glUniform3f(GetUniformLocation(_name), _value0, _value1, _value2));
+}
+
 void Shader::SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3)
 {
   GLCall(glUniform4f(GetUniformLocation(_name), _value0, _value1, _value2, _value3));
@@ -124,7 +129,7 @@ UInt Shader::Compile(unsigned int _type, const std::string& _source)
   if(!result)
   {
     GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
-    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : "fragment"), " shader:\n", error_log)
+    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : "fragment"), " shader:\n ", error_log)
   }
 
   return shader_ID;
@@ -145,6 +150,7 @@ int Shader::GetUniformLocation(const std::string& _name)
   if(UniformLocationCache.contains(_name)) return UniformLocationCache[_name];
 
   GLCall(int location = glGetUniformLocation(ID, _name.c_str()));
+  if(location < 0) WARNING("Could not find the location for uniform ", _name)
   UniformLocationCache[_name] = location;
 
   return location;

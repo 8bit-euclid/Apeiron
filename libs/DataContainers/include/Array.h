@@ -14,11 +14,6 @@ class MultiArray;
 template <class t_derived_class, class t_data_type>
 class Array
 {
-private:
-  constexpr t_derived_class& Derived() noexcept { return static_cast<t_derived_class&>(*this); }
-
-  constexpr const t_derived_class& Derived() const noexcept { return static_cast<const t_derived_class&>(*this); }
-
 protected:
   constexpr Array() {}
 
@@ -31,6 +26,7 @@ public:
   /** Check if an index is in-range. */
   constexpr void IndexBoundCheck(const std::size_t _index) const
   {
+    DEBUG_ASSERT(Derived().size(), "The array has not yet been sized.")
     DEBUG_ASSERT(isBounded(_index, std::size_t(0), Derived().size()), "The array index ", _index, " must be in the range [0, ", Derived().size() - 1, "].")
   }
 
@@ -71,6 +67,11 @@ public:
     FOR_EACH(entry, _value_list) Derived()[index++] = entry;
     return Derived();
   }
+
+private:
+  constexpr t_derived_class& Derived() noexcept { return static_cast<t_derived_class&>(*this); }
+
+  constexpr const t_derived_class& Derived() const noexcept { return static_cast<const t_derived_class&>(*this); }
 };
 
 /***************************************************************************************************************************************************************
@@ -96,7 +97,7 @@ private:
 
 public:
   /** Default constructor. */
-  constexpr StaticArray() : StaticArray(GetTypeInitValue<t_data_type>()) {}
+  constexpr StaticArray() : StaticArray(GetStaticInitValue<t_data_type>()) {}
 
   /** Constructor from single initial value. */
   constexpr StaticArray(const t_data_type& _init_value) :
@@ -127,12 +128,12 @@ class DynamicArray : public std::vector<t_data_type>, public Array<DynamicArray<
   using Base = Array<DynamicArray<t_data_type>, t_data_type>;
   friend Base;
 
-  public:
+public:
   /** Default constructor. */
   DynamicArray() : std::vector<t_data_type>() {}
 
   /** Constructor based on given size. */
-  DynamicArray(const std::size_t _array_size) : DynamicArray(_array_size, GetTypeInitValue<t_data_type>()) {}
+  DynamicArray(const std::size_t _array_size) : DynamicArray(_array_size, GetDynamicInitValue<t_data_type>()) {}
 
   /** Constructor based on given size single initial value. */
   DynamicArray(const std::size_t _t_array_size, const t_data_type& _init_value) : std::vector<t_data_type>(_t_array_size, _init_value) {}

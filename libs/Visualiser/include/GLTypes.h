@@ -19,7 +19,7 @@ constexpr GLenum GLTypeEnum(const t_data_type& _value = t_data_type())
   else EXIT("Unrecognised OpenGL data type: ");
 }
 
-constexpr GLsizei GLTypeSize(const GLenum _gl_type)
+constexpr GLuint GLTypeSize(const GLenum _gl_type)
 {
   switch(_gl_type)
   {
@@ -32,7 +32,8 @@ constexpr GLsizei GLTypeSize(const GLenum _gl_type)
     case GL_FLOAT: return sizeof(GLfloat);
     case GL_DOUBLE: return sizeof(GLdouble);
   }
-  EXIT("Unrecognised OpenGL data type.");
+
+  EXIT("Unrecognised OpenGL data type.")
 }
 
 }

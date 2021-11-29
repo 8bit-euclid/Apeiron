@@ -3,7 +3,9 @@
 #include "../include/Global.h"
 #include "../../DataContainers/include/Array.h"
 #include "Camera.h"
+#include "Light.h"
 #include "Model.h"
+#include "Material.h"
 #include "Shader.h"
 #include "Window.h"
 
@@ -21,7 +23,11 @@ class Visualiser
 {
 public:
   bool isViewPortModified{false};
-//  DynamicArray<Model> Models;
+  DynamicArray<Model> Models;
+  DynamicArray<Material> Materials;
+  DynamicArray<Light> Lights;
+  DynamicArray<DirectionalLight> DirectionalLights;
+  DynamicArray<PointLight> PointLights;
   DynamicArray<Camera> Cameras;
   DynamicArray<Shader> Shaders;
 
@@ -37,7 +43,7 @@ public:
 
   const StaticArray<Bool, 1024>& GetKeys() const { return OpenGLWindow.GetKeys(); }
 
-  StaticArray<GLfloat, 2> GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
+  StaticArray<GLdouble, 2> GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
 
   inline std::pair<GLint, GLint> ViewportDimensions() { return OpenGLWindow.GetViewportDimensions(); }
 

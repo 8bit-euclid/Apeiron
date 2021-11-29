@@ -33,13 +33,13 @@ class Random;
 * Random Integer Class
 ***************************************************************************************************************************************************************/
 template <typename t_data_type>
-class Random<t_data_type, TypeCategory::Integer> : public RandomBase<t_data_type, TypeCategory::Integer>
+class Random<t_data_type, TypeCategory::Integral> : public RandomBase<t_data_type, TypeCategory::Integral>
 {
   private:
   std::uniform_int_distribution<t_data_type> Distribution;
 
   public:
-  Random(const t_data_type& _min, const t_data_type& _max) : RandomBase<t_data_type, TypeCategory::Integer>(), Distribution(_min, _max) {}
+  Random(const t_data_type& _min, const t_data_type& _max) : RandomBase<t_data_type, TypeCategory::Integral>(), Distribution(_min, _max) {}
   Random() = delete;
   ~Random() = default;
 

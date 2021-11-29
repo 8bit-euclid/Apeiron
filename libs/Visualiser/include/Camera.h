@@ -19,17 +19,21 @@ class Camera
 
 public:
   Camera();
+
   Camera(const glm::vec3& _position, const GLfloat& _pitch, const GLfloat& _yaw);
+
   ~Camera();
 
   void SetOrientation(const glm::vec3& _position, const GLfloat& _pitch, const GLfloat& _yaw);
 
   void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& _field_of_view = -1.0, const GLfloat& _near_plane = 0.0, const GLfloat& _far_plane = 0.0);
 
+  glm::vec3 GetPosition();
+
   void KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time);
 
   // TODO - need to replace argument type with StaticVector, once it is implemented
-  void MouseControl(const StaticArray<GLfloat, 2>& _cursor_displacement);
+  void MouseControl(const StaticArray<GLdouble, 2>& _cursor_displacement);
 
   void ComputeViewMatrix(glm::mat4& _view_matrix);
 

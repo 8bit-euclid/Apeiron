@@ -60,10 +60,10 @@ void Window::Open(GLint _width, GLint _height)
   glfwSetWindowUserPointer(pWindow, this);
 }
 
-StaticArray<GLfloat, 2> Window::GetMouseDisplacement()
+StaticArray<GLdouble, 2> Window::GetMouseDisplacement()
 {
-  GLfloat x_displacement = MouseDisplacement[0];
-  GLfloat y_displacement = MouseDisplacement[1];
+  GLdouble x_displacement = MouseDisplacement[0];
+  GLdouble y_displacement = MouseDisplacement[1];
   MouseDisplacement[0] = 0.0;
   MouseDisplacement[1] = 0.0;
 
