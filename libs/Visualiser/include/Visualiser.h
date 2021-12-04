@@ -2,6 +2,7 @@
 
 #include "../include/Global.h"
 #include "../../DataContainers/include/Array.h"
+#include "../../DataContainers/include/List.h"
 #include "Camera.h"
 #include "Light.h"
 #include "Model.h"
@@ -23,13 +24,13 @@ class Visualiser
 {
 public:
   bool isViewPortModified{false};
-  DynamicArray<Model> Models;
-  DynamicArray<Material> Materials;
-  DynamicArray<Light> Lights;
-  DynamicArray<DirectionalLight> DirectionalLights;
-  DynamicArray<PointLight> PointLights;
-  DynamicArray<Camera> Cameras;
-  DynamicArray<Shader> Shaders;
+  List<Model> Models;
+  List<Material> Materials;
+  List<Texture> Textures;
+  List<DirectionalLight> DirectionalLights;
+  List<PointLight> PointLights;
+  List<Camera> Cameras;
+  List<Shader> Shaders;
 
   Visualiser() = default;
 

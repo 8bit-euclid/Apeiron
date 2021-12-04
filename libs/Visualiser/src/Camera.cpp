@@ -3,14 +3,13 @@
 namespace Apeiron {
 
 Camera::Camera()
-  : Position(glm::vec3(0.0f, 0.0f, 0.0)), Front(glm::vec3(0.0f, 0.0f, -1.0)), Pitch(0.0), Yaw(0.0), AspectRatio(0.0), FieldOfView(45.0), NearPlane(0.0),
-    FarPlane(0.0)
+  : Camera(glm::vec3(0.0f, 0.0f, 0.0), 0.0f, 0.0f)
 {
-  SetOrientation(Position, Pitch, Yaw);
+
 }
 
 Camera::Camera(const glm::vec3& _position, const GLfloat& _pitch, const GLfloat& _yaw)
-  : Position(_position), Front(glm::vec3(0.0f, 0.0f, -1.0)), Pitch(_pitch), Yaw(_yaw), AspectRatio(0.0), FieldOfView(45.0), NearPlane(0.0),
+  : Position(_position), Front(glm::vec3(0.0f, 0.0f, -1.0f)), Pitch(_pitch), Yaw(_yaw), AspectRatio(0.0), FieldOfView(45.0), NearPlane(0.0),
     FarPlane(0.0)
 {
   SetOrientation(Position, Pitch, Yaw);

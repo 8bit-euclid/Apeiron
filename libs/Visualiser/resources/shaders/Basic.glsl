@@ -1,12 +1,14 @@
 #shader vertex
 #version 460 core
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 texture_coordinate;
+layout(location = 2) in vec3 colour;
+layout(location = 3) in vec2 texture_coordinate;
 
 out vec4 v_position;
 out vec3 v_normal;
+out vec3 v_colour;
 out vec3 v_fragment_position;
 out vec2 v_texture_coordinate;
 
@@ -16,11 +18,12 @@ uniform mat4 u_projection_matrix;
 
 void main()
 {
-   gl_Position = u_projection_matrix * u_view_matrix * u_model_matrix * position;
+   v_position = vec4(position, 1.0);
+   gl_Position = u_projection_matrix * u_view_matrix * u_model_matrix * v_position;
 
-   v_position = vec4(clamp(position, 0.0f, 1.0f));
    v_normal = mat3(transpose(inverse(u_model_matrix))) * normal; // Accounts for model rotation and scaling
-   v_fragment_position = (u_model_matrix * position).xyz;
+   v_colour = colour;
+   v_fragment_position = (u_model_matrix * v_position).xyz;
    v_texture_coordinate = texture_coordinate;
 }
 
@@ -29,6 +32,7 @@ void main()
 
 in vec4 v_position;
 in vec3 v_normal;
+in vec3 v_colour;
 in vec3 v_fragment_position;
 in vec2 v_texture_coordinate;
 
@@ -64,11 +68,12 @@ uniform vec4 u_colour;
 uniform vec3 u_camera_position;
 uniform sampler2D u_texture;
 
-const int Max_Point_Lights = 1;
+uniform Material u_material;
+
+const int Max_Point_Lights = 4;
+uniform int u_point_light_count;
 uniform DirectionalLight u_directional_light;
 uniform PointLight u_point_lights[Max_Point_Lights];
-
-uniform Material u_material;
 
 vec4 CalculateLightByDirection(Light _light, vec3 _direction)
 {
@@ -103,7 +108,7 @@ vec4 CalculateDirectionalLight()
 vec4 CalculatePointLights()
 {
    vec4 total_colour = vec4(0.0, 0.0, 0.0, 0.0);
-   for(int i = 0; i < Max_Point_Lights; i++)
+   for(int i = 0; i < u_point_light_count; i++)
    {
       vec3 direction = v_fragment_position - u_point_lights[i].Position;
       float distance = length(direction);

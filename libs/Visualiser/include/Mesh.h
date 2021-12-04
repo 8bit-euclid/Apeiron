@@ -8,6 +8,13 @@
 
 namespace Apeiron {
 
+enum class ShadingType
+{
+  Flat,
+  Phong,
+  None
+};
+
 struct Vertex
 {
   glm::vec3 Position;
@@ -44,6 +51,7 @@ struct VertexAttributeLayout
 class Mesh
 {
 public:
+  ShadingType Shading;
   DynamicArray<Vertex> Vertices;
   DynamicArray<GLuint> Indices;
 
@@ -53,10 +61,10 @@ public:
 
   void ComputeVertexNormals();
 
-  const static VertexAttributeLayout& GetVertexLayout() { return VertexLayout; }
+  const VertexAttributeLayout& GetVertexLayout() { return VertexLayout; }
 
 private:
-  static VertexAttributeLayout VertexLayout;
+  VertexAttributeLayout VertexLayout;
 };
 
 }

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <iterator>
 #include <limits>
+#include <list>
 #include <map>
 #include <random>
 #include <signal.h>

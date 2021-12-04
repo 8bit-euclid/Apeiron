@@ -19,14 +19,14 @@ class Texture
 
 private:
   UInt RendererID;
-  std::string Type;
   std::string FilePath;
   UChar* LocalBuffer;
   int Width, Height;
   int BitsPerPixel;
 
 public:
-  Texture(const std::string& _file_path, const std::string& _type);
+  Texture() = delete;
+  Texture(const std::string& _file_path);
   ~Texture();
 
   void Bind(UInt _slot = 0) const;
