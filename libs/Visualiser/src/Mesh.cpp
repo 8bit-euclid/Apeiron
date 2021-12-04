@@ -12,6 +12,7 @@ void VertexAttributeLayout::AddAttribute(const GLuint _n_values)
 }
 
 Mesh::Mesh()
+  : Shading(ShadingType::None)
 {
   VertexLayout.AddAttribute<GLfloat>(3); // Position
   VertexLayout.AddAttribute<GLfloat>(3); // Normal
@@ -23,23 +24,26 @@ Mesh::Mesh()
 
 void Mesh::ComputeVertexNormals()
 {
-  // Zero all vertex normals.
-  FOR_EACH(vertex, Vertices) vertex.Normal = glm::vec3(0.0, 0.0, 0.0);
-
-  for(std::size_t it = 0; it < Indices.size(); it += 3)
+  if(Shading == ShadingType::Flat) return;
+  else if(Shading == ShadingType::Phong)
   {
-    // Compute the normal of the current triangle and update the normal at each vertex in the current triangle
-    const GLuint iv0 = Indices[it];
-    const GLuint iv1 = Indices[it + 1];
-    const GLuint iv2 = Indices[it + 2];
-    FOR(iv, 3) Vertices[Indices[it + iv]].Normal += glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+    // Zero all vertex normals.
+    FOR_EACH(vertex, Vertices) vertex.Normal = glm::vec3(0.0, 0.0, 0.0);
+
+    for(std::size_t it = 0; it < Indices.size(); it += 3)
+    {
+      // Compute the normal of the current triangle and update the normal at each vertex in the current triangle
+      const GLuint iv0 = Indices[it];
+      const GLuint iv1 = Indices[it + 1];
+      const GLuint iv2 = Indices[it + 2];
+      FOR(iv, 3) Vertices[Indices[it + iv]].Normal += glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+    }
+
+    // Normalise all vertex normals.
+    FOR_EACH(vertex, Vertices) vertex.Normal = glm::normalize(vertex.Normal);
   }
-
-  // Normalise all vertex normals.
-  FOR_EACH(vertex, Vertices) vertex.Normal = glm::normalize(vertex.Normal);
+  else EXIT("Unrecognised shading type prescribed.")
 }
-
-VertexAttributeLayout Mesh::VertexLayout = VertexAttributeLayout();
 
 }
 

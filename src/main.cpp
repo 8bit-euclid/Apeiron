@@ -8,35 +8,71 @@ int main(void)
   Visualiser visualiser;
   visualiser.OpenWindow(1920, 1080);
 
+  // Tetrahedron model
   visualiser.Models.resize(1);
-  DynamicArray<Vertex>& vertices = visualiser.Models[0].Geometry.Vertices;
-  DynamicArray<GLuint>& indices = visualiser.Models[0].Geometry.Indices;
+  visualiser.Models[0].Geometry.Shading = ShadingType::Phong;
+  DynamicArray<Vertex>& vertices0 = visualiser.Models[0].Geometry.Vertices;
+  DynamicArray<GLuint>& indices0 = visualiser.Models[0].Geometry.Indices;
 
-  vertices.resize(4);
-  vertices[0].Position = glm::vec3(0.0f, 1.0f, 1.0f);
-  vertices[1].Position = glm::vec3(1.0f, 1.0f, 0.0f);
-  vertices[2].Position = glm::vec3(0.0f, 1.0f, 0.0f);
-  vertices[3].Position = glm::vec3(0.0f, 2.0f, 0.0f);
+  vertices0.resize(4);
+  vertices0[0].Position = glm::vec3(0.0f, 1.0f, 1.0f);
+  vertices0[1].Position = glm::vec3(1.0f, 1.0f, 0.0f);
+  vertices0[2].Position = glm::vec3(0.0f, 1.0f, 0.0f);
+  vertices0[3].Position = glm::vec3(0.0f, 2.0f, 0.0f);
 
-  indices.resize(12);
-  indices[0] = 0;
-  indices[1] = 1;
-  indices[2] = 2;
+  indices0.resize(12);
+  indices0[0] = 0;
+  indices0[1] = 1;
+  indices0[2] = 2;
 
-  indices[3] = 0;
-  indices[4] = 1;
-  indices[5] = 3;
+  indices0[3] = 0;
+  indices0[4] = 1;
+  indices0[5] = 3;
 
-  indices[6] = 0;
-  indices[7] = 2;
-  indices[8] = 3;
+  indices0[6] = 0;
+  indices0[7] = 2;
+  indices0[8] = 3;
 
-  indices[9] = 1;
-  indices[10] = 2;
-  indices[11] = 3;
+  indices0[9] = 1;
+  indices0[10] = 2;
+  indices0[11] = 3;
 
   visualiser.Models[0].Load();
 
+//  // Floor model
+  visualiser.Models.resize(2);
+  visualiser.Models[1].Geometry.Shading = ShadingType::Flat;
+  DynamicArray<Vertex>& vertices1 = visualiser.Models[1].Geometry.Vertices;
+  DynamicArray<GLuint>& indices1 = visualiser.Models[1].Geometry.Indices;
+
+  vertices1.resize(4);
+  vertices1[0].Position = glm::vec3(-10.0f, 0.0f, -10.0f);
+  vertices1[1].Position = glm::vec3(10.0f, 0.0f, -10.0f);
+  vertices1[2].Position = glm::vec3(-10.0f, 0.0f, 10.0f);
+  vertices1[3].Position = glm::vec3(10.0f, 0.0f, 10.0f);
+
+  vertices1[0].Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+  vertices1[1].Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+  vertices1[2].Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+  vertices1[3].Normal = glm::vec3(0.0f, -1.0f, 0.0f);
+
+  vertices1[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
+  vertices1[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
+  vertices1[2].TextureCoordinates = glm::vec2(0.0f, 1.0f);
+  vertices1[3].TextureCoordinates = glm::vec2(1.0f, 1.0f);
+
+  indices1.resize(6);
+  indices1[0] = 0;
+  indices1[1] = 2;
+  indices1[2] = 1;
+
+  indices1[3] = 1;
+  indices1[4] = 2;
+  indices1[5] = 3;
+
+  visualiser.Models[1].Load();
+
+  // Shaders
   visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Basic.glsl");
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Line.glsl");
   visualiser.Shaders[0].Bind();
@@ -61,13 +97,14 @@ int main(void)
   float angl_incr(0.1);
   float angl_offs(0.0);
 
-  visualiser.Materials.emplace_back(1.0, 32.0);
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Papyrus.png");
+  visualiser.Materials.emplace_back(0.7, 128.0);
+//  visualiser.Materials.emplace_back(1.0, 32.0);
 
-//  visualiser.Lights.emplace_back(glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.7);
+  visualiser.DirectionalLights.emplace_back(glm::vec3(0.0, 0.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.0, 0.0);
 
-  visualiser.DirectionalLights.emplace_back(glm::vec3(1.0, 0.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.7);
-
-  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 0.0, 0.0), glm::vec4(1.0, 0.0, 0.0, 1.0), 0.1, 1.0, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(0.0, 0.0, 0.0), glm::vec4(0.0, 0.0, 1.0, 1.0), 0.0, 1.0, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.0, 1.0, StaticArray<GLfloat, 3>{0.3, 0.1, 0.1});
 
   visualiser.Cameras.resize(1);
   visualiser.Cameras[0].SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
@@ -100,14 +137,16 @@ int main(void)
     angl_offs += angl_incr;
     if(angl_offs > 360.0) angl_offs -= 360.0;
 
+    // Tetrahedron model
     glm::mat4 _model_matrix(1.0);
     _model_matrix = glm::translate(_model_matrix, glm::vec3(x_offs, 0.0f, 0.0f));
     _model_matrix = glm::rotate(_model_matrix, (float)ToRadians(angl_offs), glm::vec3(0.0f, 0.0f, 1.0f));
 //    _model_matrix = glm::scale(_model_matrix, glm::vec3(2.0f, 2.0f, 1.0f));
 
-    visualiser.Materials[0].Apply(visualiser.Shaders[0]);
-    visualiser.DirectionalLights[0].SwitchOn(visualiser.Shaders[0]);
-    visualiser.PointLights[0].SwitchOn(visualiser.Shaders[0]);
+    visualiser.Shaders[0].UseMaterial(visualiser.Materials[0]);
+    visualiser.Shaders[0].UseLight(visualiser.DirectionalLights[0]);
+    visualiser.Shaders[0].UseLight(visualiser.PointLights[0]);
+    visualiser.Shaders[0].UseLight(visualiser.PointLights[1]);
 
     glm::mat4 _view_matrix(1.0), _projection_matrix(1.0);
     visualiser.Cameras[0].ComputeViewMatrix(_view_matrix);
@@ -121,6 +160,17 @@ int main(void)
 //    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
 
     visualiser.Models[0].Draw();
+
+    // Floor model
+    _model_matrix = glm::mat4(1.0);
+    _model_matrix = glm::translate(_model_matrix, glm::vec3(0.0f, -2.0f, 0.0f));
+    visualiser.Shaders[0].SetUniformMatrix4f("u_model_matrix", _model_matrix);
+    visualiser.Textures[0].Bind();
+    visualiser.Shaders[0].UseMaterial(visualiser.Materials[0]);
+    visualiser.Models[1].Draw();
+
+
+
 
     visualiser.EndFrame();
   }

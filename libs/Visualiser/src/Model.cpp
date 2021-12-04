@@ -8,11 +8,13 @@ void Model::Load()
   Geometry.ComputeVertexNormals();
 
   // Load vertex and index buffer objects
-  VBO.Init(Geometry.Vertices);
+  VAO.Bind();
   IBO.Init(Geometry.Indices);
+  VBO.Init(Geometry.Vertices);
 
   // Add vertex buffer to vertex array object
   VAO.AddBuffer(VBO, Geometry.GetVertexLayout());
+  VAO.Unbind();
 }
 
 void Model::Draw()

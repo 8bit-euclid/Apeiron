@@ -4,6 +4,9 @@
 
 namespace Apeiron {
 
+/***************************************************************************************************************************************************************
+* Shader Constructor/Destructor
+***************************************************************************************************************************************************************/
 Shader::Shader(const std::string& _file_path)
   : ID(0), FilePath(_file_path)
 {
@@ -20,10 +23,47 @@ Shader::~Shader()
   Delete();
 }
 
+void Shader::UseMaterial(const Material& _material)
+{
+  SetUniform1f("u_material.SpecularIntensity", _material.SpecularIntensity);
+  SetUniform1f("u_material.Smoothness", _material.Smoothness);
+}
+
+void Shader::UseLight(const Light& _light)
+{
+  const LightType type = _light.Type;
+  const UInt index = _light.GetIndex();
+  std::string uniform_name = type == LightType::Directional ? "u_directional_light" :
+                             type == LightType::Point ? "u_point_lights[" + To_Str(index) + "]" :
+                             type == LightType::Spot ? "u_spot_lights[" + To_Str(index) + "]" :
+                             throw std::invalid_argument("The lighting type was either not recognised or not specified.");
+
+  SetUniform4f(uniform_name + ".Base.Colour", _light.Colour.r, _light.Colour.g, _light.Colour.b, _light.Colour.a);
+  SetUniform1f(uniform_name + ".Base.AmbientIntensity", _light.AmbientIntensity);
+  SetUniform1f(uniform_name + ".Base.DiffuseIntensity", _light.DiffuseIntensity);
+
+  if(type == LightType::Directional)
+  {
+    const glm::vec3& direction = static_cast<const DirectionalLight&>(_light).Direction;
+    SetUniform3f(uniform_name + ".Direction", direction.x, direction.y, direction.z);
+  }
+  else if(type == LightType::Point)
+  {
+    const PointLight& point_light = static_cast<const PointLight&>(_light);
+    const glm::vec3& position = point_light.Position;
+    const StaticArray<GLfloat, 3>& attenuation = point_light.AttenuationCoefficients;
+
+    SetUniform1i("u_point_light_count", _light.GetLightCount());
+    SetUniform3f(uniform_name + ".Position", position.x, position.y, position.z);
+    SetUniform3f(uniform_name + ".AttenuationCoefficients", attenuation[0], attenuation[1], attenuation[2]);
+  }
+  else EXIT("Cannot yet handle the passed light type.")
+
+}
+
 /***************************************************************************************************************************************************************
 * Setting Shader Uniforms
 ***************************************************************************************************************************************************************/
-
 void Shader::SetUniform1i(const std::string& _name, GLint _value)
 {
   GLCall(glUniform1i(GetUniformLocation(_name), _value));
@@ -55,9 +95,8 @@ void Shader::SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj
 }
 
 /***************************************************************************************************************************************************************
-* Vertex Array Supporting Classes
+* Shader Parsing, Compilation, and Installation
 ***************************************************************************************************************************************************************/
-
 ShaderSourceCode Shader::Parse(const std::string& _file_path)
 {
   std::ifstream stream(_file_path);
@@ -145,6 +184,9 @@ void Shader::Delete()
   GLCall(glDeleteProgram(ID));
 }
 
+/***************************************************************************************************************************************************************
+* Uniform Support Functions
+***************************************************************************************************************************************************************/
 int Shader::GetUniformLocation(const std::string& _name)
 {
   if(UniformLocationCache.contains(_name)) return UniformLocationCache[_name];

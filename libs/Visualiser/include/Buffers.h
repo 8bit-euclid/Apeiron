@@ -33,6 +33,8 @@ struct Buffer
     }
   }
 
+  inline GLuint GetID() { return ID; }
+
 protected:
   GLuint ID;
 };
@@ -46,6 +48,7 @@ struct VertexBuffer : public Buffer
   {
     Bind();
     Load(_vertices);
+    Unbind();
   }
 
   inline void Bind() const override { GLCall(glBindBuffer(GL_ARRAY_BUFFER, ID)); }
@@ -67,6 +70,7 @@ struct IndexBuffer : public Buffer
     nIndices = _indices.size();
     Bind();
     Load(_indices);
+    Unbind();
   }
 
   inline void Bind() const override { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID)); }
@@ -103,11 +107,7 @@ struct ShaderStorageBuffer : public Buffer
 class VertexArray
 {
 public:
-  VertexArray()
-  {
-    GLCall(glGenVertexArrays(1, &ID));
-    Bind();
-  }
+  VertexArray() { GLCall(glGenVertexArrays(1, &ID)); }
 
   ~VertexArray() { Delete(); }
 
@@ -124,6 +124,7 @@ public:
 
       offset += element.nComponents * GLTypeSize(element.Type);
     }
+    _vertex_buffer.Unbind();
   }
 
   inline void Bind() const { GLCall(glBindVertexArray(ID)); }
@@ -138,6 +139,8 @@ public:
       ID = 0;
     }
   }
+
+  inline GLuint GetID() { return ID; }
 
 private:
   GLuint ID;

@@ -4,7 +4,6 @@
 #include "../../DataContainers/include/Array.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
-#include "Shader.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -24,17 +23,22 @@ enum class LightType
 
 class Light
 {
+  friend class Shader;
+
 protected:
   Light();
 
-  Light(glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
+  Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
 
 public:
   ~Light() = default;
 
-  void SwitchOn(Shader& _shader, LightType _light_type = LightType::None, UInt _index = -1);
+  virtual UInt GetIndex() const = 0;
+
+  virtual UInt GetLightCount() const = 0;
 
 protected:
+  LightType Type;
   glm::vec4 Colour;
   GLfloat AmbientIntensity;
   GLfloat DiffuseIntensity;
@@ -45,6 +49,8 @@ protected:
 ***************************************************************************************************************************************************************/
 class DirectionalLight : public Light
 {
+  friend class Shader;
+
 public:
   DirectionalLight();
 
@@ -52,7 +58,9 @@ public:
 
   ~DirectionalLight() = default;
 
-  void SwitchOn(Shader& _shader);
+  UInt GetIndex() const override { return 0; }
+
+  UInt GetLightCount() const override { return 1; }
 
 private:
   glm::vec3 Direction;
@@ -63,15 +71,23 @@ private:
 ***************************************************************************************************************************************************************/
 class PointLight : public Light
 {
+  friend class Shader;
+
 public:
   PointLight();
 
   PointLight(glm::vec3 _position, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
              const StaticArray<GLfloat, 3>& _attenuation_coefficients);
 
-  ~PointLight() = default;
+  PointLight(const PointLight& _point_light);
 
-  void SwitchOn(Shader& _shader);
+  ~PointLight();
+
+  PointLight& operator=(const PointLight& _point_light);
+
+  UInt GetIndex() const override { return iPointLight; }
+
+  UInt GetLightCount() const override { return nPointLights; }
 
 private:
   constexpr static UInt MaxPointLights = 4;
