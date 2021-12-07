@@ -13,9 +13,18 @@
 
 namespace Apeiron {
 
+enum class ShaderType
+{
+  Vertex,
+  Geometry,
+  Fragment,
+  nTypes
+};
+
 struct ShaderSourceCode
 {
   std::string Vertex;
+  std::string Geometry;
   std::string Fragment;
 };
 
@@ -62,7 +71,7 @@ private:
   *************************************************************************************************************************************************************/
   ShaderSourceCode Parse(const std::string& _file_path);
 
-  void Create(const std::string& vertex_shader, const std::string& fragment_shader);
+  void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
 
   GLuint Compile(GLuint _type, const std::string& _source);
 

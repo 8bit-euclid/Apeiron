@@ -62,6 +62,8 @@ private:
 
   static void HandleMouse(GLFWwindow* _p_window, GLdouble _x_coord, GLdouble _y_coord);
 
+  static void HandleMouseWheel(GLFWwindow* _p_window, GLdouble _x_offset, GLdouble _y_offset);
+
   std::pair<GLint, GLint> GetFrameBufferSize() const;
 };
 

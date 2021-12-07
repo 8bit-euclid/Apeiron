@@ -56,10 +56,10 @@ void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _d
 {
   GLfloat displacement = Speed * _delta_time;
 
-  if(_keys[GLFW_KEY_UP]) Position += displacement * Front;
-  if(_keys[GLFW_KEY_DOWN]) Position -= displacement * Front;
-  if(_keys[GLFW_KEY_LEFT]) Position -= displacement * Right;
-  if(_keys[GLFW_KEY_RIGHT]) Position += displacement * Right;
+  if(_keys[GLFW_KEY_UP] || _keys[GLFW_KEY_W]) Position += displacement * Front;
+  if(_keys[GLFW_KEY_DOWN] || _keys[GLFW_KEY_S]) Position -= displacement * Front;
+  if(_keys[GLFW_KEY_LEFT] || _keys[GLFW_KEY_A]) Position -= displacement * Right;
+  if(_keys[GLFW_KEY_RIGHT] || _keys[GLFW_KEY_D]) Position += displacement * Right;
 }
 
 // TODO - need to replace argument type with StaticVector, once it is implemented
@@ -67,7 +67,7 @@ void Camera::MouseControl(const StaticArray<GLdouble, 2>& _cursor_displacement)
 {
   // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
   Yaw += Sensitivity * _cursor_displacement[0];
-  Pitch += Sensitivity * _cursor_displacement[1];
+  Pitch -= Sensitivity * _cursor_displacement[1];
   Pitch = Bound(Pitch, -89.0f, 89.0f);
 
   // Update camera orientation

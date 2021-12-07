@@ -35,6 +35,9 @@ public:
   // TODO - need to replace argument type with StaticVector, once it is implemented
   void MouseControl(const StaticArray<GLdouble, 2>& _cursor_displacement);
 
+  // TODO - need to replace argument type with StaticVector, once it is implemented
+  void MouseWheelControl(const StaticArray<GLdouble, 2>& _cursor_displacement);
+
   void ComputeViewMatrix(glm::mat4& _view_matrix);
 
   void ComputeProjectionMatrix(glm::mat4& _projection_matrix);
@@ -46,8 +49,8 @@ private:
   glm::vec3 Right;
   constexpr static glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  constexpr static GLfloat Speed = 5.0f;
-  constexpr static GLfloat Sensitivity = 0.2f;
+  constexpr static GLfloat Speed{6.0f};
+  constexpr static GLfloat Sensitivity{0.3f};
   GLfloat Pitch;
   GLfloat Yaw;
   GLfloat AspectRatio;
