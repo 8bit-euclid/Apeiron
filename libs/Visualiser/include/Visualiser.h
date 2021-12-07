@@ -29,6 +29,7 @@ public:
   List<Texture> Textures;
   List<DirectionalLight> DirectionalLights;
   List<PointLight> PointLights;
+  List<SpotLight> SpotLights;
   List<Camera> Cameras;
   List<Shader> Shaders;
 

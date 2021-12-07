@@ -33,42 +33,57 @@ DirectionalLight::DirectionalLight(glm::vec3 _direction, glm::vec4 _rgba_colour,
 }
 
 /***************************************************************************************************************************************************************
-* Point Light Class
+* Point Light Abstract Base Class
 ***************************************************************************************************************************************************************/
-PointLight::PointLight()
-  : Light()
+namespace LightSupport {
+
+template<class t_derived_class>
+PointLightBase<t_derived_class>::PointLightBase(const LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour,
+                                                const GLfloat _ambient_intensity, const GLfloat _diffuse_intensity,
+                                                const StaticArray<GLfloat, 3>& _attenuation_coefficients)
+  : Light(_light_type, _rgba_colour, _ambient_intensity, _diffuse_intensity), Position(_position), AttenuationCoefficients(_attenuation_coefficients)
 {
   iPointLight = nPointLights++;
-  ASSERT(nPointLights <= MaxPointLights, "Currently cannot create more than ", MaxPointLights, " point lights.")
 }
 
-PointLight::PointLight(glm::vec3 _position, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-                       const StaticArray<GLfloat, 3>& _attenuation_coefficients)
-  : Light(LightType::Point, _rgba_colour, _ambient_intensity, _diffuse_intensity), Position(_position), AttenuationCoefficients(_attenuation_coefficients)
+template<class t_derived_class>
+PointLightBase<t_derived_class>::PointLightBase(const PointLightBase<t_derived_class>& _point_light_base)
+  : iPointLight(_point_light_base.iPointLight), Position(_point_light_base.Position), AttenuationCoefficients(_point_light_base.AttenuationCoefficients)
 {
-  iPointLight = nPointLights++;
-  ASSERT(nPointLights <= MaxPointLights, "Currently cannot create more than ", MaxPointLights, " point lights.")
+  nPointLights++;
 }
 
-PointLight::PointLight(const PointLight& _point_light)
-{
-  iPointLight = _point_light.iPointLight;
-  Position = _point_light.Position;
-  AttenuationCoefficients = _point_light.AttenuationCoefficients;
-}
-
-PointLight::~PointLight()
+template<class t_derived_class>
+PointLightBase<t_derived_class>::~PointLightBase()
 {
   nPointLights--;
 }
 
-PointLight& PointLight::operator=(const PointLight& _point_light)
-{
-  iPointLight = _point_light.iPointLight;
-  Position = _point_light.Position;
-  AttenuationCoefficients = _point_light.AttenuationCoefficients;
 }
 
-UInt PointLight::nPointLights = 0;
+template class LightSupport::PointLightBase<PointLight>;
+template class LightSupport::PointLightBase<SpotLight>;
+template<class t_derived_class> UInt LightSupport::PointLightBase<t_derived_class>::nPointLights = 0;
+
+/***************************************************************************************************************************************************************
+* Point Light Class
+***************************************************************************************************************************************************************/
+PointLight::PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour, const GLfloat _ambient_intensity, const GLfloat _diffuse_intensity,
+                       const StaticArray<GLfloat, 3>& _attenuation_coefficients)
+  : PointLightBase(LightType::Point, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients)
+{
+
+}
+
+/***************************************************************************************************************************************************************
+* Spotlight Class
+***************************************************************************************************************************************************************/
+SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _cone_angle, GLfloat _ambient_intensity,
+                     GLfloat _diffuse_intensity, const StaticArray<GLfloat, 3>& _attenuation_coefficients)
+  : PointLightBase(LightType::Spot, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients),
+                   Direction(glm::normalize(_direction)), ConeAngle(_cone_angle), CosConeAngle(std::cos(ToRadians(_cone_angle)))
+{
+
+}
 
 }

@@ -15,7 +15,7 @@ Shader::Shader(const std::string& _file_path)
   ASSERT(ID, "Could not create shader program.")
 
   auto source = Parse(_file_path);
-  Create(source.Vertex, source.Fragment);
+  Create(source.Vertex, source.Geometry, source.Fragment);
 }
 
 Shader::~Shader()
@@ -37,10 +37,11 @@ void Shader::UseLight(const Light& _light)
                              type == LightType::Point ? "u_point_lights[" + To_Str(index) + "]" :
                              type == LightType::Spot ? "u_spot_lights[" + To_Str(index) + "]" :
                              throw std::invalid_argument("The lighting type was either not recognised or not specified.");
+  std::string base_name = type == LightType::Spot ? ".Point" : "\0";
 
-  SetUniform4f(uniform_name + ".Base.Colour", _light.Colour.r, _light.Colour.g, _light.Colour.b, _light.Colour.a);
-  SetUniform1f(uniform_name + ".Base.AmbientIntensity", _light.AmbientIntensity);
-  SetUniform1f(uniform_name + ".Base.DiffuseIntensity", _light.DiffuseIntensity);
+  SetUniform4f(uniform_name + base_name + ".Base.Colour", _light.Colour.r, _light.Colour.g, _light.Colour.b, _light.Colour.a);
+  SetUniform1f(uniform_name + base_name + ".Base.AmbientIntensity", _light.AmbientIntensity);
+  SetUniform1f(uniform_name + base_name + ".Base.DiffuseIntensity", _light.DiffuseIntensity);
 
   if(type == LightType::Directional)
   {
@@ -50,14 +51,25 @@ void Shader::UseLight(const Light& _light)
   else if(type == LightType::Point)
   {
     const PointLight& point_light = static_cast<const PointLight&>(_light);
-    const glm::vec3& position = point_light.Position;
-    const StaticArray<GLfloat, 3>& attenuation = point_light.AttenuationCoefficients;
 
     SetUniform1i("u_point_light_count", _light.GetLightCount());
-    SetUniform3f(uniform_name + ".Position", position.x, position.y, position.z);
-    SetUniform3f(uniform_name + ".AttenuationCoefficients", attenuation[0], attenuation[1], attenuation[2]);
+    SetUniform3f(uniform_name + ".Position", point_light.Position.x, point_light.Position.y, point_light.Position.z);
+    SetUniform3f(uniform_name + ".AttenuationCoefficients",
+                 point_light.AttenuationCoefficients[0], point_light.AttenuationCoefficients[1], point_light.AttenuationCoefficients[2]);
   }
-  else EXIT("Cannot yet handle the passed light type.")
+  else if(type == LightType::Spot)
+  {
+    const SpotLight& spot_light = static_cast<const SpotLight&>(_light);
+
+    SetUniform1i("u_spot_light_count", _light.GetLightCount());
+    SetUniform3f(uniform_name + ".Point.Position", spot_light.Position.x, spot_light.Position.y, spot_light.Position.z);
+    SetUniform3f(uniform_name + ".Point.AttenuationCoefficients",
+                 spot_light.AttenuationCoefficients[0], spot_light.AttenuationCoefficients[1], spot_light.AttenuationCoefficients[2]);
+
+    SetUniform3f(uniform_name + ".Direction", spot_light.Direction.x, spot_light.Direction.y, spot_light.Direction.z);
+    SetUniform1f(uniform_name + ".CosConeAngle", spot_light.CosConeAngle);
+  }
+  else EXIT("Cannot yet handle the given light type.")
 
 }
 
@@ -101,30 +113,31 @@ ShaderSourceCode Shader::Parse(const std::string& _file_path)
 {
   std::ifstream stream(_file_path);
 
-  enum class ShaderType { None = -1, Vertex = 0, Fragment = 1 };
-
   std::string line;
-  std::stringstream string_stream[2];
-  ShaderType type = ShaderType::None;
+  std::stringstream string_stream[static_cast<UInt>(ShaderType::nTypes)];
+  ShaderType type;
   while(getline(stream, line))
   {
     if(line.find("#shader") != std::string::npos)
     {
       if(line.find("vertex") != std::string::npos) type = ShaderType::Vertex;
+      else if(line.find("geometry") != std::string::npos) type = ShaderType::Geometry;
       else if(line.find("fragment") != std::string::npos) type = ShaderType::Fragment;
     }
     else string_stream[static_cast<int>(type)] << line << '\n';
   }
 
-  return { string_stream[0].str(), string_stream[1].str() };
+  return { string_stream[0].str(), string_stream[1].str(), string_stream[2].str() };
 }
 
-void Shader::Create(const std::string& vertex_shader, const std::string& fragment_shader)
+void Shader::Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader)
 {
   // Create and attach shaders
-  GLuint vs_id = Compile(GL_VERTEX_SHADER, vertex_shader);
-  GLuint fs_id = Compile(GL_FRAGMENT_SHADER, fragment_shader);
+  GLuint vs_id = Compile(GL_VERTEX_SHADER, _vertex_shader);
+  GLuint gs_id = Compile(GL_GEOMETRY_SHADER, _geometry_shader);
+  GLuint fs_id = Compile(GL_FRAGMENT_SHADER, _fragment_shader);
   Attach(ID, vs_id);
+  Attach(ID, gs_id);
   Attach(ID, fs_id);
 
   GLint result = 0;
@@ -150,6 +163,7 @@ void Shader::Create(const std::string& vertex_shader, const std::string& fragmen
 
   // Delete shaders
   GLCall(glDeleteShader(vs_id));
+  GLCall(glDeleteShader(gs_id));
   GLCall(glDeleteShader(fs_id));
 }
 
@@ -168,7 +182,7 @@ UInt Shader::Compile(unsigned int _type, const std::string& _source)
   if(!result)
   {
     GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
-    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : "fragment"), " shader:\n ", error_log)
+    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : _type == GL_GEOMETRY_SHADER ? "geometry" : "fragment"), " shader:\n ", error_log)
   }
 
   return shader_ID;

@@ -108,6 +108,7 @@ void Window::CreateCallBacks()
 {
   glfwSetKeyCallback(pWindow, HandleKeys);
   glfwSetCursorPosCallback(pWindow, HandleMouse);
+//  glfwSetScrollCallback(pWindow, HandleMouse);
 }
 
 void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
@@ -140,6 +141,11 @@ void Window::HandleMouse(GLFWwindow* _p_window, const GLdouble _x_coord, const G
 
   p_window->MouseDisplacement = {_x_coord - p_window->PreviousMousePosition[0], _y_coord - p_window->PreviousMousePosition[1]};
   p_window->PreviousMousePosition = {_x_coord, _y_coord};
+}
+
+void Window::HandleMouseWheel(GLFWwindow *_p_window, GLdouble _x_offset, GLdouble _y_offset)
+{
+
 }
 
 std::pair<GLint, GLint> Window::GetFrameBufferSize() const

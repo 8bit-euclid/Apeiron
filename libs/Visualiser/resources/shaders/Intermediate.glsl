@@ -6,11 +6,14 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec3 colour;
 layout(location = 3) in vec2 texture_coordinate;
 
-out vec4 v_position;
-out vec3 v_normal;
-out vec3 v_colour;
-out vec3 v_fragment_position;
-out vec2 v_texture_coordinate;
+out Data
+{
+   vec3 Normal;
+   vec3 Colour;
+   vec3 FragmentPosition;
+   vec2 TextureCoordinate;
+   mat4 ProjectionMatrix;
+} data_out;
 
 uniform mat4 u_model_matrix;
 uniform mat4 u_view_matrix;
@@ -18,20 +21,60 @@ uniform mat4 u_projection_matrix;
 
 void main()
 {
-   v_position = vec4(position, 1.0);
-   gl_Position = u_projection_matrix * u_view_matrix * u_model_matrix * v_position;
+   const vec4 vertex_position = vec4(position, 1.0);
+   gl_Position = u_view_matrix * u_model_matrix * vertex_position;
 
-   v_normal = mat3(transpose(inverse(u_model_matrix))) * normal; // Accounts for model rotation and non-uniform scaling
-   v_colour = colour;
-   v_fragment_position = (u_model_matrix * v_position).xyz;
-   v_texture_coordinate = texture_coordinate;
+   data_out.Normal = mat3(transpose(inverse(u_model_matrix))) * normal; // Accounts for model rotation and non-uniform scaling
+   data_out.Colour = colour;
+   data_out.FragmentPosition = (u_model_matrix * vertex_position).xyz;
+   data_out.TextureCoordinate = texture_coordinate;
+   data_out.ProjectionMatrix = u_projection_matrix;
+}
+
+#shader geometry
+#version 460 core
+
+layout (triangles) in;
+layout (triangle_strip, max_vertices = 3) out;
+
+out vec3 v_normal;
+out vec3 v_colour;
+out vec3 v_fragment_position;
+out vec2 v_texture_coordinate;
+
+in Data
+{
+   vec3 Normal;
+   vec3 Colour;
+   vec3 FragmentPosition;
+   vec2 TextureCoordinate;
+   mat4 ProjectionMatrix;
+} data_in[];
+
+void main()
+{
+   vec3 tangent0 = vec3(gl_in[1].gl_Position - gl_in[0].gl_Position);
+   vec3 tangent1 = vec3(gl_in[2].gl_Position - gl_in[0].gl_Position);
+   vec3 triangle_normal = normalize(cross(tangent0, tangent1));
+
+   for(int i = 0; i < gl_in.length(); i++)
+   {
+//      gl_Position = data_in[i].ProjectionMatrix * (gl_in[i].gl_Position + 0.1*vec4(normalize(cross(tangent0, tangent1)), 0.0));
+      gl_Position = data_in[i].ProjectionMatrix * gl_in[i].gl_Position;
+      v_normal = triangle_normal;
+//      v_normal = data_in[i].Normal;
+      v_colour = data_in[i].Colour;
+      v_fragment_position = data_in[i].FragmentPosition;
+      v_texture_coordinate = data_in[i].TextureCoordinate;
+      EmitVertex();
+   }
+   EndPrimitive();
 }
 
 #shader fragment
 #version 460 core
 #extension GL_OES_standard_derivatives : enable
 
-in vec4 v_position;
 in vec3 v_normal;
 in vec3 v_colour;
 in vec3 v_fragment_position;
