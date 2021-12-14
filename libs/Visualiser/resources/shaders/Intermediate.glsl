@@ -12,8 +12,9 @@ out Data
    vec3 Colour;
    vec3 FragmentPosition;
    vec2 TextureCoordinate;
+   mat4 ViewMatrix;
    mat4 ProjectionMatrix;
-} data_out;
+} v_data_out;
 
 uniform mat4 u_model_matrix;
 uniform mat4 u_view_matrix;
@@ -22,14 +23,18 @@ uniform mat4 u_projection_matrix;
 void main()
 {
    const vec4 vertex_position = vec4(position, 1.0);
-   gl_Position = u_view_matrix * u_model_matrix * vertex_position;
+   gl_Position = u_model_matrix * vertex_position;
 
-   data_out.Normal = mat3(transpose(inverse(u_model_matrix))) * normal; // Accounts for model rotation and non-uniform scaling
-   data_out.Colour = colour;
-   data_out.FragmentPosition = (u_model_matrix * vertex_position).xyz;
-   data_out.TextureCoordinate = texture_coordinate;
-   data_out.ProjectionMatrix = u_projection_matrix;
+   v_data_out.Normal = mat3(transpose(inverse(u_model_matrix))) * normal; // Accounts for model rotation and non-uniform scaling
+   v_data_out.Colour = colour;
+   v_data_out.FragmentPosition = (u_model_matrix * vertex_position).xyz;
+   v_data_out.TextureCoordinate = texture_coordinate;
+   v_data_out.ViewMatrix = u_view_matrix;
+   v_data_out.ProjectionMatrix = u_projection_matrix;
 }
+
+
+
 
 #shader geometry
 #version 460 core
@@ -37,39 +42,45 @@ void main()
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-out vec3 v_normal;
-out vec3 v_colour;
-out vec3 v_fragment_position;
-out vec2 v_texture_coordinate;
-
 in Data
 {
    vec3 Normal;
    vec3 Colour;
    vec3 FragmentPosition;
    vec2 TextureCoordinate;
+   mat4 ViewMatrix;
    mat4 ProjectionMatrix;
-} data_in[];
+} v_data_in[];
+
+out vec3 v_normal;
+out vec3 v_colour;
+out vec3 v_fragment_position;
+out vec2 v_texture_coordinate;
 
 void main()
 {
-   vec3 tangent0 = vec3(gl_in[1].gl_Position - gl_in[0].gl_Position);
-   vec3 tangent1 = vec3(gl_in[2].gl_Position - gl_in[0].gl_Position);
-   vec3 triangle_normal = normalize(cross(tangent0, tangent1));
+   const vec3 tangent0 = (gl_in[1].gl_Position - gl_in[0].gl_Position).xyz;
+   const vec3 tangent1 = (gl_in[2].gl_Position - gl_in[0].gl_Position).xyz;
+   const vec3 face_normal = normalize(cross(tangent0, tangent1));
 
    for(int i = 0; i < gl_in.length(); i++)
    {
-//      gl_Position = data_in[i].ProjectionMatrix * (gl_in[i].gl_Position + 0.1*vec4(normalize(cross(tangent0, tangent1)), 0.0));
-      gl_Position = data_in[i].ProjectionMatrix * gl_in[i].gl_Position;
-      v_normal = triangle_normal;
-//      v_normal = data_in[i].Normal;
-      v_colour = data_in[i].Colour;
-      v_fragment_position = data_in[i].FragmentPosition;
-      v_texture_coordinate = data_in[i].TextureCoordinate;
+//      gl_Position = v_data_in[i].ProjectionMatrix * v_data_in[i].ViewMatrix * (gl_in[i].gl_Position + 0.5*vec4(face_normal, 0.0));
+      gl_Position = v_data_in[i].ProjectionMatrix * v_data_in[i].ViewMatrix * gl_in[i].gl_Position;
+
+      v_normal = face_normal; // Flat shading
+//      v_normal = v_data_in[i].Normal; // Smooth shading
+
+      v_colour = v_data_in[i].Colour;
+      v_fragment_position = v_data_in[i].FragmentPosition;
+      v_texture_coordinate = v_data_in[i].TextureCoordinate;
       EmitVertex();
    }
    EndPrimitive();
 }
+
+
+
 
 #shader fragment
 #version 460 core
