@@ -131,30 +131,15 @@ uniform SpotLight u_spot_lights[Max_Spot_Lights];
 
 vec4 CalculateLightByDirection(Light _light, vec3 _direction)
 {
-//   vec3 face_normal = normalize(cross(dFdx(v_fragment_position), dFdy(v_fragment_position)));
-//   if(!gl_FrontFacing) face_normal = -face_normal;
+   const vec4 ambient_colour = _light.AmbientIntensity * _light.Colour;
 
-   vec4 ambient_colour = _light.AmbientIntensity * _light.Colour;
+   const float diffuse_factor = max(dot(-v_normal, normalize(_direction)), 0.0f);
+   const vec4 diffuse_colour = diffuse_factor * _light.DiffuseIntensity * _light.Colour;
 
-//   float diffuse_factor = max(dot(normalize(face_normal), normalize(_direction)), 0.0);
-   float diffuse_factor = max(dot(normalize(v_normal), normalize(_direction)), 0.0);
-   vec4 diffuse_colour = diffuse_factor * _light.DiffuseIntensity * _light.Colour;
-
-   vec4 specular_colour = vec4(0.0);
-   if(diffuse_factor > 0.0)
-   {
-      vec3 fragment_to_camera = normalize(u_camera_position - v_fragment_position);
-//      vec3 reflected_ray = normalize(reflect(_direction, normalize(face_normal)));
-      vec3 reflected_ray = normalize(reflect(_direction, normalize(v_normal)));
-
-      float specular_factor = dot(fragment_to_camera, reflected_ray);
-      if(specular_factor > 0.0)
-      {
-         specular_factor = pow(specular_factor, u_material.Smoothness);
-         specular_colour = specular_factor * u_material.SpecularIntensity * _light.Colour;
-      }
-
-   }
+   const vec3 fragment_to_camera = normalize(u_camera_position - v_fragment_position);
+   const vec3 reflected_ray = normalize(reflect(_direction, v_normal));
+   const float specular_factor = pow(max(dot(fragment_to_camera, reflected_ray), 0.0f), u_material.Smoothness);
+   const vec4 specular_colour = specular_factor * u_material.SpecularIntensity * _light.Colour;
 
    return (ambient_colour + diffuse_colour + specular_colour);
 }
@@ -166,15 +151,15 @@ vec4 CalculateDirectionalLight()
 
 vec4 CalculatePointLight(PointLight _point_light)
 {
-   vec3 direction = v_fragment_position - _point_light.Position;
-   float distance = length(direction);
-   direction = normalize(direction);
+   vec3 light_to_fragment = v_fragment_position - _point_light.Position;
+   float distance = length(light_to_fragment);
+   light_to_fragment = normalize(light_to_fragment);
 
    const float attenuation = _point_light.AttenuationCoefficients[0] +
    _point_light.AttenuationCoefficients[1] * distance +
    _point_light.AttenuationCoefficients[2] * distance * distance;
 
-   return CalculateLightByDirection(_point_light.Base, direction) / attenuation;
+   return CalculateLightByDirection(_point_light.Base, light_to_fragment) / attenuation;
 }
 
 vec4 CalculatePointLights()
@@ -203,6 +188,7 @@ vec4 CalculateSpotLights()
 
 void main()
 {
+//   vec4 lighting = CalculatePointLights();
    vec4 lighting = CalculateDirectionalLight() + CalculatePointLights() + CalculateSpotLights();
 
 //   vec4 texture_colour = texture(u_texture, v_texture_coordinate);

@@ -25,6 +25,9 @@ Shader::~Shader()
 
 void Shader::UseMaterial(const Material& _material)
 {
+//  glMaterialf(GL_FRONT, GL_SPECULAR, _material.SpecularIntensity);
+//  glMaterialf(GL_FRONT, GL_SHININESS, _material.Smoothness);
+
   SetUniform1f("u_material.SpecularIntensity", _material.SpecularIntensity);
   SetUniform1f("u_material.Smoothness", _material.Smoothness);
 }
