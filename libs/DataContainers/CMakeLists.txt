@@ -5,7 +5,8 @@ set(SOURCE_FILES
         include/List.h
         include/MultiArray.h
         include/Support.h
-        src/Array.cpp)
+        src/Array.cpp
+        src/MultiArray.cpp)
 
 set(LINK_LIBRARIES)
 

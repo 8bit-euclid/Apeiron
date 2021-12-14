@@ -1,7 +1,10 @@
 #pragma once
 
-#include <GL/glew.h>
 #include "../../../include/Global.h"
+#include "../../DataContainers/include/Array.h"
+
+#include <GL/glew.h>
+#include <glm/glm.hpp>
 
 namespace Apeiron {
 
@@ -34,6 +37,26 @@ constexpr GLuint GLTypeSize(const GLenum _gl_type)
   }
 
   EXIT("Unrecognised OpenGL data type.")
+}
+
+// TODO - change from StaticArray to StaticVector, once implemented.
+template<std::size_t t_vector_size, class t_data_type, glm::qualifier t_qualifier = glm::defaultp>
+constexpr StaticArray<t_data_type, t_vector_size>
+ConvertGlmVecToStaticArray(const glm::vec<static_cast<glm::length_t>(t_vector_size), t_data_type, t_qualifier>& _in_vector)
+{
+  StaticArray<t_data_type, t_vector_size> out_vector;
+  FOR(i, t_vector_size) out_vector[i] = _in_vector[i];
+  return out_vector;
+}
+
+// TODO - change from StaticArray to StaticVector, once implemented.
+template<std::size_t t_vector_size, class t_data_type, glm::qualifier t_qualifier = glm::defaultp>
+constexpr glm::vec<static_cast<glm::length_t>(t_vector_size), t_data_type, t_qualifier>
+ConvertStaticArrayToGlmVec(const StaticArray<t_data_type, t_vector_size>& _in_vector)
+{
+  glm::vec<t_vector_size, t_data_type, t_qualifier> out_vector;
+  FOR(i, t_vector_size) out_vector[i] = _in_vector[i];
+  return out_vector;
 }
 
 }

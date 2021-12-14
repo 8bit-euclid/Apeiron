@@ -82,6 +82,20 @@ constexpr Float Infinity(std::numeric_limits<Float>::infinity());
 constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
 constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
+/** Check if a value is NaN. */
+template <class t_data_type>
+constexpr bool isNaN(const t_data_type _value = t_data_type())
+{
+  return std::isnan(_value);
+}
+
+/** Check if a value is infinity. */
+template <class t_data_type>
+constexpr bool isInfinity(const t_data_type _value = t_data_type())
+{
+  return std::isinf(_value);
+}
+
 /***************************************************************************************************************************************************************
 * Type Checking
 ***************************************************************************************************************************************************************/

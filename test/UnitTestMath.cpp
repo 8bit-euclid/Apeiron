@@ -9,7 +9,6 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Sequences and Series
 ***************************************************************************************************************************************************************/
-/** isEqual: Test . */
 TEST_F(ApeironTest, GetInteger)
 {
   constexpr std::size_t size = 100;
@@ -19,7 +18,6 @@ TEST_F(ApeironTest, GetInteger)
 /***************************************************************************************************************************************************************
 * General Arithmetic Functions
 ***************************************************************************************************************************************************************/
-/** isLess: Test . */
 TEST_F(ApeironTest, Sum)
 {
   constexpr int intSum = Sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -29,17 +27,15 @@ TEST_F(ApeironTest, Sum)
   EXPECT_DOUBLE_EQ(floatSum, 55.0);
 }
 
-/** isLessEqual: Test . */
-TEST_F(ApeironTest, Multiply)
+TEST_F(ApeironTest, Product)
 {
-  constexpr int intProd = Multiply(1, 2, 3, 4, 5);
+  constexpr int intProd = Product(1, 2, 3, 4, 5);
   EXPECT_EQ(intProd, 120);
 
-  constexpr Float floatProd = Multiply(1.0, 2.0, 3.0, 4.0, 5.0);
+  constexpr Float floatProd = Product(1.0, 2.0, 3.0, 4.0, 5.0);
   EXPECT_DOUBLE_EQ(floatProd, 120.0);
 }
 
-/** isLarger: Test . */
 TEST_F(ApeironTest, Divide)
 {
   EXPECT_EQ(Divide(20, 5), Four);
@@ -49,7 +45,6 @@ TEST_F(ApeironTest, Divide)
   EXPECT_THROW(Divide(1.0, 0.0), std::logic_error);
 }
 
-/** isLargerEqual: Test . */
 TEST_F(ApeironTest, Modulo)
 {
   EXPECT_EQ(Modulo(20, 5), 0);
@@ -65,7 +60,6 @@ TEST_F(ApeironTest, Modulo)
 /***************************************************************************************************************************************************************
 * Combinatorial Functions
 ***************************************************************************************************************************************************************/
-/** isBounded: Test . */
 TEST_F(ApeironTest, Factorial)
 {
   EXPECT_EQ(Factorial(0), 1);
@@ -73,7 +67,6 @@ TEST_F(ApeironTest, Factorial)
   EXPECT_EQ(Factorial(5), 120);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, FactorialQuotient)
 {
   EXPECT_EQ(FactorialQuotient(1, 0), 1);
@@ -83,7 +76,6 @@ TEST_F(ApeironTest, FactorialQuotient)
   EXPECT_THROW(FactorialQuotient(2, 3), std::logic_error);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Choose)
 {
   EXPECT_EQ(Choose(3, 0), 1);
@@ -96,46 +88,86 @@ TEST_F(ApeironTest, Choose)
 /***************************************************************************************************************************************************************
 * Power Functions
 ***************************************************************************************************************************************************************/
-/** isBounded: Test . */
 TEST_F(ApeironTest, iPow)
 {
-
+  EXPECT_EQ(iPow(2.0, 1), 2.0);
+  EXPECT_EQ(iPow(2.0, 2), 4.0);
+  EXPECT_EQ(iPow(2.0, 3), 8.0);
+  EXPECT_THROW(iPow(2.0, 31), std::logic_error);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Square)
 {
-
+  EXPECT_EQ(Square(2.0), 4.0);
+  EXPECT_EQ(Square(3.0), 9.0);
+  EXPECT_EQ(Square(4.0), 16.0);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Cube)
 {
-
+  EXPECT_EQ(Cube(2.0), 8.0);
+  EXPECT_EQ(Cube(3.0), 27.0);
+  EXPECT_EQ(Cube(4.0), 64.0);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Sqrt)
 {
-
+  EXPECT_EQ(Sqrt(4.0), 2.0);
+  EXPECT_EQ(Sqrt(9.0), 3.0);
+  EXPECT_EQ(Sqrt(16.0), 4.0);
+  EXPECT_TRUE(isNaN(Sqrt(-1.0)));
+  EXPECT_TRUE(isNaN(Sqrt(Infinity)));
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Cbrt)
 {
-
+  EXPECT_EQ(Cbrt(8.0), 2.0);
+  EXPECT_EQ(Cbrt(27.0), 3.0);
+  EXPECT_EQ(Cbrt(-8.0), -2.0);
+  EXPECT_EQ(Cbrt(-27.0), -3.0);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Hypot)
 {
-
+  EXPECT_EQ(Hypot(3.0, 4.0), 5.0);
+  EXPECT_EQ(Hypot(5.0, 12.0), 13.0);
+  EXPECT_EQ(Hypot(8.0, 15.0), 17.0);
+  EXPECT_EQ(Hypot(7.0, 24.0), 25.0);
 }
 
-/** isBounded: Test . */
 TEST_F(ApeironTest, Exp)
 {
+  EXPECT_DOUBLE_EQ(Exp(0.0), 1.0);
+  EXPECT_DOUBLE_EQ(Exp(1.0), e);
+  EXPECT_DOUBLE_EQ(Exp(2.0), iPow(e, 2));
+  EXPECT_DOUBLE_EQ(Exp(3.0), iPow(e, 3));
+}
 
+TEST_F(ApeironTest, Sin)
+{
+  EXPECT_DOUBLE_EQ(Sin(0.0), Zero);
+  EXPECT_DOUBLE_EQ(Sin(HalfPi), One);
+  EXPECT_DOUBLE_EQ(Sin(SixthPi), Half);
+  EXPECT_DOUBLE_EQ(Sin(QuartPi), One/Sqrt(Two));
+  EXPECT_DOUBLE_EQ(Sin(ThirdPi), Half*Sqrt(Three));
+}
+
+TEST_F(ApeironTest, Cos)
+{
+  EXPECT_DOUBLE_EQ(Cos(0.0), One);
+  EXPECT_NEAR(Cos(HalfPi), Zero, Small);
+  EXPECT_DOUBLE_EQ(Cos(SixthPi), Half*Sqrt(Three));
+  EXPECT_DOUBLE_EQ(Cos(QuartPi), One/Sqrt(Two));
+  EXPECT_DOUBLE_EQ(Cos(ThirdPi), Half);
+}
+
+TEST_F(ApeironTest, Tan)
+{
+  EXPECT_DOUBLE_EQ(Tan(0.0), Zero);
+  EXPECT_DOUBLE_EQ(Tan(SixthPi), One/Sqrt(Three));
+  EXPECT_DOUBLE_EQ(Tan(QuartPi), One);
+  EXPECT_DOUBLE_EQ(Tan(ThirdPi), Sqrt(Three));
+  EXPECT_THROW(Tan(HalfPi), std::invalid_argument);
 }
 
 }

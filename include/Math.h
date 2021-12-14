@@ -38,9 +38,16 @@ constexpr Float CbrtNewtonRaphson(const Float& _value, const Float& _value_curr,
   return _value_curr == _value_prev ? _value_curr : CbrtNewtonRaphson(_value, Third*(Two*_value_curr + _value/(_value_curr*_value_curr)), _value_curr);
 }
 
+/** Taylor expansion for constexpr Exp function. */
 constexpr Float Exp(const Float& _value, const Float& _sum, const Float& n, const int _iteration, const Float& _delta_value)
 {
   return _delta_value/n == Zero ? _sum : Exp(_value, _sum + _delta_value/n, n*_iteration, _iteration + 1, _delta_value*_value);
+}
+
+template <typename t_data_type>
+constexpr t_data_type TrigonometricSeries(t_data_type x, t_data_type sum, t_data_type n, int i, int s, t_data_type t)
+{
+  return t * s / n == Zero ? sum : TrigonometricSeries(x, sum + t * s / n, n * i * (i + 1), i + 2, -s, t * x * x);
 }
 
 }
@@ -73,16 +80,16 @@ constexpr auto Sum(const t_iterator _first, const t_iterator _last)
   return std::accumulate(_first, _last, static_cast<data_type>(0));
 }
 
-/** Multiply the terms of a sequence with each other. */
+/** Product the terms of a sequence with each other. */
 template <typename ...t_data_type>
-constexpr auto Multiply(const t_data_type& ..._values)
+constexpr auto Product(const t_data_type& ..._values)
 {
   return (_values * ... * 1);
 }
 
-/** Multiply the terms of a sequence between two iterators. */
+/** Product the terms of a sequence between two iterators. */
 template <class t_iterator>
-constexpr auto Multiply(const t_iterator _first, const t_iterator _last)
+constexpr auto Product(const t_iterator _first, const t_iterator _last)
 {
   typedef typename std::iterator_traits<t_iterator>::value_type data_type;
   return std::accumulate(_first, _last, static_cast<data_type>(1), std::multiplies<data_type>());
@@ -137,17 +144,19 @@ template <typename t_data_type>
 constexpr t_data_type iPow(const t_data_type& _value, const unsigned int& _exponent)
 {
   return _exponent <= 30 ? (_exponent == 0 ? static_cast<t_data_type>(1) : _value*iPow(_value, _exponent - 1)) :
-         throw std::logic_error("Cannot currently compute the power with an exponent larger than 20.");
+         throw std::logic_error("Cannot currently compute the power with an exponent larger than 30.");
 }
 
 /** Square of a value. */
-constexpr Float Square(const Float& _value)
+template <typename t_data_type>
+constexpr t_data_type Square(const t_data_type& _value)
 {
   return iPow(_value, 2);
 }
 
 /** Cube of a value. */
-constexpr Float Cube(const Float& _value)
+template <typename t_data_type>
+constexpr t_data_type Cube(const t_data_type& _value)
 {
   return iPow(_value, 3);
 }
@@ -155,7 +164,7 @@ constexpr Float Cube(const Float& _value)
 /** Constexpr version of std::sqrt. */
 constexpr Float Sqrt(const Float& _value)
 {
-  return Zero <= _value && _value < Infinity ? MathSupport::SqrtNewtonRaphson(_value, _value, Zero) : std::numeric_limits<Float>::quiet_NaN();
+  return Zero <= _value && _value < Infinity ? MathSupport::SqrtNewtonRaphson(_value, _value, Zero) : QuietNaN;
 }
 
 constexpr Float Cbrt(const Float& _value)
@@ -164,7 +173,8 @@ constexpr Float Cbrt(const Float& _value)
 }
 
 /** Constexpr version of std::sqrt. */
-constexpr Float Hypot(const Float& _value0, const Float& _value1)
+template <typename t_data_type>
+constexpr Float Hypot(const t_data_type& _value0, const t_data_type& _value1)
 {
   return Sqrt(Square(_value0) + Square(_value1));
 }
@@ -177,6 +187,23 @@ constexpr Float Exp(Float _value)
 /***************************************************************************************************************************************************************
 * Trigonometric Functions
 ***************************************************************************************************************************************************************/
+template <typename t_data_type>
+constexpr Float Sin(const t_data_type _value)
+{
+  return MathSupport::TrigonometricSeries(_value, _value, static_cast<Float>(6), 4, -1, iPow(_value, 3));
+}
+
+template <typename t_data_type>
+constexpr Float Cos(t_data_type _value)
+{
+  return Sin(_value + HalfPi);
+}
+
+template <typename t_data_type>
+constexpr Float Tan(t_data_type _value)
+{
+  return !isEqual(Cos(_value), Zero) ? sin(_value) / cos(_value) : throw std::invalid_argument("Cannot compute tan(x) as cos(x) is 0.");
+}
 
 }//Apeiron
 

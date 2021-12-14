@@ -24,7 +24,18 @@ Mesh::Mesh()
 
 void Mesh::ComputeVertexNormals()
 {
-  if(Shading == ShadingType::Flat) return;
+  if(Shading == ShadingType::Flat)
+  {
+    for(std::size_t it = 0; it < Indices.size(); it += 3)
+    {
+      // Assign the normal of the current triangle to each vertex normal.
+      const GLuint iv0 = Indices[it];
+      const GLuint iv1 = Indices[it + 1];
+      const GLuint iv2 = Indices[it + 2];
+      const glm::vec3 face_normal = glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+      FOR(iv, 3) Vertices[Indices[it + iv]].Normal = face_normal;
+    }
+  }
   else if(Shading == ShadingType::Phong)
   {
     // Zero all vertex normals.
@@ -36,13 +47,34 @@ void Mesh::ComputeVertexNormals()
       const GLuint iv0 = Indices[it];
       const GLuint iv1 = Indices[it + 1];
       const GLuint iv2 = Indices[it + 2];
-      FOR(iv, 3) Vertices[Indices[it + iv]].Normal += glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+      const glm::vec3 face_normal = glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+      FOR(iv, 3) Vertices[Indices[it + iv]].Normal += face_normal;
     }
 
     // Normalise all vertex normals.
     FOR_EACH(vertex, Vertices) vertex.Normal = glm::normalize(vertex.Normal);
   }
   else EXIT("Unrecognised shading type prescribed.")
+
+  if(Shading == ShadingType::Phong) FOR_EACH(vertex, Vertices) vertex.Normal = glm::vec3(0.0, 0.0, 0.0);
+
+  for(std::size_t it = 0; it < Indices.size(); it += 3)
+  {
+    // Compute the normal of the current triangular face and update the normal at each vertex in the current triangle accordingly.
+    const GLuint iv0 = Indices[it];
+    const GLuint iv1 = Indices[it + 1];
+    const GLuint iv2 = Indices[it + 2];
+    glm::vec3 face_normal = glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+    if(Shading == ShadingType::Flat)
+    {
+      face_normal = glm::normalize(face_normal);
+      FOR(iv, 3) Vertices[Indices[it + iv]].Normal = face_normal;
+    }
+    else if(Shading == ShadingType::Phong) FOR(iv, 3) Vertices[Indices[it + iv]].Normal += face_normal;
+    else EXIT("Unrecognised shading type prescribed.")
+  }
+
+  if(Shading == ShadingType::Phong) FOR_EACH(vertex, Vertices) vertex.Normal = glm::normalize(vertex.Normal);
 }
 
 }

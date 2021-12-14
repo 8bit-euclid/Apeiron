@@ -4,6 +4,7 @@
 #include "../../DataContainers/include/Array.h"
 #include "../../DataContainers/include/List.h"
 #include "Camera.h"
+#include "Geometry.h"
 #include "Light.h"
 #include "Model.h"
 #include "Material.h"

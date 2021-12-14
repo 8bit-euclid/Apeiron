@@ -4,7 +4,7 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ArraySize = 20;
+constexpr std::size_t ArraySize = 50;
 
 namespace Apeiron
 {
@@ -21,7 +21,8 @@ public:
   DynamicArray<int> IntDynamicArray;
   DynamicArray<Float> FloatDynamicArray;
 
-  ArrayTest() : BoolDynamicArray(ArraySize), IntDynamicArray(ArraySize), FloatDynamicArray(ArraySize) {}
+  ArrayTest()
+    : BoolDynamicArray(ArraySize), IntDynamicArray(ArraySize), FloatDynamicArray(ArraySize) {}
 
   void SetUp() override
   {
@@ -31,7 +32,7 @@ public:
 
 TEST_F(ArrayTest, Initialisation)
 {
-  // Create constexpr StaticArray objects.
+  // Initilise constexpr StaticArray objects.
   constexpr StaticArray<bool, ArraySize> ConstexprBoolArray;
   constexpr StaticArray<int, ArraySize> ConstexprIntArray(2);
   constexpr StaticArray<Float, 5> ConstexprFloatArray1{One, Two, Three, Four, Five};
@@ -43,13 +44,11 @@ TEST_F(ArrayTest, Initialisation)
     if(i < 3) EXPECT_EQ(ConstexprFloatArray2[i], Float(i + 1));
   }
 
-  // Test run-time initialisation of arrays.
+  // Test default initialisation of arrays.
   FOR(i, ArraySize)
   {
     // Static arrays
-    EXPECT_EQ(ConstexprBoolArray[i], false);
     EXPECT_EQ(BoolStaticArray[i], false);
-    EXPECT_EQ(ConstexprIntArray[i], 2);
     EXPECT_EQ(IntStaticArray[i], -1);
     EXPECT_EQ(FloatStaticArray[i], Zero);
 
@@ -60,7 +59,7 @@ TEST_F(ArrayTest, Initialisation)
   }
 }
 
-TEST_F(ArrayTest, AssignmentOperator)
+TEST_F(ArrayTest, SubscriptOperator)
 {
   FOR(i, ArraySize)
   {
@@ -79,6 +78,34 @@ TEST_F(ArrayTest, AssignmentOperator)
     EXPECT_EQ(BoolDynamicArray[i], true);
     EXPECT_EQ(IntDynamicArray[i], 1);
     EXPECT_EQ(FloatDynamicArray[i], Zero);
+  }
+}
+
+TEST_F(ArrayTest, AssignmentOperator)
+{
+  const bool rand_bool = Random<bool>()();
+  const int rand_int = Random(-100, 100)();
+  const Float rand_float = Random(-100.0, 100.0)();
+
+  BoolStaticArray = rand_bool;
+  IntStaticArray = rand_int;
+  FloatStaticArray = rand_float;
+
+  BoolDynamicArray = rand_bool;
+  IntDynamicArray = rand_int;
+  FloatDynamicArray = rand_float;
+
+  FOR(i, ArraySize)
+  {
+    // Static arrays
+    EXPECT_EQ(BoolStaticArray[i], rand_bool);
+    EXPECT_EQ(IntStaticArray[i], rand_int);
+    EXPECT_EQ(FloatStaticArray[i], rand_float);
+
+    // Dynamic arrays
+    EXPECT_EQ(BoolDynamicArray[i], rand_bool);
+    EXPECT_EQ(IntDynamicArray[i], rand_int);
+    EXPECT_EQ(FloatDynamicArray[i], rand_float);
   }
 }
 

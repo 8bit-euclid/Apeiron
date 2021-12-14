@@ -21,13 +21,31 @@ protected:
 public:
   virtual ~RandomBase() {};
 
-  /** Pure virtual subscript operator overload to generate a random number. */
+  // Pure virtual subscript operator overload to generate a random number.
   virtual t_data_type operator()() = 0;
 };
 
-/** Forward declaration of specialised Random classes. */
-template <typename t_data_type, TypeCategory type_category = GetTypeCategory(t_data_type())>
+// Forward declaration of Random class partial template specialisations.
+template <typename t_data_type, TypeCategory type_category = GetTypeCategory<t_data_type>()>
 class Random;
+
+/***************************************************************************************************************************************************************
+* Random Boolean Class
+***************************************************************************************************************************************************************/
+template <typename t_data_type>
+class Random<t_data_type, TypeCategory::Boolean> : public RandomBase<t_data_type, TypeCategory::Boolean>
+{
+public:
+  Random() : Distribution(0, 1) {}
+
+  ~Random() = default;
+
+  // Overloaded subscript operator to generate a random boolean.
+  inline t_data_type operator()() { return Distribution(this->Generator); }
+
+private:
+  std::uniform_int_distribution<UChar> Distribution;
+};
 
 /***************************************************************************************************************************************************************
 * Random Integer Class
@@ -35,19 +53,21 @@ class Random;
 template <typename t_data_type>
 class Random<t_data_type, TypeCategory::Integral> : public RandomBase<t_data_type, TypeCategory::Integral>
 {
-  private:
-  std::uniform_int_distribution<t_data_type> Distribution;
-
-  public:
-  Random(const t_data_type& _min, const t_data_type& _max) : RandomBase<t_data_type, TypeCategory::Integral>(), Distribution(_min, _max) {}
+public:
   Random() = delete;
+
+  Random(const t_data_type& _min, const t_data_type& _max) :  Distribution(_min, _max) {}
+
   ~Random() = default;
 
-  /** Overloaded subscript operator to generate a random integer. */
+  // Overloaded subscript operator to generate a random integer.
   inline t_data_type operator()() { return Distribution(this->Generator); }
 
-  /** Reset min/max bounds for the distribution. */
+  // Reset min/max bounds for the distribution.
   void Reset(const t_data_type& _min, const t_data_type& _max) { *this = Random(_min, _max); }
+
+private:
+  std::uniform_int_distribution<t_data_type> Distribution;
 };
 
 /***************************************************************************************************************************************************************
@@ -56,22 +76,24 @@ class Random<t_data_type, TypeCategory::Integral> : public RandomBase<t_data_typ
 template <typename t_data_type>
 class Random<t_data_type, TypeCategory::FloatingPoint> : public RandomBase<t_data_type, TypeCategory::FloatingPoint>
 {
-  private:
-  std::uniform_real_distribution<t_data_type> Distribution;
-
-  public:
-  Random(const t_data_type& _min, const t_data_type& _max) : RandomBase<t_data_type, TypeCategory::FloatingPoint>(), Distribution(_min, _max) {}
+public:
   Random() = delete;
+
+  Random(const t_data_type& _min, const t_data_type& _max) : Distribution(_min, _max) {}
+
   ~Random() = default;
 
-  /** Overloaded subscript operator to generate a random floating-point value. */
+  // Overloaded subscript operator to generate a random floating-point value.
   inline t_data_type operator()() { return Distribution(this->Generator); }
 
-  /** Reset min/max bounds for the distribution. */
+  // Reset min/max bounds for the distribution.
   void Reset(const t_data_type& _min, const t_data_type& _max) { *this = Random(_min, _max); }
+
+private:
+  std::uniform_real_distribution<t_data_type> Distribution;
 };
 
-/** Template deduction guide. */
+// Template deduction guide.
 template <typename t_data_type> Random(t_data_type, t_data_type) -> Random<t_data_type>;
 
 }
