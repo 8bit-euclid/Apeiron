@@ -9,6 +9,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Apeiron {
 
@@ -17,7 +18,8 @@ class Model
 public:
   Mesh Geometry;
 
-  Model() : VAO(), VBO(), IBO(), SSBO() {}
+  Model()
+    : VAO(), VBO(), EBO(), SSBO() {}
 
   ~Model() { Delete(); }
 
@@ -27,15 +29,23 @@ public:
 
   void Delete();
 
+  void Reset();
+
+  void Scale(const glm::vec3& _factors);
+
+  void Translate(const glm::vec3& _displacement);
+
+  void Rotate(const GLfloat _degree_angle, const glm::vec3& _axis);
+
+  const glm::mat4& GetModelMatrix() const;
+
 private:
   VertexArray VAO;
   VertexBuffer VBO;
-  IndexBuffer IBO;
+  IndexBuffer EBO;
   ShaderStorageBuffer SSBO;
 
-  glm::mat4 ModelMatrix;
-  DynamicArray<Material> Materials;
-  DynamicArray<Texture> Textures;
+  glm::mat4 ModelMatrix{1.0f};
 };
 
 }

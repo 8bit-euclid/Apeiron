@@ -9,8 +9,14 @@ void CreateSquare(Model& _model, const GLfloat _length)
 
 void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _width)
 {
-  CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f*_length, 0.0f, 0.5f*_width}, StaticArray<GLfloat, 3>{0.5f*_length, 0.0f, 0.5f*_width},
-                        StaticArray<GLfloat, 3>{0.5f*_length, 0.0f, -0.5f*_width}, StaticArray<GLfloat, 3>{-0.5f*_length, 0.0f, -0.5f*_width});
+  _model.Geometry.Vertices.resize(4);
+  _model.Geometry.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
+  _model.Geometry.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
+  _model.Geometry.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
+  _model.Geometry.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
+
+  CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f*_length, 0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{0.5f*_length, 0.5f*_width, 0.0f},
+                        StaticArray<GLfloat, 3>{0.5f*_length, -0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{-0.5f*_length, -0.5f*_width, 0.0f});
 }
 
 template <class ...t_static_vector>

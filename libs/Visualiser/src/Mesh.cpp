@@ -12,7 +12,6 @@ void VertexAttributeLayout::AddAttribute(const GLuint _n_values)
 }
 
 Mesh::Mesh()
-  : Shading(ShadingType::None)
 {
   VertexLayout.AddAttribute<GLfloat>(3); // Position
   VertexLayout.AddAttribute<GLfloat>(3); // Normal

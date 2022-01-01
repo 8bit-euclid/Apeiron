@@ -24,42 +24,61 @@ namespace Apeiron {
 class Visualiser
 {
 public:
-  bool isViewPortModified{false};
-  List<Model> Models;
-  List<Material> Materials;
-  List<Texture> Textures;
-  List<DirectionalLight> DirectionalLights;
-  List<PointLight> PointLights;
-  List<SpotLight> SpotLights;
-  List<Camera> Cameras;
-  List<Shader> Shaders;
+  Visualiser() : Visualiser(1920, 1080) {}
 
-  Visualiser() = default;
+  Visualiser(GLint _window_width, GLint _window_height)
+    : OpenGLWindow(_window_width, _window_height), MainLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6) {}
 
   ~Visualiser() = default;
 
-  inline void OpenWindow(GLint _window_width, GLint _window_height) { OpenGLWindow.Open(_window_width, _window_height); };
+  inline GLFWwindow*
+  GetGLFWWindow() { return OpenGLWindow.pWindow; }
 
-  inline void CloseWindow() { OpenGLWindow.Close(); }
+  inline bool
+  isWindowOpen() { return OpenGLWindow.isOpen(); }
 
-  inline bool isWindowOpen() { return OpenGLWindow.isOpen(); }
+  const StaticArray<Bool, 1024>&
+  GetKeys() const { return OpenGLWindow.GetKeys(); }
 
-  const StaticArray<Bool, 1024>& GetKeys() const { return OpenGLWindow.GetKeys(); }
+  StaticArray<GLdouble, 2>
+  GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
 
-  StaticArray<GLdouble, 2> GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
+  StaticArray<GLdouble, 2>
+  GetMouseWheelDisplacement() { return OpenGLWindow.GetMouseWheelDisplacement(); }
 
-  inline std::pair<GLint, GLint> ViewportDimensions() { return OpenGLWindow.GetViewportDimensions(); }
+  inline std::pair<GLint, GLint>
+  ViewportDimensions() { return {OpenGLWindow.ViewportDimensions[0], OpenGLWindow.ViewportDimensions[1]}; }
 
-  inline GLfloat ViewportAspectRatio() { return OpenGLWindow.GetViewportAspectRatio(); }
+  inline GLfloat
+  ViewportAspectRatio() { return OpenGLWindow.GetViewportAspectRatio(); }
 
   void BeginFrame();
 
   GLfloat GetDeltaTime() { return OpenGLWindow.GetDeltaTime(); }
 
+  void RenderScene();
+
+  void RenderShadows();
+
+  void RenderModels(UInt _shader_index);
+
   void EndFrame();
 
 private:
   Window OpenGLWindow;
+
+public:
+  bool isViewPortModified{false};
+
+  List<Model> Models;
+  List<Shader> Shaders;
+  List<Material> Materials;
+  List<Texture> Textures;
+
+  DirectionalLight MainLight;
+  List<PointLight> PointLights;
+  List<SpotLight> SpotLights;
+  List<Camera> Cameras;
 };
 
 }

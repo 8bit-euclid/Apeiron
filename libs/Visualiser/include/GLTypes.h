@@ -9,7 +9,8 @@
 namespace Apeiron {
 
 template<typename t_data_type>
-constexpr GLenum GLTypeEnum(const t_data_type& _value = t_data_type())
+consteval GLenum
+GLTypeEnum(const t_data_type& _value = t_data_type())
 {
   if constexpr(isTypeEqual<t_data_type, GLbyte>()) return GL_BYTE;
   else if constexpr(isTypeEqual<t_data_type, GLubyte>()) return GL_UNSIGNED_BYTE;
@@ -22,7 +23,8 @@ constexpr GLenum GLTypeEnum(const t_data_type& _value = t_data_type())
   else EXIT("Unrecognised OpenGL data type: ");
 }
 
-constexpr GLuint GLTypeSize(const GLenum _gl_type)
+constexpr GLuint
+GLTypeSize(const GLenum _gl_type)
 {
   switch(_gl_type)
   {
@@ -41,7 +43,7 @@ constexpr GLuint GLTypeSize(const GLenum _gl_type)
 
 // TODO - change from StaticArray to StaticVector, once implemented.
 template<std::size_t t_vector_size, class t_data_type, glm::qualifier t_qualifier = glm::defaultp>
-constexpr StaticArray<t_data_type, t_vector_size>
+consteval StaticArray<t_data_type, t_vector_size>
 ConvertGlmVecToStaticArray(const glm::vec<static_cast<glm::length_t>(t_vector_size), t_data_type, t_qualifier>& _in_vector)
 {
   StaticArray<t_data_type, t_vector_size> out_vector;

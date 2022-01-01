@@ -9,7 +9,7 @@ void Model::Load()
 
   // Load vertex and index buffer objects
   VAO.Bind();
-  IBO.Init(Geometry.Indices);
+  EBO.Init(Geometry.Indices);
   VBO.Init(Geometry.Vertices);
 
   // Add vertex buffer to vertex array object
@@ -20,41 +20,46 @@ void Model::Load()
 void Model::Draw()
 {
   VAO.Bind();
-  IBO.Bind();
+  EBO.Bind();
 
-  GLCall(glDrawElements(GL_TRIANGLES, IBO.nIndices, GL_UNSIGNED_INT, nullptr));
+  GLCall(glDrawElements(GL_TRIANGLES, EBO.nIndices, GL_UNSIGNED_INT, nullptr));
 
-  IBO.Unbind();
+  EBO.Unbind();
   VAO.Unbind();
 }
 
 void Model::Delete()
 {
-  IBO.Delete();
-  IBO.nIndices = 0;
   VBO.Delete();
   VAO.Delete();
+  EBO.Delete();
+  EBO.nIndices = 0;
 }
 
-//void Model::Draw(Shader& _shader, Camera& _camera)
-//{
-//  _shader.Bind();
-//  VAO.Bind();
-//
-//  UInt n_diffuse = 0;
-//  UInt n_specular = 0;
-//
-//  FOR(i, Textures.size())
-//  {
-//    std::string number;
-//    const std::string& type = Textures[i].Type;
-//    if(type == "diffuse") number = std::to_string(n_diffuse++);
-//    else if(type == "specular") number = std::to_string(n_specular++);
-//
-////    Textures[i].Unit(_shader, (type + number).c_str(), i);
-//    Textures[i].Bind();
-//  }
-//}
+void Model::Reset()
+{
+  ModelMatrix = glm::mat4(1.0);
+}
+
+void Model::Scale(const glm::vec3& _factors)
+{
+  ModelMatrix = glm::scale(ModelMatrix, _factors);
+}
+
+void Model::Translate(const glm::vec3& _displacement)
+{
+  ModelMatrix = glm::translate(ModelMatrix, _displacement);
+}
+
+void Model::Rotate(const GLfloat _degree_angle, const glm::vec3& _axis)
+{
+  ModelMatrix = glm::rotate(ModelMatrix, static_cast<GLfloat>(ToRadians(_degree_angle)), _axis);
+}
+
+const glm::mat4& Model::GetModelMatrix() const
+{
+  return ModelMatrix;
+}
 
 }
 

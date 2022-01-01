@@ -11,20 +11,24 @@ set(SOURCE_FILES
         include/Mesh.h
         include/Model.h
         include/Shader.h
+        include/Shadow.h
         include/Texture.h
         include/Visualiser.h
         include/Window.h
         resources/external/stb_image/stb_image.h
+        test/VisualiserTest.h
         src/Camera.cpp
         src/Geometry.cpp
         src/Light.cpp
         src/Mesh.cpp
         src/Model.cpp
         src/Shader.cpp
+        src/Shadow.cpp
         src/Texture.cpp
         src/Visualiser.cpp
         src/Window.cpp
-        resources/external/stb_image/stb_image.cpp)
+        resources/external/stb_image/stb_image.cpp
+        test/VisualiserTest.cpp)
 
 set(LINK_LIBRARIES)
 
