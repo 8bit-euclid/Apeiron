@@ -93,71 +93,44 @@ std::ostream& operator<<(std::ostream& _output_stream, const Array<t_derived_cla
 ***************************************************************************************************************************************************************/
 template <class t_data_type, std::size_t t_array_size>
 constexpr StaticArray<t_data_type, t_array_size>::StaticArray()
-  : StaticArray(GetStaticInitValue<t_data_type>())
-{
-
-}
+  : StaticArray(GetStaticInitValue<t_data_type>()) {}
 
 template <class t_data_type, std::size_t t_array_size>
 constexpr StaticArray<t_data_type, t_array_size>::StaticArray(const t_data_type& _init_value)
-  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_init_value))
-{
-
-}
+  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_init_value)) {}
 
 template <class t_data_type, std::size_t t_array_size>
 constexpr StaticArray<t_data_type, t_array_size>::StaticArray(const std::initializer_list<t_data_type>& _initialiser_list)
-  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_initialiser_list))
-{
-
-}
+  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_initialiser_list)) {}
 
 template <class t_data_type, std::size_t t_array_size>
 template <class t_iterator>
 constexpr StaticArray<t_data_type, t_array_size>::StaticArray(const t_iterator _first, const t_iterator _last)
-  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_first, _last))
-{
-
-}
+  : std::array<t_data_type, t_array_size>(DataContainersSupport::InitStaticArray<t_data_type, t_array_size>(_first, _last)) {}
 
 /***************************************************************************************************************************************************************
 * Dynamic Array Class
 ***************************************************************************************************************************************************************/
 template <class t_data_type>
 DynamicArray<t_data_type>::DynamicArray()
-  : std::vector<t_data_type>()
-{
-
-}
+  : std::vector<t_data_type>() {}
 
 template <class t_data_type>
 DynamicArray<t_data_type>::DynamicArray(const std::size_t _array_size)
-  : DynamicArray(_array_size, GetDynamicInitValue<t_data_type>())
-{
-
-}
+  : DynamicArray(_array_size, GetDynamicInitValue<t_data_type>()) {}
 
 template <class t_data_type>
 DynamicArray<t_data_type>::DynamicArray(const std::size_t _t_array_size, const t_data_type& _init_value)
-  : std::vector<t_data_type>(_t_array_size, _init_value)
-{
-
-}
+  : std::vector<t_data_type>(_t_array_size, _init_value) {}
 
 template <class t_data_type>
 DynamicArray<t_data_type>::DynamicArray(const std::initializer_list<t_data_type>& _initialiser_list)
-  : std::vector<t_data_type>(_initialiser_list)
-{
-
-}
+  : std::vector<t_data_type>(_initialiser_list) {}
 
 template <class t_data_type>
 template <class t_iterator>
 DynamicArray<t_data_type>::DynamicArray(const t_iterator _first, const t_iterator _last)
-  : std::vector<t_data_type>(_first, _last)
-{
-
-}
+  : std::vector<t_data_type>(_first, _last) {}
 
 }
 

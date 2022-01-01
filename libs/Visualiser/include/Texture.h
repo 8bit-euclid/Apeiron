@@ -16,21 +16,36 @@ namespace Apeiron {
 class Texture
 {
   friend class Model;
-
-private:
-  UInt RendererID;
-  std::string FilePath;
-  UChar* LocalBuffer;
-  int Width, Height;
-  int BitsPerPixel;
+  friend class Shadow;
 
 public:
-  Texture() = delete;
+  Texture();
+
   Texture(const std::string& _file_path);
+
   ~Texture();
 
+  void Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type);
+
+  void ReadFromFile(const std::string& _file_path, const GLint _wrap_type);
+
   void Bind(UInt _slot = 0) const;
+
   void Unbind() const;
+
+  inline UInt GetID() const { return ID; }
+
+  inline int GetWidth() const { return Width; }
+
+  inline int GetHeight() const { return Height; }
+
+private:
+  UInt ID;
+  UChar* LocalBuffer;
+
+  int Width;
+  int Height;
+  int BitsPerPixel;
 };
 
 }

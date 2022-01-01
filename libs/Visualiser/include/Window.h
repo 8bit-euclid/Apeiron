@@ -12,12 +12,11 @@ namespace Apeiron {
 
 class Window
 {
-  constexpr static GLint mKeys = 1024;
+  friend class Visualiser;
+  constexpr static GLint mKeys{1024};
 
 public:
-  Window() = default;
-
-  Window(GLint _width, GLint _height) : WindowDimensions{_width, _height} { Open(_width, _height); };
+  Window(GLint _width, GLint _height);
 
   ~Window() { glfwTerminate(); };
 
@@ -35,7 +34,11 @@ public:
 
   StaticArray<GLdouble, 2> GetMouseDisplacement();
 
+  StaticArray<GLdouble, 2> GetMouseWheelDisplacement();
+
   bool isViewPortModified();
+
+  void ResetViewPort();
 
   void SwapBuffers();
 
@@ -54,15 +57,16 @@ private:
   StaticArray<GLint, 2> ViewportDimensions;
   StaticArray<GLdouble, 2> PreviousMousePosition;
   StaticArray<GLdouble, 2> MouseDisplacement;
+  StaticArray<GLdouble, 2> MouseWheelDisplacement;
   bool isFirstMouseMovement;
 
   void CreateCallBacks();
 
-  static void HandleKeys(GLFWwindow* _p_window, GLint _key, GLint _code, GLint _action, GLint _mode);
+  static void HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode);
 
-  static void HandleMouse(GLFWwindow* _p_window, GLdouble _x_coord, GLdouble _y_coord);
+  static void HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord);
 
-  static void HandleMouseWheel(GLFWwindow* _p_window, GLdouble _x_offset, GLdouble _y_offset);
+  static void HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
 
   std::pair<GLint, GLint> GetFrameBufferSize() const;
 };

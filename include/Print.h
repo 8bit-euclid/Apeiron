@@ -20,7 +20,7 @@ enum class PrintFormat
 template <typename t_data_type>
 std::ostream& operator,(std::ostream& _out, const t_data_type& _data)
 {
-  _out<<_data;
+  _out << _data;
   return _out;
 }
 
@@ -29,9 +29,9 @@ template <typename t_data_type>
 inline std::string To_Str(const t_data_type& atype)
 {
   std::stringstream str_buffer;
-  str_buffer<<atype<<std::endl;
+  str_buffer << atype<<std::endl;
   std::string str;
-  str_buffer>>str;
+  str_buffer >> str;
   return str;
 }
 
@@ -41,16 +41,16 @@ inline void SetFormat(const PrintFormat _print_format)
   switch(_print_format)
   {
     case PrintFormat::Fixed:
-      std::cout<<std::fixed;
+      std::cout << std::fixed;
       break;
     case PrintFormat::Scientific:
-      std::cout<<std::scientific;
+      std::cout << std::scientific;
       break;
     case PrintFormat::HexFloat:
-      std::cout<<std::hexfloat;
+      std::cout << std::hexfloat;
       break;
     case PrintFormat::Default:
-      std::cout<<std::defaultfloat;
+      std::cout << std::defaultfloat;
       break;
     default:
       EXIT("Print format not recognised.")
@@ -60,28 +60,28 @@ inline void SetFormat(const PrintFormat _print_format)
 /** Set precision of the output. */
 inline void SetPrecision(const int _significant_figures)
 {
-  std::cout<<std::setprecision(_significant_figures);
+  std::cout << std::setprecision(_significant_figures);
 }
 
 /** Flush output stream. */
 inline void Flush()
 {
-  std::cout<<std::flush;
+  std::cout << std::flush;
 }
 
 /** Print a new line. */
 template <char separator = ' '>
 inline void Print()
 {
-  std::cout<<'\b',' ','\n';
+  std::cout << '\b',' ','\n';
 }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
 template <char separator = ' ', typename t_data_type, typename ...tail_data_type>
 inline void Print(const t_data_type& _data, tail_data_type... _tail_data)
 {
-  std::cout<<_data;
-  if(separator != '\0') std::cout<<separator;
+  std::cout << _data;
+  if(separator != '\0') std::cout << separator;
   Print<separator>(_tail_data...);
 }
 

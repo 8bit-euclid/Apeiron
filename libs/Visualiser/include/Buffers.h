@@ -81,6 +81,51 @@ struct IndexBuffer : public Buffer
 };
 
 /***************************************************************************************************************************************************************
+* Frame Buffer Class
+***************************************************************************************************************************************************************/
+struct FrameBuffer
+{
+  FrameBuffer() = default;
+
+  ~FrameBuffer() { Delete(); }
+
+  inline void Init(GLenum _attachement, GLenum _mode, GLuint _mapID)
+  {
+    GLCall(glGenFramebuffers(1, &ID));
+
+//    Bind();
+//
+//    Load(_attachement, _mapID);
+//    Draw(_mode);
+//    Read(_mode);
+//
+//    Unbind();
+  }
+
+  inline void Bind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, ID)); }
+
+  inline void Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
+
+  inline void Load(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, _attachement, GL_TEXTURE_2D, _mapID, 0)); }
+
+  inline void Draw(GLenum _mode) const { GLCall(glDrawBuffer(_mode)); }
+
+  inline void Read(GLenum _mode) const { GLCall(glReadBuffer(_mode)); }
+
+  inline void Delete()
+  {
+    if(ID != 0)
+    {
+      GLCall(glDeleteFramebuffers(1, &ID));
+      ID = 0;
+    }
+  }
+
+protected:
+  GLuint ID;
+};
+
+/***************************************************************************************************************************************************************
 * Shader Storage Buffer Class
 ***************************************************************************************************************************************************************/
 struct ShaderStorageBuffer : public Buffer
@@ -114,16 +159,17 @@ public:
   inline void AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout)
   {
     _vertex_buffer.Bind();
-    const auto& elements = _vertex_layout.Attributes;
-    GLuint offset = 0;
-    FOR(i, elements.size())
+
+    GLuint offset(0);
+    FOR(i, _vertex_layout.Attributes.size())
     {
-      const auto& element = elements[i];
-      GLCall(glVertexAttribPointer(i, element.nComponents, element.Type, element.isNormalised, _vertex_layout.Stride, reinterpret_cast<const void*>(offset)));
+      const auto& element = _vertex_layout.Attributes[i];
+      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, _vertex_layout.Stride, reinterpret_cast<void*>(offset)));
       GLCall(glEnableVertexAttribArray(i));
 
-      offset += element.nComponents * GLTypeSize(element.Type);
+      offset += element.nComponents * GLTypeSize(element.GLType);
     }
+
     _vertex_buffer.Unbind();
   }
 
@@ -135,7 +181,7 @@ public:
   {
     if(ID != 0)
     {
-      GLCall(glDeleteVertexArrays(1, &ID));
+      GLCall(glDeleteBuffers(1, &ID));
       ID = 0;
     }
   }

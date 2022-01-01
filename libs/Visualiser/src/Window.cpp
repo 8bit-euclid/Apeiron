@@ -2,6 +2,12 @@
 
 namespace Apeiron {
 
+Window::Window(GLint _width, GLint _height)
+  : WindowDimensions{_width, _height}
+{
+  Open(_width, _height);
+}
+
 void Window::Open(GLint _width, GLint _height)
 {
   if(!glfwInit())
@@ -17,10 +23,10 @@ void Window::Open(GLint _width, GLint _height)
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
   // Framebuffer properties
-  glfwWindowHint(GLFW_RED_BITS, 10);
-  glfwWindowHint(GLFW_GREEN_BITS, 10);
-  glfwWindowHint(GLFW_BLUE_BITS, 10);
-  glfwWindowHint(GLFW_ALPHA_BITS, 10);
+//  glfwWindowHint(GLFW_RED_BITS, 8);
+//  glfwWindowHint(GLFW_GREEN_BITS, 8);
+//  glfwWindowHint(GLFW_BLUE_BITS, 8);
+//  glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
   // Anti-aliasing properties
   glfwWindowHint(GLFW_SAMPLES, 24);
@@ -46,6 +52,7 @@ void Window::Open(GLint _width, GLint _height)
 
   // Handle key mouse inputs
   CreateCallBacks();
+  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 //  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Allow modern extension features
@@ -61,7 +68,10 @@ void Window::Open(GLint _width, GLint _height)
   else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
 
   GLCall(glEnable(GL_DEPTH_TEST));
-  GLCall(glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
+  GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+
+  GLCall(glEnable(GL_BLEND));
+  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
   glfwSetWindowUserPointer(pWindow, this);
 }
@@ -72,6 +82,16 @@ StaticArray<GLdouble, 2> Window::GetMouseDisplacement()
   GLdouble y_displacement = MouseDisplacement[1];
   MouseDisplacement[0] = 0.0;
   MouseDisplacement[1] = 0.0;
+
+  return {x_displacement, y_displacement};
+}
+
+StaticArray<GLdouble, 2> Window::GetMouseWheelDisplacement()
+{
+  GLdouble x_displacement = MouseWheelDisplacement[0];
+  GLdouble y_displacement = MouseWheelDisplacement[1];
+  MouseWheelDisplacement[0] = 0.0;
+  MouseWheelDisplacement[1] = 0.0;
 
   return {x_displacement, y_displacement};
 }
@@ -92,6 +112,11 @@ bool Window::isViewPortModified()
   else return false;
 }
 
+void Window::ResetViewPort()
+{
+  GLCall(glViewport(0, 0, ViewportDimensions[0], ViewportDimensions[1]));
+}
+
 void Window::SwapBuffers()
 {
   glfwSwapBuffers(pWindow);
@@ -107,8 +132,8 @@ void Window::ComputeDeltaTime()
 void Window::CreateCallBacks()
 {
   glfwSetKeyCallback(pWindow, HandleKeys);
-  glfwSetCursorPosCallback(pWindow, HandleMouse);
-//  glfwSetScrollCallback(pWindow, HandleMouse);
+  glfwSetCursorPosCallback(pWindow, HandleMousePosition);
+  glfwSetScrollCallback(pWindow, HandleMouseWheel);
 }
 
 void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
@@ -127,11 +152,9 @@ void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _co
   }
 }
 
-void Window::HandleMouse(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord)
+void Window::HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord)
 {
-  // Get pointer to the Window object which contains _p_window.
   Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));
-
 
   if(p_window->isFirstMouseMovement)
   {
@@ -143,9 +166,10 @@ void Window::HandleMouse(GLFWwindow* _p_window, const GLdouble _x_coord, const G
   p_window->PreviousMousePosition = {_x_coord, _y_coord};
 }
 
-void Window::HandleMouseWheel(GLFWwindow *_p_window, GLdouble _x_offset, GLdouble _y_offset)
+void Window::HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset)
 {
-
+  Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));
+  p_window->MouseWheelDisplacement = {0.0, _y_offset};
 }
 
 std::pair<GLint, GLint> Window::GetFrameBufferSize() const

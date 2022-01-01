@@ -4,18 +4,18 @@
 
 namespace Apeiron {
 
-/***************************************************************************************************************************************************************
-* Shader Constructor/Destructor
-***************************************************************************************************************************************************************/
-Shader::Shader(const std::string& _file_path)
-  : ID(0), FilePath(_file_path)
+/** Module Interface ******************************************************************************************************************************************/
+Shader::Shader()
+  : ID(0)
 {
-  // Create shader program
   GLCall(ID = glCreateProgram());
   ASSERT(ID, "Could not create shader program.")
+}
 
-  auto source = Parse(_file_path);
-  Create(source.Vertex, source.Geometry, source.Fragment);
+Shader::Shader(const std::string& _file_path)
+  : Shader()
+{
+  ReadFromFile(_file_path);
 }
 
 Shader::~Shader()
@@ -23,13 +23,40 @@ Shader::~Shader()
   Delete();
 }
 
+void Shader::ReadFromFile(const std::string &_file_path)
+{
+  auto source = Parse(_file_path);
+  Create(source.Vertex, source.Geometry, source.Fragment);
+}
+
+void Shader::UseModel(const Model& _model)
+{
+  SetUniformMatrix4f("u_model_matrix", _model.GetModelMatrix());
+}
+
 void Shader::UseMaterial(const Material& _material)
 {
-//  glMaterialf(GL_FRONT, GL_SPECULAR, _material.SpecularIntensity);
-//  glMaterialf(GL_FRONT, GL_SHININESS, _material.Smoothness);
-
   SetUniform1f("u_material.SpecularIntensity", _material.SpecularIntensity);
   SetUniform1f("u_material.Smoothness", _material.Smoothness);
+}
+
+void Shader::UseTexture(const Texture& _texture, const UInt _slot)
+{
+//  glEnable(GL_TEXTURE_2D);
+  SetUniform1i("u_texture", _slot);
+  _texture.Bind(_slot);
+}
+
+void Shader::UseCamera(Camera& _camera)
+{
+  _camera.UpdateViewMatrix();
+  _camera.UpdateProjectionMatrix();
+
+  SetUniformMatrix4f("u_view_matrix", _camera.GetViewMatrix());
+  SetUniformMatrix4f("u_projection_matrix", _camera.GetProjectionMatrix());
+
+  const glm::vec3& camera_position = _camera.GetPosition();
+  SetUniform3f("u_camera_position", camera_position.x, camera_position.y, camera_position.z);
 }
 
 void Shader::UseLight(const Light& _light)
@@ -73,7 +100,16 @@ void Shader::UseLight(const Light& _light)
     SetUniform1f(uniform_name + ".CosConeAngle", spot_light.CosConeAngle);
   }
   else EXIT("Cannot yet handle the given light type.")
+}
 
+void Shader::SetDirectionalShadowMap(const UInt _slot)
+{
+  SetUniform1i("u_direc_shadow", _slot);
+}
+
+void Shader::SetDirectionalLightTransform(const glm::mat4& _tranform_matrix)
+{
+  SetUniformMatrix4f("u_direc_light_matrix", _tranform_matrix);
 }
 
 /***************************************************************************************************************************************************************
@@ -135,18 +171,25 @@ ShaderSourceCode Shader::Parse(const std::string& _file_path)
 
 void Shader::Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader)
 {
-  // Create and attach shaders
+  // Create and attach vertex shader.
   GLuint vs_id = Compile(GL_VERTEX_SHADER, _vertex_shader);
-  GLuint gs_id = Compile(GL_GEOMETRY_SHADER, _geometry_shader);
-  GLuint fs_id = Compile(GL_FRAGMENT_SHADER, _fragment_shader);
   Attach(ID, vs_id);
-  Attach(ID, gs_id);
+
+  // Create and attach geometry shader if it exists.
+  GLuint gs_id(-1);
+  if(!_geometry_shader.empty())
+  {
+    gs_id = Compile(GL_GEOMETRY_SHADER, _geometry_shader);
+    Attach(ID, gs_id);
+  }
+
+  // Create and attach fragment shader.
+  GLuint fs_id = Compile(GL_FRAGMENT_SHADER, _fragment_shader);
   Attach(ID, fs_id);
 
-  GLint result = 0;
-  GLchar error_log[1024] = { 0 };
-
   // Link shader program
+  GLint result = 0;
+  GLchar error_log[1024] = {0};
   GLCall(glLinkProgram(ID));
   GLCall(glGetProgramiv(ID, GL_LINK_STATUS, &result));
   if(!result)
@@ -166,7 +209,7 @@ void Shader::Create(const std::string& _vertex_shader, const std::string& _geome
 
   // Delete shaders
   GLCall(glDeleteShader(vs_id));
-  GLCall(glDeleteShader(gs_id));
+  if(!_geometry_shader.empty()) { GLCall(glDeleteShader(gs_id)); }
   GLCall(glDeleteShader(fs_id));
 }
 

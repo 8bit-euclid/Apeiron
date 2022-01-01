@@ -6,6 +6,11 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wpedantic"
+//#include "old_header.hpp"
+//#pragma GCC diagnostic pop
+
 namespace Apeiron {
 
 enum class ShadingType
@@ -25,12 +30,12 @@ struct Vertex
 
 struct VertexAttribute
 {
-  GLenum Type;
+  GLenum GLType;
   GLuint nComponents;
   GLboolean isNormalised;
 
   VertexAttribute(const GLenum _type, const GLuint _n_components, const GLboolean _is_normalised)
-    : Type(_type), nComponents(_n_components), isNormalised(_is_normalised) {}
+    : GLType(_type), nComponents(_n_components), isNormalised(_is_normalised) {}
 
   ~VertexAttribute() = default;
 };
@@ -51,9 +56,9 @@ struct VertexAttributeLayout
 class Mesh
 {
 public:
-  ShadingType Shading;
   DynamicArray<Vertex> Vertices;
   DynamicArray<GLuint> Indices;
+  ShadingType Shading{ShadingType::None};
 
   Mesh();
 
