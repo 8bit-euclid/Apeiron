@@ -28,15 +28,13 @@ void Texture::Init(const GLuint _width, const GLuint _height, const GLint _forma
 
   Bind();
 
-//  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrap_type));
-//  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrap_type));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _wrap_type));
+  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _wrap_type));
   GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
   GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-  GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, LocalBuffer));
-//  GLCall(glTexImage2D(GL_TEXTURE_2D, 0, _format, Width, Height, 0, _format, _data_type, LocalBuffer));
+//  GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, LocalBuffer));
+  GLCall(glTexImage2D(GL_TEXTURE_2D, 0, _format, Width, Height, 0, _format, _data_type, LocalBuffer));
 
   GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 

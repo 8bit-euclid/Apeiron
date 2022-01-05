@@ -70,8 +70,8 @@ void Window::Open(GLint _width, GLint _height)
   GLCall(glEnable(GL_DEPTH_TEST));
   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
-  GLCall(glEnable(GL_BLEND));
-  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+//  GLCall(glEnable(GL_BLEND));
+//  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
   glfwSetWindowUserPointer(pWindow, this);
 }

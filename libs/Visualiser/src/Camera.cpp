@@ -51,10 +51,21 @@ void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _d
   if(_keys[GLFW_KEY_A]) Position -= displacement * Right;
   if(_keys[GLFW_KEY_D]) Position += displacement * Right;
 
-  if(_keys[GLFW_KEY_UP]) Position += displacement * WorldUp;
-  if(_keys[GLFW_KEY_DOWN]) Position -= displacement * WorldUp;
-  if(_keys[GLFW_KEY_LEFT]) Position -= displacement * Right;
-  if(_keys[GLFW_KEY_RIGHT]) Position += displacement * Right;
+  if(_keys[GLFW_KEY_Q]) Position += displacement * WorldUp;
+  if(_keys[GLFW_KEY_E]) Position -= displacement * WorldUp;
+
+  if(_keys[GLFW_KEY_UP])
+  {
+    Pitch += 8.0 * displacement;
+    BoundPitch();
+  }
+  if(_keys[GLFW_KEY_DOWN])
+  {
+    Pitch -= 8.0 * displacement;
+    BoundPitch();
+  }
+  if(_keys[GLFW_KEY_LEFT]) Yaw -= 8.0 * displacement;
+  if(_keys[GLFW_KEY_RIGHT]) Yaw += 8.0 * displacement;
 }
 
 // TODO - need to replace argument type with StaticVector, once it is implemented
@@ -63,7 +74,7 @@ void Camera::MousePositionControl(const StaticArray<GLdouble, 2>& _cursor_displa
   // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
   Yaw += MousePositionSensitivity * _cursor_displacement[0];
   Pitch -= MousePositionSensitivity * _cursor_displacement[1];
-  Pitch = Bound(Pitch, -89.0f, 89.0f);
+  BoundPitch();
 
   // Update camera orientation
   SetOrientation(Position, Pitch, Yaw);
@@ -77,14 +88,14 @@ void Camera::MouseWheelControl(const StaticArray<GLdouble, 2>& _wheel_displaceme
 
 void Camera::UpdateViewMatrix()
 {
-  ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), WorldUp);
-//  ViewMatrix = glm::lookAt(Position, Position + Front, WorldUp);
+//  ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), WorldUp);
+  ViewMatrix = glm::lookAt(Position, Position + Front, WorldUp);
 }
 
 void Camera::UpdateProjectionMatrix()
 {
-//  ProjectionMatrix = glm::perspective(glm::radians(FieldOfView), AspectRatio, NearPlane, FarPlane);
-  ProjectionMatrix = glm::ortho(-AspectRatio, AspectRatio, -1.0f, 1.0f, -10.0f, 10.0f);
+  ProjectionMatrix = glm::perspective(glm::radians(FieldOfView), AspectRatio, NearPlane, FarPlane);
+//  ProjectionMatrix = glm::ortho(-AspectRatio, AspectRatio, -1.0f, 1.0f, -10.0f, 10.0f);
 }
 
 }

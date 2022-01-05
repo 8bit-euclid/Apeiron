@@ -4,11 +4,11 @@ namespace Apeiron {
 
 void Visualiser::BeginFrame()
 {
-//  // Compute delta time for previous frame
-//  OpenGLWindow.ComputeDeltaTime();
-//
-//  // Check if the viewport has been modified
-//  isViewPortModified = OpenGLWindow.isViewPortModified();
+  // Compute delta time for previous frame
+  OpenGLWindow.ComputeDeltaTime();
+
+  // Check if the viewport has been modified
+  isViewPortModified = OpenGLWindow.isViewPortModified();
 
   // Clear window
   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
@@ -17,29 +17,29 @@ void Visualiser::BeginFrame()
 
 void Visualiser::RenderScene()
 {
-  Shaders[0].Bind();
-
   OpenGLWindow.ResetViewPort();
 
   // Clear window
   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
+  Shaders[0].Bind();
+
   Shaders[0].UseCamera(Cameras[0]);
 
   Shaders[0].UseLight(MainLight);
-//  Shaders[0].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
-//
-//  MainLight.GetShadowMap().Read(1);
-//  Shaders[0].UseTexture(0);
-//  Shaders[0].SetDirectionalShadowMap(1);
+  Shaders[0].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
+
+  MainLight.GetShadowMap().Read(1);
+  Shaders[0].SetDirectionalShadowMap(1);
 
 //  Shaders[0].UseLight(PointLights[0]);
-//    Shaders[0].UseLight(PointLights[1]);
-//    Shaders[0].UseLight(SpotLights[0]);
-//    Shaders[0].UseLight(SpotLights[1]);
+//  Shaders[0].UseLight(PointLights[1]);
+//  Shaders[0].UseLight(SpotLights[0]);
+//  Shaders[0].UseLight(SpotLights[1]);
 
   RenderModels(0);
+  MainLight.GetShadowMap().GetMap().Unbind();
 
   Shaders[0].Unbind();
 }
@@ -47,6 +47,7 @@ void Visualiser::RenderScene()
 void Visualiser::RenderShadows()
 {
   Shaders[1].Bind();
+  Shaders[1].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
 
   const Shadow& shadow_map = MainLight.GetShadowMap();
 
@@ -54,11 +55,10 @@ void Visualiser::RenderShadows()
 
   shadow_map.Write();
 
-  Shaders[1].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
-
   RenderModels(1);
 
-  shadow_map.FBO.Unbind();
+  shadow_map.Finalise();
+
   Shaders[1].Unbind();
 }
 
@@ -71,7 +71,7 @@ void Visualiser::RenderModels(UInt _shader_index)
   static float angl_incr(0.1);
   static float angl_offs(0.0);
 
-//  if(_shader_index == 1)
+  if(_shader_index == 1)
   {
     x_offs += x_sign * x_incr;
     if(Abs(x_offs) > 2.0) x_sign *= -1.0;
@@ -95,10 +95,10 @@ void Visualiser::RenderModels(UInt _shader_index)
   // Floor model
   Models[1].Reset();
   Models[1].Translate({0.0f, -2.0f, 0.0f});
+  Models[1].Rotate(90.0, {1.0f, 0.0f, 0.0f});
   Shaders[_shader_index].UseModel(Models[1]);
   Shaders[_shader_index].UseMaterial(Materials[0]);
-  Textures[0].Bind();
-//  Shaders[0].UseTexture(0);
+//  Shaders[0].UseTexture(Textures[0], 0);
   Models[1].Draw();
 //  Textures[0].Unbind();
 }

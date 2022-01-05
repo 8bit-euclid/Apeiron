@@ -21,15 +21,19 @@ public:
 
   ~Shadow();
 
-  virtual void Init(GLuint _width, GLuint _height);
+  virtual void Init(GLsizei _width, GLsizei _height);
 
   virtual void Write() const;
 
+  virtual void Finalise() const;
+
   virtual void Read(UInt _texture_slot) const;
 
+  const Texture& GetMap() const { return Map; }
+
 protected:
-  FrameBuffer FBO;
   Texture Map;
+  FrameBuffer FBO;
 };
 
 }
