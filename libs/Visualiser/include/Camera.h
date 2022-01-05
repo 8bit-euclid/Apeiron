@@ -37,6 +37,8 @@ public:
 
   void UpdateProjectionMatrix();
 
+  void BoundPitch() { Pitch = Bound(Pitch, -89.0f, 89.0f); }
+
   inline const glm::vec3& GetPosition() const { return Position; }
 
   inline const glm::mat4& GetViewMatrix() const { return ViewMatrix; }

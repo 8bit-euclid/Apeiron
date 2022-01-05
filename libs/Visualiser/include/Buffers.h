@@ -85,22 +85,9 @@ struct IndexBuffer : public Buffer
 ***************************************************************************************************************************************************************/
 struct FrameBuffer
 {
-  FrameBuffer() = default;
+  FrameBuffer() { GLCall(glGenFramebuffers(1, &ID)); }
 
   ~FrameBuffer() { Delete(); }
-
-  inline void Init(GLenum _attachement, GLenum _mode, GLuint _mapID)
-  {
-    GLCall(glGenFramebuffers(1, &ID));
-
-//    Bind();
-//
-//    Load(_attachement, _mapID);
-//    Draw(_mode);
-//    Read(_mode);
-//
-//    Unbind();
-  }
 
   inline void Bind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, ID)); }
 

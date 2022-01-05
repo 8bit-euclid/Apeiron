@@ -42,7 +42,6 @@ void Shader::UseMaterial(const Material& _material)
 
 void Shader::UseTexture(const Texture& _texture, const UInt _slot)
 {
-//  glEnable(GL_TEXTURE_2D);
   SetUniform1i("u_texture", _slot);
   _texture.Bind(_slot);
 }
