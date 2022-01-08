@@ -106,9 +106,29 @@ void Shader::SetDirectionalShadowMap(const UInt _slot)
   SetUniform1i("u_direc_shadow", _slot);
 }
 
-void Shader::SetDirectionalLightTransform(const glm::mat4& _tranform_matrix)
+void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt _slot)
 {
-  SetUniformMatrix4f("u_direc_light_matrix", _tranform_matrix);
+  SetUniform1i("u_point_lights["+To_Str(_i_point_light)+"].Shadow", _slot);
+}
+
+void Shader::SetPointPosition(const glm::vec3& _position)
+{
+  SetUniform3f("u_plight_position", _position.x, _position.y, _position.z);
+}
+
+void Shader::SetPointFarPlane(const float _far_plane)
+{
+  SetUniform1f("u_plight_far_plane", _far_plane);
+}
+
+void Shader::SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix)
+{
+  SetUniformMatrix4f("u_dlight_space_matrix", _light_space_matrix);
+}
+
+void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices)
+{
+  FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices["+To_Str(i)+"]", _light_space_matrices[i]);
 }
 
 /***************************************************************************************************************************************************************

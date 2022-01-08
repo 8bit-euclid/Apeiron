@@ -19,13 +19,14 @@ class Texture
   friend class Shadow;
 
 public:
-  Texture();
+  Texture(const GLint _texture_type, const bool _is_fbo_attachment = false);
 
   Texture(const std::string& _file_path);
 
   ~Texture();
 
-  void Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type);
+  void Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type,
+            const StaticArray<GLfloat, 4>& _border_colour = {1.0f, 1.0f, 1.0f, 1.0f});
 
   void ReadFromFile(const std::string& _file_path, const GLint _wrap_type);
 
@@ -35,12 +36,14 @@ public:
 
   inline UInt GetID() const { return ID; }
 
-  inline int GetWidth() const { return Width; }
+  const int& GetWidth() const { return Width; }
 
-  inline int GetHeight() const { return Height; }
+  const int& GetHeight() const { return Height; }
 
 private:
+  GLint Type;
   UInt ID;
+  bool isFrameBufferAttachment;
   UChar* LocalBuffer;
 
   int Width;

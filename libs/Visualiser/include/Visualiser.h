@@ -58,7 +58,9 @@ public:
 
   void RenderScene();
 
-  void RenderShadows();
+  void RenderDirectionalShadows();
+
+  void RenderPointShadows();
 
   void RenderModels(UInt _shader_index);
 

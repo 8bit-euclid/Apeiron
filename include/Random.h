@@ -12,7 +12,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Random Number Base Class
 ***************************************************************************************************************************************************************/
-template <typename t_data_type, TypeCategory type_category = GetTypeCategory(t_data_type())>
+template <typename t_data_type, TypeCategory type_category = GetTypeCategory<t_data_type>()>
 class RandomBase
 {
 protected:

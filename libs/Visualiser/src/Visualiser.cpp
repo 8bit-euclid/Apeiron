@@ -27,44 +27,81 @@ void Visualiser::RenderScene()
 
   Shaders[0].UseCamera(Cameras[0]);
 
-  Shaders[0].UseLight(MainLight);
-  Shaders[0].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
-
-  MainLight.GetShadowMap().Read(1);
+//  Shaders[0].UseLight(MainLight);
+  Shaders[0].SetDirectionalLightSpaceMatrix(MainLight.GetLightSpaceMatrix());
+  MainLight.GetShadowMap().ReadFrom(1);
   Shaders[0].SetDirectionalShadowMap(1);
 
-//  Shaders[0].UseLight(PointLights[0]);
+  FOR(i, PointLights.size())
+  {
+    Shaders[0].UseLight(PointLights[i]);
+    PointLights[i].GetShadowMap().ReadFrom(i + 2);
+    Shaders[0].SetPointShadowMap(i, i + 2);
+  }
+  Shaders[0].SetPointFarPlane(PointLight::GetFarPlane());
+
 //  Shaders[0].UseLight(PointLights[1]);
 //  Shaders[0].UseLight(SpotLights[0]);
 //  Shaders[0].UseLight(SpotLights[1]);
 
   RenderModels(0);
-  MainLight.GetShadowMap().GetMap().Unbind();
+
+  MainLight.GetShadowMap().Finalise();
 
   Shaders[0].Unbind();
 }
 
-void Visualiser::RenderShadows()
+void Visualiser::RenderDirectionalShadows()
 {
   Shaders[1].Bind();
-  Shaders[1].SetDirectionalLightTransform(MainLight.CalculateLightTransform());
+  Shaders[1].SetDirectionalLightSpaceMatrix(MainLight.GetLightSpaceMatrix());
 
   const Shadow& shadow_map = MainLight.GetShadowMap();
 
-  GLCall(glViewport(0, 0, shadow_map.Map.GetWidth(), shadow_map.Map.GetHeight()));
+  GLCall(glViewport(0, 0, shadow_map.GetDepthMap().GetWidth(), shadow_map.GetDepthMap().GetHeight()));
 
-  shadow_map.Write();
+//  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
+
+  shadow_map.WriteTo();
 
   RenderModels(1);
 
   shadow_map.Finalise();
 
+//  GLCall(glCullFace(GL_BACK));
+
   Shaders[1].Unbind();
+}
+
+void Visualiser::RenderPointShadows()
+{
+  if(PointLights.empty()) return;
+
+  Shaders[2].Bind();
+
+  FOR_EACH(point_light, PointLights)
+  {
+    Shaders[2].SetPointLightSpaceMatrices(point_light.GetLightSpaceMatrices());
+    Shaders[2].SetPointPosition(point_light.GetPosition());
+    Shaders[2].SetPointFarPlane(PointLight::GetFarPlane());
+
+    const Shadow& shadow_map = point_light.GetShadowMap();
+
+    GLCall(glViewport(0, 0, shadow_map.GetDepthMap().GetWidth(), shadow_map.GetDepthMap().GetHeight()));
+
+    shadow_map.WriteTo();
+
+    RenderModels(2);
+
+    shadow_map.Finalise();
+  }
+
+  Shaders[2].Unbind();
 }
 
 void Visualiser::RenderModels(UInt _shader_index)
 {
-  static float x_incr(0.005);
+  static float x_incr(0.008);
   static float x_offs(0.0);
   static float x_sign(1.0);
 

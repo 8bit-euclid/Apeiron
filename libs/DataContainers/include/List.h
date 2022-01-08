@@ -13,25 +13,19 @@ public:
   List() = default;
   ~List() = default;
 
-  /*************************************************************************************************************************************************************
-  * Size and Index Range-checking
-  *************************************************************************************************************************************************************/
-  /** Check if an index is in-range. */
+  /** Size and Index Range-checking ***************************************************************************************************************************/
   void IndexBoundCheck(const std::size_t _index) const
   {
     DEBUG_ASSERT(this->size(), "The list has not yet been sized.")
     DEBUG_ASSERT(isBounded(_index, std::size_t(0), this->size()), "The list index ", _index, " must be in the range [0, ", this->size() - 1, "].")
   }
 
-  /** Check that two list sizes are equal. */
   void SizeCheck(const std::size_t _size0, const std::size_t _size1) const
   {
     DEBUG_ASSERT(areSizesEqual(_size0, _size1), "The list sizes ", _size0, " and ", _size1, " must be equal.")
   }
 
-  /*************************************************************************************************************************************************************
-  * Subscript Operator Overloads
-  *************************************************************************************************************************************************************/
+  /** Subscript Operator Overloads ****************************************************************************************************************************/
   t_data_type& operator[](const std::size_t _index)
   {
     IndexBoundCheck(_index);
@@ -48,9 +42,7 @@ public:
     return *iterator;
   }
 
-  /*************************************************************************************************************************************************************
-  * Assignment Operator Overloads
-  *************************************************************************************************************************************************************/
+  /** Assignment Operator Overloads ***************************************************************************************************************************/
   List& operator=(const t_data_type& _value) noexcept
   {
     FOR_EACH(entry, *this) entry = _value;

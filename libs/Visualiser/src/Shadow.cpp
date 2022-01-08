@@ -2,8 +2,8 @@
 
 namespace Apeiron {
 
-Shadow::Shadow()
-  : Map(), FBO()
+Shadow::Shadow(const bool _is_point_light)
+  : isPointLightShadow(_is_point_light), DepthMap(_is_point_light ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D, true), FBO()
 {
 
 }
@@ -15,32 +15,22 @@ Shadow::~Shadow()
 
 void Shadow::Init(GLsizei _width, GLsizei _height)
 {
-  Map.Width = _width;
-  Map.Height = _height;
-
-  Map.Bind();
-
-  GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, _width, _height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
-
-  float border_colour[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_colour));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-  GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+  DepthMap.Init(_width, _height, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
   FBO.Bind();
-  FBO.Load(GL_DEPTH_ATTACHMENT, Map.GetID());
+
+  if(isPointLightShadow) FBO.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap.GetID());
+  else FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap.GetID());
+
   FBO.Draw(GL_NONE);
   FBO.Read(GL_NONE);
 
   ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
 
   FBO.Unbind();
-  Map.Unbind();
 }
 
-void Shadow::Write() const
+void Shadow::WriteTo() const
 {
   FBO.Bind();
   GLCall(glClear(GL_DEPTH_BUFFER_BIT));
@@ -48,12 +38,13 @@ void Shadow::Write() const
 
 void Shadow::Finalise() const
 {
+  DepthMap.Unbind();
   FBO.Unbind();
 }
 
-void Shadow::Read(UInt _texture_slot) const
+void Shadow::ReadFrom(UInt _texture_slot) const
 {
-  Map.Bind(_texture_slot);
+  DepthMap.Bind(_texture_slot);
 }
 
 }

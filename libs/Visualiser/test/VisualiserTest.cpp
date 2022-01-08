@@ -6,6 +6,7 @@
 namespace Apeiron {
 
 VisualiserTest::VisualiserTest()
+  : TextureTest(GL_TEXTURE_2D)
 {
 
 }

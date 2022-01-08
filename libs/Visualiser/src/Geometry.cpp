@@ -2,6 +2,16 @@
 
 namespace Apeiron {
 
+void CreateTriangle(Model &_model, GLfloat _length)
+{
+
+}
+
+void CreateTriangle(Model &_model, const StaticArray<GLfloat, 3> &_v0, const StaticArray<GLfloat, 3> &_v1, const StaticArray<GLfloat, 3> &_v2)
+{
+
+}
+
 void CreateSquare(Model& _model, const GLfloat _length)
 {
   CreateRectangle(_model, _length, _length);
@@ -17,6 +27,12 @@ void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _width)
 
   CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f*_length, 0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{0.5f*_length, 0.5f*_width, 0.0f},
                         StaticArray<GLfloat, 3>{0.5f*_length, -0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{-0.5f*_length, -0.5f*_width, 0.0f});
+}
+
+void CreateQuadrilateral(Model &_model, const StaticArray<GLfloat, 3> &_v0, const StaticArray<GLfloat, 3> &_v1, const StaticArray<GLfloat, 3> &_v2,
+                         const StaticArray<GLfloat, 3> &_v3)
+{
+
 }
 
 template <class ...t_static_vector>
@@ -160,6 +176,46 @@ void CreateCube(Model& _model, GLfloat _length)
   indices0[35] = 6;
 
   _model.Load();
+}
+
+void CreateCuboid(Model &_model, const StaticArray<GLfloat, 3> &_lengths)
+{
+
+}
+
+void CreateSphere(Model &_model, GLfloat _radius)
+{
+  CreateEllipsoid(_model, _radius, _radius, _radius);
+}
+
+void CreateEllipsoid(Model &_model, GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z)
+{
+
+}
+
+void CreateOctahedron(Model &_model, GLfloat _length)
+{
+
+}
+
+void CreateDodecahedron(Model &_model, GLfloat _length)
+{
+
+}
+
+void CreateIcosahedron(Model &_model, GLfloat _length)
+{
+
+}
+
+void CreateCylinder(Model &_model)
+{
+
+}
+
+void CreateCone(Model &_model)
+{
+
 }
 
 }

@@ -35,8 +35,6 @@ protected:
 public:
   ~Light() = default;
 
-  virtual glm::mat4 CalculateLightTransform() const = 0;
-
   virtual UInt GetIndex() const = 0;
 
   virtual UInt GetLightCount() const = 0;
@@ -49,7 +47,6 @@ protected:
   GLfloat AmbientIntensity;
   GLfloat DiffuseIntensity;
 
-  glm::mat4 ProjectionMatrix;
   Shadow ShadowMap;
 };
 
@@ -67,14 +64,15 @@ public:
 
   ~DirectionalLight() = default;
 
-  glm::mat4 CalculateLightTransform() const;
-
   UInt GetIndex() const override { return 0; }
 
   UInt GetLightCount() const override { return 1; }
 
+  const glm::mat4& GetLightSpaceMatrix() const { return LightSpaceMatrix; }
+
 private:
   glm::vec3 Direction;
+  glm::mat4 LightSpaceMatrix;
 };
 
 /***************************************************************************************************************************************************************
@@ -96,11 +94,15 @@ protected:
 public:
   ~PointLightBase();
 
-  glm::mat4 CalculateLightTransform() const;
-
   UInt GetIndex() const override { return iPointLight; }
 
   UInt GetLightCount() const override { return nPointLights; }
+
+  constexpr static GLfloat GetFarPlane() { return FarPlane; }
+
+  const glm::vec3& GetPosition() { return Position; }
+
+  const StaticArray<glm::mat4, 6>& GetLightSpaceMatrices() const { return LightSpaceMatrices; }
 
   PointLightBase<t_derived_class>& operator=(const PointLightBase<t_derived_class>& _other) = delete;
 
@@ -108,11 +110,14 @@ public:
 
 protected:
   constexpr static UInt MaxPointLights{4};
+  constexpr static GLfloat FarPlane{25.0f};
+
   static UInt nPointLights;
   UInt iPointLight;
 
   glm::vec3 Position;
   StaticArray<GLfloat, 3> AttenuationCoefficients; // 0: constant term, 1: linear term, 2: quadratic term
+  StaticArray<glm::mat4, 6> LightSpaceMatrices;
 };
 
 }

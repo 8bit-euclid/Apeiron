@@ -18,7 +18,7 @@ out Data
 uniform mat4 u_model_matrix;
 uniform mat4 u_view_matrix;
 uniform mat4 u_projection_matrix;
-uniform mat4 u_direc_light_matrix; // projection * view (from the directional light's perspective)
+uniform mat4 u_dlight_space_matrix; // projection * view (from the directional light's perspective)
 
 void main()
 {
@@ -28,7 +28,7 @@ void main()
    v_data_out.Colour = colour;
    v_data_out.TextureCoordinate = texture_coordinate;
    v_data_out.FragmentPosition = gl_Position.xyz;
-   v_data_out.FragmentPositionDlight = u_direc_light_matrix * vec4(v_data_out.FragmentPosition, 1.0);
+   v_data_out.FragmentPositionDlight = u_dlight_space_matrix * vec4(v_data_out.FragmentPosition, 1.0);
 
    gl_Position = u_projection_matrix * u_view_matrix * gl_Position;
 }
@@ -104,28 +104,22 @@ float CalculateDirectionalShadow()
    projected_coordinates = (projected_coordinates + 1.0f) / 2.0f;
 
    float actual_depth = projected_coordinates.z;
-   float closest_depth = texture(u_direc_shadow, projected_coordinates.xy).r;
-   float shadow = actual_depth > closest_depth ? 1.0f : 0.0f;
+   float shadow = 0.0f;
+   if(actual_depth <= 1.0f)
+   {
+      vec2 texel_size = 1.0f / textureSize(u_direc_shadow, 0);
+      float bias = max(0.05 * (1.0 - dot(normalize(v_data_in.Normal), normalize(u_directional_light.Direction))), 0.005);
+
+      for(int x = -1; x <= 1; x++)
+         for(int y = -1; y <= 1; y++)
+         {
+            float pcf_depth = bias + texture(u_direc_shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
+            shadow += actual_depth > pcf_depth ? 1.0f : 0.0f;
+         }
+      shadow /= 9.0f;
+   }
 
    return shadow;
-
-   //   float actual_depth = projected_coordinates.z;
-   //   float shadow = 0.0f;
-   //   if(actual_depth <= 1.0f)
-   //   {
-   //      vec2 texel_size = 1.0f / textureSize(u_direc_shadow, 0);
-   //      float bias = max(0.05 * (1.0 - dot(normalize(v_data_in.Normal), normalize(u_directional_light.Direction))), 0.005);
-   //
-   //      for(int x = -1; x <= 1; x++)
-   //         for(int y = -1; y <= 1; y++)
-   //         {
-   //            float pcf_depth = bias + texture(u_direc_shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
-   //            shadow += actual_depth > pcf_depth ? 1.0f : 0.0f;
-   //         }
-   //      shadow /= 9.0f;
-   //   }
-   //
-   //   return shadow;
 }
 
 vec4 CalculateLightByDirection(Light _light, vec3 _direction, float _shadow_factor)
