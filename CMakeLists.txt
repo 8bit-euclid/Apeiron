@@ -68,6 +68,7 @@ include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Polytope)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Visualiser)
@@ -82,6 +83,7 @@ set(APEIRON_LINK_LIBRARIES
         ArrayLibrary
         BenchmarkLibrary
         FunctionalLibrary
+        PolytopeLibrary
         SortLibrary
         TensorLibrary
         VisualiserLibrary)

@@ -13,26 +13,25 @@ namespace Apeiron {
 
 class Shadow
 {
-  friend class Shader;
-  friend class Visualiser;
-
 public:
-  Shadow();
+  Shadow(const bool _is_point_light);
 
   ~Shadow();
 
   virtual void Init(GLsizei _width, GLsizei _height);
 
-  virtual void Write() const;
+  virtual void WriteTo() const;
 
   virtual void Finalise() const;
 
-  virtual void Read(UInt _texture_slot) const;
+  virtual void ReadFrom(UInt _texture_slot) const;
 
-  const Texture& GetMap() const { return Map; }
+  const Texture& GetDepthMap() const { return DepthMap; }
 
 protected:
-  Texture Map;
+  bool isPointLightShadow;
+
+  Texture DepthMap;
   FrameBuffer FBO;
 };
 

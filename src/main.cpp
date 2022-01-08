@@ -22,7 +22,8 @@ int main(void)
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Basic.glsl");
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Intermediate.glsl");
   visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Advanced.glsl");
-  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Shadow.glsl");
+  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/DirectionalShadow.glsl");
+  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/PointShadow.glsl");
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Line.glsl");
 
   visualiser.Shaders[0].Bind();
@@ -41,14 +42,16 @@ int main(void)
 //  vertex_array.Bind();
 
 
-  visualiser.Materials.emplace_back(0.3, 256.0);
-//  visualiser.Materials.emplace_back(0.2, 32.0);
+//  visualiser.Materials.emplace_back(0.3, 1024.0);
+  visualiser.Materials.emplace_back(0.7, 1024.0);
 
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/ChernoLogo.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Papyrus.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Cloth.jpg");
 
-//  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.5, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(0.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(4.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
 //  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.5, 0.3, StaticArray<GLfloat, 3>{0.3, 0.1, 0.1});
 
 //  visualiser.SpotLights.emplace_back(glm::vec3(0.0, 3.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 1.0, 0.7, StaticArray<GLfloat, 3>{1.0, 0.0, 0.0});
@@ -76,8 +79,8 @@ int main(void)
       visualiser.Shaders[0].SetUniform2f("u_resolution", (float)width, (float)height);
     }
 
-    visualiser.RenderShadows();
-
+    visualiser.RenderDirectionalShadows();
+    visualiser.RenderPointShadows();
     visualiser.RenderScene();
 
     visualiser.EndFrame();

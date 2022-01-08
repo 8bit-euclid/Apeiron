@@ -10,7 +10,7 @@
 #define STACK_TRACE_SIZE 10
 
 /** Dimension. */
-constexpr int Dim = 2;
+constexpr std::size_t Dim = 2;
 
 #include "Macros.h"
 #include "Types.h"

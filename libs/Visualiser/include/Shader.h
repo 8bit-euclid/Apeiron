@@ -60,7 +60,15 @@ public:
 
   void SetDirectionalShadowMap(const UInt _slot);
 
-  void SetDirectionalLightTransform(const glm::mat4& _tranform_matrix);
+  void SetPointShadowMap(const size_t _i_point_light, const UInt _slot);
+
+  void SetPointPosition(const glm::vec3& _position);
+
+  void SetPointFarPlane(const float _far_plane);
+
+  void SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix);
+
+  void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
 
   /** Setting Shader Uniforms *********************************************************************************************************************************/
   void SetUniform1i(const std::string& _name, GLint _value);

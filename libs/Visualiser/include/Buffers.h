@@ -16,8 +16,10 @@ namespace Apeiron{
 ***************************************************************************************************************************************************************/
 struct Buffer
 {
+protected:
   Buffer() { GLCall(glGenBuffers(1, &ID)); }
 
+public:
   ~Buffer() { Delete(); }
 
   virtual void Bind() const = 0;
@@ -93,7 +95,9 @@ struct FrameBuffer
 
   inline void Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
 
-  inline void Load(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, _attachement, GL_TEXTURE_2D, _mapID, 0)); }
+  inline void AttachTexture(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture(GL_FRAMEBUFFER, _attachement, _mapID, 0)); }
+
+  inline void AttachTexture2D(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, _attachement, GL_TEXTURE_2D, _mapID, 0)); }
 
   inline void Draw(GLenum _mode) const { GLCall(glDrawBuffer(_mode)); }
 
