@@ -117,6 +117,9 @@ void Visualiser::RenderModels(UInt _shader_index)
     if(angl_offs > 360.0) angl_offs -= 360.0;
   }
 
+  Shaders[_shader_index].SetUniform1i("u_use_texture", 0);
+  Shaders[_shader_index].SetUniform1i("u_use_normal_map", 0);
+
   // Cube model
   Models[0].Reset();
   Models[0].Translate({x_offs, 0.0f, 0.0f});
@@ -129,15 +132,48 @@ void Visualiser::RenderModels(UInt _shader_index)
 //    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
   Models[0].Draw();
 
+
+  Shaders[_shader_index].UseTexture(Textures[0], 0);
+  Shaders[_shader_index].SetUniform1i("u_use_texture", 1);
+  Shaders[_shader_index].SetUniform1i("u_use_normal_map", 1);
+  Textures[1].Bind(1);
+
   // Floor model
   Models[1].Reset();
   Models[1].Translate({0.0f, -2.0f, 0.0f});
-  Models[1].Rotate(90.0, {1.0f, 0.0f, 0.0f});
+  Models[1].Rotate(-90.0, {1.0f, 0.0f, 0.0f});
   Shaders[_shader_index].UseModel(Models[1]);
   Shaders[_shader_index].UseMaterial(Materials[0]);
 //  Shaders[0].UseTexture(Textures[0], 0);
   Models[1].Draw();
 //  Textures[0].Unbind();
+
+  // Wall model 0
+  Models[2].Reset();
+  Models[2].Translate({2.5f, 0.5f, -5.0f});
+//  Models[2].Rotate(90.0, {1.0f, 0.0f, 0.0f});
+  Shaders[_shader_index].UseModel(Models[2]);
+  Shaders[_shader_index].UseMaterial(Materials[0]);
+  Shaders[_shader_index].UseTexture(Textures[0], 0);
+  Shaders[_shader_index].SetUniform1i("u_use_texture", 1);
+  Shaders[_shader_index].SetUniform1i("u_use_normal_map", 1);
+  Shaders[_shader_index].SetUniform1i("u_normal_map", 1);
+  Textures[1].Bind(1);
+
+  Models[2].Draw();
+//  Textures[0].Unbind();
+
+  // Wall model 1
+  Models[2].Reset();
+  Models[2].Translate({-2.5f, 0.5f, -5.0f});
+//  Models[2].Rotate(90.0, {1.0f, 0.0f, 0.0f});
+  Shaders[_shader_index].UseModel(Models[2]);
+  Shaders[_shader_index].UseMaterial(Materials[0]);
+  Shaders[_shader_index].UseTexture(Textures[0], 0);
+  Models[2].Draw();
+
+  Textures[0].Unbind();
+  Textures[1].Unbind();
 }
 
 void Visualiser::EndFrame()

@@ -3,7 +3,7 @@
 #include "../../../include/Global.h"
 
 namespace Apeiron {
-namespace Geometry{
+namespace Geometry {
 
 enum class PolytopeCategory
 {
@@ -22,6 +22,20 @@ enum class PolytopeCategory
   Arbitrary2D,
   Arbitrary3D
 };
+
+/** Check if a polytope is considered static, i.e. is its information known at compile-time? */
+template <PolytopeCategory t_category>
+constexpr bool isStaticPolytope()
+{
+  return t_category != PolytopeCategory::Arbitrary2D && t_category != PolytopeCategory::Arbitrary3D;
+}
+
+/** Check if a polytope is considered dynamic, i.e. is its information not known at compile-time? */
+template <PolytopeCategory t_category>
+constexpr bool isDynamicPolytope()
+{
+  return !isStaticPolytope<t_category>();
+}
 
 /** Get the number of vertices for a given polytope category. */
 template <PolytopeCategory t_category>

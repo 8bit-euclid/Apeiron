@@ -1,8 +1,10 @@
 include_directories(${PROJECT_SOURCE_DIR}/libs/Polytope)
 
 set(SOURCE_FILES
-        include/Polytope.h
         include/Categories.h
+        include/Polygon.h
+        include/Polyhedron.h
+        include/Polytope.h
         src/Polytope.cpp)
 
 set(LINK_LIBRARIES)

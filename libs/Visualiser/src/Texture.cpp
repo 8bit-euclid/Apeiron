@@ -25,6 +25,8 @@ Texture::~Texture()
 void Texture::Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type,
                    const StaticArray<GLfloat, 4>& _border_colour)
 {
+  Print<'\0'>("Initialising a ", _width, "x", _height, " texture.");
+
   Width = _width;
   Height = _height;
 
@@ -66,9 +68,10 @@ void Texture::ReadFromFile(const std::string& _file_path, const GLint _wrap_type
   int width, height;
   LocalBuffer = stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0);
 
+  ASSERT(BitsPerPixel == 3 || BitsPerPixel == 4, "Currently only 3 or 4 bits per pixel are supported.")
   ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
 
-  Init(width, height, GL_RGBA, GL_UNSIGNED_BYTE, _wrap_type);
+  Init(width, height, BitsPerPixel == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, _wrap_type);
 
   stbi_image_free(LocalBuffer);
 }

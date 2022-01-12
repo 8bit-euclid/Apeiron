@@ -17,16 +17,21 @@ void CreateSquare(Model& _model, const GLfloat _length)
   CreateRectangle(_model, _length, _length);
 }
 
-void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _width)
+void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _height)
 {
   _model.Geometry.Vertices.resize(4);
+
+  // Set tangents
+  FOR(i, 4) _model.Geometry.Vertices[i].Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+
+  // Set texture coordinates
   _model.Geometry.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
   _model.Geometry.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
   _model.Geometry.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
   _model.Geometry.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
-  CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f*_length, 0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{0.5f*_length, 0.5f*_width, 0.0f},
-                        StaticArray<GLfloat, 3>{0.5f*_length, -0.5f*_width, 0.0f}, StaticArray<GLfloat, 3>{-0.5f*_length, -0.5f*_width, 0.0f});
+  CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f * _length, -0.5f * _height, 0.0f}, StaticArray<GLfloat, 3>{ 0.5f * _length, -0.5f * _height, 0.0f},
+                        StaticArray<GLfloat, 3>{ 0.5f * _length,  0.5f * _height, 0.0f}, StaticArray<GLfloat, 3>{-0.5f * _length,  0.5f * _height, 0.0f});
 }
 
 void CreateQuadrilateral(Model &_model, const StaticArray<GLfloat, 3> &_v0, const StaticArray<GLfloat, 3> &_v1, const StaticArray<GLfloat, 3> &_v2,

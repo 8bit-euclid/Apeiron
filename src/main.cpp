@@ -17,6 +17,10 @@ int main(void)
   visualiser.Models.resize(2);
   CreateSquare(visualiser.Models[1], 10.0f);
 
+  // Wall model
+  visualiser.Models.resize(3);
+  CreateSquare(visualiser.Models[2], 5.0f);
+
   // Shaders
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Minimal.glsl");
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Basic.glsl");
@@ -26,10 +30,9 @@ int main(void)
   visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/PointShadow.glsl");
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Line.glsl");
 
-  visualiser.Shaders[0].Bind();
+//  visualiser.Shaders[0].Bind();
 //  visualiser.Shaders[0].SetUniform1f("u_thickness", 20.0);
-  visualiser.Shaders[0].SetUniform4f("u_colour", 1.0f, 1.0f, 1.0f, 1.0f);
-  visualiser.Shaders[0].Unbind();
+//  visualiser.Shaders[0].Unbind();
 
 //  DynamicArray<glm::vec4> varray;
 //  varray.emplace_back(glm::vec4(-0.6f, -0.6f, 0.0f, 1.0f));
@@ -43,15 +46,22 @@ int main(void)
 
 
 //  visualiser.Materials.emplace_back(0.3, 1024.0);
-  visualiser.Materials.emplace_back(0.7, 1024.0);
+//  visualiser.Materials.emplace_back(0.7, 1024.0);
+  visualiser.Materials.emplace_back(0.8, 256.0);
 
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K.jpg");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K_Normal.jpg");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/BrickWall_001_2K.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/BrickWall_001_2K_Normal.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Paper_001_4K/Paper_001_4K.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Paper_001_4K/Paper_001_4K_Normal.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/ChernoLogo.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Papyrus.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Cloth.jpg");
 
-  visualiser.PointLights.emplace_back(glm::vec3(0.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
-  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
-  visualiser.PointLights.emplace_back(glm::vec3(4.0, 3.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.3, StaticArray<GLfloat, 3>{0.3, 0.2, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, -3.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.05, 0.05});
+//  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
+//  visualiser.PointLights.emplace_back(glm::vec3(4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
 //  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.5, 0.3, StaticArray<GLfloat, 3>{0.3, 0.1, 0.1});
 
 //  visualiser.SpotLights.emplace_back(glm::vec3(0.0, 3.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 1.0, 0.7, StaticArray<GLfloat, 3>{1.0, 0.0, 0.0});

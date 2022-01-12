@@ -3,8 +3,9 @@
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
-layout(location = 2) in vec3 colour;
-layout(location = 3) in vec2 texture_coordinate;
+layout(location = 2) in vec3 tangent;
+layout(location = 3) in vec3 colour;
+layout(location = 4) in vec2 texture_coordinate;
 
 out Data
 {
@@ -83,7 +84,6 @@ struct Material
    float Smoothness;
 };
 
-uniform vec4 u_colour;
 uniform vec3 u_camera_position;
 uniform sampler2D u_texture;
 uniform sampler2D u_direc_shadow;
@@ -188,5 +188,4 @@ void main()
    //   fragment_colour = vec4(lighting, 1.0f);
    fragment_colour = lighting;
    //   fragment_colour = vec4(lighting * texture_colour, 1.0f);
-   //   fragment_colour = u_colour * lighting;
 }
