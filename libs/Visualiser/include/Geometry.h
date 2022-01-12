@@ -20,7 +20,7 @@ void CreateTriangle(Model& _model, const StaticArray<GLfloat, 3>& _v0, const Sta
 
 void CreateSquare(Model& _model, GLfloat _length);
 
-void CreateRectangle(Model& _model, GLfloat _length, GLfloat _width);
+void CreateRectangle(Model& _model, GLfloat _length, GLfloat _height);
 
 void CreateQuadrilateral(Model& _model, const StaticArray<GLfloat, 3>& _v0, const StaticArray<GLfloat, 3>& _v1, const StaticArray<GLfloat, 3>& _v2,
                          const StaticArray<GLfloat, 3>& _v3);

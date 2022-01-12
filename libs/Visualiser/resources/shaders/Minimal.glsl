@@ -4,7 +4,8 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 temp1;
 layout(location = 2) in vec3 temp2;
-layout(location = 3) in vec2 texture_coordinate;
+layout(location = 3) in vec3 temp3;
+layout(location = 4) in vec2 texture_coordinate;
 
 out vec2 v_texture_coordinate;
 
