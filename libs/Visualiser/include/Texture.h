@@ -25,7 +25,7 @@ public:
 
   ~Texture();
 
-  void Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type,
+  void Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type, const GLint _wrap_type,
             const StaticArray<GLfloat, 4>& _border_colour = {1.0f, 1.0f, 1.0f, 1.0f});
 
   void ReadFromFile(const std::string& _file_path, const GLint _wrap_type);

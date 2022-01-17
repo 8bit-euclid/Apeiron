@@ -21,7 +21,22 @@ inline void GLClearErrors()
 /** Throw current OpenGL error and exit program. */
 inline void GLLogCall(const char* _function, const char* _file, const int _line)
 {
-  if(GLenum error = glGetError()) EXIT_FROM(_file, _line, "OpenGL error (0x0", std::hex, error, std::dec, ") from call:\n\t", _function)
+  if(GLenum error_code = glGetError())
+  {
+    std::string error_message;
+    switch(error_code)
+    {
+      case GL_INVALID_ENUM: error_message = "INVALID_ENUM"; break;
+      case GL_INVALID_VALUE: error_message = "INVALID_VALUE"; break;
+      case GL_INVALID_OPERATION: error_message = "INVALID_OPERATION"; break;
+      case GL_STACK_OVERFLOW: error_message = "STACK_OVERFLOW"; break;
+      case GL_STACK_UNDERFLOW: error_message = "STACK_UNDERFLOW"; break;
+      case GL_OUT_OF_MEMORY: error_message = "OUT_OF_MEMORY"; break;
+      case GL_INVALID_FRAMEBUFFER_OPERATION: error_message = "INVALID_FRAMEBUFFER_OPERATION"; break;
+    }
+
+    EXIT_FROM(_file, _line, "OpenGL error 0x0", std::hex, error_code, std::dec, " (", error_message,") from call:\n\t", _function)
+  }
 }
 
 }

@@ -47,10 +47,10 @@ void main()
 
 in vec4 v_fragment_position;
 
-uniform float u_plight_far_plane;
+uniform float u_point_light_far_plane;
 uniform vec3 u_plight_position;
 
 void main()
 {
-    gl_FragDepth = length(v_fragment_position.xyz - u_plight_position) / u_plight_far_plane; // Division maps depth to [0,1]
+    gl_FragDepth = length(v_fragment_position.xyz - u_plight_position) / u_point_light_far_plane; // Division maps depth to [0,1]
 }

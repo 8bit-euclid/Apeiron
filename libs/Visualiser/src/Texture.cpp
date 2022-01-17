@@ -22,8 +22,8 @@ Texture::~Texture()
   GLCall(glDeleteTextures(1, &ID));
 }
 
-void Texture::Init(const GLuint _width, const GLuint _height, const GLint _format, const GLenum _data_type, const GLint _wrap_type,
-                   const StaticArray<GLfloat, 4>& _border_colour)
+void Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
+                   const GLint _wrap_type, const StaticArray<GLfloat, 4>& _border_colour)
 {
   Print<'\0'>("Initialising a ", _width, "x", _height, " texture.");
 
@@ -33,6 +33,7 @@ void Texture::Init(const GLuint _width, const GLuint _height, const GLint _forma
   Bind();
 
   // Common settings
+//  if(BitsPerPixel == 2) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   GLCall(glTexParameteri(Type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
   GLCall(glTexParameteri(Type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
@@ -44,7 +45,7 @@ void Texture::Init(const GLuint _width, const GLuint _height, const GLint _forma
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_S, _wrap_type));
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_T, _wrap_type));
 
-    GLCall(glTexImage2D(Type, 0, _format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer));
+    GLCall(glTexImage2D(Type, 0, _internal_format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer));
   }
   else if(Type == GL_TEXTURE_CUBE_MAP)
   {
@@ -54,7 +55,7 @@ void Texture::Init(const GLuint _width, const GLuint _height, const GLint _forma
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_T, _wrap_type));
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_R, _wrap_type));
 
-    FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _format, Width, Height, 0, _format, _data_type, nullptr)); }
+    FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _internal_format, Width, Height, 0, _format, _data_type, nullptr)); }
   }
 
   if(!isFrameBufferAttachment) GLCall(glGenerateMipmap(Type));
@@ -67,11 +68,15 @@ void Texture::ReadFromFile(const std::string& _file_path, const GLint _wrap_type
   stbi_set_flip_vertically_on_load(1);
   int width, height;
   LocalBuffer = stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0);
-
-  ASSERT(BitsPerPixel == 3 || BitsPerPixel == 4, "Currently only 3 or 4 bits per pixel are supported.")
   ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
 
-  Init(width, height, BitsPerPixel == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, _wrap_type);
+  Print("Bits: ", BitsPerPixel);
+  Print("Type: ", sizeof(decltype(LocalBuffer)));
+  std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
+                                    BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
+                                    BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
+                                    throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + To_Str(BitsPerPixel) + ".";
+  Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
 
   stbi_image_free(LocalBuffer);
 }

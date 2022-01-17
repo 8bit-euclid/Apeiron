@@ -101,6 +101,7 @@ void Visualiser::RenderPointShadows()
 
 void Visualiser::RenderModels(UInt _shader_index)
 {
+  constexpr int slot_offs(3);
   static float x_incr(0.008);
   static float x_offs(0.0);
   static float x_sign(1.0);
@@ -117,8 +118,9 @@ void Visualiser::RenderModels(UInt _shader_index)
     if(angl_offs > 360.0) angl_offs -= 360.0;
   }
 
-  Shaders[_shader_index].SetUniform1i("u_use_texture", 0);
+  Shaders[_shader_index].SetUniform1i("u_use_diffuse_map", 0);
   Shaders[_shader_index].SetUniform1i("u_use_normal_map", 0);
+  Shaders[_shader_index].SetUniform1i("u_use_height_map", 0);
 
   // Cube model
   Models[0].Reset();
@@ -133,10 +135,15 @@ void Visualiser::RenderModels(UInt _shader_index)
   Models[0].Draw();
 
 
-  Shaders[_shader_index].UseTexture(Textures[0], 0);
-  Shaders[_shader_index].SetUniform1i("u_use_texture", 1);
+  Shaders[_shader_index].UseTexture(Textures[0], slot_offs);
+  Shaders[_shader_index].SetUniform1i("u_use_diffuse_map", 1);
   Shaders[_shader_index].SetUniform1i("u_use_normal_map", 1);
-  Textures[1].Bind(1);
+  Shaders[_shader_index].SetUniform1i("u_use_height_map", 1);
+  Shaders[_shader_index].SetUniform1i("u_normal_map", slot_offs + 1);
+  Shaders[_shader_index].SetUniform1i("u_height_map", slot_offs + 2);
+  Shaders[_shader_index].SetUniform1f("u_height_scale", 0.08);
+  Textures[1].Bind(slot_offs + 1);
+  Textures[2].Bind(slot_offs + 2);
 
   // Floor model
   Models[1].Reset();
@@ -154,11 +161,14 @@ void Visualiser::RenderModels(UInt _shader_index)
 //  Models[2].Rotate(90.0, {1.0f, 0.0f, 0.0f});
   Shaders[_shader_index].UseModel(Models[2]);
   Shaders[_shader_index].UseMaterial(Materials[0]);
-  Shaders[_shader_index].UseTexture(Textures[0], 0);
-  Shaders[_shader_index].SetUniform1i("u_use_texture", 1);
+  Shaders[_shader_index].UseTexture(Textures[0], slot_offs);
+  Shaders[_shader_index].SetUniform1i("u_use_diffuse_map", 1);
   Shaders[_shader_index].SetUniform1i("u_use_normal_map", 1);
-  Shaders[_shader_index].SetUniform1i("u_normal_map", 1);
-  Textures[1].Bind(1);
+  Shaders[_shader_index].SetUniform1i("u_use_height_map", 1);
+  Shaders[_shader_index].SetUniform1i("u_normal_map", slot_offs + 1);
+  Shaders[_shader_index].SetUniform1i("u_height_map", slot_offs + 2);
+  Textures[1].Bind(slot_offs + 1);
+  Textures[2].Bind(slot_offs + 2);
 
   Models[2].Draw();
 //  Textures[0].Unbind();
@@ -169,11 +179,12 @@ void Visualiser::RenderModels(UInt _shader_index)
 //  Models[2].Rotate(90.0, {1.0f, 0.0f, 0.0f});
   Shaders[_shader_index].UseModel(Models[2]);
   Shaders[_shader_index].UseMaterial(Materials[0]);
-  Shaders[_shader_index].UseTexture(Textures[0], 0);
+  Shaders[_shader_index].UseTexture(Textures[0], slot_offs);
   Models[2].Draw();
 
   Textures[0].Unbind();
   Textures[1].Unbind();
+  Textures[2].Unbind();
 }
 
 void Visualiser::EndFrame()

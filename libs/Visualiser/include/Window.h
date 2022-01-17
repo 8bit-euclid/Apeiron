@@ -60,6 +60,8 @@ private:
   StaticArray<GLdouble, 2> MouseWheelDisplacement;
   bool isFirstMouseMovement;
 
+  std::pair<GLint, GLint> GetFrameBufferSize() const;
+
   void CreateCallBacks();
 
   static void HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode);
@@ -68,7 +70,7 @@ private:
 
   static void HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
 
-  std::pair<GLint, GLint> GetFrameBufferSize() const;
+  static void APIENTRY glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum _severity, GLsizei length, const char* message, const void* userParam);
 };
 
 }

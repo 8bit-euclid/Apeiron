@@ -85,7 +85,7 @@ struct Material
 };
 
 uniform vec3 u_camera_position;
-uniform sampler2D u_texture;
+uniform sampler2D u_diffuse_map;
 uniform sampler2D u_direc_shadow;
 
 uniform Material u_material;
@@ -183,7 +183,7 @@ void main()
 {
    vec4 lighting = CalculateDirectionalLight() + CalculatePointLights() + CalculateSpotLights();
    //   vec3 lighting = CalculateDirectionalLight().rgb;
-   //   vec3 texture_colour = texture(u_texture, v_data_in.TextureCoordinate).rgb;
+   //   vec3 texture_colour = texture(u_diffuse_map, v_data_in.TextureCoordinate).rgb;
 
    //   fragment_colour = vec4(lighting, 1.0f);
    fragment_colour = lighting;

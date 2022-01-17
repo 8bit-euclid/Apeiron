@@ -12,6 +12,9 @@ enum class PolytopeCategory
   Quadrilateral,
   Pentagonal,
   Hexagonal,
+  Septagonal,
+  Octagonal,
+  Arbitrary2D,
 
   // 3-Polytopes
   Tetrahedral,
@@ -19,7 +22,6 @@ enum class PolytopeCategory
   Octahedral,
   Dodecahedral,
   Icosahedral,
-  Arbitrary2D,
   Arbitrary3D
 };
 
@@ -45,6 +47,8 @@ constexpr std::size_t GetPolytopeDimension()
           t_category == PolytopeCategory::Quadrilateral ||
           t_category == PolytopeCategory::Pentagonal ||
           t_category == PolytopeCategory::Hexagonal ||
+          t_category == PolytopeCategory::Septagonal ||
+          t_category == PolytopeCategory::Octagonal ||
           t_category == PolytopeCategory::Arbitrary2D) ? 2 :
 
          (t_category == PolytopeCategory::Tetrahedral ||
@@ -71,6 +75,9 @@ constexpr std::size_t GetPolytopeVertexCount()
          t_category == PolytopeCategory::Quadrilateral ? 4 :
          t_category == PolytopeCategory::Pentagonal ? 5 :
          t_category == PolytopeCategory::Hexagonal ? 6 :
+         t_category == PolytopeCategory::Septagonal ? 7 :
+         t_category == PolytopeCategory::Octagonal ? 8 :
+
          t_category == PolytopeCategory::Tetrahedral ? 4 :
          t_category == PolytopeCategory::Cuboidal ? 8 :
          t_category == PolytopeCategory::Octahedral ? 6 :

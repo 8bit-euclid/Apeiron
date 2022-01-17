@@ -76,7 +76,7 @@ TestTexture2D::TestTexture2D()
 
   TextureTest.ReadFromFile("libs/Visualiser/resources/textures/ChernoLogo.png", GL_CLAMP_TO_EDGE);
   TextureTest.Bind();
-  ShaderTest.SetUniform1i("u_texture", 0);
+  ShaderTest.SetUniform1i("u_diffuse_map", 0);
 
   ShaderTest.Unbind();
 
