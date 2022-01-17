@@ -42,7 +42,7 @@ void Shader::UseMaterial(const Material& _material)
 
 void Shader::UseTexture(const Texture& _texture, const UInt _slot)
 {
-  SetUniform1i("u_texture", _slot);
+  SetUniform1i("u_diffuse_map", _slot);
   _texture.Bind(_slot);
 }
 
@@ -121,7 +121,7 @@ void Shader::SetPointPosition(const glm::vec3& _position)
 
 void Shader::SetPointFarPlane(const float _far_plane)
 {
-  SetUniform1f("u_plight_far_plane", _far_plane);
+  SetUniform1f("u_point_light_far_plane", _far_plane);
 }
 
 void Shader::SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix)

@@ -15,7 +15,7 @@ Shadow::~Shadow()
 
 void Shadow::Init(GLsizei _width, GLsizei _height)
 {
-  DepthMap.Init(_width, _height, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+  DepthMap.Init(_width, _height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
   FBO.Bind();
 

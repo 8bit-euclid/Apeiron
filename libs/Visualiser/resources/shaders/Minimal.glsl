@@ -27,10 +27,10 @@ in vec2 v_texture_coordinate;
 out vec4 colour;
 
 uniform vec4 u_colour;
-uniform sampler2D u_texture;
+uniform sampler2D u_diffuse_map;
 
 void main()
 {
-   colour = texture(u_texture, v_texture_coordinate);
+   colour = texture(u_diffuse_map, v_texture_coordinate);
 //   colour = u_colour;
 }

@@ -1,11 +1,14 @@
 #include "../include/Global.h"
 #include "../libs/Visualiser/include/Visualiser.h"
+#include "../libs/Polytope/include/Polygon.h"
 #include "../libs/Visualiser/test/VisualiserTest.h"
 
 using namespace Apeiron;
 
 int main(void)
 {
+//  Geometry::Polygon p(8, 5.0);
+
   Visualiser visualiser;
 
   // Tetrahedron model
@@ -49,17 +52,26 @@ int main(void)
 //  visualiser.Materials.emplace_back(0.7, 1024.0);
   visualiser.Materials.emplace_back(0.8, 256.0);
 
-  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K.jpg");
-  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K_Normal.jpg");
-//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/BrickWall_001_2K.png");
-//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/BrickWall_001_2K_Normal.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K.jpg");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K_Normal.jpg");
+
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Diffuse.png");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Normal.png");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Displacement.png");
+
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodToyBox_1K/Diffuse.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodToyBox_1K/Normal.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodToyBox_1K/Displacement.png");
+
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodFloor_001_4K/Diffuse.png");
+//  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodFloor_001_4K/Normal.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Paper_001_4K/Paper_001_4K.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Paper_001_4K/Paper_001_4K_Normal.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/ChernoLogo.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Papyrus.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Cloth.jpg");
 
-  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, -3.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.05, 0.05});
+  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, StaticArray<GLfloat, 3>{0.3, 0.1, 0.0});
 //  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
 //  visualiser.PointLights.emplace_back(glm::vec3(4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
 //  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.5, 0.3, StaticArray<GLfloat, 3>{0.3, 0.1, 0.1});
