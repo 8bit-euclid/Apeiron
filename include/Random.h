@@ -12,7 +12,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Abstract Random Number Base Class
 ***************************************************************************************************************************************************************/
-template <typename T, TypeCategory category = GetTypeCategory<T>()>
+template<typename T, TypeCategory category = GetTypeCategory<T>()>
 class RandomBase
 {
 protected:
@@ -27,14 +27,14 @@ protected:
   std::mt19937 Generator;
 };
 
-/** Forward declaration of Random class and template deduction guide. */
-template <typename T, TypeCategory category = GetTypeCategory<T>()> class Random;
-template <typename T> Random(T, T) -> Random<T>;
+/** Forward declaration of Random class and templatededuction guide. */
+template<typename T, TypeCategory category = GetTypeCategory<T>()> class Random;
+template<typename T> Random(T, T) -> Random<T>;
 
 /***************************************************************************************************************************************************************
 * Random Boolean Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class Random<T, TypeCategory::Boolean> : public RandomBase<T, TypeCategory::Boolean>
 {
 public:
@@ -50,7 +50,7 @@ private:
 /***************************************************************************************************************************************************************
 * Random Integer Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class Random<T, TypeCategory::Integral> : public RandomBase<T, TypeCategory::Integral>
 {
 public:
@@ -69,7 +69,7 @@ private:
 /***************************************************************************************************************************************************************
 * Random Floating-point Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class Random<T, TypeCategory::FloatingPoint> : public RandomBase<T, TypeCategory::FloatingPoint>
 {
 public:

@@ -11,7 +11,7 @@ namespace Apeiron {
 /***************************************************************************************************************************************************************
 * Array Abstract Base Class
 ***************************************************************************************************************************************************************/
-template <typename T, class derived>
+template<typename T, class derived>
 class Array
 {
 protected:
@@ -29,7 +29,7 @@ public:
   constexpr const T& operator[](const std::size_t _index) const;
 
   /** Assignment Operator Overloads */
-  template <class t_rhs_type>
+  template<class t_rhs_type>
   constexpr derived& operator=(const t_rhs_type& _value) noexcept;
 
   constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
@@ -42,13 +42,13 @@ private:
 };
 
 /** Non-member functions */
-template <typename T, class derived>
+template<typename T, class derived>
 std::ostream& operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base);
 
 /***************************************************************************************************************************************************************
 * Static Array Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t N>
+template<typename T, std::size_t N>
 class StaticArray : public std::array<T, N>,
                     public Array<T, StaticArray<T, N>>
 {
@@ -58,11 +58,11 @@ public:
   /** Constructors */
   constexpr StaticArray();
 
-  constexpr StaticArray(const T& _value);
+  explicit constexpr StaticArray(const T& _value);
 
   constexpr StaticArray(const std::initializer_list<T>& _list);
 
-  template <class iter>
+  template<class iter>
   constexpr StaticArray(const iter _first, const iter _last);
 
   /** Operators */
@@ -75,7 +75,7 @@ public:
 /***************************************************************************************************************************************************************
 * Dynamic Array Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class DynamicArray : public std::vector<T>,
                      public Array<T, DynamicArray<T>>
 {
@@ -85,13 +85,13 @@ public:
   /** Constructors */
   DynamicArray();
 
-  DynamicArray(const std::size_t _size);
+  explicit DynamicArray(const std::size_t _size);
 
   DynamicArray(const std::size_t _size, const T& _value);
 
   DynamicArray(const std::initializer_list<T>& _list);
 
-  template <class iter>
+  template<class iter>
   DynamicArray(const iter _first, const iter _last);
 
   /** Operators */
@@ -100,6 +100,26 @@ public:
 
   friend Base;
 };
+
+/***************************************************************************************************************************************************************
+* Static Array Aliases
+***************************************************************************************************************************************************************/
+template<typename T> using SArray2 = StaticArray<T, 2>;
+template<typename T> using SArray3 = StaticArray<T, 3>;
+template<typename T> using SArray4 = StaticArray<T, 4>;
+
+template<std::size_t N> using SArrayB = StaticArray<Bool, N>;
+template<std::size_t N> using SArrayU = StaticArray<std::size_t, N>;
+template<std::size_t N> using SArrayI = StaticArray<int, N>;
+template<std::size_t N> using SArrayF = StaticArray<Float, N>;
+
+/***************************************************************************************************************************************************************
+* Dynamic Array Aliases
+***************************************************************************************************************************************************************/
+using DArrayB = DynamicArray<Bool>;
+using DArrayU = DynamicArray<std::size_t>;
+using DArrayI = DynamicArray<int>;
+using DArrayF = DynamicArray<Float>;
 
 }
 

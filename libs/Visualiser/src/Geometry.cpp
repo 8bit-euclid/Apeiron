@@ -2,12 +2,12 @@
 
 namespace Apeiron {
 
-void CreateTriangle(Model &_model, GLfloat _length)
+void CreateTriangle(Model& _model, GLfloat _length)
 {
 
 }
 
-void CreateTriangle(Model &_model, const StaticArray<GLfloat, 3> &_v0, const StaticArray<GLfloat, 3> &_v1, const StaticArray<GLfloat, 3> &_v2)
+void CreateTriangle(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2)
 {
 
 }
@@ -30,17 +30,17 @@ void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _height
   _model.Geometry.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
   _model.Geometry.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
-  CreatePolygon(_model, StaticArray<GLfloat, 3>{-0.5f * _length, -0.5f * _height, 0.0f}, StaticArray<GLfloat, 3>{ 0.5f * _length, -0.5f * _height, 0.0f},
-                        StaticArray<GLfloat, 3>{ 0.5f * _length,  0.5f * _height, 0.0f}, StaticArray<GLfloat, 3>{-0.5f * _length,  0.5f * _height, 0.0f});
+  CreatePolygon(_model, SVector3<GLfloat>{-0.5f * _length, -0.5f * _height, 0.0f}, SVector3<GLfloat>{0.5f * _length, -0.5f * _height, 0.0f},
+                SVector3<GLfloat>{0.5f * _length, 0.5f * _height, 0.0f}, SVector3<GLfloat>{-0.5f * _length, 0.5f * _height, 0.0f});
 }
 
-void CreateQuadrilateral(Model &_model, const StaticArray<GLfloat, 3> &_v0, const StaticArray<GLfloat, 3> &_v1, const StaticArray<GLfloat, 3> &_v2,
-                         const StaticArray<GLfloat, 3> &_v3)
+void CreateQuadrilateral(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
+                         const SVector3<GLfloat>& _v3)
 {
 
 }
 
-template <class ...t_static_vector>
+template<class ...t_static_vector>
 void CreatePolygon(Model& _model, const t_static_vector& ..._v)
 {
   _model.Geometry.Shading = ShadingType::Flat;
@@ -71,8 +71,8 @@ void CreateTetrahedron(Model& _model, GLfloat _length)
   CreateTetrahedron(_model, {-0.5f*_length, 0.0f, width/3.0f}, {0.5f*_length, 0.0f, width/3.0f}, {0.0f, 0.0f, -2.0f*width/3.0f}, {0.0f, height, 0.0f});
 }
 
-void CreateTetrahedron(Model& _model, const StaticArray<GLfloat, 3>& _v0, const StaticArray<GLfloat, 3>& _v1, const StaticArray<GLfloat, 3>& _v2,
-                       const StaticArray<GLfloat, 3>& _v3)
+void CreateTetrahedron(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
+                       const SVector3<GLfloat>& _v3)
 {
   _model.Geometry.Shading = ShadingType::Flat;
 
@@ -107,14 +107,14 @@ void CreateTetrahedron(Model& _model, const StaticArray<GLfloat, 3>& _v0, const 
 
 void CreateCube(Model& _model, GLfloat _length)
 {
-  StaticArray<GLfloat, 3> v0{-0.5f*_length, -0.5f*_length, 0.5f*_length};
-  StaticArray<GLfloat, 3> v1{0.5f*_length, -0.5f*_length, 0.5f*_length};
-  StaticArray<GLfloat, 3> v2{-0.5f*_length, -0.5f*_length, -0.5f*_length};
-  StaticArray<GLfloat, 3> v3{0.5f*_length, -0.5f*_length, -0.5f*_length};
-  StaticArray<GLfloat, 3> v4{-0.5f*_length, 0.5f*_length, 0.5f*_length};
-  StaticArray<GLfloat, 3> v5{0.5f*_length, 0.5f*_length, 0.5f*_length};
-  StaticArray<GLfloat, 3> v6{-0.5f*_length, 0.5f*_length, -0.5f*_length};
-  StaticArray<GLfloat, 3> v7{0.5f*_length, 0.5f*_length, -0.5f*_length};
+  SVector3<GLfloat> v0{-0.5f * _length, -0.5f * _length, 0.5f * _length};
+  SVector3<GLfloat> v1{0.5f * _length, -0.5f * _length, 0.5f * _length};
+  SVector3<GLfloat> v2{-0.5f * _length, -0.5f * _length, -0.5f * _length};
+  SVector3<GLfloat> v3{0.5f * _length, -0.5f * _length, -0.5f * _length};
+  SVector3<GLfloat> v4{-0.5f * _length, 0.5f * _length, 0.5f * _length};
+  SVector3<GLfloat> v5{0.5f * _length, 0.5f * _length, 0.5f * _length};
+  SVector3<GLfloat> v6{-0.5f * _length, 0.5f * _length, -0.5f * _length};
+  SVector3<GLfloat> v7{0.5f * _length, 0.5f * _length, -0.5f * _length};
 
   _model.Geometry.Shading = ShadingType::Flat;
 
@@ -183,7 +183,7 @@ void CreateCube(Model& _model, GLfloat _length)
   _model.Load();
 }
 
-void CreateCuboid(Model &_model, const StaticArray<GLfloat, 3> &_lengths)
+void CreateCuboid(Model &_model, const SVector3<GLfloat>& _lengths)
 {
 
 }

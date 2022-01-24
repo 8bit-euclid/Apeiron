@@ -11,7 +11,7 @@ namespace Shapes {
 /***************************************************************************************************************************************************************
 * Polytope Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<class derived, PolytopeCategory t_category, std::size_t t_dimension>
+template<class derived, PolytopeCategory category, std::size_t dim>
 struct Polytope
 {
   constexpr virtual ~Polytope() = 0;
@@ -35,28 +35,28 @@ private:
 /***************************************************************************************************************************************************************
 * Static Polytope Abstract Class
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory t_category, std::size_t t_dimension>
-struct StaticPolytope : public Polytope<StaticPolytope<t_category, t_dimension>, t_category, t_dimension>
+template<PolytopeCategory category, std::size_t dim>
+struct StaticPolytope : public Polytope<StaticPolytope<category, dim>, category, dim>
 {
-  constexpr StaticPolytope() { STATIC_ASSERT(isStaticPolytope<t_category>(), "The polytope's information must be known at compile time.") }
+  constexpr StaticPolytope() { STATIC_ASSERT(isStaticPolytope<category>(), "The polytope's information must be known at compile time.") }
 
   constexpr virtual ~StaticPolytope() = 0;
 
-  StaticArray<StaticArray<Float, t_dimension>, PolytopeVertexCount<t_category>()> Vertices;
-  constexpr static auto Faces{GetPolytopeFaces<t_category, t_dimension>()};
+  StaticArray<SVectorF < dim>, PolytopeVertexCount<category>()> Vertices;
+  constexpr static auto Faces{GetPolytopeFaces<category, dim>()};
 };
 
 /***************************************************************************************************************************************************************
 * Dynamic Polytope Abstract Class
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory t_category, std::size_t t_dimension>
-struct DynamicPolytope : public Polytope<DynamicPolytope<t_category, t_dimension>, t_category, t_dimension>
+template<PolytopeCategory category, std::size_t dim>
+struct DynamicPolytope : public Polytope<DynamicPolytope<category, dim>, category, dim>
 {
-  DynamicPolytope() { STATIC_ASSERT(isDynamicPolytope<t_category>(), "Rather use StaticPolytope if the polytope's information is known at compile-time.") }
+  DynamicPolytope() { STATIC_ASSERT(isDynamicPolytope<category>(), "Rather use StaticPolytope if the polytope's information is known at compile-time.") }
 
   virtual ~DynamicPolytope() = 0;
 
-  DynamicArray<StaticArray<Float, t_dimension>> Vertices;
+  DynamicArray<SVectorF<dim>> Vertices;
   DynamicArray<DynamicArray<std::size_t>> Faces;
 };
 

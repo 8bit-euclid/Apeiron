@@ -5,7 +5,7 @@
 
 namespace Apeiron{
 
-template <typename T, int n_values>
+template<typename T, int n_values>
 struct SortObject
 {
   std::size_t Index;
@@ -16,7 +16,7 @@ struct SortObject
   SortObject(const std::size_t _index, const StaticArray<T, n_values>& _values) : Index(_index), Values(_values) {}
 };
 
-template <typename T, unsigned int n_values = 1>
+template<typename T, unsigned int n_values = 1>
 class Sort
 {
   private:

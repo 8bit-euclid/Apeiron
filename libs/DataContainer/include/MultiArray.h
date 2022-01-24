@@ -8,7 +8,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Multi-dimensional Array Abstract Base Class
 ***************************************************************************************************************************************************************/
-template <typename T, class derived>
+template<typename T, class derived>
 class MultiArray
 {
 protected:
@@ -64,14 +64,14 @@ private:
 /***************************************************************************************************************************************************************
 * Static Multi-dimensional Array Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t ...dimensions>
+template<typename T, std::size_t ...dimensions>
 class StaticMultiArray : public MultiArray<T, StaticMultiArray<T, dimensions...>>
 {
 public:
   /** Constructors. */
   constexpr StaticMultiArray();
 
-  constexpr StaticMultiArray(const T& _value);
+  explicit constexpr StaticMultiArray(const T& _value);
 
 private:
   constexpr static StaticArray<std::size_t, sizeof...(dimensions)> Dimensions{dimensions...};
@@ -84,7 +84,7 @@ private:
 /***************************************************************************************************************************************************************
 * Dynamic Multi-dimensional Array Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class DynamicMultiArray : public MultiArray<T, DynamicMultiArray<T>>
 {
 public:
