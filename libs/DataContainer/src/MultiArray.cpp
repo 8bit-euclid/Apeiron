@@ -10,7 +10,7 @@ namespace Apeiron {
 ***************************************************************************************************************************************************************/
 
 /** Size and index range-checking */
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr void
 MultiArray<T, derived>::MultiIndexBoundCheck(const std::convertible_to<std::size_t> auto ..._multi_index) const
 {
@@ -24,7 +24,7 @@ MultiArray<T, derived>::MultiIndexBoundCheck(const std::convertible_to<std::size
 }
 
 /** Multi-dimensional subscript index toggling */
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr std::size_t
 MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<std::size_t> auto ..._multi_index) const
 {
@@ -44,18 +44,18 @@ MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<std::size_t
   return index;
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr auto
 MultiArray<T, derived>::ComputeMultiIndex(std::size_t _index) const
 {
   EXIT("Yet to complete.")
 
-  constexpr auto& dims = Derived().Dimensions;
-  constexpr auto& n_entries = Derived().nEntries;
-
-  DEBUG_ASSERT(isBounded(_index, 0, n_entries), "The passed index ", _index, " should be in the range [0, ", n_entries, "].")
-
-  StaticArray<std::size_t, dims.size()> res;
+//  constexpr auto& dims = Derived().Dimensions;
+//  constexpr auto& n_entries = Derived().nEntries;
+//
+//  DEBUG_ASSERT(isBounded(_index, 0, n_entries), "The passed index ", _index, " should be in the range [0, ", n_entries, "].")
+//
+//  StaticArray<std::size_t, dims.size()> res;
 
 //  std::size_t factor = Multiply(dimensions...);
 //  for (size_t i = sizeof...(dimensions); i != 0; --i) {
@@ -64,18 +64,19 @@ MultiArray<T, derived>::ComputeMultiIndex(std::size_t _index) const
 //    assert(res[i - 1] < dims[i - 1]);
 //    _index -= res[i - 1] * factor;
 //  }
-  return res;
+//  return res;
+  return 0;
 }
 
 /** Operator overloads. */
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr T&
 MultiArray<T, derived>::operator()(std::convertible_to<std::size_t> auto ..._multi_index)
 {
   return Derived().Entries[ComputeLinearIndex(_multi_index...)];
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr const T&
 MultiArray<T, derived>::operator()(const std::convertible_to<std::size_t> auto ..._multi_index) const
 {
@@ -95,7 +96,7 @@ MultiArray<T, derived>::operator=(const std::initializer_list<T>& _value_array) 
   return derived_class;
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr derived&
 MultiArray<T, derived>::operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept
 {
@@ -116,11 +117,11 @@ MultiArray<T, derived>::operator=(const std::initializer_list<std::initializer_l
 /***************************************************************************************************************************************************************
 * Static Multi-dimensional Array Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t ...dimensions>
+template<typename T, std::size_t ...dimensions>
 constexpr StaticMultiArray<T, dimensions...>::StaticMultiArray()
   : StaticMultiArray(GetStaticInitValue<T>()) {}
 
-template <typename T, std::size_t ...dimensions>
+template<typename T, std::size_t ...dimensions>
 constexpr StaticMultiArray<T, dimensions...>::StaticMultiArray(const T& _value)
   : Entries(_value)
 {
@@ -132,16 +133,16 @@ constexpr StaticMultiArray<T, dimensions...>::StaticMultiArray(const T& _value)
 ***************************************************************************************************************************************************************/
 
 /** Constructors/Destructors */
-template <typename T>
+template<typename T>
 DynamicMultiArray<T>::DynamicMultiArray()
   : DynamicMultiArray(0) {}
 
-template <typename T>
+template<typename T>
 DynamicMultiArray<T>::DynamicMultiArray(const std::convertible_to<std::size_t> auto ..._dimensions)
   : Dimensions{static_cast<std::size_t>(_dimensions)...}, nEntries(Product(_dimensions...)), Entries(nEntries, GetDynamicInitValue<T>()) {}
 
 /** Multi-array Resize Functions */
-template <typename T>
+template<typename T>
 void DynamicMultiArray<T>::Resize(const std::convertible_to<std::size_t> auto ..._dimensions)
 {
   Dimensions = {_dimensions...};

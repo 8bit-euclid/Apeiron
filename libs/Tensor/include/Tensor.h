@@ -9,7 +9,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Tensor Abstract Base Class
 ***************************************************************************************************************************************************************/
-template <typename T, class derived>
+template<typename T, class derived>
 class Tensor : Detail::NumericContainer<T, Tensor<T, derived>>
 {
 protected:
@@ -57,7 +57,7 @@ private:
 /***************************************************************************************************************************************************************
 * Static Tensor Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t ...dimensions>
+template<typename T, std::size_t ...dimensions>
 class StaticTensor : public Tensor<T, StaticTensor<T, dimensions...>>
 {
   friend Tensor<T, StaticTensor<T, dimensions...>>;
@@ -72,7 +72,7 @@ private:
 /***************************************************************************************************************************************************************
 * Dynamic Tensor Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class DynamicTensor : public Tensor<T, DynamicTensor<T>>
 {
   friend Tensor<T, DynamicTensor<T>>;
@@ -91,10 +91,10 @@ private:
 
 //StaticTensor<Float, 3> test;
 //
-//template <typename T, unsigned t_dimension>
-//class StaticVector : public StaticTensor<T, 1, t_dimension> {};
+//template<typename T, unsigned dim>
+//class StaticVector : public StaticTensor<T, 1, dim> {};
 //
-//template <typename T, unsigned t_dimension0, unsigned t_dimension1>
+//template<typename T, unsigned t_dimension0, unsigned t_dimension1>
 //class StaticMatrix : public StaticTensor<T, 2, t_dimension0, t_dimension1> {};
 //
 //typedef StaticTensor<Float, 1, 1> Vector_StFl;

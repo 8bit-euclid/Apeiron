@@ -2,6 +2,7 @@
 
 #include "../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "../include/GLDebug.h"
 #include "../include/GLTypes.h"
 #include "../include/Visualiser.h"
@@ -36,7 +37,7 @@ protected:
   glm::mat4 ViewMatrix;
   glm::mat4 ProjectionMatrix;
 
-//  template <typename t_derived>
+//  template<typename t_derived>
 //  std::shared_ptr<t_derived> shared_from_base()
 //  {
 //    return std::static_pointer_cast<t_derived>(shared_from_this());
@@ -79,7 +80,7 @@ public:
   void OnImGuiRender() override;
 
 private:
-  StaticArray<float, 4> ClearColour{0.2f, 0.3f, 0.8f, 1.0f};
+  SVector4<GLfloat> ClearColour{0.2f, 0.3f, 0.8f, 1.0f};
 };
 
 /***************************************************************************************************************************************************************

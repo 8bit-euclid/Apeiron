@@ -2,6 +2,7 @@
 
 #include "../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
 
@@ -32,9 +33,9 @@ public:
 
   const StaticArray<Bool, mKeys>& GetKeys() const { return Keys; }
 
-  StaticArray<GLdouble, 2> GetMouseDisplacement();
+  SVectorF2 GetMouseDisplacement();
 
-  StaticArray<GLdouble, 2> GetMouseWheelDisplacement();
+  SVectorF2 GetMouseWheelDisplacement();
 
   bool isViewPortModified();
 
@@ -52,12 +53,12 @@ private:
   GLfloat DeltaTime{0.0};
   GLfloat LastTime{0.0};
 
-  StaticArray<Bool, mKeys> Keys;
-  StaticArray<GLint, 2> WindowDimensions;
-  StaticArray<GLint, 2> ViewportDimensions;
-  StaticArray<GLdouble, 2> PreviousMousePosition;
-  StaticArray<GLdouble, 2> MouseDisplacement;
-  StaticArray<GLdouble, 2> MouseWheelDisplacement;
+  SArrayB<mKeys> Keys;
+  SArray2<GLint> WindowDimensions;
+  SArray2<GLint> ViewportDimensions;
+  SArray2<GLdouble> PreviousMousePosition;
+  SArray2<GLdouble> MouseDisplacement;
+  SArray2<GLdouble> MouseWheelDisplacement;
   bool isFirstMouseMovement;
 
   std::pair<GLint, GLint> GetFrameBufferSize() const;

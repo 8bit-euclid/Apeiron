@@ -2,6 +2,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -27,11 +28,9 @@ public:
 
   void KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time);
 
-  // TODO - need to replace argument type with StaticVector, once it is implemented
-  void MousePositionControl(const StaticArray<GLdouble, 2>& _cursor_displacement);
+  void MousePositionControl(const SVectorF2& _cursor_displacement);
 
-  // TODO - need to replace argument type with StaticVector, once it is implemented
-  void MouseWheelControl(const StaticArray<GLdouble, 2>& _wheel_displacement);
+  void MouseWheelControl(const SVectorF2& _wheel_displacement);
 
   void UpdateViewMatrix();
 

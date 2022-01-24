@@ -17,7 +17,7 @@ enum class PrintFormat
 #define Setw(_width) std::setw(_width)
 
 /** Comma operator overload or output stream. */
-template <typename T>
+template<typename T>
 std::ostream& operator,(std::ostream& _out, const T& _data)
 {
   _out << _data;
@@ -25,7 +25,7 @@ std::ostream& operator,(std::ostream& _out, const T& _data)
 }
 
 /** Convert to a string. */
-template <typename T>
+template<typename T>
 inline std::string To_Str(const T& atype)
 {
   std::stringstream str_buffer;
@@ -70,14 +70,14 @@ inline void Flush()
 }
 
 /** Print a new line. */
-template <char sep = ' '>
+template<char sep = ' '>
 inline void Print()
 {
   std::cout << '\b',' ','\n';
 }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
-template <char sep = ' ', typename T, typename ...trail_T>
+template<char sep = ' ', typename T, typename ...trail_T>
 inline void Print(const T& _data, trail_T... _trailing_data)
 {
   std::cout << _data;

@@ -9,7 +9,7 @@ namespace Apeiron {
 /***************************************************************************************************************************************************************
 * Matrix Abstract Base Class
 ***************************************************************************************************************************************************************/
-template <typename T, class derived>
+template<typename T, class derived>
 class Matrix : Detail::NumericContainer<T, Matrix<T, derived>>
 {
 protected:
@@ -25,7 +25,7 @@ private:
 /***************************************************************************************************************************************************************
 * Static Matrix Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t M, std::size_t N>
+template<typename T, std::size_t M, std::size_t N>
 class StaticMatrix : public StaticMultiArray<T, M, N>,
                      public Matrix<T, StaticMatrix<T, M, N>>
 {
@@ -42,7 +42,7 @@ public:
   explicit constexpr StaticMatrix(const std::initializer_list<T>& _list)
     : BaseMultiArray(_list) {}
 
-  template <class iter>
+  template<class iter>
   constexpr StaticMatrix(const iter _first, const iter _last)
     : BaseMultiArray(_first, _last) {}
 
@@ -53,7 +53,7 @@ private:
 /***************************************************************************************************************************************************************
 * Dynamic Matrix Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 class DynamicMatrix : public DynamicMultiArray<T>,
                       public Matrix<T, DynamicMatrix<T>>
 {
@@ -73,7 +73,7 @@ public:
   explicit DynamicMatrix(const std::initializer_list<T>& _list)
     : BaseMultiArray(_list) {}
 
-  template <class iter>
+  template<class iter>
   DynamicMatrix(const iter _first, const iter _last)
     : BaseMultiArray(_first, _last) {}
 

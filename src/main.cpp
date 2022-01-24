@@ -9,7 +9,7 @@
 
 using namespace Apeiron;
 
-template <typename T, class D>
+template<typename T, class D>
 void TestFunc(const Vector<T, D>& _vector)
 {
   Print("Success!");
@@ -113,13 +113,13 @@ int main(void)
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Papyrus.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/Cloth.jpg");
 
-  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, StaticArray<GLfloat, 3>{0.3, 0.1, 0.0});
-//  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
-//  visualiser.PointLights.emplace_back(glm::vec3(4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, StaticArray<GLfloat, 3>{0.3, 0.1, 0.05});
-//  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.5, 0.3, StaticArray<GLfloat, 3>{0.3, 0.1, 0.1});
+  visualiser.PointLights.emplace_back(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0});
+//  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, SVectorT3<GLfloat>{0.3, 0.1, 0.05});
+//  visualiser.PointLights.emplace_back(glm::vec3(4.0, 2.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.7, 0.6, SVectorT3<GLfloat>{0.3, 0.1, 0.05});
+//  visualiser.PointLights.emplace_back(glm::vec3(-4.0, 2.0, 0.0), glm::vec4(0.0, 1.0, 0.0, 1.0), 0.5, 0.3, SVectorT3<GLfloat>{0.3, 0.1, 0.1});
 
-//  visualiser.SpotLights.emplace_back(glm::vec3(0.0, 3.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 1.0, 0.7, StaticArray<GLfloat, 3>{1.0, 0.0, 0.0});
-//  visualiser.SpotLights.emplace_back(glm::vec3(3.0, 1.0, 0.0), glm::vec3(-5.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 0.5, 0.3, StaticArray<GLfloat, 3>{1.0, 0.0, 0.0});
+//  visualiser.SpotLights.emplace_back(glm::vec3(0.0, 3.0, 0.0), glm::vec3(0.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 1.0, 0.7, SVectorT3<GLfloat>{1.0, 0.0, 0.0});
+//  visualiser.SpotLights.emplace_back(glm::vec3(3.0, 1.0, 0.0), glm::vec3(-5.0, -1.0, 0.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 0.5, 0.3, SVectorT3<GLfloat>{1.0, 0.0, 0.0});
 
   visualiser.Cameras.resize(1);
   visualiser.Cameras[0].SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);

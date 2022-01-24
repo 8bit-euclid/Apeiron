@@ -40,10 +40,10 @@ public:
   const StaticArray<Bool, 1024>&
   GetKeys() const { return OpenGLWindow.GetKeys(); }
 
-  StaticArray<GLdouble, 2>
+  SVectorF2
   GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
 
-  StaticArray<GLdouble, 2>
+  SVectorF2
   GetMouseWheelDisplacement() { return OpenGLWindow.GetMouseWheelDisplacement(); }
 
   inline std::pair<GLint, GLint>

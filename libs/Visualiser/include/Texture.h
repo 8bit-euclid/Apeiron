@@ -1,9 +1,11 @@
 #pragma once
 
-#include <GL/glew.h>
 #include "../../../include/Global.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
+
+#include <GL/glew.h>
 
 //#pragma GCC diagnostic push
 //#pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -26,7 +28,7 @@ public:
   ~Texture();
 
   void Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type, const GLint _wrap_type,
-            const StaticArray<GLfloat, 4>& _border_colour = {1.0f, 1.0f, 1.0f, 1.0f});
+            const SVector4<GLfloat>& _border_colour = {1.0f, 1.0f, 1.0f, 1.0f});
 
   void ReadFromFile(const std::string& _file_path, const GLint _wrap_type);
 

@@ -6,7 +6,7 @@
 
 namespace Apeiron {
 
-template <typename T>
+template<typename T>
 class List : public std::list<T>
 {
 public:

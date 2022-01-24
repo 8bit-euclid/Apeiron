@@ -83,11 +83,11 @@ constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
 constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
 /** Check if a value is NaN. */
-template <typename T>
+template<typename T>
 constexpr bool isNaN(const T _value = T()) { return std::isnan(_value); }
 
 /** Check if a value is infinity. */
-template <typename T>
+template<typename T>
 constexpr bool isInfinity(const T _value = T()) { return std::isinf(_value); }
 
 /***************************************************************************************************************************************************************
@@ -95,14 +95,14 @@ constexpr bool isInfinity(const T _value = T()) { return std::isinf(_value); }
 ***************************************************************************************************************************************************************/
 
 /** Check if two data types are the same. */
-template <class T1, class T2>
+template<class T1, class T2>
 constexpr bool isTypeEqual()
 {
   return std::is_same_v<T1, T2>;
 }
 
 /** Check if the data types of a sequence of values are the same. */
-template <typename T, class ...T_seq>
+template<typename T, class ...T_seq>
 constexpr bool areAllTypesEqual()
 {
   return (isTypeEqual<T, T_seq>() && ...);
@@ -155,7 +155,7 @@ constexpr TypeCategory GetTypeCategory(const T& _value = T())
 }
 
 /** Get the initial value for each type category. */
-template <typename T, TypeCategory category = GetTypeCategory<T>()>
+template<typename T, TypeCategory category = GetTypeCategory<T>()>
 constexpr T GetStaticInitValue()
 {
   return category == TypeCategory::Boolean ? static_cast<T>(false) :
@@ -166,7 +166,7 @@ constexpr T GetStaticInitValue()
 }
 
 /** Get the initial value for each type category. */
-template <typename T, TypeCategory category = GetTypeCategory<T>()>
+template<typename T, TypeCategory category = GetTypeCategory<T>()>
 T GetDynamicInitValue()
 {
   return category == TypeCategory::Boolean ? static_cast<T>(false) :

@@ -10,7 +10,7 @@ namespace Apeiron{
 ***************************************************************************************************************************************************************/
 
 /** Size and Index Range-checking */
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr void
 Array<T, derived>::IndexBoundCheck(const std::size_t _index) const
 {
@@ -18,7 +18,7 @@ Array<T, derived>::IndexBoundCheck(const std::size_t _index) const
   DEBUG_ASSERT(isBounded(_index, std::size_t(0), Derived().size()), "The array index ", _index, " must be in the range [0, ", Derived().size() - 1, "].")
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr void
 Array<T, derived>::SizeCheck(const std::size_t _size0, const std::size_t _size1) const
 {
@@ -26,7 +26,7 @@ Array<T, derived>::SizeCheck(const std::size_t _size0, const std::size_t _size1)
 }
 
 /** Subscript Operator Overloads */
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr T&
 Array<T, derived>::operator[](const std::size_t _index)
 {
@@ -34,7 +34,7 @@ Array<T, derived>::operator[](const std::size_t _index)
   return *(Derived().begin() + _index);
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr const T&
 Array<T, derived>::operator[](const std::size_t _index) const
 {
@@ -43,8 +43,8 @@ Array<T, derived>::operator[](const std::size_t _index) const
 }
 
 /** Assignment Operator Overloads */
-template <typename T, class derived>
-template <class t_rhs_type>
+template<typename T, class derived>
+template<class t_rhs_type>
 constexpr derived&
 Array<T, derived>::operator=(const t_rhs_type& _value) noexcept
 {
@@ -53,7 +53,7 @@ Array<T, derived>::operator=(const t_rhs_type& _value) noexcept
   return Derived();
 }
 
-template <typename T, class derived>
+template<typename T, class derived>
 constexpr derived&
 Array<T, derived>::operator=(const std::initializer_list<T>& _value_list) noexcept
 {
@@ -64,7 +64,7 @@ Array<T, derived>::operator=(const std::initializer_list<T>& _value_list) noexce
 }
 
 /** Non-member functions */
-template <typename T, class derived>
+template<typename T, class derived>
 std::ostream&
 operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base)
 {
@@ -76,44 +76,44 @@ operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base)
 /***************************************************************************************************************************************************************
 * Static Array Class
 ***************************************************************************************************************************************************************/
-template <typename T, std::size_t t_array_size>
+template<typename T, std::size_t t_array_size>
 constexpr StaticArray<T, t_array_size>::StaticArray()
   : StaticArray(GetStaticInitValue<T>()) {}
 
-template <typename T, std::size_t t_array_size>
+template<typename T, std::size_t t_array_size>
 constexpr StaticArray<T, t_array_size>::StaticArray(const T& _value)
   : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_value)) {}
 
-template <typename T, std::size_t t_array_size>
+template<typename T, std::size_t t_array_size>
 constexpr StaticArray<T, t_array_size>::StaticArray(const std::initializer_list<T>& _list)
   : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_list)) {}
 
-template <typename T, std::size_t t_array_size>
-template <class iter>
+template<typename T, std::size_t t_array_size>
+template<class iter>
 constexpr StaticArray<T, t_array_size>::StaticArray(const iter _first, const iter _last)
   : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_first, _last)) {}
 
 /***************************************************************************************************************************************************************
 * Dynamic Array Class
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 DynamicArray<T>::DynamicArray()
   : std::vector<T>() {}
 
-template <typename T>
+template<typename T>
 DynamicArray<T>::DynamicArray(const std::size_t _size)
   : DynamicArray(_size, GetDynamicInitValue<T>()) {}
 
-template <typename T>
+template<typename T>
 DynamicArray<T>::DynamicArray(const std::size_t _size, const T& _value)
   : std::vector<T>(_size, _value) {}
 
-template <typename T>
+template<typename T>
 DynamicArray<T>::DynamicArray(const std::initializer_list<T>& _list)
   : std::vector<T>(_list) {}
 
-template <typename T>
-template <class iter>
+template<typename T>
+template<class iter>
 DynamicArray<T>::DynamicArray(const iter _first, const iter _last)
   : std::vector<T>(_first, _last) {}
 

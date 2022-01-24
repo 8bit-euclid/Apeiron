@@ -2,6 +2,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
 #include "Shadow.h"
@@ -87,7 +88,7 @@ protected:
   PointLightBase() = delete;
 
   PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-                 const StaticArray<GLfloat, 3>& _attenuation_coefficients);
+                 const SVector3<GLfloat>& _attenuation_coefficients);
 
   PointLightBase(const PointLightBase<derived>& _point_light_base);
 
@@ -116,7 +117,7 @@ protected:
   UInt iPointLight;
 
   glm::vec3 Position;
-  StaticArray<GLfloat, 3> AttenuationCoefficients; // 0: constant term, 1: linear term, 2: quadratic term
+  StaticVector<GLfloat, 3> AttenuationCoefficients; // 0: constant term, 1: linear term, 2: quadratic term
   StaticArray<glm::mat4, 6> LightSpaceMatrices;
 };
 
@@ -130,12 +131,8 @@ class PointLight : public Detail::PointLightBase<PointLight>
   friend class Shader;
 
 public:
-  PointLight() = delete;
-
   PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-             const StaticArray<GLfloat, 3>& _attenuation_coefficients);
-
-  ~PointLight() = default;
+             const SVector3<GLfloat>& _attenuation_coefficients);
 };
 
 /***************************************************************************************************************************************************************
@@ -146,12 +143,8 @@ class SpotLight : public Detail::PointLightBase<SpotLight>
   friend class Shader;
 
 public:
-  SpotLight() = delete;
-
   SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _cone_angle, GLfloat _ambient_intensity,
-            GLfloat _diffuse_intensity, const StaticArray<GLfloat, 3>& _attenuation_coefficients);
-
-  ~SpotLight() = default;
+            GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients);
 
 private:
   GLfloat ConeAngle;

@@ -2,6 +2,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
 #include "Model.h"
@@ -16,16 +17,16 @@ namespace Apeiron {
 ***************************************************************************************************************************************************************/
 void CreateTriangle(Model& _model, GLfloat _length);
 
-void CreateTriangle(Model& _model, const StaticArray<GLfloat, 3>& _v0, const StaticArray<GLfloat, 3>& _v1, const StaticArray<GLfloat, 3>& _v2);
+void CreateTriangle(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2);
 
 void CreateSquare(Model& _model, GLfloat _length);
 
 void CreateRectangle(Model& _model, GLfloat _length, GLfloat _height);
 
-void CreateQuadrilateral(Model& _model, const StaticArray<GLfloat, 3>& _v0, const StaticArray<GLfloat, 3>& _v1, const StaticArray<GLfloat, 3>& _v2,
-                         const StaticArray<GLfloat, 3>& _v3);
+void CreateQuadrilateral(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
+                         const SVector3<GLfloat>& _v3);
 
-template <class ...t_static_vector>
+template<class ...t_static_vector>
 void CreatePolygon(Model& _model, const t_static_vector& ..._v);
 
 /***************************************************************************************************************************************************************
@@ -33,12 +34,12 @@ void CreatePolygon(Model& _model, const t_static_vector& ..._v);
 ***************************************************************************************************************************************************************/
 void CreateTetrahedron(Model& _model, GLfloat _length);
 
-void CreateTetrahedron(Model& _model, const StaticArray<GLfloat, 3>& _v0, const StaticArray<GLfloat, 3>& _v1, const StaticArray<GLfloat, 3>& _v2,
-                       const StaticArray<GLfloat, 3>& _v3);
+void CreateTetrahedron(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
+                       const SVector3<GLfloat>& _v3);
 
 void CreateCube(Model& _model, GLfloat _length);
 
-void CreateCuboid(Model& _model, const StaticArray<GLfloat, 3>& _lengths);
+void CreateCuboid(Model& _model, const SVector3<GLfloat>& _lengths);
 
 void CreateOctahedron(Model& _model, GLfloat _length);
 

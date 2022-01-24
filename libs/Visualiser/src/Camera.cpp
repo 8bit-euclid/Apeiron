@@ -69,7 +69,7 @@ void Camera::KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _d
 }
 
 // TODO - need to replace argument type with StaticVector, once it is implemented
-void Camera::MousePositionControl(const StaticArray<GLdouble, 2>& _cursor_displacement)
+void Camera::MousePositionControl(const SVectorF2& _cursor_displacement)
 {
   // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
   Yaw += MousePositionSensitivity * _cursor_displacement[0];
@@ -80,7 +80,7 @@ void Camera::MousePositionControl(const StaticArray<GLdouble, 2>& _cursor_displa
   SetOrientation(Position, Pitch, Yaw);
 }
 
-void Camera::MouseWheelControl(const StaticArray<GLdouble, 2>& _wheel_displacement)
+void Camera::MouseWheelControl(const SVectorF2& _wheel_displacement)
 {
   GLfloat displacement = MouseWheelSensitivity * _wheel_displacement[1];
   Position += displacement * Front;

@@ -9,28 +9,28 @@ namespace Apeiron{
 ***************************************************************************************************************************************************************/
 
 /** Min value. */
-template <typename T>
+template<typename T>
 constexpr T Min(const T& _a, const T& _b)
 {
   return std::min(_a, _b);
 }
 
 /** Max value. */
-template <typename T>
+template<typename T>
 constexpr T Max(const T& _a, const T& _b)
 {
   return std::max(_a, _b);
 }
 
 /** Bound value between a minimum and a maximum. */
-template <typename T>
+template<typename T>
 constexpr std::pair<T, T> MinMax(const T& _a, const T& _b)
 {
   return std::minmax(_a, _b);
 }
 
 /** Bound value between a minimum and a maximum. */
-template <typename T>
+template<typename T>
 constexpr T Bound(const T& _value, const T& _min, const T& _max)
 {
   return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
@@ -41,7 +41,7 @@ constexpr T Bound(const T& _value, const T& _min, const T& _max)
 ***************************************************************************************************************************************************************/
 
 /** Signum function. */
-template <typename T>
+template<typename T>
 constexpr T Sgn(const T& _value, const int _zero_sign = 1)
 {
   switch(_zero_sign)
@@ -54,7 +54,7 @@ constexpr T Sgn(const T& _value, const int _zero_sign = 1)
 }
 
 /** Absolute value. */
-template <typename T>
+template<typename T>
 constexpr T Abs(const T& _value)
 {
   return _value < static_cast<T>(0) ? -_value : _value;
@@ -65,21 +65,21 @@ constexpr T Abs(const T& _value)
 ***************************************************************************************************************************************************************/
 
 /** Floor function. */
-template <typename integer_T = int64_t>
+template<typename integer_T = int64_t>
 constexpr Float Floor(const Float& _value)
 {
   return static_cast<integer_T>(_value) - (static_cast<integer_T>(_value) > _value);
 }
 
 /** Ceiling function. */
-template <typename integer_T = int64_t>
+template<typename integer_T = int64_t>
 constexpr Float Ceil(const Float& _value)
 {
   return static_cast<integer_T>(_value) + (static_cast<integer_T>(_value) < _value);
 }
 
 /** Rounding function. */
-template <typename integer_T = int64_t>
+template<typename integer_T = int64_t>
 constexpr Float Round(const Float& _value)
 {
   return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value);

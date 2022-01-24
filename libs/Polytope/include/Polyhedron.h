@@ -11,10 +11,10 @@ namespace Shapes {
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polyhedra
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory t_category>
-struct Polyhedron : public StaticPolytope<t_category, 3>
+template<PolytopeCategory category>
+struct Polyhedron : public StaticPolytope<category, 3>
 {
-  Polyhedron() { STATIC_ASSERT((isNPolytope<t_category, 3>()), "A polyhedron must be a 3-polytope.") }
+  Polyhedron() { STATIC_ASSERT((isNPolytope<category, 3>()), "A polyhedron must be a 3-polytope.") }
 
   Polyhedron(const Float _side_length);
 
@@ -33,7 +33,7 @@ struct Polyhedron<PolytopeCategory::Arbitrary3D> : public DynamicPolytope<Polyto
 ***************************************************************************************************************************************************************/
 struct Tetrahedron : public Polyhedron<PolytopeCategory::Tetrahedral>
 {
-  Tetrahedron(const StaticArray<Float, 3>& _v0, const StaticArray<Float, 3>& _v1, const StaticArray<Float, 3>& _v2, const StaticArray<Float, 3>& _v3);
+  Tetrahedron(const SVectorF3& _v0, const SVectorF3& _v1, const SVectorF3& _v2, const SVectorF3& _v3);
 };
 
 struct RegularTetrahedron : public Tetrahedron
@@ -51,7 +51,7 @@ struct TrirectangularTetrahedron : public Tetrahedron
 ***************************************************************************************************************************************************************/
 //void CreateCube(Model &_model, GLfloat _side_length);
 //
-//void CreateCuboid(Model &_model, const StaticArray<GLfloat, 3> &_lengths);
+//void CreateCuboid(Model &_model, const SVectorF3& _lengths);
 //
 //void CreateOctahedron(Model &_model, GLfloat _side_length);
 //

@@ -1,4 +1,5 @@
 #include "../include/Window.h"
+#include "LinearAlgebra/include/Vector.h"
 
 #define GL_DEBUG_MODE
 
@@ -94,7 +95,7 @@ void Window::Open(GLint _width, GLint _height)
   glfwSetWindowUserPointer(pWindow, this);
 }
 
-StaticArray<GLdouble, 2> Window::GetMouseDisplacement()
+SVectorF2 Window::GetMouseDisplacement()
 {
   GLdouble x_displacement = MouseDisplacement[0];
   GLdouble y_displacement = MouseDisplacement[1];
@@ -104,7 +105,7 @@ StaticArray<GLdouble, 2> Window::GetMouseDisplacement()
   return {x_displacement, y_displacement};
 }
 
-StaticArray<GLdouble, 2> Window::GetMouseWheelDisplacement()
+SVectorF2 Window::GetMouseWheelDisplacement()
 {
   GLdouble x_displacement = MouseWheelDisplacement[0];
   GLdouble y_displacement = MouseWheelDisplacement[1];

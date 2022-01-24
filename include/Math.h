@@ -16,7 +16,7 @@ namespace Apeiron{
 namespace Detail {
 
 /** Modulo function for integer types. */
-template <typename T>
+template<typename T>
 constexpr T
 Modulo(const T& _numerator, const T& _denominator, std::true_type, std::false_type)
 {
@@ -24,7 +24,7 @@ Modulo(const T& _numerator, const T& _denominator, std::true_type, std::false_ty
 }
 
 /** Modulo function for floating-point types. */
-template <typename T>
+template<typename T>
 constexpr T
 Modulo(const T& _numerator, const T& _denominator, std::false_type, std::true_type)
 {
@@ -52,7 +52,7 @@ Exp(const Float& _value, const Float& _sum, const Float& n, const int _iteration
   return _delta_value/n == Zero ? _sum : Exp(_value, _sum + _delta_value/n, n*_iteration, _iteration + 1, _delta_value*_value);
 }
 
-template <typename T>
+template<typename T>
 constexpr T
 TrigonometricSeries(T x, T sum, T n, int i, int s, T t)
 {
@@ -64,7 +64,7 @@ TrigonometricSeries(T x, T sum, T n, int i, int s, T t)
 /***************************************************************************************************************************************************************
 * Sequences and Series
 ***************************************************************************************************************************************************************/
-template <typename T, T ...sequence>
+template<typename T, T ...sequence>
 constexpr T
 GetInteger(std::integer_sequence<T, sequence...>, std::size_t _index)
 {
@@ -76,7 +76,7 @@ GetInteger(std::integer_sequence<T, sequence...>, std::size_t _index)
 * General Arithmetic Functions
 ***************************************************************************************************************************************************************/
 /** Sum the terms of a sequence together. */
-template <typename ...T>
+template<typename ...T>
 constexpr auto
 Sum(const T& ..._values)
 {
@@ -84,7 +84,7 @@ Sum(const T& ..._values)
 }
 
 /** Sum the terms of a sequence between two iterators. */
-template <class iter>
+template<class iter>
 constexpr auto
 Sum(const iter _first, const iter _last)
 {
@@ -93,7 +93,7 @@ Sum(const iter _first, const iter _last)
 }
 
 /** Product the terms of a sequence with each other. */
-template <typename ...T>
+template<typename ...T>
 constexpr auto
 Product(const T& ..._values)
 {
@@ -101,7 +101,7 @@ Product(const T& ..._values)
 }
 
 /** Product the terms of a sequence between two iterators. */
-template <class iter>
+template<class iter>
 constexpr auto
 Product(const iter _first, const iter _last)
 {
@@ -110,7 +110,7 @@ Product(const iter _first, const iter _last)
 }
 
 /** Division function. */
-template <typename T>
+template<typename T>
 constexpr Float
 Divide(const T& _numerator, const T& _denominator)
 {
@@ -119,7 +119,7 @@ Divide(const T& _numerator, const T& _denominator)
 }
 
 /** Modulo function. */
-template <typename T>
+template<typename T>
 constexpr T
 Modulo(const T& _numerator, const T& _denominator)
 {
@@ -159,7 +159,7 @@ Choose(const unsigned int _n, const unsigned int _r)
 /***************************************************************************************************************************************************************
 * Power Functions
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 constexpr T
 iPow(const T& _value, const unsigned int& _exponent)
 {
@@ -168,7 +168,7 @@ iPow(const T& _value, const unsigned int& _exponent)
 }
 
 /** Square of a value. */
-template <typename T>
+template<typename T>
 constexpr T
 Square(const T& _value)
 {
@@ -176,7 +176,7 @@ Square(const T& _value)
 }
 
 /** Cube of a value. */
-template <typename T>
+template<typename T>
 constexpr T
 Cube(const T& _value)
 {
@@ -197,7 +197,7 @@ Cbrt(const Float& _value)
 }
 
 /** Constexpr version of std::sqrt. */
-template <typename T>
+template<typename T>
 constexpr Float
 Hypot(const T& _value0, const T& _value1)
 {
@@ -213,21 +213,21 @@ Exp(Float _value)
 /***************************************************************************************************************************************************************
 * Trigonometric/Inverse-Trigonometric Functions
 ***************************************************************************************************************************************************************/
-template <typename T>
+template<typename T>
 constexpr Float
 Sin(const T _value)
 {
   return Detail::TrigonometricSeries(_value, _value, static_cast<Float>(6), 4, -1, iPow(_value, 3));
 }
 
-template <typename T>
+template<typename T>
 constexpr Float
 Cos(T _value)
 {
   return Sin(_value + HalfPi);
 }
 
-template <typename T>
+template<typename T>
 constexpr Float
 Tan(T _value)
 {

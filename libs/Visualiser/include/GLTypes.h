@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -20,7 +20,7 @@ GLTypeEnum(const T& _value = T())
   else if constexpr(isTypeEqual<T, GLuint>()) return GL_UNSIGNED_INT;
   else if constexpr(isTypeEqual<T, GLfloat>()) return GL_FLOAT;
   else if constexpr(isTypeEqual<T, GLdouble>()) return GL_DOUBLE;
-  else EXIT("Unrecognised OpenGL data type: ");
+  else EXIT("Unrecognised OpenGL data type: ")
 }
 
 constexpr GLuint
@@ -37,27 +37,26 @@ GLTypeSize(const GLenum _gl_type)
     case GL_FLOAT: return sizeof(GLfloat);
     case GL_DOUBLE: return sizeof(GLdouble);
   }
-
   EXIT("Unrecognised OpenGL data type.")
 }
 
-// TODO - change from StaticArray to StaticVector, once implemented.
-template<std::size_t t_vector_size, typename T, glm::qualifier t_qualifier = glm::defaultp>
-consteval StaticArray<T, t_vector_size>
-ConvertGlmVecToStaticArray(const glm::vec<static_cast<glm::length_t>(t_vector_size), T, t_qualifier>& _in_vector)
+/** Convert a GLM vector to a static vector. */
+template<std::size_t size, typename T, glm::qualifier qual = glm::defaultp>
+consteval StaticVector<T, size>
+ConvertGlmVecToStaticArray(const glm::vec<size, T, qual>& _in_vector)
 {
-  StaticArray<T, t_vector_size> out_vector;
-  FOR(i, t_vector_size) out_vector[i] = _in_vector[i];
+  StaticVector<T, size> out_vector;
+  FOR(i, size) out_vector[i] = _in_vector[i];
   return out_vector;
 }
 
-// TODO - change from StaticArray to StaticVector, once implemented.
-template<std::size_t t_vector_size, typename T, glm::qualifier t_qualifier = glm::defaultp>
-constexpr glm::vec<static_cast<glm::length_t>(t_vector_size), T, t_qualifier>
-ConvertStaticArrayToGlmVec(const StaticArray<T, t_vector_size>& _in_vector)
+/** Convert a static vector to a GLM vector. */
+template<std::size_t size, typename T, glm::qualifier qual = glm::defaultp>
+constexpr glm::vec<size, T, qual>
+ConvertStaticArrayToGlmVec(const StaticVector<T, size>& _in_vector)
 {
-  glm::vec<t_vector_size, T, t_qualifier> out_vector;
-  FOR(i, t_vector_size) out_vector[i] = _in_vector[i];
+  glm::vec<size, T, qual> out_vector;
+  FOR(i, size) out_vector[i] = _in_vector[i];
   return out_vector;
 }
 

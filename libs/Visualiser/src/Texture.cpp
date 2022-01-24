@@ -23,7 +23,7 @@ Texture::~Texture()
 }
 
 void Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
-                   const GLint _wrap_type, const StaticArray<GLfloat, 4>& _border_colour)
+                   const GLint _wrap_type, const SVector4<GLfloat>& _border_colour)
 {
   Print<'\0'>("Initialising a ", _width, "x", _height, " texture.");
 

@@ -10,7 +10,7 @@ namespace Detail {
 ***************************************************************************************************************************************************************/
 
 /** Initialise an std::array with a single value. */
-template <typename T, std::size_t t_array_size>
+template<typename T, std::size_t t_array_size>
 constexpr auto InitStaticArray(const T& _value)
 {
   std::array<T, t_array_size> initialised_array;
@@ -19,7 +19,7 @@ constexpr auto InitStaticArray(const T& _value)
 }
 
 /** Initialise an std::array with an initializer list. */
-template <typename T, std::size_t t_array_size>
+template<typename T, std::size_t t_array_size>
 constexpr auto InitStaticArray(const std::initializer_list<T>& _list)
 {
   areSizesEqual(t_array_size, _list.size()) ? true : throw "The size of the initializer list must equal the array size.";
@@ -29,7 +29,7 @@ constexpr auto InitStaticArray(const std::initializer_list<T>& _list)
 }
 
 /** Initialise an std::array with a first and last iterator. */
-template <typename T, std::size_t t_array_size, class iter>
+template<typename T, std::size_t t_array_size, class iter>
 constexpr auto InitStaticArray(const iter _first, const iter _last)
 {
   isTypeEqual<T, typename std::iterator_traits<iter>::value_type>() ? true : throw "The number of iterators must equal the array size.";
@@ -42,7 +42,7 @@ constexpr auto InitStaticArray(const iter _first, const iter _last)
 /***************************************************************************************************************************************************************
 * Numeric Data Container Support
 ***************************************************************************************************************************************************************/
-template <typename T, class derived>
+template<typename T, class derived>
 class NumericContainer
 {
 protected:
