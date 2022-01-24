@@ -5,9 +5,11 @@ set(SOURCE_FILES
         include/Polygon.h
         include/Polyhedron.h
         include/Polytope.h
-        src/Polytope.cpp)
+        src/Polygon.cpp src/Categories.cpp)
 
-set(LINK_LIBRARIES)
+set(LINK_LIBRARIES
+        DataContainerLibrary
+        LinearAlgebraLibrary)
 
 add_library(PolytopeLibrary ${SOURCE_FILES})
 target_link_libraries(PolytopeLibrary ${LINK_LIBRARIES})

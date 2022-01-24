@@ -6,6 +6,7 @@ set(SOURCE_FILES
         include/Geometry.h
         include/GLDebug.h
         include/GLTypes.h
+        include/HDR.h
         include/Light.h
         include/Material.h
         include/Mesh.h
@@ -19,6 +20,7 @@ set(SOURCE_FILES
         test/VisualiserTest.h
         src/Camera.cpp
         src/Geometry.cpp
+        src/HDR.cpp
         src/Light.cpp
         src/Mesh.cpp
         src/Model.cpp
@@ -30,7 +32,9 @@ set(SOURCE_FILES
         resources/external/stb_image/stb_image.cpp
         test/VisualiserTest.cpp)
 
-set(LINK_LIBRARIES)
+set(LINK_LIBRARIES
+        DataContainerLibrary
+        LinearAlgebraLibrary)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
 target_include_directories(VisualiserLibrary SYSTEM PRIVATE resources/external/stb_image)

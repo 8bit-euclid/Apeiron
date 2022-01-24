@@ -3,10 +3,10 @@
 
 namespace Apeiron {
 
-template<typename t_data_type>
+template<typename T>
 void VertexAttributeLayout::AddAttribute(const GLuint _n_values)
 {
-  constexpr GLenum typeEnum = GLTypeEnum<t_data_type>();
+  constexpr GLenum typeEnum = GLTypeEnum<T>();
   Attributes.emplace_back(typeEnum, _n_values, (typeEnum == GL_UNSIGNED_BYTE ? GL_TRUE : GL_FALSE));
   Stride += _n_values * GLTypeSize(typeEnum);
 }

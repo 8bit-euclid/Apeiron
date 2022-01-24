@@ -6,8 +6,8 @@
 
 namespace Apeiron {
 
-template <class t_data_type>
-class List : public std::list<t_data_type>
+template <typename T>
+class List : public std::list<T>
 {
 public:
   List() = default;
@@ -26,7 +26,7 @@ public:
   }
 
   /** Subscript Operator Overloads ****************************************************************************************************************************/
-  t_data_type& operator[](const std::size_t _index)
+  T& operator[](const std::size_t _index)
   {
     IndexBoundCheck(_index);
     auto iterator = this->begin();
@@ -34,7 +34,7 @@ public:
     return *iterator;
   }
 
-  const t_data_type& operator[](const std::size_t _index) const
+  const T& operator[](const std::size_t _index) const
   {
     IndexBoundCheck(_index);
     auto iterator = this->begin();
@@ -43,13 +43,13 @@ public:
   }
 
   /** Assignment Operator Overloads ***************************************************************************************************************************/
-  List& operator=(const t_data_type& _value) noexcept
+  List& operator=(const T& _value) noexcept
   {
     FOR_EACH(entry, *this) entry = _value;
     return *this;
   }
 
-  List& operator=(const std::initializer_list<t_data_type>& _value_list)
+  List& operator=(const std::initializer_list<T>& _value_list)
   {
     SizeCheck(_value_list.size(), this->size());
     std::size_t index(0);

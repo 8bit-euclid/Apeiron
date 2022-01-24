@@ -2,7 +2,7 @@
 
 #include "../../../include/Global.h"
 #include "Timer.h"
-#include <DataContainers/include/Array.h>
+#include <DataContainer/include/Array.h>
 
 namespace Apeiron{
 
@@ -95,7 +95,7 @@ public:
     FOR_EACH(stop_watch, StopWatchMap) stop_watch.second.Reset();
   }
 
-  private:
+private:
   /** Finalise time metrics for the current lap. */
   inline void Finalise(const std::string& _timer_name)
   {

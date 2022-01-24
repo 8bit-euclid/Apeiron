@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../include/Global.h"
-#include "../../DataContainers/include/Array.h"
-#include "../../DataContainers/include/List.h"
+#include "../../DataContainer/include/Array.h"
+#include "../../DataContainer/include/List.h"
 #include "Camera.h"
 #include "Geometry.h"
 #include "Light.h"

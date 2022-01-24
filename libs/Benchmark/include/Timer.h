@@ -1,11 +1,13 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include <DataContainers/include/Array.h>
+#include "../../DataContainer/include/Array.h"
 
 namespace Apeiron{
 
-/** Units for measuring time. */
+/***************************************************************************************************************************************************************
+* Time Units
+***************************************************************************************************************************************************************/
 enum class TimeUnit
 {
   NanoSecond,
@@ -14,29 +16,17 @@ enum class TimeUnit
   Second
 };
 
-/** Timer class. */
+/***************************************************************************************************************************************************************
+* Timer Class
+***************************************************************************************************************************************************************/
 class Timer
 {
-  /***** Friend Classes *****/
-
   friend class StopWatch;
   friend class Benchmark;
 
-  /***** Member Variables *****/
-
-  bool isRunning;
-  Float TotalNanoSecondsLapsed;
-  std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
-  std::chrono::time_point<std::chrono::high_resolution_clock> StopTime;
-
-  /********** Constructors/Desctructors **********/
-
-  public:
+public:
   /** Default constructor. */
   Timer() : isRunning(false), TotalNanoSecondsLapsed(Zero) {}
-
-  /** Default destructor. */
-  ~Timer() = default;
 
   /********** Class Methods **********/
 
@@ -67,27 +57,33 @@ class Timer
   {
     switch(_time_units)
     {
-      case TimeUnit::NanoSecond: return TotalNanoSecondsLapsed;
+      case TimeUnit::NanoSecond:  return TotalNanoSecondsLapsed;
       case TimeUnit::MicroSecond: return 1.0e-3 * TotalNanoSecondsLapsed;
       case TimeUnit::MilliSecond: return 1.0e-6 * TotalNanoSecondsLapsed;
-      case TimeUnit::Second: return 1.0e-9 * TotalNanoSecondsLapsed;
-      default: ERROR("Time unit not recognised.")
+      case TimeUnit::Second:      return 1.0e-9 * TotalNanoSecondsLapsed;
+      default: EXIT("Time unit not recognised.")
     }
   }
+
+private:
+  std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
+  std::chrono::time_point<std::chrono::high_resolution_clock> StopTime;
+  Float TotalNanoSecondsLapsed;
+  bool isRunning;
 };
 
-/** Stopwatch class. */
+/***************************************************************************************************************************************************************
+* Stopwatch Class
+***************************************************************************************************************************************************************/
 class StopWatch : public Timer
 {
-  /********** Member Variables **********/
-
-  public:
-  bool isFinalised;
+public:
   Float LapTimeMin;
   Float LapTimeMax;
   Float LapTimeMean;
   Float LapTimeRMS;
   Float LapTimeStd;
+  bool isFinalised;
   DynamicArray<Float> LapTimes;
 
   /********** Constructors/Destructors **********/

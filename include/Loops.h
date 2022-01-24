@@ -3,7 +3,7 @@
 namespace Apeiron{
 
 /** For loop through dimensions. */
-#define FOR1(_ic) for(std::size_t (_ic) = 0; (_ic) < DIM; ++(_ic))
+#define FOR1(_ic) for(std::size_t (_ic) = 0; (_ic) < Dim; ++(_ic))
 
 /** For loop from the first index. */
 #define FOR2(_index, _n_index) for(std::size_t (_index) = 0; (_index) < (_n_index); ++(_index))

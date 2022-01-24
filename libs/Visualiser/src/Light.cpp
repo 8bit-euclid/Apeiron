@@ -38,10 +38,10 @@ DirectionalLight::DirectionalLight(glm::vec3 _direction, glm::vec4 _rgba_colour,
 /***************************************************************************************************************************************************************
 * Point Light Abstract Base Class
 ***************************************************************************************************************************************************************/
-namespace LightSupport {
+namespace Detail {
 
-template<class t_derived_class>
-PointLightBase<t_derived_class>::PointLightBase(const LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour,
+template<class derived>
+PointLightBase<derived>::PointLightBase(const LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour,
                                                 const GLfloat _ambient_intensity, const GLfloat _diffuse_intensity,
                                                 const StaticArray<GLfloat, 3>& _attenuation_coefficients)
   : Light(_light_type, _rgba_colour, _ambient_intensity, _diffuse_intensity), Position(_position), AttenuationCoefficients(_attenuation_coefficients)
@@ -58,24 +58,24 @@ PointLightBase<t_derived_class>::PointLightBase(const LightType _light_type, con
   iPointLight = nPointLights++;
 }
 
-template<class t_derived_class>
-PointLightBase<t_derived_class>::PointLightBase(const PointLightBase<t_derived_class>& _point_light_base)
+template<class derived>
+PointLightBase<derived>::PointLightBase(const PointLightBase<derived>& _point_light_base)
   : iPointLight(_point_light_base.iPointLight), Position(_point_light_base.Position), AttenuationCoefficients(_point_light_base.AttenuationCoefficients)
 {
   nPointLights++;
 }
 
-template<class t_derived_class>
-PointLightBase<t_derived_class>::~PointLightBase()
+template<class derived>
+PointLightBase<derived>::~PointLightBase()
 {
   nPointLights--;
 }
 
 }
 
-template class LightSupport::PointLightBase<PointLight>;
-template class LightSupport::PointLightBase<SpotLight>;
-template<class t_derived_class> UInt LightSupport::PointLightBase<t_derived_class>::nPointLights = 0;
+template class Detail::PointLightBase<PointLight>;
+template class Detail::PointLightBase<SpotLight>;
+template<class derived> UInt Detail::PointLightBase<derived>::nPointLights = 0;
 
 /***************************************************************************************************************************************************************
 * Point Light Class

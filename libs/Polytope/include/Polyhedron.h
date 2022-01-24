@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainers/include/Array.h"
+#include "../../DataContainer/include/Array.h"
 #include "Categories.h"
 #include "Polytope.h"
 
 namespace Apeiron {
-namespace Geometry {
+namespace Shapes {
 
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polyhedra

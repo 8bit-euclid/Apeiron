@@ -65,9 +65,11 @@ target_link_libraries(ImGui glfw)
 # Setup Project Sub-directories.
 #***************************************************************************************************************************************************************
 include_directories(${PROJECT_SOURCE_DIR}/libs)
-add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainers)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainer)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/LinearAlgebra)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Manifold)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Polytope)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Sort)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
@@ -80,9 +82,11 @@ set(APEIRON_SOURCE_FILES
         src/main.cpp)
 
 set(APEIRON_LINK_LIBRARIES
-        ArrayLibrary
+        DataContainerLibrary
         BenchmarkLibrary
         FunctionalLibrary
+        LinearAlgebraLibrary
+        ManifoldLibrary
         PolytopeLibrary
         SortLibrary
         TensorLibrary
@@ -102,7 +106,7 @@ FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive
 FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
-add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainers/test/UnitTestArray.cpp)
+add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
 add_executable(UnitTestBasicMath ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
 add_executable(UnitTestComparators ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
 add_executable(UnitTestMath ${PROJECT_SOURCE_DIR}/test/UnitTestMath.cpp)
