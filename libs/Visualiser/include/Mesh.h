@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainers/include/Array.h"
+#include "../../DataContainer/include/Array.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -50,7 +50,7 @@ struct VertexAttributeLayout
 
   ~VertexAttributeLayout() = default;
 
-  template<typename t_data_type>
+  template<typename T>
   void AddAttribute(GLuint _n_values);
 };
 

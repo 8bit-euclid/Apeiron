@@ -3,10 +3,52 @@
 #include "../libs/Polytope/include/Polygon.h"
 #include "../libs/Visualiser/test/VisualiserTest.h"
 
+#include "../libs/DataContainer/include/MultiArray.h"
+#include "../libs/Tensor/include/Tensor.h"
+#include "../libs/LinearAlgebra/include/Vector.h"
+
 using namespace Apeiron;
+
+template <typename T, class D>
+void TestFunc(const Vector<T, D>& _vector)
+{
+  Print("Success!");
+}
 
 int main(void)
 {
+  StaticTensor<int, 2, 3, 5> tensor1;
+  tensor1(0, 2, 4) = 1;
+
+  DynamicTensor<int> tensor2(3, 4, 5);
+  tensor2(0, 2, 4) = 1;
+
+  StaticArray<Float, 3> t;
+
+  FOR_EACH(item, t) item = 1;
+
+  StaticMultiArray<int, 2, 4, 5> marray1;
+  marray1(0, 2, 4) = 1;
+
+  DynamicMultiArray<int> marray2(3, 4, 5);
+  marray2(0, 2, 4) = 1;
+
+  unsigned count(1);
+//  FOR_EACH(item, marray2) Print("Count: ", count++);
+  FOR_EACH(item, tensor2) Print("Count: ", count++);
+
+  StaticVector<Float, 3> vec1(True);
+  DynamicVector<Float> vec2(3, Five);
+
+  TestFunc(vec1);
+  TestFunc(vec2);
+
+//  StaticMultiArray<int, 3, 4, 5> tensor1;
+//  tensor1(0, 2, 4) = 1;
+//
+//  DynamicMultiArray<int> tensor2(3, 4, 5);
+//  tensor2(0, 2, 4) = 1;
+
 //  Geometry::Polygon p(8, 5.0);
 
   Visualiser visualiser;
@@ -55,9 +97,9 @@ int main(void)
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K.jpg");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_003_1K/BrickWall_003_1K_Normal.jpg");
 
-  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Diffuse.png");
-  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Normal.png");
-  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_002_2K/Displacement.png");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/Diffuse.png");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/Normal.png");
+  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/BrickWall_001_2K/Displacement.png");
 
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodToyBox_1K/Diffuse.png");
 //  visualiser.Textures.emplace_back("libs/Visualiser/resources/textures/WoodToyBox_1K/Normal.png");
@@ -98,7 +140,7 @@ int main(void)
     {
       auto [width, height] = visualiser.ViewportDimensions();
       visualiser.Cameras[0].SetViewFrustum(visualiser.ViewportAspectRatio());
-      visualiser.Shaders[0].SetUniform2f("u_resolution", (float)width, (float)height);
+      visualiser.Shaders[0].SetUniform2f("u_resolution", width, height);
     }
 
     visualiser.RenderDirectionalShadows();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainers/include/Array.h"
+#include "../../DataContainer/include/Array.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

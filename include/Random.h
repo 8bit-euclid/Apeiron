@@ -10,41 +10,38 @@
 namespace Apeiron{
 
 /***************************************************************************************************************************************************************
-* Random Number Base Class
+* Abstract Random Number Base Class
 ***************************************************************************************************************************************************************/
-template <typename t_data_type, TypeCategory type_category = GetTypeCategory<t_data_type>()>
+template <typename T, TypeCategory category = GetTypeCategory<T>()>
 class RandomBase
 {
 protected:
-  std::random_device Device;
-  std::mt19937 Generator;
-
-  RandomBase() : Generator(Device()) {};
+  RandomBase() : Generator(Device()) {}
 
 public:
-  virtual ~RandomBase() {};
+  /** Subscript operator overload to generate a random number. */
+  virtual T operator()() = 0;
 
-  // Pure virtual subscript operator overload to generate a random number.
-  virtual t_data_type operator()() = 0;
+protected:
+  std::random_device Device;
+  std::mt19937 Generator;
 };
 
-// Forward declaration of Random class partial template specialisations.
-template <typename t_data_type, TypeCategory type_category = GetTypeCategory<t_data_type>()>
-class Random;
+/** Forward declaration of Random class and template deduction guide. */
+template <typename T, TypeCategory category = GetTypeCategory<T>()> class Random;
+template <typename T> Random(T, T) -> Random<T>;
 
 /***************************************************************************************************************************************************************
 * Random Boolean Class
 ***************************************************************************************************************************************************************/
-template <typename t_data_type>
-class Random<t_data_type, TypeCategory::Boolean> : public RandomBase<t_data_type, TypeCategory::Boolean>
+template <typename T>
+class Random<T, TypeCategory::Boolean> : public RandomBase<T, TypeCategory::Boolean>
 {
 public:
   Random() : Distribution(0, 1) {}
 
-  ~Random() = default;
-
-  // Overloaded subscript operator to generate a random boolean.
-  inline t_data_type operator()() { return Distribution(this->Generator); }
+  /** Overloaded subscript operator to generate a random boolean. */
+  inline T operator()() override { return Distribution(this->Generator); }
 
 private:
   std::uniform_int_distribution<UChar> Distribution;
@@ -53,50 +50,39 @@ private:
 /***************************************************************************************************************************************************************
 * Random Integer Class
 ***************************************************************************************************************************************************************/
-template <typename t_data_type>
-class Random<t_data_type, TypeCategory::Integral> : public RandomBase<t_data_type, TypeCategory::Integral>
+template <typename T>
+class Random<T, TypeCategory::Integral> : public RandomBase<T, TypeCategory::Integral>
 {
 public:
-  Random() = delete;
+  Random(const T& _min, const T& _max) :  Distribution(_min, _max) {}
 
-  Random(const t_data_type& _min, const t_data_type& _max) :  Distribution(_min, _max) {}
+  /** Overloaded subscript operator to generate a random integer. */
+  inline T operator()() { return Distribution(this->Generator); }
 
-  ~Random() = default;
-
-  // Overloaded subscript operator to generate a random integer.
-  inline t_data_type operator()() { return Distribution(this->Generator); }
-
-  // Reset min/max bounds for the distribution.
-  void Reset(const t_data_type& _min, const t_data_type& _max) { *this = Random(_min, _max); }
+  /** Reset min/max bounds for the distribution. */
+  void Reset(const T& _min, const T& _max) { *this = Random(_min, _max); }
 
 private:
-  std::uniform_int_distribution<t_data_type> Distribution;
+  std::uniform_int_distribution<T> Distribution;
 };
 
 /***************************************************************************************************************************************************************
 * Random Floating-point Class
 ***************************************************************************************************************************************************************/
-template <typename t_data_type>
-class Random<t_data_type, TypeCategory::FloatingPoint> : public RandomBase<t_data_type, TypeCategory::FloatingPoint>
+template <typename T>
+class Random<T, TypeCategory::FloatingPoint> : public RandomBase<T, TypeCategory::FloatingPoint>
 {
 public:
-  Random() = delete;
+  Random(const T& _min, const T& _max) : Distribution(_min, _max) {}
 
-  Random(const t_data_type& _min, const t_data_type& _max) : Distribution(_min, _max) {}
+  /** Overloaded subscript operator to generate a random floating-point value. */
+  inline T operator()() { return Distribution(this->Generator); }
 
-  ~Random() = default;
-
-  // Overloaded subscript operator to generate a random floating-point value.
-  inline t_data_type operator()() { return Distribution(this->Generator); }
-
-  // Reset min/max bounds for the distribution.
-  void Reset(const t_data_type& _min, const t_data_type& _max) { *this = Random(_min, _max); }
+  /** Reset min/max bounds for the distribution. */
+  void Reset(const T& _min, const T& _max) { *this = Random(_min, _max); }
 
 private:
-  std::uniform_real_distribution<t_data_type> Distribution;
+  std::uniform_real_distribution<T> Distribution;
 };
-
-// Template deduction guide.
-template <typename t_data_type> Random(t_data_type, t_data_type) -> Random<t_data_type>;
 
 }

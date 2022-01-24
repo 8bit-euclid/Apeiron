@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainers/include/Array.h"
+#include "../../DataContainer/include/Array.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
 #include "Shadow.h"
@@ -78,9 +78,9 @@ private:
 /***************************************************************************************************************************************************************
 * Point Light Abstract Base Class
 ***************************************************************************************************************************************************************/
-namespace LightSupport {
+namespace Detail {
 
-template<class t_derived_class>
+template<class derived>
 class PointLightBase : public Light
 {
 protected:
@@ -89,7 +89,7 @@ protected:
   PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
                  const StaticArray<GLfloat, 3>& _attenuation_coefficients);
 
-  PointLightBase(const PointLightBase<t_derived_class>& _point_light_base);
+  PointLightBase(const PointLightBase<derived>& _point_light_base);
 
 public:
   ~PointLightBase();
@@ -104,9 +104,9 @@ public:
 
   const StaticArray<glm::mat4, 6>& GetLightSpaceMatrices() const { return LightSpaceMatrices; }
 
-  PointLightBase<t_derived_class>& operator=(const PointLightBase<t_derived_class>& _other) = delete;
+  PointLightBase<derived>& operator=(const PointLightBase<derived>& _other) = delete;
 
-  const PointLightBase<t_derived_class>& operator=(const PointLightBase<t_derived_class>& _other) const = delete;
+  const PointLightBase<derived>& operator=(const PointLightBase<derived>& _other) const = delete;
 
 protected:
   constexpr static UInt MaxPointLights{4};
@@ -125,7 +125,7 @@ protected:
 /***************************************************************************************************************************************************************
 * Point Light Class
 ***************************************************************************************************************************************************************/
-class PointLight : public LightSupport::PointLightBase<PointLight>
+class PointLight : public Detail::PointLightBase<PointLight>
 {
   friend class Shader;
 
@@ -141,7 +141,7 @@ public:
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-class SpotLight : public LightSupport::PointLightBase<SpotLight>
+class SpotLight : public Detail::PointLightBase<SpotLight>
 {
   friend class Shader;
 

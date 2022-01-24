@@ -83,103 +83,97 @@ constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
 constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
 
 /** Check if a value is NaN. */
-template <class t_data_type>
-constexpr bool isNaN(const t_data_type _value = t_data_type())
-{
-  return std::isnan(_value);
-}
+template <typename T>
+constexpr bool isNaN(const T _value = T()) { return std::isnan(_value); }
 
 /** Check if a value is infinity. */
-template <class t_data_type>
-constexpr bool isInfinity(const t_data_type _value = t_data_type())
-{
-  return std::isinf(_value);
-}
+template <typename T>
+constexpr bool isInfinity(const T _value = T()) { return std::isinf(_value); }
 
 /***************************************************************************************************************************************************************
 * Type Checking
 ***************************************************************************************************************************************************************/
 
 /** Check if two data types are the same. */
-template <class data_type_a, class data_type_b>
+template <class T1, class T2>
 constexpr bool isTypeEqual()
 {
-  return std::is_same_v<data_type_a, data_type_b>;
+  return std::is_same_v<T1, T2>;
 }
 
 /** Check if the data types of a sequence of values are the same. */
-template <class t_data_type, class ...t_values>
+template <typename T, class ...T_seq>
 constexpr bool areAllTypesEqual()
 {
-  return (isTypeEqual<t_data_type, t_values>() && ...);
+  return (isTypeEqual<T, T_seq>() && ...);
 }
 
 /** Check if the data type is a boolean type. */
-template<class t_data_type>
-constexpr bool isBoolean(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr bool isBoolean(const T& _value = T())
 {
-  return isTypeEqual<t_data_type, bool>() || isTypeEqual<t_data_type, Bool>();
+  return isTypeEqual<T, bool>() || isTypeEqual<T, Bool>();
 }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
-template<class t_data_type>
-constexpr bool isIntegral(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr bool isIntegral(const T& _value = T())
 {
-  return std::is_integral_v<t_data_type> && !isBoolean(_value);
+  return std::is_integral_v<T> && !isBoolean(_value);
 }
 
 /** Check if the data type is a floating-point type. */
-template<class t_data_type>
-constexpr bool isFloatingPoint(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr bool isFloatingPoint(const T& _value = T())
 {
-  return std::is_floating_point_v<t_data_type>;
+  return std::is_floating_point_v<T>;
 }
 
 /** Check if the data type is a number type (floating-point or integer type). */
-template<class t_data_type>
-constexpr bool isNumber(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr bool isNumber(const T& _value = T())
 {
   return isIntegral(_value) || isFloatingPoint(_value);
 }
 
 /** Check if the data type is a number type (floating-point or integer type). */
-template<class t_data_type>
-constexpr bool isString(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr bool isString(const T& _value = T())
 {
-  return isTypeEqual<t_data_type, char*>() || isTypeEqual<t_data_type, std::string>();
+  return isTypeEqual<T, char*>() || isTypeEqual<T, std::string>();
 }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
-template<class t_data_type>
-constexpr TypeCategory GetTypeCategory(const t_data_type& _value = t_data_type())
+template<typename T>
+constexpr TypeCategory GetTypeCategory(const T& _value = T())
 {
-  return isBoolean<t_data_type>() ? TypeCategory::Boolean :
-         isIntegral<t_data_type>() ? TypeCategory::Integral :
-         isFloatingPoint<t_data_type>() ? TypeCategory::FloatingPoint :
-         isString<t_data_type>() ? TypeCategory::String :
+  return isBoolean<T>() ? TypeCategory::Boolean :
+         isIntegral<T>() ? TypeCategory::Integral :
+         isFloatingPoint<T>() ? TypeCategory::FloatingPoint :
+         isString<T>() ? TypeCategory::String :
          TypeCategory::Other;
 }
 
 /** Get the initial value for each type category. */
-template <class t_data_type, TypeCategory t_type_category = GetTypeCategory<t_data_type>()>
-constexpr t_data_type GetStaticInitValue()
+template <typename T, TypeCategory category = GetTypeCategory<T>()>
+constexpr T GetStaticInitValue()
 {
-  return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
-         t_type_category == TypeCategory::Integral ? static_cast<t_data_type>(-1) :
-         t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
-         t_type_category == TypeCategory::Other ? t_data_type() :
+  return category == TypeCategory::Boolean ? static_cast<T>(false) :
+         category == TypeCategory::Integral ? static_cast<T>(-1) :
+         category == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
+         category == TypeCategory::Other ? T() :
          throw std::invalid_argument("The passed type does not qualify for static initialisation.");
 }
 
 /** Get the initial value for each type category. */
-template <class t_data_type, TypeCategory t_type_category = GetTypeCategory<t_data_type>()>
-t_data_type GetDynamicInitValue()
+template <typename T, TypeCategory category = GetTypeCategory<T>()>
+T GetDynamicInitValue()
 {
-  return t_type_category == TypeCategory::Boolean ? static_cast<t_data_type>(false) :
-         t_type_category == TypeCategory::Integral ? static_cast<t_data_type>(-1) :
-         t_type_category == TypeCategory::FloatingPoint ? static_cast<t_data_type>(0.0) :
-         t_type_category == TypeCategory::String ? static_cast<t_data_type>('\0') :
-         t_type_category == TypeCategory::Other ? t_data_type() :
+  return category == TypeCategory::Boolean ? static_cast<T>(false) :
+         category == TypeCategory::Integral ? static_cast<T>(-1) :
+         category == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
+         category == TypeCategory::String ? static_cast<T>('\0') :
+         category == TypeCategory::Other ? T() :
          throw std::invalid_argument("The passed type does not qualify for dynamic initialisation.");
 }
 

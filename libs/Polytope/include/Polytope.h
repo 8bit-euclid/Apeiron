@@ -1,34 +1,56 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainers/include/Array.h"
+#include "../../DataContainer/include/Array.h"
+#include "../../LinearAlgebra/include/Vector.h"
 #include "Categories.h"
 
 namespace Apeiron {
-namespace Geometry {
+namespace Shapes {
 
 /***************************************************************************************************************************************************************
-* n-Polytope Abstract Base Class Definitions
+* Polytope Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory t_category, std::size_t t_dimension>
+template<class derived, PolytopeCategory t_category, std::size_t t_dimension>
 struct Polytope
 {
-  virtual ~Polytope() = 0;
+  constexpr virtual ~Polytope() = 0;
+
+  /** Vertices/Faces Access */
+  constexpr auto& Vertices() { return Derived().Vertices; }
+
+  constexpr const auto& Vertices() const { return Derived().Vertices; }
+
+  constexpr auto& Faces() { return Derived().Faces; }
+
+  constexpr const auto& Faces() const { return Derived().Faces; }
+
+private:
+  /** Derived Class Access */
+  constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
+
+  constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
 };
 
+/***************************************************************************************************************************************************************
+* Static Polytope Abstract Class
+***************************************************************************************************************************************************************/
 template<PolytopeCategory t_category, std::size_t t_dimension>
-struct StaticPolytope : public Polytope<t_category, t_dimension>
+struct StaticPolytope : public Polytope<StaticPolytope<t_category, t_dimension>, t_category, t_dimension>
 {
-  StaticPolytope() { STATIC_ASSERT(isStaticPolytope<t_category>(), "The polytope's information must be known at compile time.") }
+  constexpr StaticPolytope() { STATIC_ASSERT(isStaticPolytope<t_category>(), "The polytope's information must be known at compile time.") }
 
-  virtual ~StaticPolytope() = 0;
+  constexpr virtual ~StaticPolytope() = 0;
 
-  StaticArray<StaticArray<Float, t_dimension>, GetPolytopeVertexCount<t_category>()> Vertices;
-  StaticArray<StaticArray<std::size_t, GetPolytopeFaceVertexCount<t_category>()>, GetPolytopeFaceCount<t_category>()> Faces;
+  StaticArray<StaticArray<Float, t_dimension>, PolytopeVertexCount<t_category>()> Vertices;
+  constexpr static auto Faces{GetPolytopeFaces<t_category, t_dimension>()};
 };
 
+/***************************************************************************************************************************************************************
+* Dynamic Polytope Abstract Class
+***************************************************************************************************************************************************************/
 template<PolytopeCategory t_category, std::size_t t_dimension>
-struct DynamicPolytope : public Polytope<t_category, t_dimension>
+struct DynamicPolytope : public Polytope<DynamicPolytope<t_category, t_dimension>, t_category, t_dimension>
 {
   DynamicPolytope() { STATIC_ASSERT(isDynamicPolytope<t_category>(), "Rather use StaticPolytope if the polytope's information is known at compile-time.") }
 

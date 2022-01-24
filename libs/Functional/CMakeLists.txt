@@ -4,7 +4,8 @@ set(SOURCE_FILES
         include/Explicit.h
         src/Explicit.cpp)
 
-set(LINK_LIBRARIES)
+set(LINK_LIBRARIES
+        LinearAlgebraLibrary)
 
 add_library(FunctionalLibrary ${SOURCE_FILES})
 target_link_libraries(FunctionalLibrary ${LINK_LIBRARIES})

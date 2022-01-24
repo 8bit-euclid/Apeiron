@@ -16,8 +16,6 @@ class Shadow
 public:
   Shadow(const bool _is_point_light);
 
-  ~Shadow();
-
   virtual void Init(GLsizei _width, GLsizei _height);
 
   virtual void WriteTo() const;

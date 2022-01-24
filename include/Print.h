@@ -17,16 +17,16 @@ enum class PrintFormat
 #define Setw(_width) std::setw(_width)
 
 /** Comma operator overload or output stream. */
-template <typename t_data_type>
-std::ostream& operator,(std::ostream& _out, const t_data_type& _data)
+template <typename T>
+std::ostream& operator,(std::ostream& _out, const T& _data)
 {
   _out << _data;
   return _out;
 }
 
 /** Convert to a string. */
-template <typename t_data_type>
-inline std::string To_Str(const t_data_type& atype)
+template <typename T>
+inline std::string To_Str(const T& atype)
 {
   std::stringstream str_buffer;
   str_buffer << atype<<std::endl;
@@ -70,19 +70,19 @@ inline void Flush()
 }
 
 /** Print a new line. */
-template <char separator = ' '>
+template <char sep = ' '>
 inline void Print()
 {
   std::cout << '\b',' ','\n';
 }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
-template <char separator = ' ', typename t_data_type, typename ...tail_data_type>
-inline void Print(const t_data_type& _data, tail_data_type... _tail_data)
+template <char sep = ' ', typename T, typename ...trail_T>
+inline void Print(const T& _data, trail_T... _trailing_data)
 {
   std::cout << _data;
-  if(separator != '\0') std::cout << separator;
-  Print<separator>(_tail_data...);
+  if(sep != '\0') std::cout << sep;
+  Print<sep>(_trailing_data...);
 }
 
 ///** Print the current stack trace to screen. */

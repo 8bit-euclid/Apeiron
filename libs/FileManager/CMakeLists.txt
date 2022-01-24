@@ -1,4 +1,4 @@
-include_directories(${PROJECT_SOURCE_DIR}/libs/DataContainers)
+include_directories(${PROJECT_SOURCE_DIR}/libs/DataContainer)
 
 set(SOURCE_FILES
         include/Sort.h

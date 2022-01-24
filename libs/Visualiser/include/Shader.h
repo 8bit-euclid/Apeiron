@@ -35,7 +35,7 @@ struct ShaderSourceCode
 class Shader
 {
 public:
-  /** Module Interface ****************************************************************************************************************************************/
+  /** Module Interface */
   Shader();
 
   Shader(const std::string& _file_path);
@@ -70,7 +70,7 @@ public:
 
   void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
 
-  /** Setting Shader Uniforms *********************************************************************************************************************************/
+  /** Setting Shader Uniforms */
   void SetUniform1i(const std::string& _name, GLint _value);
 
   void SetUniform1f(const std::string& _name, GLfloat _value);
@@ -87,7 +87,7 @@ private:
   GLuint ID;
   std::unordered_map<std::string, int> UniformLocationCache;
 
-  /** Shader Parsing, Compilation, Installation, and Deletion *************************************************************************************************/
+  /** Shader Parsing, Compilation, Installation, and Deletion functions. */
   ShaderSourceCode Parse(const std::string& _file_path);
 
   void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
@@ -98,7 +98,7 @@ private:
 
   void Delete();
 
-  /** Uniform Support Functions *******************************************************************************************************************************/
+  /** Uniform Support Functions */
   int GetUniformLocation(const std::string& _name);
 };
 

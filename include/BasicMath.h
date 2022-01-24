@@ -9,29 +9,29 @@ namespace Apeiron{
 ***************************************************************************************************************************************************************/
 
 /** Min value. */
-template <typename t_data_type>
-constexpr t_data_type Min(const t_data_type& _a, const t_data_type& _b)
+template <typename T>
+constexpr T Min(const T& _a, const T& _b)
 {
   return std::min(_a, _b);
 }
 
 /** Max value. */
-template <typename t_data_type>
-constexpr t_data_type Max(const t_data_type& _a, const t_data_type& _b)
+template <typename T>
+constexpr T Max(const T& _a, const T& _b)
 {
   return std::max(_a, _b);
 }
 
 /** Bound value between a minimum and a maximum. */
-template <typename t_data_type>
-constexpr std::pair<t_data_type, t_data_type> MinMax(const t_data_type& _a, const t_data_type& _b)
+template <typename T>
+constexpr std::pair<T, T> MinMax(const T& _a, const T& _b)
 {
   return std::minmax(_a, _b);
 }
 
 /** Bound value between a minimum and a maximum. */
-template <typename t_data_type>
-constexpr t_data_type Bound(const t_data_type& _value, const t_data_type& _min, const t_data_type& _max)
+template <typename T>
+constexpr T Bound(const T& _value, const T& _min, const T& _max)
 {
   return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
 }
@@ -41,23 +41,23 @@ constexpr t_data_type Bound(const t_data_type& _value, const t_data_type& _min, 
 ***************************************************************************************************************************************************************/
 
 /** Signum function. */
-template <typename t_data_type>
-constexpr t_data_type Sgn(const t_data_type& _value, const int _zero_sign = 1)
+template <typename T>
+constexpr T Sgn(const T& _value, const int _zero_sign = 1)
 {
   switch(_zero_sign)
   {
-    case -1: return _value > static_cast<t_data_type>(0) ? static_cast<t_data_type>(1) : static_cast<t_data_type>(-1);
-    case 0: return (static_cast<t_data_type>(0) < _value) - (_value < static_cast<t_data_type>(0));
-    case 1: return _value >= static_cast<t_data_type>(0) ? static_cast<t_data_type>(1) : static_cast<t_data_type>(-1);
+    case -1: return _value > static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
+    case 0: return (static_cast<T>(0) < _value) - (_value < static_cast<T>(0));
+    case 1: return _value >= static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
     default: EXIT("Unrecognised sign for zero.")
   }
 }
 
 /** Absolute value. */
-template <typename t_data_type>
-constexpr t_data_type Abs(const t_data_type& _value)
+template <typename T>
+constexpr T Abs(const T& _value)
 {
-  return _value < static_cast<t_data_type>(0) ? -_value : _value;
+  return _value < static_cast<T>(0) ? -_value : _value;
 }
 
 /***************************************************************************************************************************************************************
@@ -65,21 +65,21 @@ constexpr t_data_type Abs(const t_data_type& _value)
 ***************************************************************************************************************************************************************/
 
 /** Floor function. */
-template <typename integer_type = int64_t>
+template <typename integer_T = int64_t>
 constexpr Float Floor(const Float& _value)
 {
-  return static_cast<integer_type>(_value) - (static_cast<integer_type>(_value) > _value);
+  return static_cast<integer_T>(_value) - (static_cast<integer_T>(_value) > _value);
 }
 
 /** Ceiling function. */
-template <typename integer_type = int64_t>
+template <typename integer_T = int64_t>
 constexpr Float Ceil(const Float& _value)
 {
-  return static_cast<integer_type>(_value) + (static_cast<integer_type>(_value) < _value);
+  return static_cast<integer_T>(_value) + (static_cast<integer_T>(_value) < _value);
 }
 
 /** Rounding function. */
-template <typename integer_type = int64_t>
+template <typename integer_T = int64_t>
 constexpr Float Round(const Float& _value)
 {
   return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value);
