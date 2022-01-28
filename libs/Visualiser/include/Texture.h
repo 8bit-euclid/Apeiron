@@ -7,12 +7,6 @@
 
 #include <GL/glew.h>
 
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wold-style-cast"
-//#pragma GCC diagnostic ignored "-Wcast-qual"
-//#include "Visualiser/resources/external/stb_image/stb_image.h"
-//#pragma GCC diagnostic pop
-
 namespace Apeiron {
 
 class Texture

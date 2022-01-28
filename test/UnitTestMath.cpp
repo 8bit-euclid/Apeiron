@@ -116,7 +116,7 @@ TEST_F(ApeironTest, Sqrt)
   EXPECT_EQ(Sqrt(9.0), 3.0);
   EXPECT_EQ(Sqrt(16.0), 4.0);
   EXPECT_TRUE(isNaN(Sqrt(-1.0)));
-  EXPECT_TRUE(isNaN(Sqrt(Infinity)));
+  EXPECT_TRUE(isNaN(Sqrt(InfFloat<>)));
 }
 
 TEST_F(ApeironTest, Cbrt)

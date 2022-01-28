@@ -2,7 +2,9 @@
 
 namespace Apeiron{
 
-/** Type Categories. */
+/***************************************************************************************************************************************************************
+* Type Categories
+***************************************************************************************************************************************************************/
 enum class TypeCategory
 {
   Boolean,
@@ -13,19 +15,18 @@ enum class TypeCategory
 };
 
 /***************************************************************************************************************************************************************
-* Boolean Type Wrapper (for std::vector)
+* Boolean Type Wrapper (for std:: containers)
 ***************************************************************************************************************************************************************/
-
-class Bool
+struct Bool
 {
-  private:
-  bool Value;
-
-  public:
   constexpr Bool() : Bool(false) {}
+
   constexpr Bool(const bool _value) : Value(_value) {}
 
   constexpr operator bool() const { return Value; }
+
+private:
+  bool Value;
 };
 
 constexpr Bool True(true);
@@ -57,6 +58,10 @@ typedef uint16_t UInt16;
 typedef uint32_t UInt32;
 typedef uint64_t UInt64;
 
+/** Integral limits. */
+template<typename T = int> requires std::integral<T> constexpr T MinInt(std::numeric_limits<T>::min());
+template<typename T = int> requires std::integral<T> constexpr T MaxInt(std::numeric_limits<T>::max());
+
 /***************************************************************************************************************************************************************
 * Floating-point Types
 ***************************************************************************************************************************************************************/
@@ -74,13 +79,14 @@ typedef uint64_t UInt64;
   #error No numerical precision defined.
 #endif
 
-constexpr Float Epsilon(std::numeric_limits<Float>::epsilon());
-constexpr Float FloatMin(std::numeric_limits<Float>::min());
-constexpr Float FloatMax(std::numeric_limits<Float>::max());
-constexpr Float FloatLowest(std::numeric_limits<Float>::lowest());
-constexpr Float Infinity(std::numeric_limits<Float>::infinity());
-constexpr Float QuietNaN(std::numeric_limits<Float>::quiet_NaN());
-constexpr Float SignalNaN(std::numeric_limits<Float>::signaling_NaN());
+/** Floating-point limits. */
+template<typename T = Float> requires std::floating_point<T> constexpr T Epsilon(std::numeric_limits<T>::epsilon());
+template<typename T = Float> requires std::floating_point<T> constexpr T MinFloat(std::numeric_limits<T>::min());
+template<typename T = Float> requires std::floating_point<T> constexpr T MaxFloat(std::numeric_limits<T>::max());
+template<typename T = Float> requires std::floating_point<T> constexpr T LowestFloat(std::numeric_limits<T>::lowest());
+template<typename T = Float> requires std::floating_point<T> constexpr T InfFloat(std::numeric_limits<T>::infinity());
+template<typename T = Float> requires std::floating_point<T> constexpr T QuietNaN(std::numeric_limits<T>::quiet_NaN());
+template<typename T = Float> requires std::floating_point<T> constexpr T SignalNaN(std::numeric_limits<T>::signaling_NaN());
 
 /** Check if a value is NaN. */
 template<typename T>
@@ -96,56 +102,43 @@ constexpr bool isInfinity(const T _value = T()) { return std::isinf(_value); }
 
 /** Check if two data types are the same. */
 template<class T1, class T2>
-constexpr bool isTypeEqual()
-{
-  return std::is_same_v<T1, T2>;
-}
+constexpr bool
+isTypeEqual() { return std::is_same_v<T1, T2>; }
 
 /** Check if the data types of a sequence of values are the same. */
-template<typename T, class ...T_seq>
-constexpr bool areAllTypesEqual()
-{
-  return (isTypeEqual<T, T_seq>() && ...);
-}
+template<typename T, typename... Ts>
+constexpr bool
+isTypeHomogeneous() { return (isTypeEqual<T, Ts>() && ...); }
 
 /** Check if the data type is a boolean type. */
 template<typename T>
-constexpr bool isBoolean(const T& _value = T())
-{
-  return isTypeEqual<T, bool>() || isTypeEqual<T, Bool>();
-}
+constexpr bool
+isBoolean(const T& _value = T{}) { return isTypeEqual<T, bool>() || isTypeEqual<T, Bool>(); }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
 template<typename T>
-constexpr bool isIntegral(const T& _value = T())
-{
-  return std::is_integral_v<T> && !isBoolean(_value);
-}
+constexpr bool
+isIntegral(const T& _value = T{}) { return std::is_integral_v<T> && !isBoolean(_value); }
 
 /** Check if the data type is a floating-point type. */
 template<typename T>
-constexpr bool isFloatingPoint(const T& _value = T())
-{
-  return std::is_floating_point_v<T>;
-}
+constexpr bool
+isFloatingPoint(const T& _value = T{}) { return std::is_floating_point_v<T>; }
 
 /** Check if the data type is a number type (floating-point or integer type). */
 template<typename T>
-constexpr bool isNumber(const T& _value = T())
-{
-  return isIntegral(_value) || isFloatingPoint(_value);
-}
+constexpr bool
+isNumber(const T& _value = T{}) { return isIntegral(_value) || isFloatingPoint(_value); }
 
 /** Check if the data type is a number type (floating-point or integer type). */
 template<typename T>
-constexpr bool isString(const T& _value = T())
-{
-  return isTypeEqual<T, char*>() || isTypeEqual<T, std::string>();
-}
+constexpr bool
+isString(const T& _value = T{}) { return isTypeEqual<T, char*>() || isTypeEqual<T, std::string>(); }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
 template<typename T>
-constexpr TypeCategory GetTypeCategory(const T& _value = T())
+constexpr TypeCategory
+GetTypeCategory(const T& _value = T{})
 {
   return isBoolean<T>() ? TypeCategory::Boolean :
          isIntegral<T>() ? TypeCategory::Integral :
@@ -154,26 +147,31 @@ constexpr TypeCategory GetTypeCategory(const T& _value = T())
          TypeCategory::Other;
 }
 
+/***************************************************************************************************************************************************************
+* Type Initialisation
+***************************************************************************************************************************************************************/
+
 /** Get the initial value for each type category. */
-template<typename T, TypeCategory category = GetTypeCategory<T>()>
-constexpr T GetStaticInitValue()
+template<typename T, TypeCategory cat = GetTypeCategory<T>()>
+constexpr T
+GetStaticInitValue()
 {
-  return category == TypeCategory::Boolean ? static_cast<T>(false) :
-         category == TypeCategory::Integral ? static_cast<T>(-1) :
-         category == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
-         category == TypeCategory::Other ? T() :
+  return cat == TypeCategory::Boolean ? static_cast<T>(false) :
+         cat == TypeCategory::Integral ? static_cast<T>(-1) :
+         cat == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
+         cat == TypeCategory::Other ? T{} :
          throw std::invalid_argument("The passed type does not qualify for static initialisation.");
 }
 
 /** Get the initial value for each type category. */
-template<typename T, TypeCategory category = GetTypeCategory<T>()>
+template<typename T, TypeCategory cat = GetTypeCategory<T>()>
 T GetDynamicInitValue()
 {
-  return category == TypeCategory::Boolean ? static_cast<T>(false) :
-         category == TypeCategory::Integral ? static_cast<T>(-1) :
-         category == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
-         category == TypeCategory::String ? static_cast<T>('\0') :
-         category == TypeCategory::Other ? T() :
+  return cat == TypeCategory::Boolean ? static_cast<T>(false) :
+         cat == TypeCategory::Integral ? static_cast<T>(-1) :
+         cat == TypeCategory::FloatingPoint ? static_cast<T>(0.0) :
+         cat == TypeCategory::String ? static_cast<T>('\0') :
+         cat == TypeCategory::Other ? T{} :
          throw std::invalid_argument("The passed type does not qualify for dynamic initialisation.");
 }
 

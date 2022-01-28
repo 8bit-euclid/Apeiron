@@ -1,5 +1,4 @@
 #include "../include/Texture.h"
-
 #include "../resources/external/stb_image/stb_image.h"
 
 namespace Apeiron {
@@ -25,22 +24,19 @@ Texture::~Texture()
 void Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
                    const GLint _wrap_type, const SVector4<GLfloat>& _border_colour)
 {
-  Print<'\0'>("Initialising a ", _width, "x", _height, " texture.");
-
   Width = _width;
   Height = _height;
 
   Bind();
 
   // Common settings
-//  if(BitsPerPixel == 2) glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   GLCall(glTexParameteri(Type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
   GLCall(glTexParameteri(Type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
   // Type-specific settings
   if(Type == GL_TEXTURE_2D)
   {
-    if(_wrap_type == GL_CLAMP_TO_BORDER) GLCall(glTexParameterfv(Type, GL_TEXTURE_BORDER_COLOR, _border_colour.data()));
+    if(_wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(Type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
 
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_S, _wrap_type));
     GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_T, _wrap_type));
@@ -70,8 +66,6 @@ void Texture::ReadFromFile(const std::string& _file_path, const GLint _wrap_type
   LocalBuffer = stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0);
   ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
 
-  Print("Bits: ", BitsPerPixel);
-  Print("Type: ", sizeof(decltype(LocalBuffer)));
   std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
                                     BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
                                     BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :

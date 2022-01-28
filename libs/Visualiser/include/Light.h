@@ -147,9 +147,9 @@ public:
             GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients);
 
 private:
+  glm::vec3 Direction;
   GLfloat ConeAngle;
   GLfloat CosConeAngle;
-  glm::vec3 Direction;
 };
 
 }

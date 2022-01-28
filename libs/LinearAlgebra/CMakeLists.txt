@@ -3,6 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/LinearAlgebra)
 set(SOURCE_FILES
         include/Matrix.h
         include/Vector.h
+        include/VectorOperations.h
         src/Matrix.cpp
         src/Vector.cpp)
 

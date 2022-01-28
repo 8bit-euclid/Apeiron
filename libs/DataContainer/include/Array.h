@@ -29,8 +29,9 @@ public:
   constexpr const T& operator[](const std::size_t _index) const;
 
   /** Assignment Operator Overloads */
-  template<class t_rhs_type>
-  constexpr derived& operator=(const t_rhs_type& _value) noexcept;
+  constexpr derived& operator=(const std::convertible_to<T> auto _value) noexcept;
+
+//  constexpr Array<T, derived>& operator=(const Array<T, derived>& _array) noexcept;
 
   constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
 
@@ -42,8 +43,8 @@ private:
 };
 
 /** Non-member functions */
-template<typename T, class derived>
-std::ostream& operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base);
+template<typename T, class D>
+std::ostream& operator<<(std::ostream& _output_stream, const Array<T, D>& _array_base);
 
 /***************************************************************************************************************************************************************
 * Static Array Class
@@ -104,6 +105,7 @@ public:
 /***************************************************************************************************************************************************************
 * Static Array Aliases
 ***************************************************************************************************************************************************************/
+template<typename T> using SArray1 = StaticArray<T, 1>;
 template<typename T> using SArray2 = StaticArray<T, 2>;
 template<typename T> using SArray3 = StaticArray<T, 3>;
 template<typename T> using SArray4 = StaticArray<T, 4>;

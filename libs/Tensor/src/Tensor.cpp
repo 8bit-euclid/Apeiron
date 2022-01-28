@@ -15,14 +15,14 @@ constexpr Tensor<T, derived>::Tensor()
 
 template<typename T, class derived>
 constexpr T&
-Tensor<T, derived>::operator()(std::convertible_to<std::size_t> auto ..._multi_index)
+Tensor<T, derived>::operator()(std::convertible_to<std::size_t> auto... _multi_index)
 {
   return Derived().Entries(_multi_index...);
 }
 
 template<typename T, class derived>
 constexpr const T&
-Tensor<T, derived>::operator()(const std::convertible_to<std::size_t> auto ..._multi_index) const
+Tensor<T, derived>::operator()(const std::convertible_to<std::size_t> auto... _multi_index) const
 {
   return Derived().Entries(_multi_index...);
 }
@@ -44,10 +44,10 @@ Tensor<T, derived>::operator=(const std::initializer_list<std::initializer_list<
 /***************************************************************************************************************************************************************
 * Static Tensor Class
 ***************************************************************************************************************************************************************/
-template<typename T, size_t... dimensions>
-StaticTensor<T, dimensions...>::StaticTensor()
+template<typename T, size_t... dims>
+StaticTensor<T, dims...>::StaticTensor()
 {
-  STATIC_ASSERT(0 < sizeof...(dimensions), "A tensor must have at least 1 dimension.")
+  STATIC_ASSERT(0 < sizeof...(dims), "A tensor must have at least 1 dimension.")
 }
 
 /***************************************************************************************************************************************************************
@@ -58,7 +58,7 @@ DynamicTensor<T>::DynamicTensor()
   : Entries() {}
 
 template<typename T>
-DynamicTensor<T>::DynamicTensor(const std::convertible_to<std::size_t> auto ..._dimensions)
+DynamicTensor<T>::DynamicTensor(const std::convertible_to<std::size_t> auto... _dimensions)
   : Entries(_dimensions...) {}
 
 }

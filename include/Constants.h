@@ -5,7 +5,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * CompileShader-time constants
 ***************************************************************************************************************************************************************/
-COMPILE_TIME_CONST(Small, 10.0*Epsilon)
+COMPILE_TIME_CONST(Small, 10.0*Epsilon<>)
 COMPILE_TIME_CONST(TenSmall, 10.0*Small)
 COMPILE_TIME_CONST(HundredSmall, 100.0*Small)
 COMPILE_TIME_CONST(TenthSmall, Small/10.0)

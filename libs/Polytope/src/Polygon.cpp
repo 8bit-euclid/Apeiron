@@ -7,15 +7,15 @@ namespace Shapes {
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polygons
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory category, std::size_t dim>
-constexpr Polygon<category, dim>::Polygon(const Float _side_length)
+template<PolytopeCategory cat, std::size_t dim>
+constexpr Polygon<cat, dim>::Polygon(const Float _side_length)
 {
 
 }
 
-template<PolytopeCategory category, std::size_t dim>
+template<PolytopeCategory cat, std::size_t dim>
 template<class... t_static_vector>
-constexpr Polygon<category, dim>::Polygon(const t_static_vector &... _vertices)
+constexpr Polygon<cat, dim>::Polygon(const t_static_vector&... _vertices)
 {
 
 }

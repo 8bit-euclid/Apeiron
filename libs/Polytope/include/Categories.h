@@ -9,7 +9,7 @@ namespace Shapes {
 * Forward Declarations
 ***************************************************************************************************************************************************************/
 enum class PolytopeCategory;
-template<PolytopeCategory category, std::size_t dim> struct StaticPolytope;
+template<PolytopeCategory cat, std::size_t dim> struct StaticPolytope;
 
 /***************************************************************************************************************************************************************
 * Polytope Categories
@@ -17,20 +17,20 @@ template<PolytopeCategory category, std::size_t dim> struct StaticPolytope;
 enum class PolytopeCategory
 {
   // 2-Polytopes
-  Triangular,
+  Triangle,
   Quadrilateral,
-  Pentagonal,
-  Hexagonal,
-  Septagonal,
-  Octagonal,
+  Pentagon,
+  Hexagon,
+  Septagon,
+  Octagon,
   Arbitrary2D,
 
   // 3-Polytopes
-  Tetrahedral,
-  Cuboidal,
-  Octahedral,
-  Dodecahedral,
-  Icosahedral,
+  Tetrahedron,
+  Cuboid,
+  Octahedron,
+  Dodecahedron,
+  Icosahedron,
   Arbitrary3D
 };
 
@@ -38,96 +38,96 @@ enum class PolytopeCategory
 * Functions for Determining Polytope Properties
 ***************************************************************************************************************************************************************/
 /** Check if a polytope is considered static, i.e. is its information known at compile-time? */
-template<PolytopeCategory category>
+template<PolytopeCategory cat>
 constexpr bool
-isStaticPolytope() { return category != PolytopeCategory::Arbitrary2D && category != PolytopeCategory::Arbitrary3D; }
+isStaticPolytope() { return cat != PolytopeCategory::Arbitrary2D && cat != PolytopeCategory::Arbitrary3D; }
 
 /** Check if a polytope is considered dynamic, i.e. is its information not known at compile-time? */
-template<PolytopeCategory category>
+template<PolytopeCategory cat>
 constexpr bool
-isDynamicPolytope() { return !isStaticPolytope<category>(); }
+isDynamicPolytope() { return !isStaticPolytope<cat>(); }
 
-/** Get the number of vertices for a given polytope category. */
-template<PolytopeCategory category>
+/** Get the dimension of a given polytope category. */
+template<PolytopeCategory cat>
 constexpr std::size_t
 PolytopeDimension()
 {
-  return (category == PolytopeCategory::Triangular ||
-          category == PolytopeCategory::Quadrilateral ||
-          category == PolytopeCategory::Pentagonal ||
-          category == PolytopeCategory::Hexagonal ||
-          category == PolytopeCategory::Septagonal ||
-          category == PolytopeCategory::Octagonal ||
-          category == PolytopeCategory::Arbitrary2D) ? 2 :
+  return (cat == PolytopeCategory::Triangle ||
+          cat == PolytopeCategory::Quadrilateral ||
+          cat == PolytopeCategory::Pentagon ||
+          cat == PolytopeCategory::Hexagon ||
+          cat == PolytopeCategory::Septagon ||
+          cat == PolytopeCategory::Octagon ||
+          cat == PolytopeCategory::Arbitrary2D) ? 2 :
 
-         (category == PolytopeCategory::Tetrahedral ||
-          category == PolytopeCategory::Cuboidal ||
-          category == PolytopeCategory::Octahedral ||
-          category == PolytopeCategory::Dodecahedral ||
-          category == PolytopeCategory::Icosahedral ||
-          category == PolytopeCategory::Arbitrary3D) ? 3 :
+         (cat == PolytopeCategory::Tetrahedron ||
+          cat == PolytopeCategory::Cuboid ||
+          cat == PolytopeCategory::Octahedron ||
+          cat == PolytopeCategory::Dodecahedron ||
+          cat == PolytopeCategory::Icosahedron ||
+          cat == PolytopeCategory::Arbitrary3D) ? 3 :
          throw std::invalid_argument("The dimension cannot be determined for the given polytope category.");
 }
 
 /** Get the number of vertices for a given polytope category. */
-template<PolytopeCategory category, std::size_t t_N>
+template<PolytopeCategory cat, std::size_t t_N>
 constexpr bool
-isNPolytope() { return PolytopeDimension<category>() == t_N; }
+isNPolytope() { return PolytopeDimension<cat>() == t_N; }
 
 /** Get the number of vertices for a given polytope category. */
-template<PolytopeCategory category>
+template<PolytopeCategory cat>
 constexpr std::size_t
 PolytopeVertexCount()
 {
-  return category == PolytopeCategory::Triangular ? 3 :
-         category == PolytopeCategory::Quadrilateral ? 4 :
-         category == PolytopeCategory::Pentagonal ? 5 :
-         category == PolytopeCategory::Hexagonal ? 6 :
-         category == PolytopeCategory::Septagonal ? 7 :
-         category == PolytopeCategory::Octagonal ? 8 :
+  return cat == PolytopeCategory::Triangle ? 3 :
+         cat == PolytopeCategory::Quadrilateral ? 4 :
+         cat == PolytopeCategory::Pentagon ? 5 :
+         cat == PolytopeCategory::Hexagon ? 6 :
+         cat == PolytopeCategory::Septagon ? 7 :
+         cat == PolytopeCategory::Octagon ? 8 :
 
-         category == PolytopeCategory::Tetrahedral ? 4 :
-         category == PolytopeCategory::Cuboidal ? 8 :
-         category == PolytopeCategory::Octahedral ? 6 :
-         category == PolytopeCategory::Dodecahedral ? 20 :
-         category == PolytopeCategory::Icosahedral ? 12 :
+         cat == PolytopeCategory::Tetrahedron ? 4 :
+         cat == PolytopeCategory::Cuboid ? 8 :
+         cat == PolytopeCategory::Octahedron ? 6 :
+         cat == PolytopeCategory::Dodecahedron ? 20 :
+         cat == PolytopeCategory::Icosahedron ? 12 :
          throw std::invalid_argument("The vertex count cannot be determined for the given polytope category.");
 }
 
 /** Get the number of faces for a given polytope category. */
-template<PolytopeCategory category>
+template<PolytopeCategory cat>
 constexpr std::size_t
 PolytopeFaceCount()
 {
-  return PolytopeDimension<category>() == 2 ? PolytopeVertexCount<category>() :
-         category == PolytopeCategory::Tetrahedral ? 4 :
-         category == PolytopeCategory::Cuboidal ? 6 :
-         category == PolytopeCategory::Octahedral ? 8 :
-         category == PolytopeCategory::Dodecahedral ? 12 :
-         category == PolytopeCategory::Icosahedral ? 20 :
+  return PolytopeDimension<cat>() == 2 ? PolytopeVertexCount<cat>() :
+         cat == PolytopeCategory::Tetrahedron ? 4 :
+         cat == PolytopeCategory::Cuboid ? 6 :
+         cat == PolytopeCategory::Octahedron ? 8 :
+         cat == PolytopeCategory::Dodecahedron ? 12 :
+         cat == PolytopeCategory::Icosahedron ? 20 :
          throw std::invalid_argument("The face count cannot be determined for the given polytope category.");
 }
 
 /** Get the number of faces for a given polytope category. */
-template<PolytopeCategory category>
+template<PolytopeCategory cat>
 constexpr std::size_t
 PolytopeFaceVertexCount()
 {
-  return PolytopeDimension<category>() == 2 ? 2 :
-         category == PolytopeCategory::Tetrahedral ? 4 :
-         category == PolytopeCategory::Cuboidal ? 6 :
-         category == PolytopeCategory::Octahedral ? 8 :
-         category == PolytopeCategory::Dodecahedral ? 12 :
-         category == PolytopeCategory::Icosahedral ? 20 :
+  return PolytopeDimension<cat>() == 2 ? 2 :
+         cat == PolytopeCategory::Tetrahedron ? 4 :
+         cat == PolytopeCategory::Cuboid ? 6 :
+         cat == PolytopeCategory::Octahedron ? 8 :
+         cat == PolytopeCategory::Dodecahedron ? 12 :
+         cat == PolytopeCategory::Icosahedron ? 20 :
          throw std::invalid_argument("The face vertex count cannot be determined for the given polytope category.");
 }
 
 /***************************************************************************************************************************************************************
 * Static Polytope Face-Vertex Connectivity (Gambit Neutral Format)
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory category, std::size_t dim>
+template<PolytopeCategory cat, std::size_t dim>
 constexpr auto
-GetPolytopeFaces(const StaticPolytope<category, dim>& _polytope = StaticPolytope<category, dim>());
+GetPolytopeFaces(const StaticPolytope<cat, dim>& _polytope = StaticPolytope<cat, dim>());
 
 }
 }

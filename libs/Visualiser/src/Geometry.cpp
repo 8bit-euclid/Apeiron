@@ -34,14 +34,13 @@ void CreateRectangle(Model& _model, const GLfloat _length, const GLfloat _height
                 SVector3<GLfloat>{0.5f * _length, 0.5f * _height, 0.0f}, SVector3<GLfloat>{-0.5f * _length, 0.5f * _height, 0.0f});
 }
 
-void CreateQuadrilateral(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
-                         const SVector3<GLfloat>& _v3)
+void CreateQuadrilateral(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2, const SVector3<GLfloat>& _v3)
 {
 
 }
 
-template<class ...t_static_vector>
-void CreatePolygon(Model& _model, const t_static_vector& ..._v)
+template<class... t_static_vector>
+void CreatePolygon(Model& _model, const t_static_vector&... _v)
 {
   _model.Geometry.Shading = ShadingType::Flat;
 
@@ -71,8 +70,7 @@ void CreateTetrahedron(Model& _model, GLfloat _length)
   CreateTetrahedron(_model, {-0.5f*_length, 0.0f, width/3.0f}, {0.5f*_length, 0.0f, width/3.0f}, {0.0f, 0.0f, -2.0f*width/3.0f}, {0.0f, height, 0.0f});
 }
 
-void CreateTetrahedron(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
-                       const SVector3<GLfloat>& _v3)
+void CreateTetrahedron(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2, const SVector3<GLfloat>& _v3)
 {
   _model.Geometry.Shading = ShadingType::Flat;
 

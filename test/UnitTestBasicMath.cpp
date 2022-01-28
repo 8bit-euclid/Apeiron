@@ -6,6 +6,10 @@
 
 namespace Apeiron{
 
+/***************************************************************************************************************************************************************
+* Min, Max, and Bounding Functions
+***************************************************************************************************************************************************************/
+
 /** Min: Test min function. */
 TEST_F(ApeironTest, Min)
 {
@@ -64,6 +68,74 @@ TEST_F(ApeironTest, Bound)
   EXPECT_LE(Bound(floating, minFloat, maxFloat), maxFloat);
 }
 
+/** Min: Test min function. */
+TEST_F(ApeironTest, MinEntry)
+{
+  int minInt = MaxInt<>;
+  FOR_EACH(entry, IntArray) minInt = Min(minInt, entry);
+  EXPECT_EQ(MinEntry(IntArray.begin(), IntArray.end()), minInt);
+
+  Float minFloat = MaxFloat<>;
+  FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
+  EXPECT_EQ(MinEntry(FloatArray.begin(), FloatArray.end()), minFloat);
+}
+
+/** Max: Test max function. */
+TEST_F(ApeironTest, MaxEntry)
+{
+  int maxInt = MinInt<>;
+  FOR_EACH(entry, IntArray) maxInt = Max(maxInt, entry);
+  EXPECT_EQ(MaxEntry(IntArray.begin(), IntArray.end()), maxInt);
+
+  Float maxFloat = MinFloat<>;
+  FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
+  EXPECT_EQ(MaxEntry(FloatArray.begin(), FloatArray.end()), maxFloat);
+}
+
+/** MinMax: Test minmax function. */
+TEST_F(ApeironTest, MinMaxEntries)
+{
+  int minInt = MaxInt<>;
+  int maxInt = MinInt<>;
+  FOR_EACH(entry, IntArray) minInt = Min(minInt, entry);
+  FOR_EACH(entry, IntArray) maxInt = Max(maxInt, entry);
+  EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).first, minInt);
+  EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).second, maxInt);
+
+  Float minFloat = MaxFloat<>;
+  Float maxFloat = MinFloat<>;
+  FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
+  FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
+  EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).first, minFloat);
+  EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).second, maxFloat);
+}
+
+/** Bound: Test the bounding function. */
+TEST_F(ApeironTest, BoundEntries)
+{
+  const int minInt = -Abs(RandomInt());
+  const int maxInt = Abs(RandomInt()) + 1;
+  BoundEntries(IntArray.begin(), IntArray.end(), minInt, maxInt);
+  FOR_EACH(entry, IntArray)
+  {
+    EXPECT_GE(entry, minInt);
+    EXPECT_LE(entry, maxInt);
+  }
+
+  const Float minFloat = -Abs(RandomFloat());
+  const Float maxFloat = Abs(RandomFloat()) + One;
+  BoundEntries(FloatArray.begin(), FloatArray.end(), minFloat, maxFloat);
+  FOR_EACH(entry, FloatArray)
+  {
+    EXPECT_GE(entry, minFloat);
+    EXPECT_LE(entry, maxFloat);
+  }
+}
+
+/***************************************************************************************************************************************************************
+* Signum and Absolute Value Functions
+***************************************************************************************************************************************************************/
+
 /** Sgn: Test the signum function. */
 TEST_F(ApeironTest, Sgn)
 {
@@ -100,6 +172,10 @@ TEST_F(ApeironTest, Abs)
   EXPECT_EQ(Abs(positiveFloat), positiveFloat);
 }
 
+/***************************************************************************************************************************************************************
+* Numerical Rounding Functions
+***************************************************************************************************************************************************************/
+
 /** Floor: Test the floor function. */
 TEST_F(ApeironTest, Floor)
 {
@@ -123,6 +199,10 @@ TEST_F(ApeironTest, Ceil)
   EXPECT_EQ(Ceil(1.999), Two);
   EXPECT_EQ(Ceil(One), One);
 }
+
+/***************************************************************************************************************************************************************
+* Mathematical Conversions
+***************************************************************************************************************************************************************/
 
 /** Round: Test conversion from degrees to radians. */
 TEST_F(ApeironTest, ToRadians)

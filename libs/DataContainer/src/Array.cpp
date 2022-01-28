@@ -44,12 +44,10 @@ Array<T, derived>::operator[](const std::size_t _index) const
 
 /** Assignment Operator Overloads */
 template<typename T, class derived>
-template<class t_rhs_type>
 constexpr derived&
-Array<T, derived>::operator=(const t_rhs_type& _value) noexcept
+Array<T, derived>::operator=(const std::convertible_to<T> auto _value) noexcept
 {
-  STATIC_ASSERT(GetTypeCategory<T>() == GetTypeCategory<t_rhs_type>(), "Attempting to assign to an incompatible type.")
-  FOR_EACH(entry, Derived()) entry = _value;
+  FOR_EACH(entry, Derived()) entry = static_cast<T>(_value);
   return Derived();
 }
 
@@ -68,7 +66,7 @@ template<typename T, class derived>
 std::ostream&
 operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base)
 {
-  const derived& derived_class = static_cast<derived&>(_array_base);
+  const derived& derived_class = static_cast<const derived&>(_array_base);
   FOR(i, derived_class.size()) _output_stream << derived_class[i] << (i == derived_class.size() - 1 ? "" : ", ");
   return _output_stream;
 }

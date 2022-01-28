@@ -26,8 +26,8 @@ void CreateRectangle(Model& _model, GLfloat _length, GLfloat _height);
 void CreateQuadrilateral(Model& _model, const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2,
                          const SVector3<GLfloat>& _v3);
 
-template<class ...t_static_vector>
-void CreatePolygon(Model& _model, const t_static_vector& ..._v);
+template<class... t_static_vector>
+void CreatePolygon(Model& _model, const t_static_vector&... _v);
 
 /***************************************************************************************************************************************************************
 * 3D

@@ -80,8 +80,8 @@ void Window::Open(GLint _width, GLint _height)
   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
   {
     GLCall(glEnable(GL_DEBUG_OUTPUT));
-    GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));PING
-    GLCall(glDebugMessageCallback(glDebugOutput, nullptr));PING
+    GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+    GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
     GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
   }
 #endif

@@ -60,7 +60,8 @@ PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& 
 
 template<class derived>
 PointLightBase<derived>::PointLightBase(const PointLightBase<derived>& _point_light_base)
-  : iPointLight(_point_light_base.iPointLight), Position(_point_light_base.Position), AttenuationCoefficients(_point_light_base.AttenuationCoefficients)
+  : Light(_point_light_base), iPointLight(_point_light_base.iPointLight), Position(_point_light_base.Position),
+    AttenuationCoefficients(_point_light_base.AttenuationCoefficients)
 {
   nPointLights++;
 }
