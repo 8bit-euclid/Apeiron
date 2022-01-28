@@ -5,8 +5,10 @@ set(SOURCE_FILES
         include/List.h
         include/MultiArray.h
         include/Detail.h
+        include/NumericContainer.h
         src/Array.cpp
-        src/MultiArray.cpp)
+        src/MultiArray.cpp
+        src/NumericContainer.cpp)
 
 set(LINK_LIBRARIES)
 

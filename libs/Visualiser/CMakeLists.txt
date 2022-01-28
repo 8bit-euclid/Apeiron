@@ -1,4 +1,5 @@
 include_directories(${PROJECT_SOURCE_DIR}/libs/Visualiser)
+#include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/libs/Visualiser/resources/external/stb_image)
 
 set(SOURCE_FILES
         include/Buffers.h

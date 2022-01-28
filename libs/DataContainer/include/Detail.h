@@ -39,26 +39,5 @@ constexpr auto InitStaticArray(const iter _first, const iter _last)
   return initialised_array;
 }
 
-/***************************************************************************************************************************************************************
-* Numeric Data Container Support
-***************************************************************************************************************************************************************/
-template<typename T, class derived>
-class NumericContainer
-{
-protected:
-  constexpr NumericContainer() { STATIC_ASSERT(isNumber<T>(), "Tensors can only be populated with numerical values.") }
-
-public:
-  /** Operator overloads. */
-
-private:
-  /** Derived class access. */
-  constexpr derived&
-  Derived() noexcept { return static_cast<derived&>(*this); }
-
-  constexpr const derived&
-  Derived() const noexcept { return static_cast<const derived&>(*this); }
-};
-
 }
 }

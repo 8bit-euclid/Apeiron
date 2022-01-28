@@ -48,6 +48,8 @@ public:
 
   inline void Unbind() const { GLCall(glUseProgram(0)); }
 
+  inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
+
   void UseModel(const Model& _model);
 
   void UseMaterial(const Material& _material);
@@ -84,6 +86,7 @@ public:
   void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
 
 private:
+  bool areWarningsOn{false};
   GLuint ID;
   std::unordered_map<std::string, int> UniformLocationCache;
 

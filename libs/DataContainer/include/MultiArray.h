@@ -17,21 +17,21 @@ protected:
 public:
   /** Size and index range-checking. */
   constexpr void
-  MultiIndexBoundCheck(const std::convertible_to<std::size_t> auto ..._multi_index) const;
+  MultiIndexBoundCheck(const std::convertible_to<std::size_t> auto... _multi_index) const;
 
   /** Multi-dimensional subscript index toggling. */
   constexpr std::size_t
-  ComputeLinearIndex(const std::convertible_to<std::size_t> auto ..._multi_index) const;
+  ComputeLinearIndex(const std::convertible_to<std::size_t> auto... _multi_index) const;
 
   constexpr auto
   ComputeMultiIndex(std::size_t _index) const;
 
   /** Operator overloads. */
   constexpr T&
-  operator()(std::convertible_to<std::size_t> auto ..._multi_index);
+  operator()(std::convertible_to<std::size_t> auto... _multi_index);
 
   constexpr const T&
-  operator()(const std::convertible_to<std::size_t> auto ..._multi_index) const;
+  operator()(const std::convertible_to<std::size_t> auto... _multi_index) const;
 
   constexpr derived&
   operator=(const std::initializer_list<T>& _value_array) noexcept;
@@ -64,21 +64,21 @@ private:
 /***************************************************************************************************************************************************************
 * Static Multi-dimensional Array Class
 ***************************************************************************************************************************************************************/
-template<typename T, std::size_t ...dimensions>
-class StaticMultiArray : public MultiArray<T, StaticMultiArray<T, dimensions...>>
+template<typename T, std::size_t ...dims>
+class StaticMultiArray : public MultiArray<T, StaticMultiArray<T, dims...>>
 {
 public:
   /** Constructors. */
   constexpr StaticMultiArray();
 
-  explicit constexpr StaticMultiArray(const T& _value);
+  explicit constexpr StaticMultiArray(const T _value);
 
 private:
-  constexpr static StaticArray<std::size_t, sizeof...(dimensions)> Dimensions{dimensions...};
-  constexpr static std::size_t nEntries{Product(dimensions...)};
+  constexpr static StaticArray<std::size_t, sizeof...(dims)> Dimensions{dims...};
+  constexpr static std::size_t nEntries{Product(dims...)};
   StaticArray<T, nEntries> Entries;
 
-  friend MultiArray<T, StaticMultiArray<T, dimensions...>>;
+  friend MultiArray<T, StaticMultiArray<T, dims...>>;
 };
 
 /***************************************************************************************************************************************************************
@@ -91,10 +91,10 @@ public:
   /** Constructors. */
   DynamicMultiArray();
 
-  DynamicMultiArray(const std::convertible_to<std::size_t> auto ..._dimensions);
+  DynamicMultiArray(const std::convertible_to<std::size_t> auto... _dimensions);
 
   /** Multi-array resize. */
-  void Resize(const std::convertible_to<std::size_t> auto ..._dimensions);
+  void Resize(const std::convertible_to<std::size_t> auto... _dimensions);
 
 private:
   DynamicArray<std::size_t> Dimensions;

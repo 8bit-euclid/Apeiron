@@ -77,8 +77,8 @@ inline void Print()
 }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
-template<char sep = ' ', typename T, typename ...trail_T>
-inline void Print(const T& _data, trail_T... _trailing_data)
+template<char sep = ' ', typename T, typename... Ts>
+inline void Print(const T& _data, Ts... _trailing_data)
 {
   std::cout << _data;
   if(sep != '\0') std::cout << sep;

@@ -12,7 +12,7 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Abstract Random Number Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, TypeCategory category = GetTypeCategory<T>()>
+template<typename T, TypeCategory cat = GetTypeCategory<T>()>
 class RandomBase
 {
 protected:
@@ -28,7 +28,7 @@ protected:
 };
 
 /** Forward declaration of Random class and templatededuction guide. */
-template<typename T, TypeCategory category = GetTypeCategory<T>()> class Random;
+template<typename T, TypeCategory cat = GetTypeCategory<T>()> class Random;
 template<typename T> Random(T, T) -> Random<T>;
 
 /***************************************************************************************************************************************************************

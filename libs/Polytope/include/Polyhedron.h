@@ -11,15 +11,15 @@ namespace Shapes {
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polyhedra
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory category>
-struct Polyhedron : public StaticPolytope<category, 3>
+template<PolytopeCategory cat>
+struct Polyhedron : public StaticPolytope<cat, 3>
 {
-  Polyhedron() { STATIC_ASSERT((isNPolytope<category, 3>()), "A polyhedron must be a 3-polytope.") }
+  Polyhedron() { STATIC_ASSERT((isNPolytope<cat, 3>()), "A polyhedron must be a 3-polytope.") }
 
   Polyhedron(const Float _side_length);
 
-  template<class ...t_static_vector>
-  Polyhedron(const t_static_vector& ..._vertices);
+  template<class... t_static_vector>
+  Polyhedron(const t_static_vector&... _vertices);
 };
 
 template<>
@@ -31,7 +31,7 @@ struct Polyhedron<PolytopeCategory::Arbitrary3D> : public DynamicPolytope<Polyto
 /***************************************************************************************************************************************************************
 * Tetrahedra
 ***************************************************************************************************************************************************************/
-struct Tetrahedron : public Polyhedron<PolytopeCategory::Tetrahedral>
+struct Tetrahedron : public Polyhedron<PolytopeCategory::Tetrahedron>
 {
   Tetrahedron(const SVectorF3& _v0, const SVectorF3& _v1, const SVectorF3& _v2, const SVectorF3& _v3);
 };

@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Set default, debug, and release flags
 set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
@@ -106,16 +106,21 @@ FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive
 FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
-add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
 add_executable(UnitTestBasicMath ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
 add_executable(UnitTestComparators ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
 add_executable(UnitTestMath ${PROJECT_SOURCE_DIR}/test/UnitTestMath.cpp)
+
+add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
+add_executable(UnitTestNumericContainer ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestNumericContainer.cpp)
+add_executable(UnitTestVector ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/test/UnitTestVector.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
 target_link_libraries(UnitTestArray gtest gtest_main)
 target_link_libraries(UnitTestBasicMath gtest gtest_main)
 target_link_libraries(UnitTestComparators gtest gtest_main)
 target_link_libraries(UnitTestMath gtest gtest_main)
+target_link_libraries(UnitTestNumericContainer gtest gtest_main)
+target_link_libraries(UnitTestVector gtest gtest_main)
 
 #add_test(UnitTestArray ${BIN_DIRECTORY}/UnitTestArray)
 #add_test(UnitTestBasicMath ${BIN_DIRECTORY}/UnitTestBasicMath)

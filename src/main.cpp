@@ -6,49 +6,34 @@
 #include "../libs/DataContainer/include/MultiArray.h"
 #include "../libs/Tensor/include/Tensor.h"
 #include "../libs/LinearAlgebra/include/Vector.h"
+#include "../libs/LinearAlgebra/include/VectorOperations.h"
 
 using namespace Apeiron;
 
 template<typename T, class D>
-void TestFunc(const Vector<T, D>& _vector)
+void TestFunc(Vector<T, D>& _vector)
 {
-  Print("Success!");
+  auto& vector = _vector.Derived();
+  vector[0] = -1;
+  Print("Success: ", vector.back());
 }
 
 int main(void)
 {
-  StaticTensor<int, 2, 3, 5> tensor1;
-  tensor1(0, 2, 4) = 1;
+  StaticVector<Float, 3> testt{4, 2, 3};
+  StaticVector<Float, 3> testt2;
+  TestFunc(testt);
+  Print("Test1:", testt);
+//  testt2 = testt;
+  testt2 = Five * testt;
+  Print("Test:", testt2);
+  Print("Integral:", MinInt<>, MaxInt<>);
+  Print("Float:", Epsilon<>, InfFloat<>, LowestFloat<>, MaxFloat<>);
 
-  DynamicTensor<int> tensor2(3, 4, 5);
-  tensor2(0, 2, 4) = 1;
+  EXIT("Done")
 
-  StaticArray<Float, 3> t;
-
-  FOR_EACH(item, t) item = 1;
-
-  StaticMultiArray<int, 2, 4, 5> marray1;
-  marray1(0, 2, 4) = 1;
-
-  DynamicMultiArray<int> marray2(3, 4, 5);
-  marray2(0, 2, 4) = 1;
-
-  unsigned count(1);
-//  FOR_EACH(item, marray2) Print("Count: ", count++);
-  FOR_EACH(item, tensor2) Print("Count: ", count++);
-
-  StaticVector<Float, 3> vec1(True);
-  DynamicVector<Float> vec2(3, Five);
-
-  TestFunc(vec1);
-  TestFunc(vec2);
-
-//  StaticMultiArray<int, 3, 4, 5> tensor1;
-//  tensor1(0, 2, 4) = 1;
-//
-//  DynamicMultiArray<int> tensor2(3, 4, 5);
-//  tensor2(0, 2, 4) = 1;
-
+  StaticTensor<Float, 3, 4, 5> test;
+  test(0, 1, 2) = Five;
 //  Geometry::Polygon p(8, 5.0);
 
   Visualiser visualiser;

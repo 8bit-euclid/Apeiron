@@ -12,15 +12,15 @@ namespace Shapes {
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polygons
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory category, std::size_t dim = 3>
-struct Polygon : public StaticPolytope<category, dim>
+template<PolytopeCategory cat, std::size_t dim = 3>
+struct Polygon : public StaticPolytope<cat, dim>
 {
-  constexpr Polygon() { STATIC_ASSERT((isNPolytope<category, 2>()), "A polygon must be a 2-polytope.") }
+  constexpr Polygon() { STATIC_ASSERT((isNPolytope<cat, 2>()), "A polygon must be a 2-polytope.") }
 
   constexpr Polygon(const Float _side_length);
 
-  template<class ...t_static_vector>
-  constexpr Polygon(const t_static_vector& ..._vertices);
+  template<class... t_static_vector>
+  constexpr Polygon(const t_static_vector&... _vertices);
 };
 
 template<std::size_t dim>
@@ -28,15 +28,15 @@ struct Polygon<PolytopeCategory::Arbitrary2D, dim> : public DynamicPolytope<Poly
 {
   Polygon(std::size_t _n_vertices, const Float _radius);
 
-  template<class ...t_static_vector>
-  Polygon(const t_static_vector& ..._vertices);
+  template<class... t_static_vector>
+  Polygon(const t_static_vector&... _vertices);
 };
 
 /***************************************************************************************************************************************************************
 * Triangles
 ***************************************************************************************************************************************************************/
 template<std::size_t dim = 3>
-struct Triangle : public Polygon<PolytopeCategory::Triangular, dim>
+struct Triangle : public Polygon<PolytopeCategory::Triangle, dim>
 {
   /** Arbitary triangle. */
   constexpr Triangle(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2);
@@ -46,7 +46,7 @@ struct Triangle : public Polygon<PolytopeCategory::Triangular, dim>
 
   /** Regular triangle. */
   constexpr Triangle(const Float _radius)
-    : Polygon<PolytopeCategory::Triangular, dim>(3, _radius) {}
+    : Polygon<PolytopeCategory::Triangle, dim>(3, _radius) {}
 };
 
 /***************************************************************************************************************************************************************

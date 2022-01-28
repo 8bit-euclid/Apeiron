@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "../include/Array.h"
-#include "../include/MultiArray.h"
 
 #ifdef DEBUG_MODE
 

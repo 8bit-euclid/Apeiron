@@ -2,7 +2,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
-#include "../../DataContainer/include/Detail.h"
+#include "../../DataContainer/include/NumericContainer.h"
 
 namespace Apeiron {
 
@@ -10,12 +10,12 @@ namespace Apeiron {
 * Vector Abstract Base Class
 ***************************************************************************************************************************************************************/
 template<typename T, class derived>
-class Vector : Detail::NumericContainer<T, Vector<T, derived>>
+class Vector : public Detail::NumericContainer<T, derived>
 {
 protected:
   constexpr Vector() = default;
 
-private:
+public:
   /** Derived Class Access */
   constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
 
@@ -45,6 +45,10 @@ public:
   template<class iter>
   constexpr StaticVector(const iter _first, const iter _last)
     : BaseArray(_first, _last) {}
+
+  /** Operators */
+  using BaseArray::operator[];
+  using BaseArray::operator=;
 
 private:
   friend Vector<T, BaseArray>;
@@ -89,10 +93,23 @@ template<typename T> using SVector3 = StaticVector<T, 3>;
 template<typename T> using SVector4 = StaticVector<T, 4>;
 
 template<std::size_t N> using SVectorF = StaticVector<Float, N>;
+using SVectorF1 = SVectorF<1>;
 using SVectorF2 = SVectorF<2>;
 using SVectorF3 = SVectorF<3>;
 using SVectorF4 = SVectorF<4>;
 
+/***************************************************************************************************************************************************************
+* Vector Conversion
+***************************************************************************************************************************************************************/
+template<std::size_t N, std::size_t M, typename T>
+consteval StaticVector<T, N>
+ConvertVector(const StaticVector<T, M>& _from_vector)
+{
+  StaticVector<T, N> to_vector;
+  std::copy(_from_vector.begin(), (_from_vector.begin() + Min(M, N)), to_vector.begin());
+  return to_vector;
 }
 
-#include "../src/Vector.cpp"
+}
+
+//#include "../src/Vector.cpp"

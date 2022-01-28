@@ -274,7 +274,7 @@ int Shader::GetUniformLocation(const std::string& _name)
   if(UniformLocationCache.contains(_name)) return UniformLocationCache[_name];
 
   GLCall(int location = glGetUniformLocation(ID, _name.c_str()));
-  if(location < 0) WARNING("Could not find the location for uniform ", _name)
+  if(areWarningsOn && location < 0) WARNING("Could not find the location for uniform ", _name)
   UniformLocationCache[_name] = location;
 
   return location;
