@@ -9,7 +9,7 @@ namespace Apeiron{
 ***************************************************************************************************************************************************************/
 
 /** Get a string with file name and line number. */
-#define FILE_LINE(_file, _line) "\n FILE: " + To_Str(_file) + "\n LINE: " + To_Str(_line) + "\n"
+#define FILE_LINE(_file, _line) "\n FILE: " + ToStr(_file) + "\n LINE: " + ToStr(_line) + "\n"
 
 /** Print a Ping from the current file and line. */
 #define PING usleep(100); Print("\nPing from file:", __FILE__, "at line number:", __LINE__); Flush();

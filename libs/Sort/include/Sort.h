@@ -34,7 +34,7 @@ class Sort
 
   inline void Init(const std::size_t _n_sort_objects)
   {
-    STATIC_ASSERT(isNumber<T>(), "Can only sort numerical data types currently.")
+    STATIC_ASSERT(isArithmetic<T>(), "Can only sort numerical data types currently.")
     SortObjects.reserve(_n_sort_objects);
   }
 

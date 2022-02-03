@@ -69,7 +69,7 @@ void Texture::ReadFromFile(const std::string& _file_path, const GLint _wrap_type
   std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
                                     BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
                                     BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
-                                    throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + To_Str(BitsPerPixel) + ".";
+                                    throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(BitsPerPixel) + ".";
   Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
 
   stbi_image_free(LocalBuffer);

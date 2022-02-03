@@ -12,17 +12,17 @@ template<typename T, class derived>
 class NumericContainer
 {
 protected:
-  constexpr NumericContainer() { STATIC_ASSERT(isNumber<T>(), "Numeric containers can only be populated with numerical values.") }
+  constexpr NumericContainer() { STATIC_ASSERT(isArithmetic<T>(), "Numeric containers can only be populated with numerical values.") }
 
 public:
   /** Arithmetic operator overloads with scalars. */
-  constexpr derived& operator+(const std::convertible_to<T> auto _scalar);
+  constexpr derived operator+(const std::convertible_to<T> auto _scalar) const;
 
-  constexpr derived& operator-(const std::convertible_to<T> auto _scalar);
+  constexpr derived operator-(const std::convertible_to<T> auto _scalar) const;
 
-  constexpr derived& operator*(const std::convertible_to<T> auto _scalar);
+  constexpr derived operator*(const std::convertible_to<T> auto _scalar) const;
 
-  constexpr derived& operator/(const std::convertible_to<T> auto _scalar);
+  constexpr derived operator/(const std::convertible_to<T> auto _scalar) const;
 
   constexpr derived& operator+=(const std::convertible_to<T> auto _scalar);
 
@@ -33,23 +33,30 @@ public:
   constexpr derived& operator/=(const std::convertible_to<T> auto _scalar);
 
   /** Element-wise arithmetic operator overloads. */
-  constexpr derived& operator+(const derived& _container);
+  template<class D>
+  constexpr derived operator+(const NumericContainer<T, D>& _container) const;
 
-  constexpr derived& operator-(const derived& _container);
+  template<class D>
+  constexpr derived operator-(const NumericContainer<T, D>& _container) const;
 
-  constexpr derived& operator*(const derived& _container);
+  template<class D>
+  constexpr derived operator*(const NumericContainer<T, D>& _container) const;
 
-  constexpr derived& operator/(const derived& _container);
+  template<class D>
+  constexpr derived operator/(const NumericContainer<T, D>& _container) const;
 
-  constexpr derived& operator+=(const derived& _container);
+  template<class D>
+  constexpr derived& operator+=(const NumericContainer<T, D>& _container);
 
-  constexpr derived& operator-=(const derived& _container);
+  template<class D>
+  constexpr derived& operator-=(const NumericContainer<T, D>& _container);
 
-  constexpr derived& operator*=(const derived& _container);
+  template<class D>
+  constexpr derived& operator*=(const NumericContainer<T, D>& _container);
 
-  constexpr derived& operator/=(const derived& _container);
+  template<class D>
+  constexpr derived& operator/=(const NumericContainer<T, D>& _container);
 
-//private:
   /** Derived class access. */
   constexpr derived&
   Derived() noexcept { return static_cast<derived&>(*this); }
@@ -58,12 +65,12 @@ public:
   Derived() const noexcept { return static_cast<const derived&>(*this); }
 };
 
-}
+}//Detail
 
 /** Stand-alone Operator overloads. */
 template<typename T, class derived>
 constexpr derived operator*(const std::convertible_to<T> auto _scalar, const Detail::NumericContainer<T, derived>& _container);
 
-}
+}//Apeiron
 
 #include "../src/NumericContainer.cpp"

@@ -26,7 +26,7 @@ std::ostream& operator,(std::ostream& _out, const T& _data)
 
 /** Convert to a string. */
 template<typename T>
-inline std::string To_Str(const T& atype)
+inline std::string ToStr(const T& atype)
 {
   std::stringstream str_buffer;
   str_buffer << atype<<std::endl;

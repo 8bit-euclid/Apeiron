@@ -145,7 +145,7 @@ TEST_F(ApeironTest, Exp)
 
 TEST_F(ApeironTest, Sin)
 {
-  EXPECT_DOUBLE_EQ(Sin(0.0), Zero);
+  EXPECT_DOUBLE_EQ(Sin(Zero), Zero);
   EXPECT_DOUBLE_EQ(Sin(HalfPi), One);
   EXPECT_DOUBLE_EQ(Sin(SixthPi), Half);
   EXPECT_DOUBLE_EQ(Sin(QuartPi), One/Sqrt(Two));
@@ -154,7 +154,7 @@ TEST_F(ApeironTest, Sin)
 
 TEST_F(ApeironTest, Cos)
 {
-  EXPECT_DOUBLE_EQ(Cos(0.0), One);
+  EXPECT_DOUBLE_EQ(Cos(Zero), One);
   EXPECT_NEAR(Cos(HalfPi), Zero, Small);
   EXPECT_DOUBLE_EQ(Cos(SixthPi), Half*Sqrt(Three));
   EXPECT_DOUBLE_EQ(Cos(QuartPi), One/Sqrt(Two));
@@ -163,11 +163,29 @@ TEST_F(ApeironTest, Cos)
 
 TEST_F(ApeironTest, Tan)
 {
-  EXPECT_DOUBLE_EQ(Tan(0.0), Zero);
+  EXPECT_DOUBLE_EQ(Tan(Zero), Zero);
   EXPECT_DOUBLE_EQ(Tan(SixthPi), One/Sqrt(Three));
   EXPECT_DOUBLE_EQ(Tan(QuartPi), One);
-  EXPECT_DOUBLE_EQ(Tan(ThirdPi), Sqrt(Three));
+  EXPECT_NEAR(Tan(ThirdPi), Sqrt(Three), Small);
   EXPECT_THROW(Tan(HalfPi), std::invalid_argument);
+}
+
+TEST_F(ApeironTest, Arcsin)
+{
+  EXPECT_DOUBLE_EQ(Arcsin(Zero), Zero);
+  EXPECT_DOUBLE_EQ(Arcsin(One), HalfPi);
+  EXPECT_DOUBLE_EQ(Arcsin(Half), SixthPi);
+  EXPECT_DOUBLE_EQ(Arcsin(One/Sqrt(Two)), QuartPi);
+  EXPECT_DOUBLE_EQ(Arcsin(Half*Sqrt(Three)), ThirdPi);
+}
+
+TEST_F(ApeironTest, Arccos)
+{
+  EXPECT_DOUBLE_EQ(Arccos(One), Zero);
+  EXPECT_DOUBLE_EQ(Arccos(Zero), HalfPi);
+  EXPECT_NEAR(Arccos(Half*Sqrt(Three)), SixthPi, Small);
+  EXPECT_DOUBLE_EQ(Arccos(One/Sqrt(Two)), QuartPi);
+  EXPECT_DOUBLE_EQ(Arccos(Half), ThirdPi);
 }
 
 }

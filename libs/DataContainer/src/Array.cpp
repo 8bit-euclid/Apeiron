@@ -74,22 +74,29 @@ operator<<(std::ostream& _output_stream, const Array<T, derived>& _array_base)
 /***************************************************************************************************************************************************************
 * Static Array Class
 ***************************************************************************************************************************************************************/
-template<typename T, std::size_t t_array_size>
-constexpr StaticArray<T, t_array_size>::StaticArray()
+template<typename T, std::size_t size>
+constexpr StaticArray<T, size>::StaticArray()
   : StaticArray(GetStaticInitValue<T>()) {}
 
-template<typename T, std::size_t t_array_size>
-constexpr StaticArray<T, t_array_size>::StaticArray(const T& _value)
-  : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_value)) {}
+template<typename T, std::size_t size>
+constexpr StaticArray<T, size>::StaticArray(const T& _value)
+  : std::array<T, size>(Detail::InitStaticArray<T, size>(_value)) {}
 
-template<typename T, std::size_t t_array_size>
-constexpr StaticArray<T, t_array_size>::StaticArray(const std::initializer_list<T>& _list)
-  : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_list)) {}
+template<typename T, std::size_t size>
+constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& _list)
+  : std::array<T, size>(Detail::InitStaticArray<T, size>(_list))
+{
+  ASSERT(size == _list.size(), "The initializer list should be of size ", size, ".")
+}
 
-template<typename T, std::size_t t_array_size>
+template<typename T, std::size_t size>
 template<class iter>
-constexpr StaticArray<T, t_array_size>::StaticArray(const iter _first, const iter _last)
-  : std::array<T, t_array_size>(Detail::InitStaticArray<T, t_array_size>(_first, _last)) {}
+constexpr StaticArray<T, size>::StaticArray(const iter _first, const iter _last)
+  : std::array<T, size>(Detail::InitStaticArray<T, size>(_first, _last))
+{
+  STATIC_ASSERT((isTypeEqual<T, typename std::iterator_traits<iter>::value_type>()), "Mismatch in the iterator data type.")
+  ASSERT(size == std::distance(_first, _last), "The number of iterators must equal the array size ", size, ".")
+}
 
 /***************************************************************************************************************************************************************
 * Dynamic Array Class

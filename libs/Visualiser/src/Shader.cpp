@@ -63,11 +63,11 @@ void Shader::UseLight(const Light& _light)
   const LightType type = _light.Type;
   const UInt index = _light.GetIndex();
   std::string uniform_name = type == LightType::Directional ? "u_directional_light" :
-                             type == LightType::Point ? "u_point_lights[" + To_Str(index) + "]" :
-                             type == LightType::Spot ? "u_spot_lights[" + To_Str(index) + "]" :
+                             type == LightType::Point ? "u_point_lights[" + ToStr(index) + "]" :
+                             type == LightType::Spot ? "u_spot_lights[" + ToStr(index) + "]" :
                              throw std::invalid_argument("The lighting type was either not recognised or not specified.");
-  std::string light_position = type == LightType::Point ? "u_point_light_positions[" + To_Str(index) + "]" :
-                               type == LightType::Spot ? "u_spot_light_positions[" + To_Str(index) + "]" :
+  std::string light_position = type == LightType::Point ? "u_point_light_positions[" + ToStr(index) + "]" :
+                               type == LightType::Spot ? "u_spot_light_positions[" + ToStr(index) + "]" :
                                type == LightType::Directional ? "\0" :
                                throw std::invalid_argument("The lighting type was either not recognised or not specified.");
   std::string base_name = type == LightType::Spot ? ".Point" : "\0";
@@ -111,7 +111,7 @@ void Shader::SetDirectionalShadowMap(const UInt _slot)
 
 void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt _slot)
 {
-  SetUniform1i("u_point_lights["+To_Str(_i_point_light)+"].Shadow", _slot);
+  SetUniform1i("u_point_lights[" + ToStr(_i_point_light) + "].Shadow", _slot);
 }
 
 void Shader::SetPointPosition(const glm::vec3& _position)
@@ -131,7 +131,7 @@ void Shader::SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix
 
 void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices)
 {
-  FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices["+To_Str(i)+"]", _light_space_matrices[i]);
+  FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices[" + ToStr(i) + "]", _light_space_matrices[i]);
 }
 
 /***************************************************************************************************************************************************************

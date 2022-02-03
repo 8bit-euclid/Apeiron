@@ -19,8 +19,9 @@ struct Polygon : public StaticPolytope<cat, dim>
 
   constexpr Polygon(const Float _side_length);
 
-  template<class... t_static_vector>
-  constexpr Polygon(const t_static_vector&... _vertices);
+  template<class... static_vector>
+//  requires std::is_same_v<static_vector, SVectorF<dim>>
+  constexpr Polygon(const static_vector&... _vertices);
 };
 
 template<std::size_t dim>
@@ -28,8 +29,8 @@ struct Polygon<PolytopeCategory::Arbitrary2D, dim> : public DynamicPolytope<Poly
 {
   Polygon(std::size_t _n_vertices, const Float _radius);
 
-  template<class... t_static_vector>
-  Polygon(const t_static_vector&... _vertices);
+  template<class... static_vector>
+  Polygon(const static_vector&... _vertices);
 };
 
 /***************************************************************************************************************************************************************
@@ -80,24 +81,6 @@ struct Square : public Rectangle<dim>
   /** Square with prescribed side length centred at the origin. */
   constexpr Square(const Float _side_length)
     : Rectangle<dim>(_side_length, _side_length) {}
-};
-
-/***************************************************************************************************************************************************************
-* Ellipses, Circles, Sectors, and Segments
-***************************************************************************************************************************************************************/
-template<std::size_t dim = 3>
-struct Ellipse : public Polygon<PolytopeCategory::Arbitrary2D, dim>
-{
-  /** Ellipse with prescribed half-lengths centred at the origin. */
-  Ellipse(const Float _x_radius, const Float _y_radius);
-};
-
-template<std::size_t dim = 3>
-struct Circle : public Ellipse<dim>
-{
-  /** Circle with prescribed radius centred at the origin. */
-  Circle(const Float _radius)
-    : Ellipse<dim>(_radius, _radius) {}
 };
 
 }
