@@ -3,7 +3,7 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ArraySize = 50;
+constexpr std::size_t ContainerSize = 50;
 
 namespace Apeiron
 {
@@ -11,17 +11,16 @@ namespace Apeiron
 class ArrayTest : public testing::Test
 {
 public:
-
-  StaticArray<bool, ArraySize> BoolStaticArray;
-  StaticArray<int, ArraySize> IntStaticArray;
-  StaticArray<Float, ArraySize> FloatStaticArray;
+  StaticArray<bool, ContainerSize> BoolStaticArray;
+  StaticArray<int, ContainerSize> IntStaticArray;
+  StaticArray<Float, ContainerSize> FloatStaticArray;
 
   DynamicArray<Bool> BoolDynamicArray;
   DynamicArray<int> IntDynamicArray;
   DynamicArray<Float> FloatDynamicArray;
 
   ArrayTest()
-    : BoolDynamicArray(ArraySize), IntDynamicArray(ArraySize), FloatDynamicArray(ArraySize) {}
+    : BoolDynamicArray(ContainerSize), IntDynamicArray(ContainerSize), FloatDynamicArray(ContainerSize) {}
 
   void SetUp() override
   {
@@ -32,8 +31,8 @@ public:
 TEST_F(ArrayTest, Initialisation)
 {
   // Initilise constexpr StaticArray objects.
-  constexpr StaticArray<bool, ArraySize> ConstexprBoolArray;
-  constexpr StaticArray<int, ArraySize> ConstexprIntArray(2);
+  constexpr StaticArray<bool, ContainerSize> ConstexprBoolArray;
+  constexpr StaticArray<int, ContainerSize> ConstexprIntArray(2);
   constexpr StaticArray<Float, 5> ConstexprFloatArray1{One, Two, Three, Four, Five};
   constexpr StaticArray<Float, 3> ConstexprFloatArray2(ConstexprFloatArray1.begin(), ConstexprFloatArray1.begin() + 3);
 
@@ -44,7 +43,7 @@ TEST_F(ArrayTest, Initialisation)
   }
 
   // Test default initialisation of arrays.
-  FOR(i, ArraySize)
+  FOR(i, ContainerSize)
   {
     // Static arrays
     EXPECT_EQ(BoolStaticArray[i], false);
@@ -60,7 +59,7 @@ TEST_F(ArrayTest, Initialisation)
 
 TEST_F(ArrayTest, SubscriptOperator)
 {
-  FOR(i, ArraySize)
+  FOR(i, ContainerSize)
   {
     // Static arrays
     BoolStaticArray[i] = true;
@@ -94,7 +93,7 @@ TEST_F(ArrayTest, AssignmentOperator)
   IntDynamicArray = rand_int;
   FloatDynamicArray = rand_float;
 
-  FOR(i, ArraySize)
+  FOR(i, ContainerSize)
   {
     // Static arrays
     EXPECT_EQ(BoolStaticArray[i], rand_bool);

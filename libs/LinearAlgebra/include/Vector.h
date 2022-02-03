@@ -86,7 +86,7 @@ private:
 };
 
 /***************************************************************************************************************************************************************
-* Vector Aliases
+* Static Vector Aliases
 ***************************************************************************************************************************************************************/
 template<typename T> using SVector2 = StaticVector<T, 2>;
 template<typename T> using SVector3 = StaticVector<T, 3>;
@@ -99,7 +99,7 @@ using SVectorF3 = SVectorF<3>;
 using SVectorF4 = SVectorF<4>;
 
 /***************************************************************************************************************************************************************
-* Vector Conversion
+* Static Vector Conversion
 ***************************************************************************************************************************************************************/
 template<std::size_t N, std::size_t M, typename T>
 consteval StaticVector<T, N>
@@ -109,6 +109,14 @@ ConvertVector(const StaticVector<T, M>& _from_vector)
   std::copy(_from_vector.begin(), (_from_vector.begin() + Min(M, N)), to_vector.begin());
   return to_vector;
 }
+
+/***************************************************************************************************************************************************************
+* Dynamic Vector Aliases
+***************************************************************************************************************************************************************/
+using DVectorB = DynamicVector<Bool>;
+using DVectorU = DynamicVector<std::size_t>;
+using DVectorI = DynamicVector<int>;
+using DVectorF = DynamicVector<Float>;
 
 }
 

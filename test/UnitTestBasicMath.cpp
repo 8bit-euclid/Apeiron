@@ -9,8 +9,6 @@ namespace Apeiron{
 /***************************************************************************************************************************************************************
 * Min, Max, and Bounding Functions
 ***************************************************************************************************************************************************************/
-
-/** Min: Test min function. */
 TEST_F(ApeironTest, Min)
 {
   const int integer = RandomInt();
@@ -22,7 +20,6 @@ TEST_F(ApeironTest, Min)
   EXPECT_EQ(Min(floating, floating - One), floating - One);
 }
 
-/** Max: Test max function. */
 TEST_F(ApeironTest, Max)
 {
   const int integer = RandomInt();
@@ -34,7 +31,6 @@ TEST_F(ApeironTest, Max)
   EXPECT_EQ(Max(floating, floating - One), floating);
 }
 
-/** MinMax: Test minmax function. */
 TEST_F(ApeironTest, MinMax)
 {
   const int minInt = RandomInt();
@@ -52,7 +48,6 @@ TEST_F(ApeironTest, MinMax)
   EXPECT_EQ(MinMax(maxFloat, minFloat).second, maxFloat);
 }
 
-/** Bound: Test the bounding function. */
 TEST_F(ApeironTest, Bound)
 {
   const int minInt = -Abs(RandomInt());
@@ -68,7 +63,6 @@ TEST_F(ApeironTest, Bound)
   EXPECT_LE(Bound(floating, minFloat, maxFloat), maxFloat);
 }
 
-/** Min: Test min function. */
 TEST_F(ApeironTest, MinEntry)
 {
   int minInt = MaxInt<>;
@@ -80,7 +74,6 @@ TEST_F(ApeironTest, MinEntry)
   EXPECT_EQ(MinEntry(FloatArray.begin(), FloatArray.end()), minFloat);
 }
 
-/** Max: Test max function. */
 TEST_F(ApeironTest, MaxEntry)
 {
   int maxInt = MinInt<>;
@@ -92,7 +85,6 @@ TEST_F(ApeironTest, MaxEntry)
   EXPECT_EQ(MaxEntry(FloatArray.begin(), FloatArray.end()), maxFloat);
 }
 
-/** MinMax: Test minmax function. */
 TEST_F(ApeironTest, MinMaxEntries)
 {
   int minInt = MaxInt<>;
@@ -110,7 +102,6 @@ TEST_F(ApeironTest, MinMaxEntries)
   EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).second, maxFloat);
 }
 
-/** Bound: Test the bounding function. */
 TEST_F(ApeironTest, BoundEntries)
 {
   const int minInt = -Abs(RandomInt());
@@ -135,8 +126,6 @@ TEST_F(ApeironTest, BoundEntries)
 /***************************************************************************************************************************************************************
 * Signum and Absolute Value Functions
 ***************************************************************************************************************************************************************/
-
-/** Sgn: Test the signum function. */
 TEST_F(ApeironTest, Sgn)
 {
   const int negativeInt = -Abs(RandomInt()) - 1;
@@ -158,7 +147,6 @@ TEST_F(ApeironTest, Sgn)
   EXPECT_EQ(Sgn(Zero, -1), -One);
 }
 
-/** Abs: Test the absolute value function. */
 TEST_F(ApeironTest, Abs)
 {
   const int negativeInt = -Abs(RandomInt()) - 1;
@@ -175,8 +163,6 @@ TEST_F(ApeironTest, Abs)
 /***************************************************************************************************************************************************************
 * Numerical Rounding Functions
 ***************************************************************************************************************************************************************/
-
-/** Floor: Test the floor function. */
 TEST_F(ApeironTest, Floor)
 {
   EXPECT_EQ(Floor(-1.234), -Two);
@@ -188,7 +174,6 @@ TEST_F(ApeironTest, Floor)
   EXPECT_EQ(Floor(One), One);
 }
 
-/** Ceil: Test the ceil function. */
 TEST_F(ApeironTest, Ceil)
 {
   EXPECT_EQ(Ceil(-1.234), -One);
@@ -203,8 +188,6 @@ TEST_F(ApeironTest, Ceil)
 /***************************************************************************************************************************************************************
 * Mathematical Conversions
 ***************************************************************************************************************************************************************/
-
-/** Round: Test conversion from degrees to radians. */
 TEST_F(ApeironTest, ToRadians)
 {
   EXPECT_DOUBLE_EQ(ToRadians(30.0), SixthPi);
@@ -213,7 +196,6 @@ TEST_F(ApeironTest, ToRadians)
   EXPECT_DOUBLE_EQ(ToRadians(180.0), Pi);
 }
 
-/** Round: Test conversion from radians to degrees. */
 TEST_F(ApeironTest, ToDegrees)
 {
   EXPECT_DOUBLE_EQ(ToDegrees(SixthPi), 30.0);

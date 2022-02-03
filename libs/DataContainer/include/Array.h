@@ -31,8 +31,6 @@ public:
   /** Assignment Operator Overloads */
   constexpr derived& operator=(const std::convertible_to<T> auto _value) noexcept;
 
-//  constexpr Array<T, derived>& operator=(const Array<T, derived>& _array) noexcept;
-
   constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
 
 private:

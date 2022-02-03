@@ -10,31 +10,28 @@ namespace Detail {
 ***************************************************************************************************************************************************************/
 
 /** Initialise an std::array with a single value. */
-template<typename T, std::size_t t_array_size>
+template<typename T, std::size_t size>
 constexpr auto InitStaticArray(const T& _value)
 {
-  std::array<T, t_array_size> initialised_array;
+  std::array<T, size> initialised_array;
   std::fill(initialised_array.begin(), initialised_array.end(), _value);
   return initialised_array;
 }
 
 /** Initialise an std::array with an initializer list. */
-template<typename T, std::size_t t_array_size>
+template<typename T, std::size_t size>
 constexpr auto InitStaticArray(const std::initializer_list<T>& _list)
 {
-  areSizesEqual(t_array_size, _list.size()) ? true : throw "The size of the initializer list must equal the array size.";
-  std::array<T, t_array_size> initialised_array;
+  std::array<T, size> initialised_array;
   std::copy(_list.begin(), _list.end(), initialised_array.begin());
   return initialised_array;
 }
 
 /** Initialise an std::array with a first and last iterator. */
-template<typename T, std::size_t t_array_size, class iter>
+template<typename T, std::size_t size, class iter>
 constexpr auto InitStaticArray(const iter _first, const iter _last)
 {
-  isTypeEqual<T, typename std::iterator_traits<iter>::value_type>() ? true : throw "The number of iterators must equal the array size.";
-  areSizesEqual(t_array_size, std::distance(_first, _last)) ? true : throw "The number of iterators must equal the array size.";
-  std::array<T, t_array_size> initialised_array;
+  std::array<T, size> initialised_array;
   std::copy(_first, _last, initialised_array.begin());
   return initialised_array;
 }

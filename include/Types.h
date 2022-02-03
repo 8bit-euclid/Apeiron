@@ -113,39 +113,47 @@ isTypeHomogeneous() { return (isTypeEqual<T, Ts>() && ...); }
 /** Check if the data type is a boolean type. */
 template<typename T>
 constexpr bool
-isBoolean(const T& _value = T{}) { return isTypeEqual<T, bool>() || isTypeEqual<T, Bool>(); }
+isBoolean(const T& = T{}) { return isTypeEqual<T, bool>() || isTypeEqual<T, Bool>(); }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
 template<typename T>
 constexpr bool
-isIntegral(const T& _value = T{}) { return std::is_integral_v<T> && !isBoolean(_value); }
+isIntegral(const T& = T{}) { return std::is_integral_v<T> && !isBoolean<T>(); }
 
 /** Check if the data type is a floating-point type. */
 template<typename T>
 constexpr bool
-isFloatingPoint(const T& _value = T{}) { return std::is_floating_point_v<T>; }
+isFloatingPoint(const T& = T{}) { return std::is_floating_point_v<T>; }
 
 /** Check if the data type is a number type (floating-point or integer type). */
 template<typename T>
 constexpr bool
-isNumber(const T& _value = T{}) { return isIntegral(_value) || isFloatingPoint(_value); }
+isArithmetic(const T& = T{}) { return isIntegral<T>() || isFloatingPoint<T>(); }
 
 /** Check if the data type is a number type (floating-point or integer type). */
 template<typename T>
 constexpr bool
-isString(const T& _value = T{}) { return isTypeEqual<T, char*>() || isTypeEqual<T, std::string>(); }
+isStringLiteral(const T& = T{}) { return isTypeEqual<T, char*>() || isTypeEqual<T, std::string>(); }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
 template<typename T>
 constexpr TypeCategory
-GetTypeCategory(const T& _value = T{})
+GetTypeCategory(const T& = T{})
 {
   return isBoolean<T>() ? TypeCategory::Boolean :
          isIntegral<T>() ? TypeCategory::Integral :
          isFloatingPoint<T>() ? TypeCategory::FloatingPoint :
-         isString<T>() ? TypeCategory::String :
-         TypeCategory::Other;
+         isStringLiteral<T>() ? TypeCategory::String : TypeCategory::Other;
 }
+
+/***************************************************************************************************************************************************************
+* Type Concepts
+***************************************************************************************************************************************************************/
+template<typename T> concept Boolean = isBoolean<T>();
+template<typename T> concept Integral = isIntegral<T>();
+template<typename T> concept FloatingPoint = isFloatingPoint<T>();
+template<typename T> concept Arithmetic = isArithmetic<T>();
+template<typename T> concept StringLiteral = isStringLiteral<T>();
 
 /***************************************************************************************************************************************************************
 * Type Initialisation

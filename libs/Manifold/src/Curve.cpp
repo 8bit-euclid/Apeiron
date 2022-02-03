@@ -1,4 +1,5 @@
 #include "../include/Curve.h"
+#include "../../LinearAlgebra/include/VectorOperations.h"
 
 namespace Apeiron {
 namespace Manifold {
@@ -8,9 +9,9 @@ namespace Manifold {
 ***************************************************************************************************************************************************************/
 template<std::size_t ambient_dim>
 Line<ambient_dim>::Line(const SVectorF<ambient_dim>& _unit_direction, const SVectorF<ambient_dim>& _coordinate)
-  : Coordinate0(_coordinate), Direction(_unit_direction)
+  : Direction(_unit_direction), Coordinate0(_coordinate)
 {
-//  STATIC_ASSERT(, "The direction vector must be of unit length.")
+  ASSERT(isNormalised(Direction), "The direction vector must be normalised.")
 }
 
 template<std::size_t ambient_dim>

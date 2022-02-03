@@ -14,21 +14,34 @@ template<typename T, class D>
 void TestFunc(Vector<T, D>& _vector)
 {
   auto& vector = _vector.Derived();
-  vector[0] = -1;
+//  vector[0] = -1;
   Print("Success: ", vector.back());
 }
 
 int main(void)
 {
   StaticVector<Float, 3> testt{4, 2, 3};
+  constexpr StaticVector<Float, 2> xaxis{3, 0};
+  StaticVector<Float, 2> yaxis{0, 2, 0};
+  StaticVector<Float, 3> vec = CrossProduct(xaxis, yaxis);
+
+
+
+
+
   StaticVector<Float, 3> testt2;
+  StaticVector<Float, 3> testt3;
+  DynamicVector<Float> testt4{1, 2, 3};
   TestFunc(testt);
+  Print("Vec:", vec);
   Print("Test1:", testt);
 //  testt2 = testt;
   testt2 = Five * testt;
+//  testt += testt4;
+//  testt3 = testt + testt4;
   Print("Test:", testt2);
-  Print("Integral:", MinInt<>, MaxInt<>);
-  Print("Float:", Epsilon<>, InfFloat<>, LowestFloat<>, MaxFloat<>);
+//  Print("Integral:", MinInt<>, MaxInt<>);
+//  Print("Float:", Epsilon<>, InfFloat<>, LowestFloat<>, MaxFloat<>);
 
   EXIT("Done")
 

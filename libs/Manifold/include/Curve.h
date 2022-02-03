@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Manifold.h"
+#include "../../LinearAlgebra/include/Vector.h"
 
 namespace Apeiron {
 namespace Manifold {
@@ -21,8 +22,8 @@ public:
   Line(const SVectorF<ambient_dim>& _unit_direction, const SVectorF<ambient_dim>& _coordinate = ConvertVector<ambient_dim>({Zero, Zero, Zero}));
 
 protected:
-  SVectorF<ambient_dim> Coordinate0;
   SVectorF<ambient_dim> Direction;
+  SVectorF<ambient_dim> Coordinate0;
 
   constexpr SVectorF<ambient_dim>
   ComputePoint(const SVectorF1& _t) override;
