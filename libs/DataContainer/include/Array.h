@@ -33,6 +33,11 @@ public:
 
   constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
 
+  /** Comparison Operator Overloads */
+  constexpr bool operator==(const Array<T, derived>& _other) noexcept;
+
+  constexpr bool operator!=(const Array<T, derived>& _other) noexcept;
+
 private:
   /** Derived Class Access */
   constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }

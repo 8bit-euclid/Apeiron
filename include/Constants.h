@@ -36,6 +36,9 @@ COMPILE_TIME_CONST(HalfPi, Half*Pi)
 COMPILE_TIME_CONST(ThirdPi, Third*Pi)
 COMPILE_TIME_CONST(QuartPi, Quart*Pi)
 COMPILE_TIME_CONST(SixthPi, Sixth*Pi)
+COMPILE_TIME_CONST(TwelfthPi, Half*SixthPi)
+COMPILE_TIME_CONST(TwoThirdPi, TwoThird*Pi)
+COMPILE_TIME_CONST(ThreeQuartPi, ThreeQuart*Pi)
 COMPILE_TIME_CONST(e, 2.71828182845904523536028747135266249775724709369995)
 
 /***************************************************************************************************************************************************************

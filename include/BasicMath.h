@@ -22,9 +22,8 @@ constexpr std::pair<T, T> MinMax(const T& _a, const T& _b) { return std::minmax(
 
 /** Bound value between a minimum and a maximum. */
 template<typename T>
-constexpr T Bound(const T& _value, const T& _min, const T& _max) {
-  return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
-}
+constexpr T Bound(const T& _value, const T& _min, const T& _max)
+{ return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound."); }
 
 template<class iter>
 using IterType = typename std::iterator_traits<iter>::value_type;
@@ -50,9 +49,8 @@ MinMaxEntries(const iter _first, const iter _last)
 
 /** Bound values from a first to a last iterator betweeb a minimum and a maximum. */
 template<class iter, typename T>
-constexpr void BoundEntries(iter _first, iter _last, const T& _min, const T& _max) {
-  for(auto it = _first; it != _last; it++) *it = Bound(*it, _min, _max);
-}
+constexpr void BoundEntries(iter _first, iter _last, const T& _min, const T& _max)
+{ for(auto it = _first; it != _last; it++) *it = Bound(*it, _min, _max); }
 
 /***************************************************************************************************************************************************************
 * Signum and Absolute Value Functions
