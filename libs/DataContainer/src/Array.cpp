@@ -61,6 +61,18 @@ Array<T, derived>::operator=(const std::initializer_list<T>& _value_list) noexce
   return Derived();
 }
 
+/** Comparison Operator Overloads */
+template<typename T, class derived>
+constexpr bool Array<T, derived>::operator==(const Array<T, derived>& _other) noexcept
+{
+  if(_other.Derived().size() != Derived().size()) return false;
+  FOR(i, _other.Derived().size()) if(Derived()[i] != _other[i]) return false;
+  return true;
+}
+
+template<typename T, class derived>
+constexpr bool Array<T, derived>::operator!=(const Array<T, derived>& _other) noexcept { return !(Derived() == _other); }
+
 /** Non-member functions */
 template<typename T, class derived>
 std::ostream&

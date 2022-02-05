@@ -81,6 +81,10 @@ public:
   DynamicVector(const iter _first, const iter _last)
     : BaseArray(_first, _last) {}
 
+  /** Operators */
+  using BaseArray::operator[];
+  using BaseArray::operator=;
+
 private:
   friend Vector<T, BaseArray>;
 };
@@ -98,11 +102,18 @@ using SVectorF2 = SVectorF<2>;
 using SVectorF3 = SVectorF<3>;
 using SVectorF4 = SVectorF<4>;
 
+/** Coordinate Axes */
+constexpr SVectorF2 xAxis2{One, Zero};
+constexpr SVectorF2 yAxis2{Zero, One};
+constexpr SVectorF3 xAxis3{One, Zero, Zero};
+constexpr SVectorF3 yAxis3{Zero, One, Zero};
+constexpr SVectorF3 zAxis3{Zero, Zero, One};
+
 /***************************************************************************************************************************************************************
 * Static Vector Conversion
 ***************************************************************************************************************************************************************/
 template<std::size_t N, std::size_t M, typename T>
-consteval StaticVector<T, N>
+constexpr StaticVector<T, N>
 ConvertVector(const StaticVector<T, M>& _from_vector)
 {
   StaticVector<T, N> to_vector;

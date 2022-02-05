@@ -6,16 +6,17 @@ namespace Apeiron {
 namespace Detail {
 
 /***************************************************************************************************************************************************************
-* Numeric Data Container Class and Common Operations
+* Numeric Data Container Class and Arithmetic Operations
 ***************************************************************************************************************************************************************/
 template<typename T, class derived>
+requires Arithmetic<T>
 class NumericContainer
 {
 protected:
-  constexpr NumericContainer() { STATIC_ASSERT(isArithmetic<T>(), "Numeric containers can only be populated with numerical values.") }
+  constexpr NumericContainer() {}
 
 public:
-  /** Arithmetic operator overloads with scalars. */
+  /** Scalar arithmetic operator overloads. */
   constexpr derived operator+(const std::convertible_to<T> auto _scalar) const;
 
   constexpr derived operator-(const std::convertible_to<T> auto _scalar) const;
@@ -32,7 +33,7 @@ public:
 
   constexpr derived& operator/=(const std::convertible_to<T> auto _scalar);
 
-  /** Element-wise arithmetic operator overloads. */
+  /** Entry-wise binary arithmetic operator overloads. */
   template<class D>
   constexpr derived operator+(const NumericContainer<T, D>& _container) const;
 
@@ -57,18 +58,30 @@ public:
   template<class D>
   constexpr derived& operator/=(const NumericContainer<T, D>& _container);
 
+  /** Entry-wise unary operator overloads. */
+  constexpr derived operator-() const;
+
+  /** Entry randomisation. */
+  void Randomise();
+
+  static void ResetRandomiser(const T _min, const T _max);
+
   /** Derived class access. */
   constexpr derived&
   Derived() noexcept { return static_cast<derived&>(*this); }
 
   constexpr const derived&
   Derived() const noexcept { return static_cast<const derived&>(*this); }
+
+private:
+  static Random<T> Randomiser;
 };
 
 }//Detail
 
 /** Stand-alone Operator overloads. */
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived operator*(const std::convertible_to<T> auto _scalar, const Detail::NumericContainer<T, derived>& _container);
 
 }//Apeiron

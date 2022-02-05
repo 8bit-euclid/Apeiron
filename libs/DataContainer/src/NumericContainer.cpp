@@ -5,7 +5,9 @@
 namespace Apeiron {
 namespace Detail {
 
+/** Scalar arithmetic operator overloads. */
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived
 NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto _scalar) const
 {
@@ -15,6 +17,7 @@ NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto _scala
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived
 NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto _scalar) const
 {
@@ -24,6 +27,7 @@ NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto _scala
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived
 NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto _scalar) const
 {
@@ -33,6 +37,7 @@ NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto _scala
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived
 NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto _scalar) const
 {
@@ -43,6 +48,7 @@ NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto _scala
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived&
 NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto _scalar)
 {
@@ -51,6 +57,7 @@ NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto _scal
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived&
 NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto _scalar)
 {
@@ -59,6 +66,7 @@ NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto _scal
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived&
 NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto _scalar)
 {
@@ -67,6 +75,7 @@ NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto _scal
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived&
 NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto _scalar)
 {
@@ -75,8 +84,9 @@ NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto _scal
   return Derived();
 }
 
-/** Element-wise arithmetic operator overloads. */
+/** Entry-wise binary arithmetic operator overloads. */
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container) const
@@ -87,41 +97,45 @@ NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& _container) const
 {
   derived out(Derived());
-  FOR(i, out.size()) out[i] += _container.Derived()[i];
+  FOR(i, out.size()) out[i] -= _container.Derived()[i];
   return out;
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& _container) const
 {
   derived out(Derived());
-  FOR(i, out.size()) out[i] += _container.Derived()[i];
+  FOR(i, out.size()) out[i] *= _container.Derived()[i];
   return out;
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container) const
 {
   derived out(Derived());
 
-  FOR(i, Derived().size())
+  FOR(i, out.size())
   {
     DEBUG_ASSERT(!isEqual(_container.Derived()[i], Zero), "Cannot divide by zero.")
-    FOR(i, out.size()) out[i] += _container.Derived()[i];
+    out[i] /= _container.Derived()[i];
   }
   return out;
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _container)
@@ -131,6 +145,7 @@ NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _containe
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _container)
@@ -140,6 +155,7 @@ NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _containe
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _container)
@@ -149,6 +165,7 @@ NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _containe
 }
 
 template<typename T, class derived>
+requires Arithmetic<T>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _container)
@@ -161,9 +178,30 @@ NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _containe
   return Derived();
 }
 
-}//Detail
+/** Entry-wise unary operator overloads. */
+template<typename T, class derived>
+requires Arithmetic<T>
+constexpr derived
+NumericContainer<T, derived>::operator-() const { return -1 * Derived(); }
+
+/** Entry randomisation. */
+template<typename T, class derived>
+requires Arithmetic<T>
+void NumericContainer<T, derived>::Randomise() { FOR_EACH(entry, Derived()) entry = Randomiser(); }
 
 template<typename T, class derived>
+requires Arithmetic<T>
+void NumericContainer<T, derived>::ResetRandomiser(const T _min, const T _max) { Randomiser.Reset(_min, _max); }
+
+template<typename T, class D>
+requires Arithmetic<T>
+Random<T> NumericContainer<T, D>::Randomiser = Random<T>();
+
+}//Detail
+
+/** Stand-alone Operator overloads. */
+template<typename T, class derived>
+requires Arithmetic<T>
 constexpr derived
 operator*(const std::convertible_to<T> auto _scalar, const Detail::NumericContainer<T, derived>& _container)
 { return _container.Derived() * _scalar; }

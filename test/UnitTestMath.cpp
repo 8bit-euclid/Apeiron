@@ -172,8 +172,10 @@ TEST_F(ApeironTest, Tan)
 
 TEST_F(ApeironTest, Arcsin)
 {
+  EXPECT_DOUBLE_EQ(Arcsin(-One), -HalfPi);
   EXPECT_DOUBLE_EQ(Arcsin(Zero), Zero);
   EXPECT_DOUBLE_EQ(Arcsin(One), HalfPi);
+
   EXPECT_DOUBLE_EQ(Arcsin(Half), SixthPi);
   EXPECT_DOUBLE_EQ(Arcsin(One/Sqrt(Two)), QuartPi);
   EXPECT_DOUBLE_EQ(Arcsin(Half*Sqrt(Three)), ThirdPi);
@@ -181,8 +183,10 @@ TEST_F(ApeironTest, Arcsin)
 
 TEST_F(ApeironTest, Arccos)
 {
-  EXPECT_DOUBLE_EQ(Arccos(One), Zero);
+  EXPECT_DOUBLE_EQ(Arccos(-One), Pi);
   EXPECT_DOUBLE_EQ(Arccos(Zero), HalfPi);
+  EXPECT_DOUBLE_EQ(Arccos(One), Zero);
+
   EXPECT_NEAR(Arccos(Half*Sqrt(Three)), SixthPi, Small);
   EXPECT_DOUBLE_EQ(Arccos(One/Sqrt(Two)), QuartPi);
   EXPECT_DOUBLE_EQ(Arccos(Half), ThirdPi);
