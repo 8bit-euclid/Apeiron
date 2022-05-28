@@ -4,4 +4,4 @@ A collection of high-performance C++ tools for numerical analysis, computational
 
 ## License
 
-See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+See the [LICENSE](LICENSE.md) file for license rights and limitations (GPL-3.0).
