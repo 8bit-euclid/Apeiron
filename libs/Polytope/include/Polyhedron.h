@@ -5,8 +5,7 @@
 #include "Categories.h"
 #include "Polytope.h"
 
-namespace Apeiron {
-namespace Shapes {
+namespace aprn::ptope {
 
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polyhedra
@@ -67,5 +66,4 @@ struct TrirectangularTetrahedron : public Tetrahedron
 //
 //void CreateCone(Model &_model);
 
-}
 }

@@ -10,6 +10,7 @@ set(SOURCE_FILES
         src/Surface.cpp)
 
 set(LINK_LIBRARIES
+        DataContainerLibrary
         LinearAlgebraLibrary)
 
 add_library(ManifoldLibrary ${SOURCE_FILES})

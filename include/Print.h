@@ -3,7 +3,7 @@
 #include "Debug.h"
 #include "Loops.h"
 
-namespace Apeiron{
+namespace aprn {
 
 enum class PrintFormat
 {
@@ -22,17 +22,6 @@ std::ostream& operator,(std::ostream& _out, const T& _data)
 {
   _out << _data;
   return _out;
-}
-
-/** Convert to a string. */
-template<typename T>
-inline std::string ToStr(const T& atype)
-{
-  std::stringstream str_buffer;
-  str_buffer << atype<<std::endl;
-  std::string str;
-  str_buffer >> str;
-  return str;
 }
 
 /** Set print format. */
@@ -99,4 +88,4 @@ inline void Print(const T& _data, Ts... _trailing_data)
 //  free(strings);
 //}
 
-}//Apeiron
+}//aprn

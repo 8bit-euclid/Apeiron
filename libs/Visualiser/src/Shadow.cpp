@@ -1,12 +1,12 @@
 #include "../include/Shadow.h"
 
-namespace Apeiron {
+namespace aprn::vis {
 
 Shadow::Shadow(const bool _is_point_light)
-  : isPointLightShadow(_is_point_light), DepthMap(_is_point_light ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D, true), FBO()
-{
+  : DepthMap(_is_point_light ? TextureType::PointDepth : TextureType::DirectionalDepth, true), FBO(), isPointLightShadow(_is_point_light) {}
 
-}
+Shadow::Shadow(Shadow&& _shadow) noexcept
+   : DepthMap(std::move(_shadow.DepthMap)), FBO(std::move(_shadow.FBO)), isPointLightShadow(std::move(_shadow.isPointLightShadow)) {}
 
 void Shadow::Init(GLsizei _width, GLsizei _height)
 {
@@ -40,6 +40,16 @@ void Shadow::Finalise() const
 void Shadow::ReadFrom(UInt _texture_slot) const
 {
   DepthMap.Bind(_texture_slot);
+}
+
+Shadow&
+Shadow::operator=(Shadow&& _shadow) noexcept
+{
+   DepthMap           = std::move(_shadow.DepthMap);
+   FBO                = std::move(_shadow.FBO);
+   isPointLightShadow = std::move(_shadow.isPointLightShadow);
+
+   return *this;
 }
 
 }

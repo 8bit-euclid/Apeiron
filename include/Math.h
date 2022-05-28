@@ -8,12 +8,12 @@
 #include <functional>
 #include <numeric>
 
-namespace Apeiron{
+namespace aprn{
 
 /***************************************************************************************************************************************************************
 * Math Support Functions
 ***************************************************************************************************************************************************************/
-namespace Detail {
+namespace detail {
 
 /** Modulo function for integer types. */
 template<typename T>
@@ -60,7 +60,7 @@ InverseTrigonometricSeries(const T x, const T sum, const int n, const T t)
 ***************************************************************************************************************************************************************/
 template<typename T, T... sequence>
 constexpr T
-GetInteger(std::integer_sequence<T, sequence...>, std::size_t _index)
+GetInteger(std::integer_sequence<T, sequence...>, size_t _index)
 {
   constexpr T sequence_array[] = {sequence...};
   return sequence_array[_index];
@@ -112,7 +112,7 @@ constexpr T
 Modulo(const T _numerator, const T _denominator)
 {
   return !isEqual(static_cast<Float>(_denominator), Zero) ?
-         Detail::Modulo<T>(_numerator, _denominator, std::is_integral<T>(), std::is_floating_point<T>()) :
+         detail::Modulo<T>(_numerator, _denominator, std::is_integral<T>(), std::is_floating_point<T>()) :
          throw std::logic_error("Denominator must be non-zero during modulo operation.");
 }
 
@@ -167,11 +167,11 @@ Cube(const T _x) { return iPow(_x, 3); }
 
 /** Constexpr version of std::sqrt. */
 constexpr Float
-Sqrt(const Float _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? Detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
+Sqrt(const Float _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
 
 /** Constexpr version of std::cbrt. */
 constexpr Float
-Cbrt(const Float _x) { return Detail::CbrtNewtonRaphson(_x, One, Zero); }
+Cbrt(const Float _x) { return detail::CbrtNewtonRaphson(_x, One, Zero); }
 
 /** Constexpr version of std::hypot. */
 constexpr Float
@@ -179,14 +179,14 @@ Hypot(const Float _x, const Float _y) { return Sqrt(Square(_x) + Square(_y)); }
 
 /** Constexpr version of std::exp. */
 constexpr Float
-Exp(const Float _x) { return Detail::Exp(_x, 1.0, 1.0, 2, _x); }
+Exp(const Float _x) { return detail::Exp(_x, 1.0, 1.0, 2, _x); }
 
 /***************************************************************************************************************************************************************
 * Trigonometric/Inverse-Trigonometric Functions
 ***************************************************************************************************************************************************************/
 /** Constexpr sine function. */
 constexpr Float
-Sin(const Float _x) { return Detail::TrigonometricSeries(_x, _x, static_cast<Float>(6), 4, -1, iPow(_x, 3)); }
+Sin(const Float _x) { return detail::TrigonometricSeries(_x, _x, static_cast<Float>(6), 4, -1, iPow(_x, 3)); }
 
 /** Constexpr cosine function. */
 constexpr Float
@@ -197,7 +197,7 @@ constexpr Float
 Tan(const Float _x)
 {
   const auto denom = Cos(_x);
-  return !isEqual(denom, Zero) ? Sin(_x) / denom : throw std::invalid_argument("Cannot compute tan(x) as cos(x) is 0.");
+  return !isEqual(denom, Zero) ? Sin(_x) / denom : throw std::domain_error("Cannot compute tan(x) as cos(x) is 0.");
 }
 
 /** Constexpr arcsine function. */
@@ -205,8 +205,8 @@ constexpr Float
 Arcsin(const Float _x)
 {
   return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ?
-         Detail::InverseTrigonometricSeries(_x, _x, 1, _x * _x * _x / 2.0) :
-         Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToStr(_x) + " is out of the arcsin domain bounds.");
+         detail::InverseTrigonometricSeries(_x, _x, 1, _x * _x * _x / 2.0) :
+         Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToString(_x) + " is out of the arcsin domain bounds.");
 }
 
 /** Constexpr arccos function. */
@@ -214,12 +214,12 @@ constexpr Float
 Arccos(const Float _x)
 {
   return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ? HalfPi - Arcsin(_x) : isEqual(_x, -1.0) ? Pi : isEqual(_x, 1.0) ? Zero :
-                                                           throw std::domain_error("The value " + ToStr(_x) + " is out of the arccos domain bounds.");
+                                                           throw std::domain_error("The value " + ToString(_x) + " is out of the arccos domain bounds.");
 }
 
 /***************************************************************************************************************************************************************
 * Hyperbolic/Inverse-Hyperbolic Functions
 ***************************************************************************************************************************************************************/
 
-}//Apeiron
+}//aprn
 

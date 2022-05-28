@@ -51,42 +51,15 @@ in Data
 
 out vec4 fragment_colour;
 
-struct Light
-{
-   vec4 Colour;
-   float AmbientIntensity;
-   float DiffuseIntensity;
-};
-
-struct DirectionalLight
-{
-   Light Base;
-   vec3 Direction;
-};
-
-struct PointLight
-{
-   Light Base;
-   vec3 Position;
-   vec3 AttenuationCoefficients;
-};
-
-struct SpotLight
-{
-   PointLight Point;
-   vec3 Direction;
-   float CosConeAngle;
-};
-
-struct Material
-{
-   float SpecularIntensity;
-   float Smoothness;
-};
+// Interface Blocks
+struct Light { vec4 Colour; float AmbientIntensity; float DiffuseIntensity; };
+struct DirectionalLight { Light Base; vec3 Direction; sampler2D Shadow; };
+struct PointLight { Light Base; vec3 Position; vec3 AttenuationCoefficients; };
+struct SpotLight { PointLight Point; vec3 Direction; float CosConeAngle; };
+struct Material { float SpecularIntensity; float Smoothness; };
 
 uniform vec3 u_camera_position;
 uniform sampler2D u_diffuse_map;
-uniform sampler2D u_direc_shadow;
 
 uniform Material u_material;
 
@@ -107,13 +80,13 @@ float CalculateDirectionalShadow()
    float shadow = 0.0f;
    if(actual_depth <= 1.0f)
    {
-      vec2 texel_size = 1.0f / textureSize(u_direc_shadow, 0);
+      vec2 texel_size = 1.0f / textureSize(u_directional_light.Shadow, 0);
       float bias = max(0.05 * (1.0 - dot(normalize(v_data_in.Normal), normalize(u_directional_light.Direction))), 0.005);
 
       for(int x = -1; x <= 1; x++)
          for(int y = -1; y <= 1; y++)
          {
-            float pcf_depth = bias + texture(u_direc_shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
+            float pcf_depth = bias + texture(u_directional_light.Shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
             shadow += actual_depth > pcf_depth ? 1.0f : 0.0f;
          }
       shadow /= 9.0f;

@@ -2,50 +2,121 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "../../DataContainer/include/List.h"
+
+#include "Action.h"
 #include "Buffers.h"
+#include "Colour.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "Texture.h"
 
+#include <map>
+#include <memory>
+#include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 class Model
 {
-public:
-  Mesh Geometry;
+ public:
+   Model();
 
-  Model()
-    : VAO(), VBO(), EBO(), SSBO() {}
+   Model(const Model& _model);
 
-  ~Model() { Delete(); }
+   Model(Model&& _model) noexcept;
 
-  void Load();
+   ~Model();
 
-  void Draw();
+   void Init();
 
-  void Delete();
+   void Animate(const Float _global_time);
 
-  void Reset();
+   void Render();
 
-  void Scale(const glm::vec3& _factors);
+   void Delete();
 
-  void Translate(const glm::vec3& _displacement);
+   /** Set Model Attributes
+   ************************************************************************************************************************************************************/
+   Model& SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
 
-  void Rotate(const GLfloat _degree_angle, const glm::vec3& _axis);
+   Model& SetMaterial(const std::string& _name, Float _specular_intensity, Float _smoothness);
 
-  const glm::mat4& GetModelMatrix() const;
+   /** Set Model Actions
+   ************************************************************************************************************************************************************/
+   Model& Scale(Float _factor, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
 
-private:
-  VertexArray VAO;
-  VertexBuffer VBO;
-  IndexBuffer EBO;
-  ShaderStorageBuffer SSBO;
+   Model& Scale(const SVectorF3& _factors, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
 
-  glm::mat4 ModelMatrix{1.0f};
+   Model& OffsetPosition(const SVectorF3& _displacement);
+
+   Model& OffsetOrientation(Float _angle, const SVectorF3& _axis);
+
+   Model& Rotate(Float _angle, const SVectorF3& _axis, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+
+   Model& RotateAbout(Float _angle, const SVectorF3& _axis, const SVectorF3& _refe_point, Float _start_time, Float _end_time,
+                      const std::function<Float(Float)>& _reparam = Linear);
+
+   Model& Move(const SVectorF3& _displacement, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+
+   Model& MoveTo(const SVectorF3& _position, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+
+   template<class D>
+   Model& MoveAlong(const mnfld::Curve<D, 3>& _path, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+
+   /** Getters
+   ************************************************************************************************************************************************************/
+   const glm::mat4&
+   GetModelMatrix() const;
+
+   /** Assignment Operators
+   ************************************************************************************************************************************************************/
+   Model& operator=(const Model& _model);
+
+   Model& operator=(Model&& _model) noexcept;
+
+ private:
+   friend class Visualiser;
+   friend class TestTexture2D;
+   friend class ModelFactory;
+   friend class ActionBase;
+   template<ActionType type> friend class Action;
+
+   void ComputeLifespan();
+
+   void Reset();
+
+   void Scale(const glm::vec3& _factors);
+
+   void Translate(const glm::vec3& _displacement);
+
+   void Rotate(const GLfloat _angle, const glm::vec3& _axis);
+
+   /** Model Properties
+   ************************************************************************************************************************************************************/
+   Mesh                                   Geometry;
+   List<SPtr<Model>>                      SubModels;
+   std::optional<std::string>             TextureSpec;
+   std::optional<Material>                MaterialSpec;
+   std::map<ActionType, SPtr<ActionBase>> Actions;
+   glm::vec3                              Centroid;
+   glm::vec4                              StrokeColour;
+   glm::vec4                              FillColour;
+   glm::mat4                              ModelMatrix{1.0f};
+   glm::mat4                              PreviousActions{1.0f};
+   Float                                  EntryTime{Zero};
+   Float                                  ExitTime{InfFloat<>};
+   bool                                   isInitialised{false};
+
+   /** Data Buffer Objects
+   ************************************************************************************************************************************************************/
+   VertexArray                            VAO;
+   VertexBuffer                           VBO;
+   IndexBuffer                            EBO;
+   std::optional<ShaderStorageBuffer>     SSBO;
 };
 
 }

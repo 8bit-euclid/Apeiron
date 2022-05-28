@@ -68,6 +68,7 @@ include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainer)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Graph)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/LinearAlgebra)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Manifold)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Polytope)
@@ -85,6 +86,7 @@ set(APEIRON_LINK_LIBRARIES
         DataContainerLibrary
         BenchmarkLibrary
         FunctionalLibrary
+        GraphLibrary
         LinearAlgebraLibrary
         ManifoldLibrary
         PolytopeLibrary
@@ -93,6 +95,14 @@ set(APEIRON_LINK_LIBRARIES
         VisualiserLibrary)
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE
+        ${PROJECT_SOURCE_DIR}/include/Global.h
+        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/Array.h
+        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/MultiArray.h
+        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
+        ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
+
 target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw glm ImGui)
 
 #***************************************************************************************************************************************************************
@@ -106,21 +116,26 @@ FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive
 FetchContent_MakeAvailable(GoogleTest)
 
 # Add unit test executables
-add_executable(UnitTestBasicMath ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
-add_executable(UnitTestComparators ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
-add_executable(UnitTestMath ${PROJECT_SOURCE_DIR}/test/UnitTestMath.cpp)
+add_executable(UnitTestBasicMath        ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
+add_executable(UnitTestComparators      ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
+add_executable(UnitTestMath             ${PROJECT_SOURCE_DIR}/test/UnitTestMath.cpp)
+add_executable(UnitTestString           ${PROJECT_SOURCE_DIR}/test/UnitTestString.cpp)
 
-add_executable(UnitTestArray ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
+add_executable(UnitTestArray            ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
+add_executable(UnitTestCurve            ${PROJECT_SOURCE_DIR}/libs/Manifold/test/UnitTestCurve.cpp)
 add_executable(UnitTestNumericContainer ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestNumericContainer.cpp)
-add_executable(UnitTestVector ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/test/UnitTestVector.cpp)
+add_executable(UnitTestVector           ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/test/UnitTestVector.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
-target_link_libraries(UnitTestArray gtest gtest_main)
-target_link_libraries(UnitTestBasicMath gtest gtest_main)
-target_link_libraries(UnitTestComparators gtest gtest_main)
-target_link_libraries(UnitTestMath gtest gtest_main)
+target_link_libraries(UnitTestBasicMath        gtest gtest_main)
+target_link_libraries(UnitTestComparators      gtest gtest_main)
+target_link_libraries(UnitTestMath             gtest gtest_main)
+target_link_libraries(UnitTestString           gtest gtest_main)
+
+target_link_libraries(UnitTestArray            gtest gtest_main)
+target_link_libraries(UnitTestCurve            gtest gtest_main)
 target_link_libraries(UnitTestNumericContainer gtest gtest_main)
-target_link_libraries(UnitTestVector gtest gtest_main)
+target_link_libraries(UnitTestVector           gtest gtest_main)
 
 #add_test(UnitTestArray ${BIN_DIRECTORY}/UnitTestArray)
 #add_test(UnitTestBasicMath ${BIN_DIRECTORY}/UnitTestBasicMath)

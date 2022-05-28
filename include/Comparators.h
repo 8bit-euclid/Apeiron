@@ -5,7 +5,7 @@
 #include "Types.h"
 #include "BasicMath.h"
 
-namespace Apeiron{
+namespace aprn{
 
 constexpr Float RelativeTolerance = Small;
 constexpr Float ZeroTolerance = Small;
@@ -36,14 +36,14 @@ constexpr bool isLargerEqual(const Float& _a, const Float& _b, const Float& _rel
 { return !isLess<exact_precision>(_a, _b, _relative_tol, _zero_tol); }
 
 /** Container size equality check. */
-constexpr bool areSizesEqual(const std::size_t _size0, const std::size_t _size1) { return _size0 == _size1; }
+constexpr bool areSizesEqual(const size_t _size0, const size_t _size1) { return _size0 == _size1; }
 
 /** Floating-point toleranced/exact boundedness check. */
 template<bool is_left_incl = true, bool is_right_incl = false, bool exact_precision = false, typename T>
 requires Arithmetic<T>
 constexpr bool isBounded(const T& _a, const T& _min, const T& _max, const T& _relative_tol = RelativeTolerance, const Float& _zero_tol = ZeroTolerance)
 {
-  if constexpr(!isTypeEqual<T, Float>()) return (is_left_incl ? _min <= _a : _min < _a) && (is_right_incl ? _a <= _max : _a < _max);
+  if constexpr(!isTypeSame<T, Float>()) return (is_left_incl ? _min <= _a : _min < _a) && (is_right_incl ? _a <= _max : _a < _max);
   else return (is_left_incl  ? isLessEqual<exact_precision>(_min, _a, _relative_tol, _zero_tol) : isLess<exact_precision>(_min, _a, _relative_tol, _zero_tol)) &&
               (is_right_incl ? isLessEqual<exact_precision>(_a, _max, _relative_tol, _zero_tol) : isLess<exact_precision>(_a, _max, _relative_tol, _zero_tol));
 }

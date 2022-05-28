@@ -1,8 +1,9 @@
-#pragma once
+#ifndef VECTOR_TEMPLATE_DEF
+#define VECTOR_TEMPLATE_DEF
 
 #include "../include/Vector.h"
 
-namespace Apeiron{
+namespace aprn{
 
 /***************************************************************************************************************************************************************
 * Vector Abstract Base Class
@@ -20,3 +21,5 @@ namespace Apeiron{
 
 
 }
+
+#endif

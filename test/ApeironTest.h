@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include "../include/Global.h"
 
-namespace Apeiron{
+namespace aprn{
 
 class ApeironTest : public testing::Test
 {

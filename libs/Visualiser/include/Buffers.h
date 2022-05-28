@@ -9,36 +9,29 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Apeiron{
+namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
 struct Buffer
 {
-protected:
-  Buffer() { GLCall(glGenBuffers(1, &ID)); }
+ protected:
+   Buffer();
 
-public:
-  ~Buffer() { Delete(); }
+ public:
+   ~Buffer();
 
-  virtual void Bind() const = 0;
+   virtual void Bind() const = 0;
 
-  virtual void Unbind() const = 0;
+   virtual void Unbind() const = 0;
 
-  inline void Delete()
-  {
-    if(ID != 0)
-    {
-      GLCall(glDeleteBuffers(1, &ID));
-      ID = 0;
-    }
-  }
+   virtual void Delete();
 
-  inline GLuint GetID() { return ID; }
+   inline GLuint GetID() const { return ID; }
 
-protected:
-  GLuint ID;
+ protected:
+   GLuint ID{};
 };
 
 /***************************************************************************************************************************************************************
@@ -46,18 +39,13 @@ protected:
 ***************************************************************************************************************************************************************/
 struct VertexBuffer : public Buffer
 {
-  inline void Init(const DynamicArray<Vertex>& _vertices) const
-  {
-    Bind();
-    Load(_vertices);
-    Unbind();
-  }
+   void Init(const DynamicArray<Vertex>& _vertices) const;
 
-  inline void Bind() const override { GLCall(glBindBuffer(GL_ARRAY_BUFFER, ID)); }
+   void Bind() const override;
 
-  inline void Unbind() const override { GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0)); }
+   void Unbind() const override;
 
-  inline void Load(const DynamicArray<Vertex>& _vertices) const { GLCall(glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(Vertex), _vertices.data(), GL_STATIC_DRAW)); }
+   void Load(const DynamicArray<Vertex>& _vertices) const;
 };
 
 /***************************************************************************************************************************************************************
@@ -65,55 +53,20 @@ struct VertexBuffer : public Buffer
 ***************************************************************************************************************************************************************/
 struct IndexBuffer : public Buffer
 {
-  std::size_t nIndices;
+   void Init(const DynamicArray<GLuint>& _indices);
 
-  inline void Init(const DynamicArray<GLuint>& _indices)
-  {
-    nIndices = _indices.size();
-    Bind();
-    Load(_indices);
-    Unbind();
-  }
+   void Bind() const override;
 
-  inline void Bind() const override { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID)); }
+   void Unbind() const override;
 
-  inline void Unbind() const override { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)); }
+   void Delete() override;
 
-  inline void Load(const DynamicArray<GLuint>& _indices) const { GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof(GLuint), _indices.data(), GL_STATIC_DRAW)); }
-};
+   void Load(const DynamicArray<GLuint>& _indices) const;
 
-/***************************************************************************************************************************************************************
-* Frame Buffer Class
-***************************************************************************************************************************************************************/
-struct FrameBuffer
-{
-  FrameBuffer() { GLCall(glGenFramebuffers(1, &ID)); }
+   inline size_t GetIndexCount() const { return IndexCount; }
 
-  ~FrameBuffer() { Delete(); }
-
-  inline void Bind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, ID)); }
-
-  inline void Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
-
-  inline void AttachTexture(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture(GL_FRAMEBUFFER, _attachement, _mapID, 0)); }
-
-  inline void AttachTexture2D(GLenum _attachement, GLuint _mapID) const { GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, _attachement, GL_TEXTURE_2D, _mapID, 0)); }
-
-  inline void Draw(GLenum _mode) const { GLCall(glDrawBuffer(_mode)); }
-
-  inline void Read(GLenum _mode) const { GLCall(glReadBuffer(_mode)); }
-
-  inline void Delete()
-  {
-    if(ID != 0)
-    {
-      GLCall(glDeleteFramebuffers(1, &ID));
-      ID = 0;
-    }
-  }
-
-protected:
-  GLuint ID;
+ protected:
+   size_t IndexCount;
 };
 
 /***************************************************************************************************************************************************************
@@ -121,66 +74,72 @@ protected:
 ***************************************************************************************************************************************************************/
 struct ShaderStorageBuffer : public Buffer
 {
-  inline void Init(DynamicArray<glm::vec4>& _data)
-  {
-    Bind();
-    Load(_data);
-  }
+   void Init(DynamicArray<glm::vec4>& _data);
 
-  inline void Bind() const override { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, ID)); }
+   void Bind() const override;
 
-  inline void BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ID); }
+   void BindBase() const;
 
-  inline void Unbind() const override { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)); }
+   void Unbind() const override;
 
-  inline void Load(DynamicArray<glm::vec4>& _data) const { GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, _data.size() * sizeof(glm::vec4), _data.data(), GL_STATIC_DRAW);); }
+   void Load(DynamicArray<glm::vec4>& _data) const;
 };
 
 /***************************************************************************************************************************************************************
 * Vertex Array Class
 ***************************************************************************************************************************************************************/
-
 class VertexArray
 {
-public:
-  VertexArray() { GLCall(glGenVertexArrays(1, &ID)); }
+ public:
+   VertexArray();
 
-  ~VertexArray() { Delete(); }
+   ~VertexArray();
 
-  inline void AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout)
-  {
-    _vertex_buffer.Bind();
+   void AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout);
 
-    GLuint offset(0);
-    FOR(i, _vertex_layout.Attributes.size())
-    {
-      const auto& element = _vertex_layout.Attributes[i];
-      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, _vertex_layout.Stride, reinterpret_cast<void*>(offset)));
-      GLCall(glEnableVertexAttribArray(i));
+   void Bind() const;
 
-      offset += element.nComponents * GLTypeSize(element.GLType);
-    }
+   void Unbind() const;
 
-    _vertex_buffer.Unbind();
-  }
+   void Delete();
 
-  inline void Bind() const { GLCall(glBindVertexArray(ID)); }
+ private:
+   GLuint ID{};
+};
 
-  inline void Unbind() const { GLCall(glBindVertexArray(0)); }
+/***************************************************************************************************************************************************************
+* Frame Buffer Class
+***************************************************************************************************************************************************************/
+struct FrameBuffer
+{
+   FrameBuffer();
 
-  inline void Delete()
-  {
-    if(ID != 0)
-    {
-      GLCall(glDeleteBuffers(1, &ID));
-      ID = 0;
-    }
-  }
+   FrameBuffer(const FrameBuffer& _fbo) = delete;
 
-  inline GLuint GetID() { return ID; }
+   FrameBuffer(FrameBuffer&& _fbo) noexcept;
 
-private:
-  GLuint ID;
+   ~FrameBuffer();
+
+   void Bind() const;
+
+   void Unbind() const;
+
+   void AttachTexture(GLenum _attachement, GLuint _mapID) const;
+
+   void AttachTexture2D(GLenum _attachement, GLuint _mapID) const;
+
+   void Draw(GLenum _mode) const;
+
+   void Read(GLenum _mode) const;
+
+   void Delete();
+
+   FrameBuffer& operator=(const FrameBuffer& _fbo) = delete;
+
+   FrameBuffer& operator=(FrameBuffer&& _fbo) noexcept;
+
+ private:
+   GLuint ID{};
 };
 
 }

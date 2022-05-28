@@ -2,8 +2,8 @@
 
 #include "Manifold.h"
 
-namespace Apeiron {
-namespace Manifold {
+namespace aprn {
+namespace mnfld {
 
 /***************************************************************************************************************************************************************
 * Curve Alias Template

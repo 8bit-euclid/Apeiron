@@ -4,13 +4,13 @@
 #include "../../DataContainer/include/MultiArray.h"
 #include "../../DataContainer/include/NumericContainer.h"
 
-namespace Apeiron{
+namespace aprn{
 
 /***************************************************************************************************************************************************************
 * Tensor Abstract Base Class
 ***************************************************************************************************************************************************************/
 template<typename T, class derived>
-class Tensor : public Detail::NumericContainer<T, Tensor<T, derived>>
+class Tensor : public detail::NumericContainer<T, Tensor<T, derived>>
 {
 protected:
   constexpr Tensor();
@@ -18,10 +18,10 @@ protected:
 public:
   /** Subscript operator overloads. */
   constexpr T&
-  operator()(std::convertible_to<std::size_t> auto... _multi_index);
+  operator()(std::convertible_to<size_t> auto... _multi_index);
 
   constexpr const T&
-  operator()(const std::convertible_to<std::size_t> auto... _multi_index) const;
+  operator()(const std::convertible_to<size_t> auto... _multi_index) const;
 
   /** Assignment operator overloads. */
   constexpr derived&
@@ -34,17 +34,17 @@ public:
   constexpr auto
   begin() { return Derived().Entries.begin(); }
 
-  constexpr auto
+  constexpr const auto
   begin() const { return Derived().Entries.begin(); }
 
   constexpr auto
   end() { return Derived().Entries.end(); }
 
-  constexpr auto
+  constexpr const auto
   end() const { return Derived().Entries.end(); }
 
 private:
-  std::pair<std::size_t, std::size_t> Type;
+  std::pair<size_t, size_t> Type;
 
   /** Derived class access. */
   constexpr derived&
@@ -57,7 +57,7 @@ private:
 /***************************************************************************************************************************************************************
 * Static Tensor Class
 ***************************************************************************************************************************************************************/
-template<typename T, std::size_t... dims>
+template<typename T, size_t... dims>
 class StaticTensor : public Tensor<T, StaticTensor<T, dims...>>
 {
   friend Tensor<T, StaticTensor<T, dims...>>;
@@ -80,9 +80,9 @@ class DynamicTensor : public Tensor<T, DynamicTensor<T>>
 public:
   DynamicTensor();
 
-  DynamicTensor(const std::convertible_to<std::size_t> auto... _dimensions);
+  DynamicTensor(const std::convertible_to<size_t> auto... _dimensions);
 
-  inline void Resize(const std::convertible_to<std::size_t> auto... _dimensions) { Entries.Resize(_dimensions...); }
+  inline void Resize(const std::convertible_to<size_t> auto... _dimensions) { Entries.Resize(_dimensions...); }
 
 private:
   DynamicMultiArray<T> Entries;

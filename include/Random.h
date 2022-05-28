@@ -7,7 +7,7 @@
 #include <chrono>
 #include <random>
 
-namespace Apeiron{
+namespace aprn{
 
 /***************************************************************************************************************************************************************
 * Abstract Random Number Base Class
@@ -59,7 +59,7 @@ public:
   Random(const T _min, const T _max) :  Distribution(_min, _max) {}
 
   /** Overloaded subscript operator to generate a random integer. */
-  inline T operator()() { return Distribution(this->Generator); }
+  inline T operator()() override { return Distribution(this->Generator); }
 
   /** Reset min/max bounds for the distribution. */
   void Reset(const T _min, const T _max) { Distribution = std::uniform_int_distribution<T>(_min, _max); }
@@ -80,7 +80,7 @@ public:
   Random(const T _min, const T _max) : Distribution(_min, _max) {}
 
   /** Overloaded subscript operator to generate a random floating-point value. */
-  inline T operator()() { return Distribution(this->Generator); }
+  inline T operator()() override { return Distribution(this->Generator); }
 
   /** Reset min/max bounds for the distribution. */
   void Reset(const T _min, const T _max) { Distribution = std::uniform_real_distribution<T>(_min, _max); }

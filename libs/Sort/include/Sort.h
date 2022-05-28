@@ -3,17 +3,17 @@
 #include "../../../include/Global.h"
 #include <DataContainer/include/Array.h>
 
-namespace Apeiron{
+namespace aprn{
 
 template<typename T, int n_values>
 struct SortObject
 {
-  std::size_t Index;
+  size_t Index;
   StaticArray<T, n_values> Values;
 
   SortObject() {}
 
-  SortObject(const std::size_t _index, const StaticArray<T, n_values>& _values) : Index(_index), Values(_values) {}
+  SortObject(const size_t _index, const StaticArray<T, n_values>& _values) : Index(_index), Values(_values) {}
 };
 
 template<typename T, unsigned int n_values = 1>
@@ -25,20 +25,20 @@ class Sort
   public:
   Sort() {}
 
-  Sort(const std::size_t _n_sort_objects)
+  Sort(const size_t _n_sort_objects)
   {
     Init(_n_sort_objects);
   }
 
   ~Sort() = default;
 
-  inline void Init(const std::size_t _n_sort_objects)
+  inline void Init(const size_t _n_sort_objects)
   {
     STATIC_ASSERT(isArithmetic<T>(), "Can only sort numerical data types currently.")
     SortObjects.reserve(_n_sort_objects);
   }
 
-  inline void AddSortObject(const std::size_t _index, const StaticArray<T, n_values>& _values)
+  inline void AddSortObject(const size_t _index, const StaticArray<T, n_values>& _values)
   {
     SortObjects.emplace_back(_index, _values);
   }
@@ -58,12 +58,12 @@ class Sort
     if(!_is_sort_in_ascending) std::reverse(SortObjects.begin(), SortObjects.end());
   }
 
-  inline std::size_t GetIndex(const std::size_t _i_object)
+  inline size_t GetIndex(const size_t _i_object)
   {
     return SortObjects[_i_object].Index;
   }
 
-  inline const StaticArray<T, n_values>& GetValues(const std::size_t _i_object)
+  inline const StaticArray<T, n_values>& GetValues(const size_t _i_object)
   {
     return SortObjects[_i_object].Values;
   }

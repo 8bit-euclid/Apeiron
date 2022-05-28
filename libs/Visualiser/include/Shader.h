@@ -15,7 +15,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 enum class ShaderType
 {
@@ -34,75 +34,82 @@ struct ShaderSourceCode
 
 class Shader
 {
-public:
-  /** Module Interface */
-  Shader();
+   /** Public interface
+   ************************************************************************************************************************************************************/
+ public:
+   /** Module Interface */
+   Shader();
 
-  Shader(const std::string& _file_path);
+   Shader(const std::string& _file_path);
 
-  ~Shader();
+   ~Shader();
 
-  void ReadFromFile(const std::string& _file_path);
+   void Read(const std::string& _file_path);
 
-  inline void Bind() const { GLCall(glUseProgram(ID)); }
+   inline void Bind() const { GLCall(glUseProgram(ID)); }
 
-  inline void Unbind() const { GLCall(glUseProgram(0)); }
+   inline void Unbind() const { GLCall(glUseProgram(0)); }
 
-  inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
+   inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
 
-  void UseModel(const Model& _model);
+   void UseModel(const Model& _model);
 
-  void UseMaterial(const Material& _material);
+   void UseMaterial(const Material& _material);
 
-  void UseTexture(const Texture& _texture, const UInt _slot);
+   void UseTexture(const Texture& _texture, const std::string& _uniform_name, const UInt _slot);
 
-  void UseCamera(Camera& _camera);
+   void UseCamera(Camera& _camera);
 
-  void UseLight(const Light& _light);
+   void UseLight(const Light& _light);
 
-  void SetDirectionalShadowMap(const UInt _slot);
+   void SetDirectionalShadowMap(const UInt _slot);
 
-  void SetPointShadowMap(const size_t _i_point_light, const UInt _slot);
+   void SetPointShadowMap(const size_t _i_point_light, const UInt _slot);
 
-  void SetPointPosition(const glm::vec3& _position);
+   void SetPointPosition(const glm::vec3& _position);
 
-  void SetPointFarPlane(const float _far_plane);
+   void SetPointFarPlane(GLfloat _far_plane);
 
-  void SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix);
+   void SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix);
 
-  void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
+   void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
 
-  /** Setting Shader Uniforms */
-  void SetUniform1i(const std::string& _name, GLint _value);
+   /** Setting Shader Uniforms */
+   void SetUniform1i(const std::string& _name, GLint _value);
 
-  void SetUniform1f(const std::string& _name, GLfloat _value);
+   void SetUniform1f(const std::string& _name, GLfloat _value);
 
-  void SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1);
+   void SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1);
 
-  void SetUniform3f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
+   void SetUniform3f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
 
-  void SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
+   void SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
 
-  void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
+   void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
 
 private:
-  bool areWarningsOn{false};
-  GLuint ID;
-  std::unordered_map<std::string, int> UniformLocationCache;
+   /** Private interface
+   ************************************************************************************************************************************************************/
 
-  /** Shader Parsing, Compilation, Installation, and Deletion functions. */
-  ShaderSourceCode Parse(const std::string& _file_path);
+   /** Shader Parsing, Compilation, Installation, and Deletion functions. */
+   ShaderSourceCode Parse(const std::string& _file_path);
 
-  void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
+   void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
 
-  GLuint Compile(GLuint _type, const std::string& _source);
+   GLuint Compile(GLuint _type, const std::string& _source);
 
-  void Attach(GLuint _program, GLuint _shader);
+   void Attach(GLuint _program, GLuint _shader);
 
-  void Delete();
+   void Delete();
 
-  /** Uniform Support Functions */
-  int GetUniformLocation(const std::string& _name);
+   /** Uniform Support Functions */
+   int GetUniformLocation(const std::string& _name);
+
+   /** Private members
+   ************************************************************************************************************************************************************/
+   GLuint                               ID;
+   std::unordered_map<std::string, int> UniformLocationCache;
+   bool                                 areWarningsOn{false};
 };
 
 }

@@ -1,8 +1,9 @@
-#pragma once
+#ifndef TENSOR_TEMPLATE_DEF
+#define TENSOR_TEMPLATE_DEF
 
 #include "../include/Tensor.h"
 
-namespace Apeiron{
+namespace aprn{
 
 /***************************************************************************************************************************************************************
 * Tensor Abstract Base Class
@@ -15,14 +16,14 @@ constexpr Tensor<T, derived>::Tensor()
 
 template<typename T, class derived>
 constexpr T&
-Tensor<T, derived>::operator()(std::convertible_to<std::size_t> auto... _multi_index)
+Tensor<T, derived>::operator()(std::convertible_to<size_t> auto... _multi_index)
 {
   return Derived().Entries(_multi_index...);
 }
 
 template<typename T, class derived>
 constexpr const T&
-Tensor<T, derived>::operator()(const std::convertible_to<std::size_t> auto... _multi_index) const
+Tensor<T, derived>::operator()(const std::convertible_to<size_t> auto... _multi_index) const
 {
   return Derived().Entries(_multi_index...);
 }
@@ -58,7 +59,9 @@ DynamicTensor<T>::DynamicTensor()
   : Entries() {}
 
 template<typename T>
-DynamicTensor<T>::DynamicTensor(const std::convertible_to<std::size_t> auto... _dimensions)
+DynamicTensor<T>::DynamicTensor(const std::convertible_to<size_t> auto... _dimensions)
   : Entries(_dimensions...) {}
 
 }
+
+#endif

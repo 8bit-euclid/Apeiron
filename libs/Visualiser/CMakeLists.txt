@@ -2,9 +2,11 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/Visualiser)
 #include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/libs/Visualiser/resources/external/stb_image)
 
 set(SOURCE_FILES
+        include/Action.h
+        include/ActionBase.h
         include/Buffers.h
         include/Camera.h
-        include/Geometry.h
+        include/Colour.h
         include/GLDebug.h
         include/GLTypes.h
         include/HDR.h
@@ -12,6 +14,7 @@ set(SOURCE_FILES
         include/Material.h
         include/Mesh.h
         include/Model.h
+        include/ModelFactory.h
         include/Shader.h
         include/Shadow.h
         include/Texture.h
@@ -19,12 +22,15 @@ set(SOURCE_FILES
         include/Window.h
         resources/external/stb_image/stb_image.h
         test/VisualiserTest.h
+        src/Action.cpp
+        src/ActionBase.cpp
+        src/Buffers.cpp
         src/Camera.cpp
-        src/Geometry.cpp
         src/HDR.cpp
         src/Light.cpp
         src/Mesh.cpp
         src/Model.cpp
+        src/ModelFactory.cpp
         src/Shader.cpp
         src/Shadow.cpp
         src/Texture.cpp
@@ -35,6 +41,7 @@ set(SOURCE_FILES
 
 set(LINK_LIBRARIES
         DataContainerLibrary
+        FunctionalLibrary
         LinearAlgebraLibrary)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})

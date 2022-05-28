@@ -2,15 +2,15 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/MultiArray.h"
-#include "../../DataContainer/include/Detail.h"
+#include "../../DataContainer/include/NumericContainer.h"
 
-namespace Apeiron {
+namespace aprn {
 
 /***************************************************************************************************************************************************************
 * Matrix Abstract Base Class
 ***************************************************************************************************************************************************************/
 template<typename T, class derived>
-class Matrix : Detail::NumericContainer<T, Matrix<T, derived>>
+class Matrix : detail::NumericContainer<T, Matrix<T, derived>>
 {
 protected:
   constexpr Matrix() = default;
@@ -25,7 +25,7 @@ private:
 /***************************************************************************************************************************************************************
 * Static Matrix Class
 ***************************************************************************************************************************************************************/
-template<typename T, std::size_t M, std::size_t N>
+template<typename T, size_t M, size_t N>
 class StaticMatrix : public StaticMultiArray<T, M, N>,
                      public Matrix<T, StaticMatrix<T, M, N>>
 {
@@ -64,10 +64,10 @@ public:
   DynamicMatrix()
     : BaseMultiArray() {}
 
-  explicit DynamicMatrix(const std::size_t _size)
+  explicit DynamicMatrix(const size_t _size)
     : BaseMultiArray(_size) {}
 
-  DynamicMatrix(const std::size_t _size, const T& _value)
+  DynamicMatrix(const size_t _size, const T& _value)
     : BaseMultiArray(_size, _value) {}
 
   explicit DynamicMatrix(const std::initializer_list<T>& _list)

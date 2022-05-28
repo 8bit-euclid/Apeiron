@@ -3,13 +3,18 @@
 
 #define GL_DEBUG_MODE
 
-namespace Apeiron {
+namespace aprn::vis {
 
+/***************************************************************************************************************************************************************
+* Public Interface
+***************************************************************************************************************************************************************/
 Window::Window(GLint _width, GLint _height)
   : WindowDimensions{_width, _height}
 {
-  Open(_width, _height);
+   Open(_width, _height);
 }
+
+Window::~Window() { glfwTerminate(); }
 
 void Window::Open(GLint _width, GLint _height)
 {
@@ -40,15 +45,15 @@ void Window::Open(GLint _width, GLint _height)
 
   // Create a window and its OpenGL context.
   WindowDimensions = {_width, _height};
-  pWindow = glfwCreateWindow(_width, _height, "Apeiron Visualiser", nullptr, nullptr);
-  if(!pWindow)
+   GlfwWindow = glfwCreateWindow(_width, _height, "Apeiron Visualiser", nullptr, nullptr);
+  if(!GlfwWindow)
   {
     glfwTerminate();
     EXIT("Could not create an OpenGL window.")
   }
 
   // Set context for GLEW to use
-  glfwMakeContextCurrent(pWindow);
+  glfwMakeContextCurrent(GlfwWindow);
   glfwSwapInterval(1);
 
   // Set viewport dimensions
@@ -59,7 +64,7 @@ void Window::Open(GLint _width, GLint _height)
   // Handle key mouse inputs
   CreateCallBacks();
 //  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   // Allow modern extension features
   glewExperimental = GL_TRUE;
@@ -67,7 +72,7 @@ void Window::Open(GLint _width, GLint _height)
   // Initialise GLEW
   if(glewInit() != GLEW_OK)
   {
-    glfwDestroyWindow(pWindow);
+    glfwDestroyWindow(GlfwWindow);
     glfwTerminate();
     EXIT("Failed to Initialise GLEW.")
   }
@@ -92,28 +97,12 @@ void Window::Open(GLint _width, GLint _height)
 //  GLCall(glEnable(GL_BLEND));
 //  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-  glfwSetWindowUserPointer(pWindow, this);
+  glfwSetWindowUserPointer(GlfwWindow, this);
 }
 
-SVectorF2 Window::GetMouseDisplacement()
-{
-  GLdouble x_displacement = MouseDisplacement[0];
-  GLdouble y_displacement = MouseDisplacement[1];
-  MouseDisplacement[0] = 0.0;
-  MouseDisplacement[1] = 0.0;
+bool Window::isOpen() const { return !glfwWindowShouldClose(GlfwWindow); }
 
-  return {x_displacement, y_displacement};
-}
-
-SVectorF2 Window::GetMouseWheelDisplacement()
-{
-  GLdouble x_displacement = MouseWheelDisplacement[0];
-  GLdouble y_displacement = MouseWheelDisplacement[1];
-  MouseWheelDisplacement[0] = 0.0;
-  MouseWheelDisplacement[1] = 0.0;
-
-  return {x_displacement, y_displacement};
-}
+void Window::Close() { glfwSetWindowShouldClose(GlfwWindow, GL_TRUE); }
 
 bool Window::isViewPortModified()
 {
@@ -131,35 +120,64 @@ bool Window::isViewPortModified()
   else return false;
 }
 
-void Window::ResetViewPort()
-{
-  GLCall(glViewport(0, 0, ViewportDimensions[0], ViewportDimensions[1]));
-}
+void Window::ResetViewPort() const { GLCall(glViewport(0, 0, ViewportDimensions[0], ViewportDimensions[1])); }
 
-void Window::SwapBuffers()
-{
-  glfwSwapBuffers(pWindow);
-}
+void Window::SwapBuffers() { glfwSwapBuffers(GlfwWindow); }
+
+void Window::ResetTime() const { glfwSetTime(Zero); }
 
 void Window::ComputeDeltaTime()
 {
-  const GLfloat current_time = glfwGetTime();
-  DeltaTime = current_time - LastTime;
-  LastTime = current_time;
+   CurrentTime = glfwGetTime();
+   DeltaTime = CurrentTime - PreviousTime;
+   PreviousTime = CurrentTime;
 }
 
-std::pair<GLint, GLint> Window::GetFrameBufferSize() const
+Float Window::GetCurrentTime() const { return CurrentTime; }
+
+Float Window::GetDeltaTime() const { return DeltaTime; }
+
+GLfloat
+Window::ComputeViewportAspectRatio() const { return static_cast<GLfloat>(ViewportDimensions[0]) / static_cast<GLfloat>(ViewportDimensions[1]); }
+
+SVectorF2
+Window::GetMouseDisplacement()
+{
+   auto x_displacement = MouseDisplacement[0];
+   auto y_displacement = MouseDisplacement[1];
+   MouseDisplacement[0] = Zero;
+   MouseDisplacement[1] = Zero;
+
+   return {x_displacement, y_displacement};
+}
+
+SVectorF2
+Window::GetMouseWheelDisplacement()
+{
+   auto x_displacement = MouseWheelDisplacement[0];
+   auto y_displacement = MouseWheelDisplacement[1];
+   MouseWheelDisplacement[0] = Zero;
+   MouseWheelDisplacement[1] = Zero;
+
+   return {x_displacement, y_displacement};
+}
+
+/***************************************************************************************************************************************************************
+* Private Interface
+***************************************************************************************************************************************************************/
+std::pair<GLint, GLint>
+Window::GetFrameBufferSize() const
 {
   GLint width, height;
-  glfwGetFramebufferSize(pWindow, &width, &height);
+  glfwGetFramebufferSize(GlfwWindow, &width, &height);
   return { width, height };
 }
 
-void Window::CreateCallBacks()
+void Window::CreateCallBacks() const
 {
-  glfwSetKeyCallback(pWindow, HandleKeys);
-  glfwSetCursorPosCallback(pWindow, HandleMousePosition);
-  glfwSetScrollCallback(pWindow, HandleMouseWheel);
+  glfwSetKeyCallback(GlfwWindow, HandleKeys);
+  glfwSetCursorPosCallback(GlfwWindow, HandleMousePosition);
+  glfwSetScrollCallback(GlfwWindow, HandleMouseWheel);
 }
 
 void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
@@ -207,57 +225,40 @@ void Window::glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum
   std::cout << "Debug message (" << id << "): " << message << std::endl;
 
   // Write error source
-  switch (_source)
+  switch(_source)
   {
-    case GL_DEBUG_SOURCE_API:
-      std::cout << "Source: API"; break;
-    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-      std::cout << "Source: Window System"; break;
-    case GL_DEBUG_SOURCE_SHADER_COMPILER:
-      std::cout << "Source: Shader Compiler"; break;
-    case GL_DEBUG_SOURCE_THIRD_PARTY:
-      std::cout << "Source: Third Party"; break;
-    case GL_DEBUG_SOURCE_APPLICATION:
-      std::cout << "Source: Application"; break;
-    case GL_DEBUG_SOURCE_OTHER:
-      std::cout << "Source: Other"; break;
-  } std::cout << std::endl;
+    case GL_DEBUG_SOURCE_API:               std::cout << "Source: API"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:     std::cout << "Source: Window System"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:   std::cout << "Source: Shader Compiler"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY:       std::cout << "Source: Third Party"; break;
+    case GL_DEBUG_SOURCE_APPLICATION:       std::cout << "Source: Application"; break;
+    case GL_DEBUG_SOURCE_OTHER:             std::cout << "Source: Other"; break;
+  }
+  std::cout << std::endl;
 
   // Write error type
-  switch (_type)
+  switch(_type)
   {
-    case GL_DEBUG_TYPE_ERROR:
-      std::cout << "Type: Error"; break;
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-      std::cout << "Type: Deprecated Behaviour"; break;
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-      std::cout << "Type: Undefined Behaviour"; break;
-    case GL_DEBUG_TYPE_PORTABILITY:
-      std::cout << "Type: Portability"; break;
-    case GL_DEBUG_TYPE_PERFORMANCE:
-      std::cout << "Type: Performance"; break;
-    case GL_DEBUG_TYPE_MARKER:
-      std::cout << "Type: Marker"; break;
-    case GL_DEBUG_TYPE_PUSH_GROUP:
-      std::cout << "Type: Push Group"; break;
-    case GL_DEBUG_TYPE_POP_GROUP:
-      std::cout << "Type: Pop Group"; break;
-    case GL_DEBUG_TYPE_OTHER:
-      std::cout << "Type: Other"; break;
-  } std::cout << std::endl;
+    case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Type: Undefined Behaviour"; break;
+    case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Type: Portability"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Type: Performance"; break;
+    case GL_DEBUG_TYPE_MARKER:              std::cout << "Type: Marker"; break;
+    case GL_DEBUG_TYPE_PUSH_GROUP:          std::cout << "Type: Push Group"; break;
+    case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
+    case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
+  }
+  std::cout << std::endl;
 
   // Write error severity
   switch(_severity)
   {
-    case GL_DEBUG_SEVERITY_HIGH:
-      std::cout << "Severity: high"; break;
-    case GL_DEBUG_SEVERITY_MEDIUM:
-      std::cout << "Severity: medium"; break;
-    case GL_DEBUG_SEVERITY_LOW:
-      std::cout << "Severity: low"; break;
-    case GL_DEBUG_SEVERITY_NOTIFICATION:
-      std::cout << "Severity: notification"; break;
-  } std::cout << std::endl;
+    case GL_DEBUG_SEVERITY_HIGH:            std::cout << "Severity: high"; break;
+    case GL_DEBUG_SEVERITY_MEDIUM:          std::cout << "Severity: medium"; break;
+    case GL_DEBUG_SEVERITY_LOW:             std::cout << "Severity: low"; break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:    std::cout << "Severity: notification"; break;
+  }
   std::cout << std::endl;
 }
 

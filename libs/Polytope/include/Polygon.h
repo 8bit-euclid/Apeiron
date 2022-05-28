@@ -1,18 +1,17 @@
 #pragma once
 
-#include "../../../include/Global.h"
+//#include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
 #include "../../LinearAlgebra/include/Vector.h"
 #include "Categories.h"
 #include "Polytope.h"
 
-namespace Apeiron {
-namespace Shapes {
+namespace aprn::ptope {
 
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polygons
 ***************************************************************************************************************************************************************/
-template<PolytopeCategory cat, std::size_t dim = 3>
+template<PolytopeCategory cat, size_t dim = 3>
 struct Polygon : public StaticPolytope<cat, dim>
 {
   constexpr Polygon() { STATIC_ASSERT((isNPolytope<cat, 2>()), "A polygon must be a 2-polytope.") }
@@ -20,14 +19,13 @@ struct Polygon : public StaticPolytope<cat, dim>
   constexpr Polygon(const Float _side_length);
 
   template<class... static_vector>
-//  requires std::is_same_v<static_vector, SVectorF<dim>>
   constexpr Polygon(const static_vector&... _vertices);
 };
 
-template<std::size_t dim>
+template<size_t dim>
 struct Polygon<PolytopeCategory::Arbitrary2D, dim> : public DynamicPolytope<PolytopeCategory::Arbitrary2D, dim>
 {
-  Polygon(std::size_t _n_vertices, const Float _radius);
+  Polygon(size_t _n_vertices, const Float _radius);
 
   template<class... static_vector>
   Polygon(const static_vector&... _vertices);
@@ -36,14 +34,14 @@ struct Polygon<PolytopeCategory::Arbitrary2D, dim> : public DynamicPolytope<Poly
 /***************************************************************************************************************************************************************
 * Triangles
 ***************************************************************************************************************************************************************/
-template<std::size_t dim = 3>
+template<size_t dim = 3>
 struct Triangle : public Polygon<PolytopeCategory::Triangle, dim>
 {
   /** Arbitary triangle. */
   constexpr Triangle(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2);
 
   /** Arbitary triangle with a specified base length and height. */
-  constexpr Triangle(const Float _length, const Float _height, const Float _apex_position = Half);
+  constexpr Triangle(const Float _length, const Float _height, const Float _apex_ratio);
 
   /** Regular triangle. */
   constexpr Triangle(const Float _radius)
@@ -53,7 +51,7 @@ struct Triangle : public Polygon<PolytopeCategory::Triangle, dim>
 /***************************************************************************************************************************************************************
 * Quadrilaterals
 ***************************************************************************************************************************************************************/
-template<std::size_t dim = 3>
+template<size_t dim = 3>
 struct Quadrilateral : public Polygon<PolytopeCategory::Quadrilateral, dim>
 {
   /** Arbitary quadrilateral. */
@@ -67,7 +65,7 @@ struct Quadrilateral : public Polygon<PolytopeCategory::Quadrilateral, dim>
     : Quadrilateral<dim>::Quadrilateral(_side_length, _side_length, _angle) {}
 };
 
-template<std::size_t dim = 3>
+template<size_t dim = 3>
 struct Rectangle : public Quadrilateral<dim>
 {
   /** Rectangle with prescribed length and height. */
@@ -75,7 +73,7 @@ struct Rectangle : public Quadrilateral<dim>
     : Quadrilateral<dim>(_length, _height) {}
 };
 
-template<std::size_t dim = 3>
+template<size_t dim = 3>
 struct Square : public Rectangle<dim>
 {
   /** Square with prescribed side length centred at the origin. */
@@ -83,5 +81,4 @@ struct Square : public Rectangle<dim>
     : Rectangle<dim>(_side_length, _side_length) {}
 };
 
-}
 }

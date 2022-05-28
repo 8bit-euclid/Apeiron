@@ -4,7 +4,7 @@
 
 #ifdef DEBUG_MODE
 
-namespace Apeiron{
+namespace aprn{
 
 TEST_F(ApeironTest, isEqual)
 {
@@ -159,9 +159,9 @@ TEST_F(ApeironTest, isBounded)
     EXPECT_TRUE((isBounded<true, true>(max_float, min_float, max_float)));
 
     // Test inclusion/exclusion
-    const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
-
+//    const int random_int = RandomInt();
+//    const Float random_float = RandomFloat();
+//
 //    EXPECT_EQ((isBounded<false, false, true>(random_int, min_int, max_int)), ());
 //    EXPECT_EQ(isBounded<true>(random_int, min_int, max_int));
 //    EXPECT_EQ(isBounded<false>(random_int, min_int, max_int));

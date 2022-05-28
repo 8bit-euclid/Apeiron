@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../include/Global.h"
+//#include "../include/Global.h"
 #include "../../DataContainer/include/Array.h"
-#include "../../DataContainer/include/List.h"
 #include "Camera.h"
-#include "Geometry.h"
+#include "ModelFactory.h"
 #include "Light.h"
 #include "Model.h"
 #include "Material.h"
@@ -19,68 +18,67 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 class Visualiser
 {
-public:
-  Visualiser() : Visualiser(1920, 1080) {}
+ public:
+   Visualiser();
 
-  Visualiser(GLint _window_width, GLint _window_height)
-    : OpenGLWindow(_window_width, _window_height), MainLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6) {}
+   Visualiser(GLint _window_width, GLint _window_height);
 
-  ~Visualiser() = default;
+   ~Visualiser() = default;
 
-  inline GLFWwindow*
-  GetGLFWWindow() { return OpenGLWindow.pWindow; }
+   void Add(Model& _model, const std::string& _name = "");
 
-  inline bool
-  isWindowOpen() { return OpenGLWindow.isOpen(); }
+   void Add(Camera&& _camera, const std::string& _name = "");
 
-  const StaticArray<Bool, 1024>&
-  GetKeys() const { return OpenGLWindow.GetKeys(); }
+   void Add(DirectionalLight&& _light, const std::string& _name = "");
 
-  SVectorF2
-  GetMouseDisplacement() { return OpenGLWindow.GetMouseDisplacement(); }
+   void Add(PointLight&& _light, const std::string& _name = "");
 
-  SVectorF2
-  GetMouseWheelDisplacement() { return OpenGLWindow.GetMouseWheelDisplacement(); }
+   void Add(SpotLight&& _light, const std::string& _name = "");
 
-  inline std::pair<GLint, GLint>
-  ViewportDimensions() { return {OpenGLWindow.ViewportDimensions[0], OpenGLWindow.ViewportDimensions[1]}; }
+   void Render();
 
-  inline GLfloat
-  ViewportAspectRatio() { return OpenGLWindow.GetViewportAspectRatio(); }
+ private:
+   void Init();
 
-  void BeginFrame();
+   void Add(std::shared_ptr<Model> _model, const std::string& _model_name);
 
-  GLfloat GetDeltaTime() { return OpenGLWindow.GetDeltaTime(); }
+   void AddTextures();
 
-  void RenderScene();
+   void AddMaterials();
 
-  void RenderDirectionalShadows();
+   void BeginFrame();
 
-  void RenderPointShadows();
+   void UpdateModels();
 
-  void RenderModels(UInt _shader_index);
+   void ManageUserInputs();
 
-  void EndFrame();
+   void UpdateViewFrustum();
 
-private:
-  Window OpenGLWindow;
+   void RenderDirectionalShadows();
 
-public:
-  bool isViewPortModified{false};
+   void RenderPointShadows();
 
-  List<Model> Models;
-  List<Shader> Shaders;
-  List<Material> Materials;
-  List<Texture> Textures;
+   void RenderFullScene();
 
-  DirectionalLight MainLight;
-  List<PointLight> PointLights;
-  List<SpotLight> SpotLights;
-  List<Camera> Cameras;
+   void RenderModels(const std::string& _shader_name);
+
+   void EndFrame();
+
+   template<class type> using Map = std::unordered_map<std::string, type>;
+   Window                          OpenGLWindow;
+   Map<std::shared_ptr<Model>>     Models;
+   Map<Shader>                     Shaders;
+   Map<Camera>                     Cameras;
+   Map<Map<Texture>>               Textures;
+   Map<DirectionalLight>           DirectionalLights;
+   Map<PointLight>                 PointLights;
+   Map<SpotLight>                  SpotLights;
+   std::reference_wrapper<Camera>  ActiveCamera;
+   bool                            isViewPortModified{false};
 };
 
 }

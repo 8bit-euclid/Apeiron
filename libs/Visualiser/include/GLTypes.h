@@ -6,20 +6,20 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 template<typename T>
 consteval GLenum
 GLTypeEnum(const T& _value = T())
 {
-  if constexpr(isTypeEqual<T, GLbyte>()) return GL_BYTE;
-  else if constexpr(isTypeEqual<T, GLubyte>()) return GL_UNSIGNED_BYTE;
-  else if constexpr(isTypeEqual<T, GLshort>()) return GL_SHORT;
-  else if constexpr(isTypeEqual<T, GLushort>()) return GL_UNSIGNED_SHORT;
-  else if constexpr(isTypeEqual<T, GLint>()) return GL_INT;
-  else if constexpr(isTypeEqual<T, GLuint>()) return GL_UNSIGNED_INT;
-  else if constexpr(isTypeEqual<T, GLfloat>()) return GL_FLOAT;
-  else if constexpr(isTypeEqual<T, GLdouble>()) return GL_DOUBLE;
+  if constexpr(isTypeSame<T, GLbyte>()) return GL_BYTE;
+  else if constexpr(isTypeSame<T, GLubyte>()) return GL_UNSIGNED_BYTE;
+  else if constexpr(isTypeSame<T, GLshort>()) return GL_SHORT;
+  else if constexpr(isTypeSame<T, GLushort>()) return GL_UNSIGNED_SHORT;
+  else if constexpr(isTypeSame<T, GLint>()) return GL_INT;
+  else if constexpr(isTypeSame<T, GLuint>()) return GL_UNSIGNED_INT;
+  else if constexpr(isTypeSame<T, GLfloat>()) return GL_FLOAT;
+  else if constexpr(isTypeSame<T, GLdouble>()) return GL_DOUBLE;
   else EXIT("Unrecognised OpenGL data type: ")
 }
 
@@ -41,9 +41,9 @@ GLTypeSize(const GLenum _gl_type)
 }
 
 /** Convert a GLM vector to a static vector. */
-template<std::size_t size, typename T, glm::qualifier qual = glm::defaultp>
+template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
 consteval StaticVector<T, size>
-ConvertGlmVecToStaticArray(const glm::vec<size, T, qual>& _in_vector)
+GlmVecToSArray(const glm::vec<size, T, qual>& _in_vector)
 {
   StaticVector<T, size> out_vector;
   FOR(i, size) out_vector[i] = _in_vector[i];
@@ -51,9 +51,9 @@ ConvertGlmVecToStaticArray(const glm::vec<size, T, qual>& _in_vector)
 }
 
 /** Convert a static vector to a GLM vector. */
-template<std::size_t size, typename T, glm::qualifier qual = glm::defaultp>
+template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
 constexpr glm::vec<size, T, qual>
-ConvertStaticArrayToGlmVec(const StaticVector<T, size>& _in_vector)
+SArrayToGlmVec(const StaticVector<T, size>& _in_vector)
 {
   glm::vec<size, T, qual> out_vector;
   FOR(i, size) out_vector[i] = _in_vector[i];

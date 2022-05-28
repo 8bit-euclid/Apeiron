@@ -9,28 +9,27 @@
 //#include <GL/glew.h>
 //#include <glm/glm.hpp>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 class HDR
 {
-public:
-  HDR();
+ public:
+   HDR();
 
-  virtual void Init(GLsizei _width, GLsizei _height);
+   virtual void Init(GLsizei _width, GLsizei _height);
 
-  virtual void WriteTo() const;
+   virtual void WriteTo() const;
 
-  virtual void Finalise() const;
+   virtual void Finalise() const;
 
-  virtual void ReadFrom(UInt _texture_slot) const;
+   virtual void ReadFrom(UInt _texture_slot) const;
 
-  const Texture& GetColourBuffer() const { return ColourBuffer; }
+   const Texture& GetColourBuffer() const { return ColourBuffer; }
 
-protected:
-  bool isPointLightShadow;
-
-  Texture ColourBuffer;
-  FrameBuffer FBO;
+ protected:
+   bool        isPointLightShadow;
+   Texture     ColourBuffer;
+   FrameBuffer FBO;
 };
 
 }

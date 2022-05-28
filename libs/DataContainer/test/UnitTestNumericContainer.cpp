@@ -4,16 +4,16 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ContainerSize = 50;
+constexpr size_t ContainerSize = 50;
 
-namespace Apeiron {
+namespace aprn {
 namespace Test {
 
 /***************************************************************************************************************************************************************
 * NumericContainer Test Classes
 ***************************************************************************************************************************************************************/
 template<typename T, class derived>
-class NumericContainer : public Detail::NumericContainer<T, derived>
+class NumericContainer : public detail::NumericContainer<T, derived>
 {
 protected:
   constexpr NumericContainer() = default;
@@ -23,7 +23,7 @@ public:
   constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
 };
 
-template<typename T, std::size_t N>
+template<typename T, size_t N>
 struct StaticNumericContainer : public StaticArray<T, N>,
                                public NumericContainer<T, StaticNumericContainer<T, N>>
 {
@@ -34,7 +34,7 @@ template<typename T>
 struct DynamicNumericContainer : public DynamicArray<T>,
                                 public NumericContainer<T, DynamicNumericContainer<T>>
 {
-  DynamicNumericContainer(const std::size_t _size) : DynamicArray<T>::DynamicArray(_size) {}
+  DynamicNumericContainer(const size_t _size) : DynamicArray<T>::DynamicArray(_size) {}
 };
 
 /***************************************************************************************************************************************************************

@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include "../../../include/Global.h"
 
-namespace Apeiron {
+namespace aprn::vis {
 
 /** OpenGL function wrapper for error checking in debug mode. */
 #ifdef DEBUG_MODE

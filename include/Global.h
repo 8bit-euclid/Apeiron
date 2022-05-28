@@ -1,7 +1,5 @@
 #pragma once
 
-#include "StandardLibrary.h"
-
 /** Run-time macros. */
 //#define PARALLEL
 
@@ -9,13 +7,13 @@
 #define DEBUG_MODE
 #define STACK_TRACE_SIZE 10
 
-/** Dimension. */
-constexpr std::size_t Dim = 2;
-
+#include "StandardLibrary.h"
 #include "Macros.h"
 #include "Types.h"
+#include "Concepts.h"
 #include "Debug.h"
 #include "Loops.h"
+#include "String.h"
 #include "Print.h"
 #include "Constants.h"
 #include "BasicMath.h"

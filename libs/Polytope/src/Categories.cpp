@@ -1,20 +1,20 @@
 #include "../include/Categories.h"
 #include "../../DataContainer/include/Array.h"
 
-namespace Apeiron {
-namespace Shapes {
+namespace aprn {
+namespace ptope {
 
-template<PolytopeCategory cat, std::size_t dim>
+template<PolytopeCategory cat, size_t dim>
 constexpr auto
 GetPolytopeFaces(const StaticPolytope<cat, dim>&)
 {
   STATIC_ASSERT(isStaticPolytope<cat>(), "The face vertices can only be determined for static polytopes.")
 
   constexpr auto n_faces = PolytopeFaceCount<cat>();
-  typedef StaticArray<std::size_t, PolytopeFaceVertexCount<cat>()> face;
+  typedef StaticArray<size_t, PolytopeFaceVertexCount<cat>()> face;
   typedef StaticArray<face, n_faces> faces;
 
-  if(isNPolytope<cat, 2>()) return faces([](std::size_t i){ return face{i, (i + 1) % n_faces}; });
+  if(isNPolytope<cat, 2>()) return faces([](size_t i){ return face{i, (i + 1) % n_faces}; });
   else
   {
     switch(cat)
