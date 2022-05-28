@@ -10,7 +10,7 @@
 #include <memory>
 #include <imgui.h>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * Visuliser Test Base and Test Menu Classes
@@ -29,11 +29,10 @@ public:
   virtual void OnImGuiRender() {}
 
 protected:
-  Model ModelTest;
-  Texture TextureTest;
-  Material MaterialTest;
-  Shader ShaderTest;
-
+  Model     ModelTest;
+  Texture   TextureTest;
+  Material  MaterialTest;
+  Shader    ShaderTest;
   glm::mat4 ViewMatrix;
   glm::mat4 ProjectionMatrix;
 

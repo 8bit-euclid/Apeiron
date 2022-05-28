@@ -1,89 +1,225 @@
 #include "../include/Texture.h"
 #include "../resources/external/stb_image/stb_image.h"
 
-namespace Apeiron {
+#include <filesystem>
 
-Texture::Texture(const GLint _texture_type, const bool _is_fbo_attachment)
-  : Type(_texture_type), ID(0), isFrameBufferAttachment(_is_fbo_attachment), LocalBuffer(nullptr), Width(0), Height(0), BitsPerPixel(0)
+namespace aprn::vis {
+
+/***************************************************************************************************************************************************************
+* TEXTURE CLASS IMPLEMENTATION
+***************************************************************************************************************************************************************/
+
+/***************************************************************************************************************************************************************
+* Public Interface
+***************************************************************************************************************************************************************/
+Texture::Texture(const TextureType _type, const std::string& _file_path)
+   : Texture(_type, false)
 {
-  ASSERT(Type == GL_TEXTURE_2D || Type == GL_TEXTURE_CUBE_MAP, "The passed texture type is currently not supported.")
+   Read(_file_path, GL_CLAMP_TO_EDGE);
+}
+
+Texture::Texture(const TextureType _type, const bool _is_fbo_attachment)
+  : ID(0), Width(0), Height(0), BitsPerPixel(0), LocalBuffer(nullptr), Type(_type), isFrameBufferAttachment(_is_fbo_attachment)
+{
   GLCall(glGenTextures(1, &ID));
 }
 
-Texture::Texture(const std::string& _file_path)
-  : Texture(GL_TEXTURE_2D)
+Texture::Texture(Texture&& _texture) noexcept
+   : ID(_texture.ID), Width(std::move(_texture.Width)), Height(std::move(_texture.Height)), BitsPerPixel(std::move(_texture.BitsPerPixel)),
+     LocalBuffer(std::move(_texture.LocalBuffer)), MapScale(std::move(_texture.MapScale)), Type(std::move(_texture.Type)),
+     isFrameBufferAttachment(std::move(_texture.isFrameBufferAttachment))
 {
-  ReadFromFile(_file_path, GL_CLAMP_TO_EDGE);
+   _texture.ID = 0;
 }
 
-Texture::~Texture()
-{
-  GLCall(glDeleteTextures(1, &ID));
-}
+Texture::~Texture() { Delete(); }
 
-void Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
+void
+Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
                    const GLint _wrap_type, const SVector4<GLfloat>& _border_colour)
 {
   Width = _width;
   Height = _height;
+  const auto opengl_type = GetOpenGLType();
 
   Bind();
 
   // Common settings
-  GLCall(glTexParameteri(Type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-  GLCall(glTexParameteri(Type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+  GLCall(glTexParameteri(opengl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+  GLCall(glTexParameteri(opengl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
-  // Type-specific settings
-  if(Type == GL_TEXTURE_2D)
+  // OpenGL type-specific settings
+  if(opengl_type == GL_TEXTURE_2D)
   {
-    if(_wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(Type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
+    if(_wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
 
-    GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_S, _wrap_type));
-    GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_T, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, _wrap_type));
 
-    GLCall(glTexImage2D(Type, 0, _internal_format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer));
+    GLCall(glTexImage2D(opengl_type, 0, _internal_format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer.get()));
   }
-  else if(Type == GL_TEXTURE_CUBE_MAP)
+  else if(opengl_type == GL_TEXTURE_CUBE_MAP)
   {
     ASSERT(_wrap_type == GL_CLAMP_TO_EDGE, "Only GL_CLAMP_TO_EDGE is currently supported for cube maps.")
 
-    GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_S, _wrap_type));
-    GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_T, _wrap_type));
-    GLCall(glTexParameteri(Type, GL_TEXTURE_WRAP_R, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_R, _wrap_type));
 
     FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _internal_format, Width, Height, 0, _format, _data_type, nullptr)); }
   }
 
-  if(!isFrameBufferAttachment) GLCall(glGenerateMipmap(Type));
+  if(!isFrameBufferAttachment) GLCall(glGenerateMipmap(opengl_type));
 
   Unbind();
 }
 
-void Texture::ReadFromFile(const std::string& _file_path, const GLint _wrap_type)
+void
+Texture::Read(const std::string& _file_path, const GLint _wrap_type)
 {
-  stbi_set_flip_vertically_on_load(1);
-  int width, height;
-  LocalBuffer = stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0);
-  ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
+   stbi_set_flip_vertically_on_load(1);
+   int width, height;
+   LocalBuffer.reset(stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0));
+   ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
 
-  std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
-                                    BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
-                                    BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
-                                    throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(BitsPerPixel) + ".";
-  Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
+   std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
+                                     BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
+                                     BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
+                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToString(BitsPerPixel) + ".";
+   Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
 
-  stbi_image_free(LocalBuffer);
+   stbi_image_free(LocalBuffer.get());
+   LocalBuffer = nullptr;
 }
 
-void Texture::Bind(UInt _slot) const
+void
+Texture::Bind(UInt _slot) const
 {
   GLCall(glActiveTexture(GL_TEXTURE0 + _slot));
-  GLCall(glBindTexture(Type, ID));
+  GLCall(glBindTexture(GetOpenGLType(), ID));
 }
 
-void Texture::Unbind() const
+void
+Texture::Unbind() const { GLCall(glBindTexture(GetOpenGLType(), 0)); }
+
+void
+Texture::Delete() { GLCall(glDeleteTextures(1, &ID)); }
+
+Texture&
+Texture::operator=(Texture&& _texture) noexcept
 {
-  GLCall(glBindTexture(Type, 0));
+   ID                      = _texture.ID;
+   _texture.ID = 0;
+
+   Width                   = std::move(_texture.Width);
+   Height                  = std::move(_texture.Height);
+   BitsPerPixel            = std::move(_texture.BitsPerPixel);
+   LocalBuffer             = std::move(_texture.LocalBuffer);
+   MapScale                = std::move(_texture.MapScale);
+   Type                    = std::move(_texture.Type);
+   isFrameBufferAttachment = std::move(_texture.isFrameBufferAttachment);
+
+   return *this;
+}
+
+/***************************************************************************************************************************************************************
+* Private Interface
+***************************************************************************************************************************************************************/
+GLint
+Texture::GetOpenGLType() const
+{
+   if(Type == TextureType::Diffuse || Type == TextureType::Normal || Type == TextureType::Height || Type == TextureType::DirectionalDepth) return GL_TEXTURE_2D;
+   else if(Type == TextureType::PointDepth) return GL_TEXTURE_CUBE_MAP;
+   else EXIT("Unrecongnised texture type.")
+}
+
+std::string
+Texture::GetUniformString() const
+{
+   switch(Type)
+   {
+      case TextureType::Diffuse: return "u_diffuse_map";
+      case TextureType::Normal:  return "u_normal_map";
+      case TextureType::Height:  return "u_height_map";
+      default: EXIT("The given texture type does not have a uniform string")
+   }
+}
+
+/***************************************************************************************************************************************************************
+* TEXTURE STAND-ALONE FUNCTIONS
+***************************************************************************************************************************************************************/
+std::string
+GetTextureName(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
+{
+   ASSERT(_resolution == 1 || _resolution == 2 || _resolution == 4 || _resolution == 8, "Only 1K, 2K, 4K, and 8K resolutions are recognised.")
+   return _material + "/" + _item + "/" + ToString(_index) + "/" + ToString(_resolution) + "K";
+}
+
+std::string
+GetTextureTypeString(TextureType _type)
+{
+   switch(_type)
+   {
+      case TextureType::Diffuse:          return "Diffuse";
+      case TextureType::Normal:           return "Normal";
+      case TextureType::Height:           return "Height";
+      case TextureType::Roughness:        return "Roughness";
+      case TextureType::AmbientOcclusion: return "AmbientOcclusion";
+      case TextureType::DirectionalDepth: return "DirectionalDepth";
+      case TextureType::PointDepth:       return "PointDepth";
+      default: EXIT("Unrecognised texture type.")
+   }
+}
+
+TextureType
+GetTextureType(const std::string& _type_string)
+{
+   if(_type_string == "Diffuse")               return TextureType::Diffuse;
+   else if(_type_string == "Normal")           return TextureType::Normal;
+   else if(_type_string == "Height")           return TextureType::Height;
+   else if(_type_string == "Roughness")        return TextureType::Roughness;
+   else if(_type_string == "AmbientOcclusion") return TextureType::AmbientOcclusion;
+   else if(_type_string == "DirectionalDepth") return TextureType::DirectionalDepth;
+   else if(_type_string == "PointDepth")       return TextureType::PointDepth;
+   else EXIT("Unrecognised texture type.")
+}
+
+std::string
+GetTextureUniformString(TextureType _type)
+{
+   switch(_type)
+   {
+      case TextureType::Diffuse: return "diffuse_map";
+      case TextureType::Normal:  return "normal_map";
+      case TextureType::Height:  return "height_map";
+      default: EXIT("The given texture type does not have an associate uniform string.")
+   }
+}
+
+std::string
+GetTextureUniformString(const std::string& _type_string) { return GetTextureUniformString(GetTextureType(_type_string)); }
+
+std::string
+GetTextureFileDirectory(const std::string& _name) { return "libs/Visualiser/resources/textures/" + _name + "/"; }
+
+std::optional<std::string>
+GetTextureFilePath(const std::string& _file_directory, TextureType _type)
+{
+   const auto& texture_str = GetTextureTypeString(_type);
+   std::string file_path = _file_directory;
+
+   if(EnumToInt(_type) <= EnumToInt(TextureType::AmbientOcclusion))
+   {
+      // Try finding a .png file first, failing which, find a .jpg file
+      for(const auto& ext : {".png", ".jpg"})
+         if(std::filesystem::exists(file_path + ext))
+         {
+            file_path.append(ext);
+            return std::make_optional<std::string>(file_path);
+         }
+      return std::nullopt;
+   }
+   else EXIT("The texture type ", texture_str, " cannot be read from file.")
 }
 
 }

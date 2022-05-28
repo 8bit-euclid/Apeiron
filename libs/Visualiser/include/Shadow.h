@@ -9,28 +9,37 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 class Shadow
 {
-public:
-  Shadow(const bool _is_point_light);
+ public:
+   Shadow(const bool _is_point_light);
 
-  virtual void Init(GLsizei _width, GLsizei _height);
+   Shadow(const Shadow& _shadow) = delete;
 
-  virtual void WriteTo() const;
+   Shadow(Shadow&& _shadow) noexcept;
 
-  virtual void Finalise() const;
+   virtual void Init(GLsizei _width, GLsizei _height);
 
-  virtual void ReadFrom(UInt _texture_slot) const;
+   virtual void WriteTo() const;
 
-  const Texture& GetDepthMap() const { return DepthMap; }
+   virtual void Finalise() const;
 
-protected:
-  bool isPointLightShadow;
+   virtual void ReadFrom(UInt _texture_slot) const;
 
-  Texture DepthMap;
-  FrameBuffer FBO;
+   inline const Texture& GetDepthMap() const { return DepthMap; }
+
+   Shadow& operator=(const Shadow& _shadow) = delete;
+
+   Shadow& operator=(Shadow&& _shadow) noexcept;
+
+ protected:
+   friend class Light;
+
+   Texture DepthMap;
+   FrameBuffer FBO;
+   bool isPointLightShadow;
 };
 
 }

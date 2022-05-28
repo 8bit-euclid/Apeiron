@@ -5,6 +5,7 @@ set(SOURCE_FILES
         src/Explicit.cpp)
 
 set(LINK_LIBRARIES
+        DataContainerLibrary
         LinearAlgebraLibrary)
 
 add_library(FunctionalLibrary ${SOURCE_FILES})

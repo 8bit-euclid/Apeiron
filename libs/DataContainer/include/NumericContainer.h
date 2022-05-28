@@ -2,14 +2,13 @@
 
 #include "../../../include/Global.h"
 
-namespace Apeiron {
-namespace Detail {
+namespace aprn {
+namespace detail {
 
 /***************************************************************************************************************************************************************
 * Numeric Data Container Class and Arithmetic Operations
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 class NumericContainer
 {
 protected:
@@ -77,13 +76,13 @@ private:
   static Random<T> Randomiser;
 };
 
-}//Detail
+}//detail
 
 /** Stand-alone Operator overloads. */
 template<typename T, class derived>
 requires Arithmetic<T>
-constexpr derived operator*(const std::convertible_to<T> auto _scalar, const Detail::NumericContainer<T, derived>& _container);
+constexpr derived operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container);
 
-}//Apeiron
+}//aprn
 
 #include "../src/NumericContainer.cpp"

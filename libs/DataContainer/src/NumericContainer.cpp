@@ -1,9 +1,10 @@
-#pragma once
+#ifndef NUMERIC_CONT_TEMPLATE_DEF
+#define NUMERIC_CONT_TEMPLATE_DEF
 
 #include "../include/NumericContainer.h"
 
-namespace Apeiron {
-namespace Detail {
+namespace aprn {
+namespace detail {
 
 /** Scalar arithmetic operator overloads. */
 template<typename T, class derived>
@@ -203,7 +204,9 @@ Random<T> NumericContainer<T, D>::Randomiser = Random<T>();
 template<typename T, class derived>
 requires Arithmetic<T>
 constexpr derived
-operator*(const std::convertible_to<T> auto _scalar, const Detail::NumericContainer<T, derived>& _container)
+operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container)
 { return _container.Derived() * _scalar; }
 
-}//Apeiron
+}//aprn
+
+#endif

@@ -3,9 +3,9 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ContainerSize = 50;
+constexpr size_t ContainerSize = 50;
 
-namespace Apeiron
+namespace aprn
 {
 
 class ArrayTest : public testing::Test
@@ -39,7 +39,7 @@ TEST_F(ArrayTest, Initialisation)
   FOR(i, 5)
   {
     EXPECT_EQ(ConstexprFloatArray1[i], Float(i + 1));
-    if(i < 3) EXPECT_EQ(ConstexprFloatArray2[i], Float(i + 1));
+    if(i < 3) { EXPECT_EQ(ConstexprFloatArray2[i], Float(i + 1)); }
   }
 
   // Test default initialisation of arrays.

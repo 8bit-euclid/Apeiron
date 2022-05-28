@@ -4,14 +4,14 @@
 
 #ifdef DEBUG_MODE
 
-namespace Apeiron{
+namespace aprn {
 
 /***************************************************************************************************************************************************************
 * Sequences and Series
 ***************************************************************************************************************************************************************/
 TEST_F(ApeironTest, GetInteger)
 {
-  constexpr std::size_t size = 100;
+  constexpr size_t size = 100;
   FOR(i, size) EXPECT_EQ(GetInteger(std::make_integer_sequence<int, size>{}, i), i);
 }
 
@@ -167,7 +167,7 @@ TEST_F(ApeironTest, Tan)
   EXPECT_DOUBLE_EQ(Tan(SixthPi), One/Sqrt(Three));
   EXPECT_DOUBLE_EQ(Tan(QuartPi), One);
   EXPECT_NEAR(Tan(ThirdPi), Sqrt(Three), Small);
-  EXPECT_THROW(Tan(HalfPi), std::invalid_argument);
+  EXPECT_THROW(Tan(HalfPi), std::domain_error);
 }
 
 TEST_F(ApeironTest, Arcsin)

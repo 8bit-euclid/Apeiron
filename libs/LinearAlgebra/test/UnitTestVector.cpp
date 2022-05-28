@@ -6,9 +6,9 @@
 
 #ifdef DEBUG_MODE
 
-constexpr std::size_t ContainerSize = 50;
+constexpr size_t ContainerSize = 50;
 
-namespace Apeiron {
+namespace aprn {
 
 /***************************************************************************************************************************************************************
 * Vector Test Fixture
@@ -529,7 +529,7 @@ TEST_F(VectorTest, isAligned)
   EXPECT_FALSE(isAligned(xAxis2, yAxis2));
   EXPECT_FALSE(isAligned(xAxis2, -yAxis2));
   EXPECT_FALSE(isAligned(xAxis2, SVectorF2{One, One}));
-  EXPECT_TRUE(isAligned(xAxis2, SVectorF2{One, One}, ToRadians(45.00001)));
+  EXPECT_TRUE(isAligned(xAxis2, SVectorF2{One, One}, DegToRad(45.00001)));
   EXPECT_TRUE(isAligned(xAxis2, SVectorF2{Ten, One}));
 
   EXPECT_TRUE(isAligned(xAxis3, xAxis3));
@@ -537,8 +537,10 @@ TEST_F(VectorTest, isAligned)
   EXPECT_FALSE(isAligned(xAxis3, yAxis3));
   EXPECT_FALSE(isAligned(xAxis3, -yAxis3));
   EXPECT_FALSE(isAligned(xAxis3, SVectorF3{One, One, Zero}));
-  EXPECT_TRUE(isAligned(xAxis3, SVectorF3{One, One, Zero}, ToRadians(45.00001)));
+  EXPECT_TRUE(isAligned(xAxis3, SVectorF3{One, One, Zero}, DegToRad(45.00001)));
   EXPECT_TRUE(isAligned(xAxis3, SVectorF3{Ten, One, Zero}));
+
+  EXPECT_THROW(isAligned(xAxis3, SVectorF3{One, Zero, Zero}, DegToRad(90.00001)), std::domain_error);
 }
 
 }

@@ -2,15 +2,16 @@
 #include "include/HDR.h"
 
 
-namespace Apeiron {
+namespace aprn::vis {
 
 HDR::HDR()
-  : ColourBuffer(GL_TEXTURE_2D, true), FBO()
+  : ColourBuffer(TextureType::Diffuse, true), FBO()
 {
 
 }
 
-void HDR::Init(GLsizei _width, GLsizei _height)
+void
+HDR::Init(GLsizei _width, GLsizei _height)
 {
 //  ColourBuffer.Init(_width, _height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
 //
@@ -25,17 +26,20 @@ void HDR::Init(GLsizei _width, GLsizei _height)
 //  FBO.Unbind();
 }
 
-void HDR::WriteTo() const
+void
+HDR::WriteTo() const
 {
 
 }
 
-void HDR::Finalise() const
+void
+HDR::Finalise() const
 {
 
 }
 
-void HDR::ReadFrom(UInt _texture_slot) const
+void
+HDR::ReadFrom(UInt _texture_slot) const
 {
 
 }

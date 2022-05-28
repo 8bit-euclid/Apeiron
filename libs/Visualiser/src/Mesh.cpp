@@ -1,7 +1,7 @@
 #include "../include/Mesh.h"
 #include "../include/GLTypes.h"
 
-namespace Apeiron {
+namespace aprn::vis {
 
 template<typename T>
 void VertexAttributeLayout::AddAttribute(const GLuint _n_values)
@@ -26,7 +26,7 @@ void Mesh::ComputeVertexNormals()
 {
   if(Shading == ShadingType::Flat)
   {
-    for(std::size_t it = 0; it < Indices.size(); it += 3)
+    for(size_t it = 0; it < Indices.size(); it += 3)
     {
       // Assign the normal of the current triangle to each vertex normal.
       const GLuint iv0 = Indices[it];
@@ -41,7 +41,7 @@ void Mesh::ComputeVertexNormals()
     // Zero all vertex normals.
     FOR_EACH(vertex, Vertices) vertex.Normal = glm::vec3(0.0, 0.0, 0.0);
 
-    for(std::size_t it = 0; it < Indices.size(); it += 3)
+    for(size_t it = 0; it < Indices.size(); it += 3)
     {
       // Compute the normal of the current triangle and update the normal at each vertex in the current triangle
       const GLuint iv0 = Indices[it];
@@ -58,7 +58,7 @@ void Mesh::ComputeVertexNormals()
 
   if(Shading == ShadingType::Phong) FOR_EACH(vertex, Vertices) vertex.Normal = glm::vec3(0.0, 0.0, 0.0);
 
-  for(std::size_t it = 0; it < Indices.size(); it += 3)
+  for(size_t it = 0; it < Indices.size(); it += 3)
   {
     // Compute the normal of the current triangular face and update the normal at each vertex in the current triangle accordingly.
     const GLuint iv0 = Indices[it];

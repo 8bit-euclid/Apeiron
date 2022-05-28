@@ -37,8 +37,8 @@ uniform mat4 u_dlight_space_matrix;
 uniform bool u_use_diffuse_map;
 uniform bool u_use_normal_map;
 uniform bool u_use_height_map;
-uniform int u_point_light_count;
-uniform int u_spot_light_count;
+uniform int  u_point_light_count;
+uniform int  u_spot_light_count;
 uniform vec3 u_camera_position;
 uniform vec3 u_point_light_positions[Max_Point_Lights];
 uniform vec3 u_spot_light_positions[Max_Spot_Lights];
@@ -86,7 +86,7 @@ layout (triangle_strip, max_vertices = 3) out;
 
 // Global constants
 const int Max_Point_Lights = 4;
-const int Max_Spot_Lights = 4;
+const int Max_Spot_Lights  = 4;
 
 // Input varying data
 in Data
@@ -127,8 +127,8 @@ uniform int u_spot_light_count;
 
 void main()
 {
-   const vec3 tangent0 = (gl_in[1].gl_Position - gl_in[0].gl_Position).xyz;
-   const vec3 tangent1 = (gl_in[2].gl_Position - gl_in[0].gl_Position).xyz;
+   const vec3 tangent0    = (gl_in[1].gl_Position - gl_in[0].gl_Position).xyz;
+   const vec3 tangent1    = (gl_in[2].gl_Position - gl_in[0].gl_Position).xyz;
    const vec3 face_normal = normalize(cross(tangent0, tangent1));
 
    for(int i = 0; i < gl_in.length(); i++)
@@ -162,14 +162,14 @@ void main()
 #version 460 core
 
 // Global constants
-const int Max_Point_Lights = 4;
-const int Max_Spot_Lights = 4;
-const float Gamma = 2.2;
-const vec3 Sample_Offset_Directions[20] = { vec3( 1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
-                                            vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-                                            vec3( 1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-                                            vec3( 1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-                                            vec3( 0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1) };
+const int   Max_Point_Lights = 4;
+const int   Max_Spot_Lights  = 4;
+const float Gamma            = 2.2;
+const vec3  Sample_Offset_Directions[20] = { vec3( 1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
+                                             vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+                                             vec3( 1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+                                             vec3( 1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+                                             vec3( 0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1) };
 
 // Input varying data
 in Data
@@ -192,33 +192,34 @@ out vec4 fragment_colour;
 
 // Interface Blocks
 struct Light            { vec4 Colour; float AmbientIntensity; float DiffuseIntensity; };
-struct DirectionalLight { Light Base; vec3 Direction; };
+struct DirectionalLight { Light Base; vec3 Direction; sampler2D Shadow; };
 struct PointLight       { Light Base; vec3 AttenuationCoefficients; samplerCube Shadow; };
 struct SpotLight        { PointLight Point; vec3 Direction; float CosConeAngle; };
 struct Material         { float SpecularIntensity; float Smoothness; };
+struct Texture          { sampler2D SpecularIntensity; float Smoothness; };
 
 // Light/Material Uniforms
-uniform int u_point_light_count;
-uniform int u_spot_light_count;
+uniform int              u_point_light_count;
+uniform int              u_spot_light_count;
 uniform DirectionalLight u_directional_light;
-uniform PointLight u_point_lights[Max_Point_Lights];
-uniform SpotLight u_spot_lights[Max_Spot_Lights];
-uniform Material u_material;
+uniform PointLight       u_point_lights[Max_Point_Lights];
+uniform SpotLight        u_spot_lights[Max_Spot_Lights];
+uniform Material         u_material;
 
 // Texture Uniforms
-uniform bool u_use_diffuse_map;
-uniform bool u_use_normal_map;
-uniform bool u_use_height_map;
-uniform float u_point_light_far_plane;
-uniform float u_height_scale;
+uniform bool      u_use_diffuse_map;
+uniform bool      u_use_normal_map;
+uniform bool      u_use_height_map;
+uniform float     u_point_light_far_plane;
+uniform float     u_height_map_scale;
 uniform sampler2D u_diffuse_map;
 uniform sampler2D u_normal_map;
 uniform sampler2D u_height_map;
-uniform sampler2D u_direc_shadow;
 
 bool UseNormalMap() { return u_use_diffuse_map && u_use_normal_map; }
 bool UseHeightMap() { return UseNormalMap() && u_use_height_map; }
-vec3 CalculateFragmentNormal(const vec2 _texture_coordinate) { return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, _texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
+vec3 CalculateFragmentNormal(const vec2 _texture_coordinate)
+{ return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, _texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
 
 float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
 {
@@ -231,13 +232,13 @@ float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
    float shadow = 0.0f;
    if(actual_depth <= 1.0f)
    {
-      vec2 texel_size = 1.0f / textureSize(u_direc_shadow, 0);
+      vec2 texel_size = 1.0f / textureSize(u_directional_light.Shadow, 0);
 
       const float bias = max(0.05 * (1.0 - dot(normal, normalize(u_directional_light.Direction))), 0.005);
       for(int x = -1; x <= 1; x++)
          for(int y = -1; y <= 1; y++)
          {
-            float pcf_depth = bias + texture(u_direc_shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
+            float pcf_depth = bias + texture(u_directional_light.Shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
             shadow += actual_depth > pcf_depth ? 1.0f : 0.0f;
          }
       shadow /= 9.0f;
@@ -248,13 +249,13 @@ float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
 
 float CalculatePointLightShadow(const PointLight _point_light, const vec3 _light_position)
 {
-   const vec3 light_to_fragment = v_data_in.TBNMatrix * (v_data_in.FragmentPosition - _light_position);
-   const float current_depth = length(light_to_fragment);
+   const vec3  light_to_fragment = v_data_in.TBNMatrix * (v_data_in.FragmentPosition - _light_position);
+   const float current_depth     = length(light_to_fragment);
 
-   const float bias = 0.15;
-   const int n_samples = 20;
+   const float bias          = 0.15;
+   const int   n_samples     = 20;
    const float view_distance = length(v_data_in.FragmentPosition - v_data_in.CameraPosition);
-   const float disk_radius = (1.0 + (view_distance / u_point_light_far_plane)) / 25.0;;
+   const float disk_radius   = (1.0 + (view_distance / u_point_light_far_plane)) / 25.0;;
    float shadow = 0.0;
    for(int i = 0; i < n_samples; ++i)
    {
@@ -269,19 +270,19 @@ float CalculatePointLightShadow(const PointLight _point_light, const vec3 _light
 
 vec4 CalculateLightByDirection(Light _light, vec3 _direction, float _shadow_factor, const vec2 _texture_coordinate)
 {
-   const vec3 normal = CalculateFragmentNormal(_texture_coordinate);
+   const vec3 normal         = CalculateFragmentNormal(_texture_coordinate);
    const vec4 ambient_colour = _light.AmbientIntensity * _light.Colour;
 
    // Diffuse lighting
    const float diffuse_factor = max(dot(-normal, normalize(_direction)), 0.0f);
-   const vec4 diffuse_colour = diffuse_factor * _light.DiffuseIntensity * _light.Colour;
+   const vec4 diffuse_colour  = diffuse_factor * _light.DiffuseIntensity * _light.Colour;
 
    // Specular lighting
-   const vec3 fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
-   const vec3 fragment_to_light = normalize(-_direction);
-   const vec3 halfway_direction = normalize(fragment_to_light + fragment_to_camera);
-   const float specular_factor = pow(max(dot(halfway_direction, normal), 0.0f), u_material.Smoothness);
-   const vec4 specular_colour = specular_factor * u_material.SpecularIntensity * _light.Colour;
+   const vec3  fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
+   const vec3  fragment_to_light  = normalize(-_direction);
+   const vec3  halfway_direction  = normalize(fragment_to_light + fragment_to_camera);
+   const float specular_factor    = pow(max(dot(halfway_direction, normal), 0.0f), u_material.Smoothness);
+   const vec4  specular_colour    = specular_factor * u_material.SpecularIntensity * _light.Colour;
 
    return ambient_colour + (1.0f - _shadow_factor) * (diffuse_colour + specular_colour);
 }
@@ -289,14 +290,15 @@ vec4 CalculateLightByDirection(Light _light, vec3 _direction, float _shadow_fact
 vec4 CalculatePointLight(const PointLight _point_light, const vec3 _light_position, const vec2 _texture_coordinate)
 {
    vec3 light_to_fragment = v_data_in.FragmentPosition - _light_position;
-   float distance = length(light_to_fragment);
-   light_to_fragment = normalize(light_to_fragment);
+   float distance         = length(light_to_fragment);
+   light_to_fragment      = normalize(light_to_fragment);
 
    const float attenuation = _point_light.AttenuationCoefficients[0] +
                              _point_light.AttenuationCoefficients[1] * distance +
                              _point_light.AttenuationCoefficients[2] * distance * distance;
 
-   return CalculateLightByDirection(_point_light.Base, light_to_fragment, CalculatePointLightShadow(_point_light, _light_position), _texture_coordinate) / attenuation;
+   return CalculateLightByDirection(_point_light.Base, light_to_fragment, CalculatePointLightShadow(_point_light, _light_position),
+                                    _texture_coordinate) / attenuation;
 }
 
 vec4 CalculateSpotLight(const SpotLight _spot_light, const vec3 _light_position, const vec2 _texture_coordinate)
@@ -305,13 +307,15 @@ vec4 CalculateSpotLight(const SpotLight _spot_light, const vec3 _light_position,
    float spot_light_factor = dot(ray_direction, _spot_light.Direction);
 
    if(spot_light_factor > _spot_light.CosConeAngle)
-      return (1.0f - (1.0f - spot_light_factor) / (1.0f - _spot_light.CosConeAngle)) * CalculatePointLight(_spot_light.Point, _light_position, _texture_coordinate);
+      return (1.0f - (1.0f - spot_light_factor) / (1.0f - _spot_light.CosConeAngle)) * CalculatePointLight(_spot_light.Point, _light_position,
+              _texture_coordinate);
    else return vec4(0.0);
 }
 
 vec4 CalculateDirectionalLight(const vec2 _texture_coordinate)
 {
-   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(_texture_coordinate), _texture_coordinate);
+   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(_texture_coordinate),
+                                    _texture_coordinate);
 }
 
 vec4 CalculatePointLights(const vec2 _texture_coordinate)
@@ -334,19 +338,18 @@ vec2 CalculateParallax()
 
    const vec3 fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
 
-   const float min_layers = 16.0f;
-//   const float max_layers = 32.0;
-   const float max_layers = 64.0;
-   const float n_layers = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
+   const float min_layers   = 16.0f;
+   const float max_layers   = 64.0;
+   const float n_layers     = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
    const float layer_height = 1.0 / n_layers;
-   const vec2 offset = u_height_scale * fragment_to_camera.xy;
-   const vec2 delta_offset = offset / n_layers;
+   const vec2  offset       = u_height_map_scale * fragment_to_camera.xy;
+   const vec2  delta_offset = offset / n_layers;
 
    // Perform steep parallax mapping
    vec2 current_texture_coordinate = v_data_in.TextureCoordinate;
-   float current_height = texture(u_height_map, current_texture_coordinate).r;
-   float current_layer_height = 0.0;
-   const float sign = 1.0f;
+   float current_height            = texture(u_height_map, current_texture_coordinate).r;
+   float current_layer_height      = 0.0;
+   const float sign                = 1.0f;
 //   const float sign = -1.0f;
    while(current_layer_height < current_height)
    {

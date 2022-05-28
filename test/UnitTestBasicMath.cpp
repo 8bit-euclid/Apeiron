@@ -4,7 +4,33 @@
 
 #ifdef DEBUG_MODE
 
-namespace Apeiron{
+namespace aprn{
+
+/***************************************************************************************************************************************************************
+* Counting Functions
+***************************************************************************************************************************************************************/
+TEST_F(ApeironTest, nDigits)
+{
+   const auto max_number = 1e5;
+   Random<size_t> RandomNumber(0, max_number);
+
+   FOR(i, max_number)
+   {
+      const auto number = RandomNumber();
+
+      // Manually count digits.
+      size_t n_digits(0);
+      if(0 <= number && number <= 9) n_digits = 1;
+      else if(10 <= number && number <= 99) n_digits = 2;
+      else if(100 <= number && number <= 999) n_digits = 3;
+      else if(1000 <= number && number <= 9999) n_digits = 4;
+      else if(10000 <= number && number <= 99999) n_digits = 5;
+      else if(100000 == number) n_digits = 6;
+      else EXIT("Ensure that the maximum number of digits for this test is 6.")
+
+      EXPECT_EQ(nDigits(number), n_digits);
+   }
+}
 
 /***************************************************************************************************************************************************************
 * Min, Max, and Bounding Functions
@@ -188,20 +214,20 @@ TEST_F(ApeironTest, Ceil)
 /***************************************************************************************************************************************************************
 * Mathematical Conversions
 ***************************************************************************************************************************************************************/
-TEST_F(ApeironTest, ToRadians)
+TEST_F(ApeironTest, DegToRad)
 {
-  EXPECT_DOUBLE_EQ(ToRadians(30.0), SixthPi);
-  EXPECT_DOUBLE_EQ(ToRadians(60.0), ThirdPi);
-  EXPECT_DOUBLE_EQ(ToRadians(90.0), HalfPi);
-  EXPECT_DOUBLE_EQ(ToRadians(180.0), Pi);
+  EXPECT_DOUBLE_EQ(DegToRad(30.0), SixthPi);
+  EXPECT_DOUBLE_EQ(DegToRad(60.0), ThirdPi);
+  EXPECT_DOUBLE_EQ(DegToRad(90.0), HalfPi);
+  EXPECT_DOUBLE_EQ(DegToRad(180.0), Pi);
 }
 
-TEST_F(ApeironTest, ToDegrees)
+TEST_F(ApeironTest, RadToDeg)
 {
-  EXPECT_DOUBLE_EQ(ToDegrees(SixthPi), 30.0);
-  EXPECT_DOUBLE_EQ(ToDegrees(ThirdPi), 60.0);
-  EXPECT_DOUBLE_EQ(ToDegrees(HalfPi), 90.0);
-  EXPECT_DOUBLE_EQ(ToDegrees(Pi), 180.0);
+  EXPECT_DOUBLE_EQ(RadToDeg(SixthPi), 30.0);
+  EXPECT_DOUBLE_EQ(RadToDeg(ThirdPi), 60.0);
+  EXPECT_DOUBLE_EQ(RadToDeg(HalfPi), 90.0);
+  EXPECT_DOUBLE_EQ(RadToDeg(Pi), 180.0);
 }
 
 }

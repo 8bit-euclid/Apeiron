@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Apeiron{
+namespace aprn{
 
 /** Macro expansions. */
 #define EXPAND(x) x
@@ -16,4 +16,4 @@ namespace Apeiron{
 #define COMPILE_TIME_CONST(_constant, _value) constexpr auto _constant = _value;
 #define RUN_TIME_CONST(_constant, _value) const auto _constant = _value;
 
-}//Apeiron
+}//aprn

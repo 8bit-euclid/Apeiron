@@ -9,69 +9,77 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-namespace Apeiron {
+namespace aprn::vis {
+
+constexpr static GLint mKeys{1024};
 
 class Window
 {
-  friend class Visualiser;
-  constexpr static GLint mKeys{1024};
+ public:
+   Window(GLint _width, GLint _height);
 
-public:
-  Window(GLint _width, GLint _height);
+   ~Window();
 
-  ~Window() { glfwTerminate(); };
+   void Open(GLint _width, GLint _height);
 
-  void Open(GLint _width, GLint _height);
+   bool isOpen() const;
 
-  inline bool isOpen() const { return !glfwWindowShouldClose(pWindow); }
+   void Close();
 
-  inline void Close() { glfwSetWindowShouldClose(pWindow, GL_TRUE); }
+   bool isViewPortModified();
 
-  inline std::pair<GLint, GLint> GetViewportDimensions() const { return {ViewportDimensions[0], ViewportDimensions[1]}; }
+   void ResetViewPort() const;
 
-  inline GLfloat GetViewportAspectRatio() const { return static_cast<GLfloat>(ViewportDimensions[0]) / static_cast<GLfloat>(ViewportDimensions[1]); }
+   void SwapBuffers();
 
-  const StaticArray<Bool, mKeys>& GetKeys() const { return Keys; }
+   void ResetTime() const;
 
-  SVectorF2 GetMouseDisplacement();
+   void ComputeDeltaTime();
 
-  SVectorF2 GetMouseWheelDisplacement();
+   Float GetDeltaTime() const;
 
-  bool isViewPortModified();
+   Float GetCurrentTime() const;
 
-  void ResetViewPort();
+   GLfloat
+   ComputeViewportAspectRatio() const;
 
-  void SwapBuffers();
+   SVectorF2
+   GetMouseDisplacement();
 
-  void ComputeDeltaTime();
+   SVectorF2
+   GetMouseWheelDisplacement();
 
-  GLfloat GetDeltaTime() { return DeltaTime; }
+ private:
+   friend class Visualiser;
 
-private:
-  GLFWwindow* pWindow;
+   std::pair<GLint, GLint>
+   GetFrameBufferSize() const;
 
-  GLfloat DeltaTime{0.0};
-  GLfloat LastTime{0.0};
+   void CreateCallBacks() const;
 
-  SArrayB<mKeys> Keys;
-  SArray2<GLint> WindowDimensions;
-  SArray2<GLint> ViewportDimensions;
-  SArray2<GLdouble> PreviousMousePosition;
-  SArray2<GLdouble> MouseDisplacement;
-  SArray2<GLdouble> MouseWheelDisplacement;
-  bool isFirstMouseMovement;
+   static void
+   HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode);
 
-  std::pair<GLint, GLint> GetFrameBufferSize() const;
+   static void
+   HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord);
 
-  void CreateCallBacks();
+   static void
+   HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
 
-  static void HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode);
+   static void APIENTRY
+   glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum _severity, GLsizei length, const char* message, const void* userParam);
 
-  static void HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord);
-
-  static void HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
-
-  static void APIENTRY glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum _severity, GLsizei length, const char* message, const void* userParam);
+   Float             CurrentTime{};
+   Float             PreviousTime{};
+   Float             DeltaTime{};
+   SVectorF2         PreviousMousePosition;
+   SVectorF2         MouseDisplacement;
+   SVectorF2         MouseWheelDisplacement;
+   SVector2<GLint>   WindowDimensions;
+   SVector2<GLint>   ViewportDimensions;
+   SArrayB<mKeys>    Keys;
+   GLFWwindow*       GlfwWindow;
+   bool              isFirstMouseMovement;
 };
 
 }

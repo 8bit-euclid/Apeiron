@@ -4,22 +4,23 @@
 
 #include <GL/glew.h>
 
-namespace Apeiron {
+namespace aprn::vis {
 
 class Material
 {
-  friend class Shader;
+ public:
+   Material()
+      : Material("none", 0.0, 0.0) {}
 
-public:
-  Material() : SpecularIntensity(0.0), Smoothness(0.0) {}
+   Material(const std::string& _name, const GLfloat _specular_intensity, const GLfloat _smoothness)
+      : Name(_name), SpecularIntensity(_specular_intensity), Smoothness(_smoothness) {}
 
-  Material(const GLfloat _specular_intensity, const GLfloat _smoothness) : SpecularIntensity(_specular_intensity), Smoothness(_smoothness) {}
+ private:
+   friend class Shader;
 
-  ~Material() = default;
-
-private:
-  GLfloat SpecularIntensity;
-  GLfloat Smoothness;
+   std::string Name;
+   GLfloat SpecularIntensity;
+   GLfloat Smoothness;
 };
 
 }

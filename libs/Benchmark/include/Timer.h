@@ -3,7 +3,7 @@
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
 
-namespace Apeiron{
+namespace aprn {
 
 /***************************************************************************************************************************************************************
 * Time Units

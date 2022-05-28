@@ -1,29 +1,5 @@
 #include "../include/Explicit.h"
 
-namespace Apeiron {
-
-constexpr SVectorF2
-Circle(const Float _radius, const Float _theta)
-{
-  return Ellipse({_radius, _radius}, _theta);
-}
-
-constexpr SVectorF2
-Ellipse(const SVectorF2& _radii, const Float _theta)
-{
-  return { _radii[0]*Cos(_theta), _radii[1]*Sin(_theta) };
-}
-
-constexpr SVectorF3
-Sphere(const Float _radius, const Float _theta, const Float _phi)
-{
-  return Ellipsoid({_radius, _radius, _radius}, _theta, _phi);
-}
-
-constexpr SVectorF3
-Ellipsoid(const SVectorF3& _radii, const Float _theta, const Float _phi)
-{
-  return { _radii[0]*Cos(_theta)*Sin(_phi), _radii[1]*Sin(_theta)*Sin(_phi), _radii[2]*Cos(_phi) };
-}
+namespace aprn::func {
 
 }
