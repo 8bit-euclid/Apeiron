@@ -6,7 +6,7 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Model::Model()
-   : VAO(), VBO(), EBO(){}
+   : VAO(), VBO(), EBO() {}
 
 Model::Model(const Model& _model)
    : Model()
@@ -76,9 +76,9 @@ Model::Delete()
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
 Model&
-Model::SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
+Model::SetColour(const SVectorF3& _rgb_colour)
 {
-   TextureSpec.emplace(GetTextureName(_material, _item, _index, _resolution));
+   FOR_EACH(vertex, Geometry.Vertices) vertex.Colour = SArrayToGlmVec(_rgb_colour);
    return *this;
 }
 
@@ -86,6 +86,13 @@ Model&
 Model::SetMaterial(const std::string& _name, Float _specular_intensity, Float _smoothness)
 {
    MaterialSpec.emplace(_name, _specular_intensity, _smoothness);
+   return *this;
+}
+
+Model&
+Model::SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
+{
+   TextureSpec.emplace(GetTextureName(_material, _item, _index, _resolution));
    return *this;
 }
 

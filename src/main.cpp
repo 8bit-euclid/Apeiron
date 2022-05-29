@@ -28,25 +28,26 @@ int main(void)
    model = ModelFactory::Square(10.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
+        .SetColour({1.0, 0.0, 0.0})
         .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
    vis.Add(model, "Floor");
 
-   // Wall 0
-   model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
-        .SetTexture("Brick", "Wall", 1, 2)
-        .OffsetPosition({2.5f, 0.5f, -5.0f});
-   vis.Add(model, "Wall 0");
+//   // Wall 0
+//   model = ModelFactory::Square(5.0);
+//   model.SetMaterial("Brick", 0.8, 256.0)
+//        .SetTexture("Brick", "Wall", 1, 2)
+//        .OffsetPosition({2.5f, 0.5f, -5.0f});
+//   vis.Add(model, "Wall 0");
 
-   // Wall 1
-   model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
-        .SetTexture("Brick", "Wall", 1, 2)
-        .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   vis.Add(model, "Wall 0");
+//   // Wall 1
+//   model = ModelFactory::Square(5.0);
+//   model.SetMaterial("Brick", 0.8, 256.0)
+//        .SetTexture("Brick", "Wall", 1, 2)
+//        .OffsetPosition({-2.5f, 0.5f, -5.0f});
+//   vis.Add(model, "Wall 0");
 
-   vis.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0}));
+//   vis.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0}));
 
    vis.Render();
 

@@ -16,7 +16,7 @@ enum class TextureType
    /** Texture file types */
    Diffuse,
    Normal,
-   Height,
+   Displacement,
    Roughness,
    AmbientOcclusion,
 
@@ -55,6 +55,8 @@ class Texture
 
    inline const int& GetHeight() const { return Height; }
 
+   inline const std::optional<Float>& GetMapScale() const { return MapScale; }
+
    inline void SetMapScale(Float _scale) { MapScale.emplace(_scale); }
 
    Texture& operator=(const Texture& _texture) = delete;
@@ -65,21 +67,18 @@ class Texture
    friend class Model;
    friend class Shadow;
 
-   GLint
-   GetOpenGLType() const;
-
-   std::string
-   GetUniformString() const;
-
    UInt                 ID;
    int                  Width;
    int                  Height;
    int                  BitsPerPixel;
-   SPtr<UChar>          LocalBuffer;
+   UPtr<UChar>          LocalBuffer;
    std::optional<Float> MapScale;
    TextureType          Type;
    bool                 isFrameBufferAttachment;
 };
+
+GLint
+GetOpenGLType(TextureType _type);
 
 std::string
 GetTextureName(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);

@@ -41,9 +41,11 @@ class Model
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
+   Model& SetColour(const SVectorF3& _rgb_colour);
 
    Model& SetMaterial(const std::string& _name, Float _specular_intensity, Float _smoothness);
+
+   Model& SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
