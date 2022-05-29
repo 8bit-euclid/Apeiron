@@ -107,26 +107,26 @@ Visualiser::AddTextures()
          const auto& texture_name = model->TextureSpec.value();
          const auto texture_list  = {TextureType::Diffuse,
                                      TextureType::Normal,
-                                     TextureType::Height}; // Add appropriate enums if more textures are to be read
+                                     TextureType::Displacement}; // Add appropriate enums if more textures are to be read
          Map<Texture> texture_files;
          for(auto texture_type : texture_list)
          {
             auto path = GetTextureFilePath(GetTextureFileDirectory(texture_name), texture_type);
             if(path.has_value())
             {
-               texture_files.insert(std::make_pair(GetTextureTypeString(texture_type), Texture{texture_type, path.value()}));
-               if(texture_type == TextureType::Height)
+               texture_files.emplace(GetTextureTypeString(texture_type), std::move(Texture{texture_type, path.value()}));
+               if(texture_type == TextureType::Displacement)
                {
                   Print<'\0'>("Please enter the height map scale for texture ", texture_name, ": ");
-                  Float height_map_scale;
-                  std::cin >> height_map_scale;
-                  texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(height_map_scale);
+                  Float displacement_map_scale;
+                  std::cin >> displacement_map_scale;
+                  texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
                }
             }
          }
 
          // Add texture files to the list of textures
-         Textures.insert(std::make_pair(texture_name, std::move(texture_files)));
+         Textures.emplace(texture_name, std::move(texture_files));
       }
 }
 
@@ -247,7 +247,7 @@ Visualiser::RenderFullScene()
 
    if(!DirectionalLights.empty())
    {
-//      shader.UseLight(MainLight);
+      shader.UseLight(DirectionalLights["Sun"]);
       shader.SetDirectionalLightSpaceMatrix(DirectionalLights["Sun"].GetLightSpaceMatrix());
       DirectionalLights["Sun"].GetShadowMap().ReadFrom(1);
       shader.SetDirectionalShadowMap(1);
@@ -283,7 +283,7 @@ Visualiser::RenderModels(const std::string& _shader_name)
    constexpr int slot_offset(3);
    shader.SetUniform1i("u_use_diffuse_map", 0);
    shader.SetUniform1i("u_use_normal_map", 0);
-   shader.SetUniform1i("u_use_height_map", 0);
+   shader.SetUniform1i("u_use_displacement_map", 0);
 
    for(auto& [_, model] : Models)
    {
@@ -294,8 +294,14 @@ Visualiser::RenderModels(const std::string& _shader_name)
          for(auto& [type_string, texture] : Textures[model->TextureSpec.value()])
          {
             const auto& uniform_name = GetTextureUniformString(type_string);
-            shader.SetUniform1i("u_use_" + uniform_name, 1);
             shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
+            shader.SetUniform1i("u_use_" + uniform_name, 1);
+            if(GetTextureType(type_string) == TextureType::Displacement)
+            {
+               const auto& scale = texture.GetMapScale();
+               ASSERT(scale.has_value(), "The displacement map scale has not been set.")
+               shader.SetUniform1f("u_" + uniform_name + "_scale", scale.value());
+            }
          }
       }
 
@@ -322,11 +328,11 @@ Visualiser::RenderModels(const std::string& _shader_name)
 //   if(model->MaterialSpec.has_value()) shader.UseMaterial(model->MaterialSpec.value());
 //   if(model->TextureSpec.has_value()) shader.UseTexture(Textures[0], "u_diffuse_map", slot_offset);
 //   shader.UseTexture(Textures[1], "u_normal_map", slot_offset + 1);
-//   shader.UseTexture(Textures[2], "u_height_map", slot_offset + 2);
+//   shader.UseTexture(Textures[2], "u_displacement_map", slot_offset + 2);
 //   shader.SetUniform1i("u_use_diffuse_map", 1);
 //   shader.SetUniform1i("u_use_normal_map", 1);
-//   shader.SetUniform1i("u_use_height_map", 1);
-//   shader.SetUniform1f("u_height_map_scale", 0.08);
+//   shader.SetUniform1i("u_use_displacement_map", 1);
+//   shader.SetUniform1f("u_displacement_map_scale", 0.08);
 //   shader.UseModel(Models[1]);
 //   Models[1].Render();
 ////  Textures[0].Unbind();
@@ -337,10 +343,10 @@ Visualiser::RenderModels(const std::string& _shader_name)
 //   shader.UseMaterial(Materials[0]);
 //   shader.UseTexture(Textures[0], "u_diffuse_map", slot_offset);
 //   shader.UseTexture(Textures[1], "u_normal_map", slot_offset + 1);
-//   shader.UseTexture(Textures[2], "u_height_map", slot_offset + 2);
+//   shader.UseTexture(Textures[2], "u_displacement_map", slot_offset + 2);
 //   shader.SetUniform1i("u_use_diffuse_map", 1);
 //   shader.SetUniform1i("u_use_normal_map", 1);
-//   shader.SetUniform1i("u_use_height_map", 1);
+//   shader.SetUniform1i("u_use_displacement_map", 1);
 //
 //   Models[2].Render();
 ////  Textures[0].Unbind();

@@ -11,11 +11,11 @@ namespace aprn {
 ***************************************************************************************************************************************************************/
 enum class TypeCategory
 {
-  Boolean,
-  Integral,
-  FloatingPoint,
-  String,
-  Other
+   Boolean,
+   Integral,
+   FloatingPoint,
+   String,
+   Other
 };
 
 /***************************************************************************************************************************************************************
@@ -23,14 +23,14 @@ enum class TypeCategory
 ***************************************************************************************************************************************************************/
 struct Bool
 {
-  constexpr Bool() : Bool(false) {}
+   constexpr Bool() : Bool(false) {}
 
-  constexpr Bool(const bool _value) : Value(_value) {}
+   constexpr Bool(const bool _value) : Value(_value) {}
 
-  constexpr operator bool() const { return Value; }
+   constexpr operator bool() const { return Value; }
 
-private:
-  bool Value;
+ private:
+   bool Value;
 };
 
 constexpr Bool True(true);
@@ -133,11 +133,6 @@ isTypeHomogeneous() { return (isTypeSame<T, Ts>() && ...); }
 template<typename T>
 constexpr bool
 isBoolean(const T = T{}) { return isTypeSame<T, bool>() || isTypeSame<T, Bool>(); }
-
-/** Check if the data type is a floating-point type. */
-template<typename T>
-constexpr bool
-isEnumerator(const T = T{}) { return std::is_floating_point_v<T>; }
 
 /** Check if the data type is an integer type. Note: does not include booleans. */
 template<typename T>

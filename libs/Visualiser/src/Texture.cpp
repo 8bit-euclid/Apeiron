@@ -40,7 +40,7 @@ Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_f
 {
   Width = _width;
   Height = _height;
-  const auto opengl_type = GetOpenGLType();
+  const auto opengl_type = GetOpenGLType(Type);
 
   Bind();
 
@@ -87,20 +87,18 @@ Texture::Read(const std::string& _file_path, const GLint _wrap_type)
                                      BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
                                      throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToString(BitsPerPixel) + ".";
    Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
-
    stbi_image_free(LocalBuffer.get());
-   LocalBuffer = nullptr;
 }
 
 void
 Texture::Bind(UInt _slot) const
 {
   GLCall(glActiveTexture(GL_TEXTURE0 + _slot));
-  GLCall(glBindTexture(GetOpenGLType(), ID));
+  GLCall(glBindTexture(GetOpenGLType(Type), ID));
 }
 
 void
-Texture::Unbind() const { GLCall(glBindTexture(GetOpenGLType(), 0)); }
+Texture::Unbind() const { GLCall(glBindTexture(GetOpenGLType(Type), 0)); }
 
 void
 Texture::Delete() { GLCall(glDeleteTextures(1, &ID)); }
@@ -123,31 +121,17 @@ Texture::operator=(Texture&& _texture) noexcept
 }
 
 /***************************************************************************************************************************************************************
-* Private Interface
+* TEXTURE STAND-ALONE FUNCTIONS
 ***************************************************************************************************************************************************************/
 GLint
-Texture::GetOpenGLType() const
+GetOpenGLType(TextureType _type)
 {
-   if(Type == TextureType::Diffuse || Type == TextureType::Normal || Type == TextureType::Height || Type == TextureType::DirectionalDepth) return GL_TEXTURE_2D;
-   else if(Type == TextureType::PointDepth) return GL_TEXTURE_CUBE_MAP;
+   if(_type == TextureType::Diffuse || _type == TextureType::Normal ||
+      _type == TextureType::Displacement || _type == TextureType::DirectionalDepth) return GL_TEXTURE_2D;
+   else if(_type == TextureType::PointDepth) return GL_TEXTURE_CUBE_MAP;
    else EXIT("Unrecongnised texture type.")
 }
 
-std::string
-Texture::GetUniformString() const
-{
-   switch(Type)
-   {
-      case TextureType::Diffuse: return "u_diffuse_map";
-      case TextureType::Normal:  return "u_normal_map";
-      case TextureType::Height:  return "u_height_map";
-      default: EXIT("The given texture type does not have a uniform string")
-   }
-}
-
-/***************************************************************************************************************************************************************
-* TEXTURE STAND-ALONE FUNCTIONS
-***************************************************************************************************************************************************************/
 std::string
 GetTextureName(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
 {
@@ -162,7 +146,7 @@ GetTextureTypeString(TextureType _type)
    {
       case TextureType::Diffuse:          return "Diffuse";
       case TextureType::Normal:           return "Normal";
-      case TextureType::Height:           return "Height";
+      case TextureType::Displacement:     return "Displacement";
       case TextureType::Roughness:        return "Roughness";
       case TextureType::AmbientOcclusion: return "AmbientOcclusion";
       case TextureType::DirectionalDepth: return "DirectionalDepth";
@@ -176,7 +160,7 @@ GetTextureType(const std::string& _type_string)
 {
    if(_type_string == "Diffuse")               return TextureType::Diffuse;
    else if(_type_string == "Normal")           return TextureType::Normal;
-   else if(_type_string == "Height")           return TextureType::Height;
+   else if(_type_string == "Displacement")     return TextureType::Displacement;
    else if(_type_string == "Roughness")        return TextureType::Roughness;
    else if(_type_string == "AmbientOcclusion") return TextureType::AmbientOcclusion;
    else if(_type_string == "DirectionalDepth") return TextureType::DirectionalDepth;
@@ -189,9 +173,9 @@ GetTextureUniformString(TextureType _type)
 {
    switch(_type)
    {
-      case TextureType::Diffuse: return "diffuse_map";
-      case TextureType::Normal:  return "normal_map";
-      case TextureType::Height:  return "height_map";
+      case TextureType::Diffuse:      return "diffuse_map";
+      case TextureType::Normal:       return "normal_map";
+      case TextureType::Displacement: return "displacement_map";
       default: EXIT("The given texture type does not have an associate uniform string.")
    }
 }
@@ -206,10 +190,11 @@ std::optional<std::string>
 GetTextureFilePath(const std::string& _file_directory, TextureType _type)
 {
    const auto& texture_str = GetTextureTypeString(_type);
-   std::string file_path = _file_directory;
+   std::string file_path = _file_directory + texture_str;
 
    if(EnumToInt(_type) <= EnumToInt(TextureType::AmbientOcclusion))
    {
+      Print("Path:", file_path);
       // Try finding a .png file first, failing which, find a .jpg file
       for(const auto& ext : {".png", ".jpg"})
          if(std::filesystem::exists(file_path + ext))
