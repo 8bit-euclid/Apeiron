@@ -69,6 +69,14 @@ PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& 
 }
 
 template<class derived>
+PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& _light) noexcept
+   : Light(std::move(_light)), iPointLight(std::move(_light.iPointLight)), Position(std::move(_light.Position)),
+     AttenuationCoefficients(std::move(_light.AttenuationCoefficients)), LightSpaceMatrices(std::move(_light.LightSpaceMatrices))
+{
+   nPointLights++; // Note: only incremented because the destructor on the 'moved' object will decrement.
+}
+
+template<class derived>
 PointLightBase<derived>::~PointLightBase() { nPointLights--; }
 
 }

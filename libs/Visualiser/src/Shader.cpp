@@ -52,45 +52,44 @@ void Shader::UseCamera(Camera& _camera)
 void Shader::UseLight(const Light& _light)
 {
    const LightType type = _light.Type;
-   const UInt index = _light.GetIndex();
+   const UInt id        = _light.GetIndex();
    std::string uniform_name   = type == LightType::Directional ? "u_directional_light" :
-                                type == LightType::Point       ? "u_point_lights[" + ToString(index) + "]" :
-                                type == LightType::Spot        ? "u_spot_lights[" + ToString(index) + "]" :
+                                type == LightType::Point       ? "u_point_lights[" + ToString(id) + "]" :
+                                type == LightType::Spot        ? "u_spot_lights[" + ToString(id) + "]" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
-   std::string light_position = type == LightType::Point       ? "u_point_light_positions[" + ToString(index) + "]" :
-                                type == LightType::Spot        ? "u_spot_light_positions[" + ToString(index) + "]" :
+   std::string light_position = type == LightType::Point       ? "u_point_light_positions[" + ToString(id) + "]" :
+                                type == LightType::Spot        ? "u_spot_light_positions[" + ToString(id) + "]" :
                                 type == LightType::Directional ? "\0" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
-   std::string base_name = type == LightType::Spot ? ".Point" : "\0";
+   std::string base_suffix = type == LightType::Spot ? ".Point" : "\0";
 
-   SetUniform4f(uniform_name + base_name + ".Base.Colour", _light.Colour.r, _light.Colour.g, _light.Colour.b, _light.Colour.a);
-   SetUniform1f(uniform_name + base_name + ".Base.AmbientIntensity", _light.AmbientIntensity);
-   SetUniform1f(uniform_name + base_name + ".Base.DiffuseIntensity", _light.DiffuseIntensity);
+   SetUniform4f(uniform_name + base_suffix + ".Base.Colour", _light.Colour.r, _light.Colour.g, _light.Colour.b, _light.Colour.a);
+   SetUniform1f(uniform_name + base_suffix + ".Base.AmbientIntensity", _light.AmbientIntensity);
+   SetUniform1f(uniform_name + base_suffix + ".Base.DiffuseIntensity", _light.DiffuseIntensity);
 
    if(type == LightType::Directional)
    {
-     const glm::vec3& direction = static_cast<const DirectionalLight&>(_light).Direction;
-     SetUniform3f(uniform_name + ".Direction", direction.x, direction.y, direction.z);
+      const glm::vec3& direction = static_cast<const DirectionalLight&>(_light).Direction;
+      SetUniform3f(uniform_name + ".Direction", direction.x, direction.y, direction.z);
    }
    else if(type == LightType::Point)
    {
-     const PointLight& point_light = static_cast<const PointLight&>(_light);
-
-     SetUniform1i("u_point_light_count", _light.GetLightCount());
-     SetUniform3f(light_position, point_light.Position.x, point_light.Position.y, point_light.Position.z);
-     SetUniform3f(uniform_name + ".AttenuationCoefficients",
-                  point_light.AttenuationCoefficients[0], point_light.AttenuationCoefficients[1], point_light.AttenuationCoefficients[2]);
+      const PointLight& point_light = static_cast<const PointLight&>(_light);
+      SetUniform1i("u_point_light_count", _light.GetLightCount());
+      SetUniform3f(light_position, point_light.Position.x, point_light.Position.y, point_light.Position.z);
+      SetUniform3f(uniform_name + ".AttenuationCoefficients",
+                   point_light.AttenuationCoefficients[0], point_light.AttenuationCoefficients[1], point_light.AttenuationCoefficients[2]);
    }
    else if(type == LightType::Spot)
    {
-     const SpotLight& spot_light = static_cast<const SpotLight&>(_light);
+      const SpotLight& spot_light = static_cast<const SpotLight&>(_light);
 
-     SetUniform1i("u_spot_light_count", _light.GetLightCount());
-     SetUniform3f(light_position, spot_light.Position.x, spot_light.Position.y, spot_light.Position.z);
-     SetUniform3f(uniform_name + ".Point.AttenuationCoefficients",
-                  spot_light.AttenuationCoefficients[0], spot_light.AttenuationCoefficients[1], spot_light.AttenuationCoefficients[2]);
-     SetUniform3f(uniform_name + ".Direction", spot_light.Direction.x, spot_light.Direction.y, spot_light.Direction.z);
-     SetUniform1f(uniform_name + ".CosConeAngle", spot_light.CosConeAngle);
+      SetUniform1i("u_spot_light_count", _light.GetLightCount());
+      SetUniform3f(light_position, spot_light.Position.x, spot_light.Position.y, spot_light.Position.z);
+      SetUniform3f(uniform_name + ".Point.AttenuationCoefficients",
+                   spot_light.AttenuationCoefficients[0], spot_light.AttenuationCoefficients[1], spot_light.AttenuationCoefficients[2]);
+      SetUniform3f(uniform_name + ".Direction", spot_light.Direction.x, spot_light.Direction.y, spot_light.Direction.z);
+      SetUniform1f(uniform_name + ".CosConeAngle", spot_light.CosConeAngle);
    }
    else EXIT("Cannot yet handle the given light type.")
 }

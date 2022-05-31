@@ -194,7 +194,6 @@ GetTextureFilePath(const std::string& _file_directory, TextureType _type)
 
    if(EnumToInt(_type) <= EnumToInt(TextureType::AmbientOcclusion))
    {
-      Print("Path:", file_path);
       // Try finding a .png file first, failing which, find a .jpg file
       for(const auto& ext : {".png", ".jpg"})
          if(std::filesystem::exists(file_path + ext))
