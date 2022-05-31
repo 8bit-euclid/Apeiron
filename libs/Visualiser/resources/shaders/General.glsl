@@ -3,7 +3,7 @@
 
 // Global constants
 const int Max_Point_Lights = 4;
-const int Max_Spot_Lights = 4;
+const int Max_Spot_Lights  = 4;
 
 // Input varying data
 layout(location = 0) in vec3 position;
@@ -142,7 +142,7 @@ void main()
       v_data_out.TextureCoordinate = v_data_in[i].TextureCoordinate;
 
       for(int j = 0; j < u_point_light_count; ++j) v_data_out.PointLightPositions[j] = v_data_in[i].PointLightPositions[j];
-      for(int j = 0; j < u_spot_light_count; ++j) v_data_out.SpotLightPositions[j] = v_data_in[i].SpotLightPositions[j];
+      for(int j = 0; j < u_spot_light_count; ++j)  v_data_out.SpotLightPositions[j] = v_data_in[i].SpotLightPositions[j];
       v_data_out.CameraPosition = v_data_in[i].CameraPosition;
       v_data_out.FragmentPosition = v_data_in[i].FragmentPosition;
       v_data_out.FragmentPositionDlight = v_data_in[i].FragmentPositionDlight;
@@ -339,7 +339,7 @@ vec2 CalculateParallax()
    const vec3 fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
 
    const float min_layers   = 16.0f;
-   const float max_layers   = 64.0;
+   const float max_layers   = 64.0f;
    const float n_layers     = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
    const float layer_height = 1.0 / n_layers;
    const vec2  offset       = u_displacement_map_scale * fragment_to_camera.xy;

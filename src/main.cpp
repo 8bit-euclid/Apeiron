@@ -31,7 +31,7 @@ int main(void)
         .SetColour({1.0, 0.0, 0.0})
         .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
-   vis.Add(model, "Floor");
+   vis.Add(model);
 
 //   // Wall 0
 //   model = ModelFactory::Square(5.0);
@@ -47,7 +47,7 @@ int main(void)
 //        .OffsetPosition({-2.5f, 0.5f, -5.0f});
 //   vis.Add(model, "Wall 0");
 
-//   vis.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0}));
+   vis.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0}));
 
    vis.Render();
 

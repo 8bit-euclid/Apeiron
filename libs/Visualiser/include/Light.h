@@ -95,9 +95,9 @@ class PointLightBase : public Light
    PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
                   const SVector3<GLfloat>& _attenuation_coefficients);
 
-   PointLightBase(const PointLightBase<derived>& _point_light_base) = delete;
+   PointLightBase(const PointLightBase<derived>& _light) = delete;
 
-   PointLightBase(PointLightBase<derived>&& _point_light_base) = default;
+   PointLightBase(PointLightBase<derived>&& _light) noexcept;
 
  public:
    ~PointLightBase();

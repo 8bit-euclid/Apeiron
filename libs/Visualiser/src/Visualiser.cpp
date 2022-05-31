@@ -15,7 +15,7 @@ Visualiser::Visualiser()
 Visualiser::Visualiser(GLint _window_width, GLint _window_height)
    : OpenGLWindow(_window_width, _window_height), Cameras{{"Main", Camera()}}, ActiveCamera(Cameras["Main"])
 {
-   Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
+//   Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
 }
 
 void
@@ -117,12 +117,14 @@ Visualiser::AddTextures()
                texture_files.emplace(GetTextureTypeString(texture_type), std::move(Texture{texture_type, path.value()}));
                if(texture_type == TextureType::Displacement)
                {
-                  Print<'\0'>("Please enter the height map scale for texture ", texture_name, ": ");
+//                  Print<'\0'>("Please enter the height map scale for texture ", texture_name, ": ");
                   Float displacement_map_scale;
-                  std::cin >> displacement_map_scale;
+//                  std::cin >> displacement_map_scale;
+                  displacement_map_scale = 0.08;
                   texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
                }
             }
+            else EXIT("Could not locate the texture files of texture ", texture_name)
          }
 
          // Add texture files to the list of textures
@@ -307,56 +309,12 @@ Visualiser::RenderModels(const std::string& _shader_name)
 
       shader.UseModel(*model);
       model->Render();
-//  Textures[0].Unbind();
 
       // Switch off texture maps
       if(model->TextureSpec.has_value())
          for(auto& [type_string, _] : Textures[model->TextureSpec.value()])
             shader.SetUniform1i("u_use_" + GetTextureUniformString(type_string), 0);
    }
-
-//   SPtr<Model> model;
-//
-//   // Cube model
-//   model = Models["Cube"];
-//   if(model->MaterialSpec.has_value()) shader.UseMaterial(model->MaterialSpec.value());
-//   shader.UseModel(*model);
-//   model->Render();
-//
-//   // Floor model
-//   model = Models["Floor"];
-//   if(model->MaterialSpec.has_value()) shader.UseMaterial(model->MaterialSpec.value());
-//   if(model->TextureSpec.has_value()) shader.UseTexture(Textures[0], "u_diffuse_map", slot_offset);
-//   shader.UseTexture(Textures[1], "u_normal_map", slot_offset + 1);
-//   shader.UseTexture(Textures[2], "u_displacement_map", slot_offset + 2);
-//   shader.SetUniform1i("u_use_diffuse_map", 1);
-//   shader.SetUniform1i("u_use_normal_map", 1);
-//   shader.SetUniform1i("u_use_displacement_map", 1);
-//   shader.SetUniform1f("u_displacement_map_scale", 0.08);
-//   shader.UseModel(Models[1]);
-//   Models[1].Render();
-////  Textures[0].Unbind();
-//
-//   // Wall model 0
-//   Models[2].OffsetPosition({2.5f, 0.5f, -5.0f});
-//   shader.UseModel(Models[2]);
-//   shader.UseMaterial(Materials[0]);
-//   shader.UseTexture(Textures[0], "u_diffuse_map", slot_offset);
-//   shader.UseTexture(Textures[1], "u_normal_map", slot_offset + 1);
-//   shader.UseTexture(Textures[2], "u_displacement_map", slot_offset + 2);
-//   shader.SetUniform1i("u_use_diffuse_map", 1);
-//   shader.SetUniform1i("u_use_normal_map", 1);
-//   shader.SetUniform1i("u_use_displacement_map", 1);
-//
-//   Models[2].Render();
-////  Textures[0].Unbind();
-//
-//   // Wall model 1
-//   Models[2].OffsetPosition({-2.5f, 0.5f, -5.0f});
-//   shader.UseModel(Models[2]);
-//   shader.UseMaterial(Materials[0]);
-//   shader.UseTexture(Textures[0], "u_diffuse_map", slot_offset);
-//   Models[2].Render();
 
    // Unbind all textures
    for(auto& [_, sub_textures] : Textures) for(auto& [_, texture] : sub_textures) texture.Unbind();
