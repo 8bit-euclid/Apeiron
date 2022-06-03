@@ -33,7 +33,7 @@ class Model
 
    void Init();
 
-   void Animate(const Float _global_time);
+   void Update(Float _global_time);
 
    void Render();
 

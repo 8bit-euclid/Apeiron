@@ -48,8 +48,9 @@ Model::Init()
 }
 
 void
-Model::Animate(const Float _global_time)
+Model::Update(Float _global_time)
 {
+   Reset();
    for(auto& [_, action] : Actions) action->Do(_global_time);
 }
 
@@ -101,7 +102,7 @@ Model::SetTexture(const std::string& _material, const std::string& _item, size_t
 Model&
 Model::Scale(Float _factor, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
 {
-   Scale(SVectorF3{_factor}, _start_time, _end_time, _reparam);
+   Scale(SVectorF3(_factor), _start_time, _end_time, _reparam);
    return *this;
 }
 
@@ -182,8 +183,9 @@ Model::GetModelMatrix() const { return ModelMatrix; }
 Model&
 Model::operator=(const Model& _model)
 {
-   ASSERT(!isInitialised, "Cannot copy assign a model if it has already been initialised.")
+   ASSERT(!isInitialised, "Cannot yet copy assign a model if it has already been initialised.")
 
+   // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
    Geometry        = _model.Geometry;
    SubModels       = _model.SubModels;
    TextureSpec     = _model.TextureSpec;
@@ -198,21 +200,19 @@ Model::operator=(const Model& _model)
    ExitTime        = _model.ExitTime;
    isInitialised   = _model.isInitialised;
 
-   // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-
    return *this;
 }
 
 Model&
 Model::operator=(Model&& _model) noexcept
 {
-   ASSERT(!isInitialised, "Cannot move assign a model if it has already been initialised.")
+   ASSERT(!isInitialised, "Cannot yet move assign a model if it has already been initialised.")
 
+   // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
    Geometry        = std::move(_model.Geometry);
    SubModels       = std::move(_model.SubModels);
    TextureSpec     = std::move(_model.TextureSpec);
    MaterialSpec    = std::move(_model.MaterialSpec);
-   Actions         = std::move(_model.Actions);
    Centroid        = std::move(_model.Centroid);
    StrokeColour    = std::move(_model.StrokeColour);
    FillColour      = std::move(_model.FillColour);
@@ -221,8 +221,10 @@ Model::operator=(Model&& _model) noexcept
    EntryTime       = std::move(_model.EntryTime);
    ExitTime        = std::move(_model.ExitTime);
    isInitialised   = std::move(_model.isInitialised);
+   Actions         = std::move(_model.Actions);
 
-   // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
+   // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
+   for(auto& [_, action] : Actions) action->Actor = std::ref(*this);
 
    return *this;
 }

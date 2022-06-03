@@ -135,23 +135,27 @@ Visualiser::AddTextures()
 void
 Visualiser::BeginFrame()
 {
-   // Compute delta time and check if the viewport was modified
-   OpenGLWindow.ComputeDeltaTime();
-   isViewPortModified = OpenGLWindow.isViewPortModified();
-
    // Clear window
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-   // Update model actions at current time-stamp
+   // Update the current and previous times, compute delta time, and check if the viewport was modified.
+   OpenGLWindow.ComputeDeltaTime();
+   isViewPortModified = OpenGLWindow.isViewPortModified();
+
+   // Update model actions at the current time-stamp
    UpdateModels();
 }
 
 void
-Visualiser::UpdateModels()
+Visualiser::EndFrame()
 {
-
+   OpenGLWindow.SwapBuffers();
+   glfwPollEvents();
 }
+
+void
+Visualiser::UpdateModels() { for(auto& [_, model] : Models) model->Update(OpenGLWindow.GetCurrentTime()); }
 
 void
 Visualiser::ManageUserInputs()
@@ -171,6 +175,54 @@ Visualiser::UpdateViewFrustum()
       ActiveCamera.get().SetViewFrustum(OpenGLWindow.ComputeViewportAspectRatio());
       Shaders["Line"].SetUniform2f("u_resolution", OpenGLWindow.ViewportDimensions[0], OpenGLWindow.ViewportDimensions[1]);
    }
+}
+
+void
+Visualiser::RenderModels(const std::string& _shader_name)
+{
+   // Line segment
+//    shader_storage_buffer.BindBase();
+//    GLsizei N2 = (GLsizei)varray.size() - 2;
+//    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
+
+   auto& shader = Shaders[_shader_name];
+
+   constexpr int slot_offset(3);
+   shader.SetUniform1i("u_use_diffuse_map", 0);
+   shader.SetUniform1i("u_use_normal_map", 0);
+   shader.SetUniform1i("u_use_displacement_map", 0);
+
+   for(auto& [_, model] : Models)
+   {
+      if(model->MaterialSpec.has_value()) shader.UseMaterial(model->MaterialSpec.value());
+      if(model->TextureSpec.has_value())
+      {
+         size_t texture_index = 0;
+         for(auto& [type_string, texture] : Textures[model->TextureSpec.value()])
+         {
+            const auto& uniform_name = GetTextureUniformString(type_string);
+            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
+            shader.SetUniform1i("u_use_" + uniform_name, 1);
+            if(GetTextureType(type_string) == TextureType::Displacement)
+            {
+               const auto& scale = texture.GetMapScale();
+               ASSERT(scale.has_value(), "The displacement map scale has not been set.")
+               shader.SetUniform1f("u_" + uniform_name + "_scale", scale.value());
+            }
+         }
+      }
+
+      shader.UseModel(*model);
+      model->Render();
+
+      // Switch off texture maps
+      if(model->TextureSpec.has_value())
+         for(auto& [type_string, _] : Textures[model->TextureSpec.value()])
+            shader.SetUniform1i("u_use_" + GetTextureUniformString(type_string), 0);
+   }
+
+   // Unbind all textures
+   for(auto& [_, sub_textures] : Textures) for(auto& [_, texture] : sub_textures) texture.Unbind();
 }
 
 void
@@ -270,61 +322,6 @@ Visualiser::RenderFullScene()
    if(!DirectionalLights.empty()) DirectionalLights["Sun"].GetShadowMap().Finalise();
 
    shader.Unbind();
-}
-
-void
-Visualiser::RenderModels(const std::string& _shader_name)
-{
-   // Line segment
-//    shader_storage_buffer.BindBase();
-//    GLsizei N2 = (GLsizei)varray.size() - 2;
-//    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
-
-   auto& shader = Shaders[_shader_name];
-
-   constexpr int slot_offset(3);
-   shader.SetUniform1i("u_use_diffuse_map", 0);
-   shader.SetUniform1i("u_use_normal_map", 0);
-   shader.SetUniform1i("u_use_displacement_map", 0);
-
-   for(auto& [_, model] : Models)
-   {
-      if(model->MaterialSpec.has_value()) shader.UseMaterial(model->MaterialSpec.value());
-      if(model->TextureSpec.has_value())
-      {
-         size_t texture_index = 0;
-         for(auto& [type_string, texture] : Textures[model->TextureSpec.value()])
-         {
-            const auto& uniform_name = GetTextureUniformString(type_string);
-            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
-            shader.SetUniform1i("u_use_" + uniform_name, 1);
-            if(GetTextureType(type_string) == TextureType::Displacement)
-            {
-               const auto& scale = texture.GetMapScale();
-               ASSERT(scale.has_value(), "The displacement map scale has not been set.")
-               shader.SetUniform1f("u_" + uniform_name + "_scale", scale.value());
-            }
-         }
-      }
-
-      shader.UseModel(*model);
-      model->Render();
-
-      // Switch off texture maps
-      if(model->TextureSpec.has_value())
-         for(auto& [type_string, _] : Textures[model->TextureSpec.value()])
-            shader.SetUniform1i("u_use_" + GetTextureUniformString(type_string), 0);
-   }
-
-   // Unbind all textures
-   for(auto& [_, sub_textures] : Textures) for(auto& [_, texture] : sub_textures) texture.Unbind();
-}
-
-void
-Visualiser::EndFrame()
-{
-   OpenGLWindow.SwapBuffers();
-   glfwPollEvents();
 }
 
 }

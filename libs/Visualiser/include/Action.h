@@ -90,6 +90,11 @@ class Action<type> final : public ActionBase
    Action(Model& _model, Float _angle_offset, const glm::vec3& _axis);
 
    void Do(const Float _global_time) override;
+
+ private:
+   glm::vec3 Position;
+   Float Angle;
+   glm::vec3 Axis;
 };
 
 ///** Reflect

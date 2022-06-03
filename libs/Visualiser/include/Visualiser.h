@@ -48,9 +48,9 @@ class Visualiser
 
    void AddTextures();
 
-   void AddMaterials();
-
    void BeginFrame();
+
+   void EndFrame();
 
    void UpdateModels();
 
@@ -58,15 +58,13 @@ class Visualiser
 
    void UpdateViewFrustum();
 
+   void RenderModels(const std::string& _shader_name);
+
    void RenderDirectionalShadows();
 
    void RenderPointShadows();
 
    void RenderFullScene();
-
-   void RenderModels(const std::string& _shader_name);
-
-   void EndFrame();
 
    template<class type> using Map = std::unordered_map<std::string, type>;
    Window                          OpenGLWindow;

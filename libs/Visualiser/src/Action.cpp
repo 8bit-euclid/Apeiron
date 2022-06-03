@@ -42,7 +42,7 @@ void
 Action<type>::Do(const Float _global_time)
 {
    const auto param = this->ComputeParameter(_global_time);
-   if(param.has_value() && isPositive(param.value())) Actor.Scale(static_cast<float>(param.value()) * Scales);
+   if(param.has_value() && isPositive(param.value())) Actor.get().Scale(static_cast<float>(param.value()) * Scales);
    else {} // Remove action
 }
 
@@ -70,9 +70,9 @@ Action<type>::Do(const Float _global_time)
    const auto param = this->ComputeParameter(_global_time);
    if(param.has_value() && isPositive(param.value()))
    {
-      if(type == ActionType::RotateAbout) Actor.Translate(-Reference);
-      Actor.Rotate(this->Angle(param.value()), Axis);
-      if(type == ActionType::RotateAbout) Actor.Translate(Reference);
+      if(type == ActionType::RotateAbout) Actor.get().Translate(-Reference);
+      Actor.get().Rotate(this->Angle(param.value()), Axis);
+      if(type == ActionType::RotateAbout) Actor.get().Translate(Reference);
    }
    else {} // Remove action
 }
@@ -82,25 +82,20 @@ Action<type>::Do(const Float _global_time)
 template<ActionType type>
 requires Offset<type>
 Action<type>::Action(Model& _model, const glm::vec3& _position_offset)
-   : ActionBase(_model, type)
-{
-
-}
+   : ActionBase(_model, type), Position(_position_offset) {}
 
 template<ActionType type>
 requires Offset<type>
 Action<type>::Action(Model& _model, Float _angle_offset, const glm::vec3& _axis)
-   : ActionBase(_model, type)
-{
-
-}
+   : ActionBase(_model, type), Angle(_angle_offset), Axis(_axis) {}
 
 template<ActionType type>
 requires Offset<type>
 void
 Action<type>::Do(const Float _global_time)
 {
-
+   if(type == ActionType::OffsetPosition) Actor.get().Translate(Position);
+   else if(type == ActionType::OffsetOrientation) Actor.get().Rotate(Angle, Axis);
 }
 
 ///** Reflect
@@ -153,7 +148,7 @@ void
 Action<type>::Do(const Float _global_time)
 {
    const auto param = this->ComputeParameter(_global_time);
-   if(param.has_value() && isPositive(param.value())) Actor.Translate(this->Displacement(param.value()));
+   if(param.has_value() && isPositive(param.value())) Actor.get().Translate(this->Displacement(param.value()));
    else {} // Remove action
 }
 
