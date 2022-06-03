@@ -97,7 +97,7 @@ class ActionBase
    std::optional<Float>
    ComputeParameter(const Float _global_time);
 
-   Model&                            Actor;
+   std::reference_wrapper<Model>     Actor;
    ActionType                        Type;
    const Float                       StartTime;
    const Float                       EndTime;
