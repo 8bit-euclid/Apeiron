@@ -48,22 +48,22 @@ struct TrirectangularTetrahedron : public Tetrahedron
 /***************************************************************************************************************************************************************
 * Static/Dynamic Polygons
 ***************************************************************************************************************************************************************/
-//void CreateCube(Model &_model, GLfloat _side_length);
+//void CreateCube(Model &model, GLfloat _side_length);
 //
-//void CreateCuboid(Model &_model, const SVectorF3& _lengths);
+//void CreateCuboid(Model &model, const SVectorF3& _lengths);
 //
-//void CreateOctahedron(Model &_model, GLfloat _side_length);
+//void CreateOctahedron(Model &model, GLfloat _side_length);
 //
-//void CreateDodecahedron(Model &_model, GLfloat _side_length);
+//void CreateDodecahedron(Model &model, GLfloat _side_length);
 //
-//void CreateIcosahedron(Model &_model, GLfloat _side_length);
+//void CreateIcosahedron(Model &model, GLfloat _side_length);
 //
-//void CreateSphere(Model &_model, GLfloat _radius);
+//void CreateSphere(Model &model, GLfloat _radius);
 //
-//void CreateEllipsoid(Model &_model, GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z);
+//void CreateEllipsoid(Model &model, GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z);
 //
-//void CreateCylinder(Model &_model);
+//void CreateCylinder(Model &model);
 //
-//void CreateCone(Model &_model);
+//void CreateCone(Model &model);
 
 }

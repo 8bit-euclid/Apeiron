@@ -87,13 +87,13 @@ ModelFactory::Polygon(const svectors& ..._v)
 }
 
 Model
-ModelFactory::Arc(GLfloat _radius, GLfloat _angle)
+ModelFactory::Arc(GLfloat _radius, GLfloat angle)
 {
    return Model();
 }
 
 Model
-ModelFactory::Sector(GLfloat _radius, GLfloat _angle)
+ModelFactory::Sector(GLfloat _radius, GLfloat angle)
 {
    return Model();
 }

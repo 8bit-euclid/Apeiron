@@ -8,9 +8,9 @@ namespace aprn::vis {
 Light::Light()
   : Light(LightType::None, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f, 0.0f) {}
 
-Light::Light(Light&& _light) noexcept
-  : Colour(std::move(_light.Colour)), AmbientIntensity(std::move(_light.AmbientIntensity)), DiffuseIntensity(std::move(_light.DiffuseIntensity)),
-    ShadowMap(std::move(_light.ShadowMap)), Type(std::move(_light.Type)) {}
+Light::Light(Light&& light) noexcept
+  : Colour(std::move(light.Colour)), AmbientIntensity(std::move(light.AmbientIntensity)), DiffuseIntensity(std::move(light.DiffuseIntensity)),
+    ShadowMap(std::move(light.ShadowMap)), Type(std::move(light.Type)) {}
 
 Light::Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity)
   : Colour(_rgba_colour), AmbientIntensity(_ambient_intensity), DiffuseIntensity(_diffuse_intensity),
@@ -20,13 +20,13 @@ Light::Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_int
 }
 
 Light&
-Light::operator=(Light&& _light) noexcept
+Light::operator=(Light&& light) noexcept
 {
-  Colour           = std::move(_light.Colour);
-  AmbientIntensity = std::move(_light.AmbientIntensity);
-  DiffuseIntensity = std::move(_light.DiffuseIntensity);
-  ShadowMap        = std::move(_light.ShadowMap);
-  Type             = std::move(_light.Type);
+  Colour           = std::move(light.Colour);
+  AmbientIntensity = std::move(light.AmbientIntensity);
+  DiffuseIntensity = std::move(light.DiffuseIntensity);
+  ShadowMap        = std::move(light.ShadowMap);
+  Type             = std::move(light.Type);
 
   return *this;
 }
@@ -69,9 +69,9 @@ PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& 
 }
 
 template<class derived>
-PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& _light) noexcept
-   : Light(std::move(_light)), iPointLight(std::move(_light.iPointLight)), Position(std::move(_light.Position)),
-     AttenuationCoefficients(std::move(_light.AttenuationCoefficients)), LightSpaceMatrices(std::move(_light.LightSpaceMatrices))
+PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcept
+   : Light(std::move(light)), iPointLight(std::move(light.iPointLight)), Position(std::move(light.Position)),
+     AttenuationCoefficients(std::move(light.AttenuationCoefficients)), LightSpaceMatrices(std::move(light.LightSpaceMatrices))
 {
    nPointLights++; // Note: only incremented because the destructor on the 'moved' object will decrement.
 }
@@ -95,9 +95,9 @@ PointLight::PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _cone_angle, GLfloat _ambient_intensity,
+SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
                      GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients)
   : PointLightBase(LightType::Spot, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients),
-                   Direction(glm::normalize(_direction)), ConeAngle(_cone_angle), CosConeAngle(std::cos(DegToRad(_cone_angle))) {}
+                   Direction(glm::normalize(_direction)), ConeAngle(_coneangle), CosConeAngle(std::cos(DegToRad(_coneangle))) {}
 
 }

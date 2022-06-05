@@ -14,65 +14,44 @@ using namespace aprn::vis;
 
 int main(void)
 {
-   Visualiser vis;
-
+   Visualiser visualiser;
    Model model;
 
    // Cube
-//   model = ModelFactory::Cube(1.0);
-//   model.Rotate(DegToRad(angl_offs), {0.0f, 0.0f, 1.0f});
-//        .MoveAlong({x_offs, 0.0f, 0.0f});
-//   visualiser.AddModel(model, "Cube");
+   model = ModelFactory::Cube(1.0);
+   model.SetColour({1.0, 1.0, 1.0})
+        .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
+        .Trace({[](Float t){ return Three*std::sin(TwoThird * t); }, [](Float t){ return Zero; }, [](Float t){ return Zero; }}, 2.0);
+   visualiser.Add(model, "Cube");
 
    // Floor
    model = ModelFactory::Square(10.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
-        .SetColour({1.0, 0.0, 0.0})
-        .OffsetPosition({0.0f, 0.0f, -2.0f})
-//        .OffsetPosition({0.0f, -2.0f, 0.0f})
+        .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
-   vis.Add(model);
+   visualiser.Add(model);
 
    // Wall 0
    model = ModelFactory::Square(5.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({2.5f, 0.5f, -5.0f});
-   vis.Add(model);
+   visualiser.Add(model);
 
    // Wall 1
    model = ModelFactory::Square(5.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   vis.Add(model);
+   visualiser.Add(model);
 
-   vis.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.3, 0.1, 0.0}));
+   visualiser.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3 < GLfloat > {0.3, 0.1, 0.0}));
 
-   vis.Render();
+   visualiser.Render();
 
    return 0;
 }
-
-
-
-//   static float x_incr(0.008);
-//   static float x_offs(0.0);
-//   static float x_sign(1.0);
-//
-//   static float angl_incr(0.1);
-//   static float angl_offs(0.0);
-
-//   if(_shader_index == 1)
-//   {
-//     x_offs += x_sign * x_incr;
-//     if(Abs(x_offs) > 2.0) x_sign *= -1.0;
-//
-//     angl_offs += angl_incr;
-//     if(angl_offs > 360.0) angl_offs -= 360.0;
-//   }
-
 
 //  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Line.glsl");
 //  visualiser.Shaders[0].Bind();

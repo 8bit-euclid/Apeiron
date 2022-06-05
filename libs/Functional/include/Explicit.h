@@ -9,16 +9,22 @@ namespace aprn::func {
 * Functions from R -> R
 ***************************************************************************************************************************************************************/
 constexpr Float
-Linear(const Float _x, const Float _m, const Float _c) { return _m * _x + _c; }
+Linear(const Float x, const Float c0, const Float c1) { return c0 + c1*x; }
+
+constexpr Float
+Quadratic(const Float x, const Float c0, const Float c1, const Float c2) { return c0 + c1*x + c2*x*x; }
+
+constexpr Float
+Cubic(const Float x, const Float c0, const Float c1, const Float c2, const Float c3) { return c0 + c1*x + c2*x*x + c3*x*x*x; }
 
 /***************************************************************************************************************************************************************
 * Functions from R -> R^n
 ***************************************************************************************************************************************************************/
 constexpr SVectorF2
-Ellipse(const SVectorF2& _radii, const Float _theta) { return { _radii[0]*Cos(_theta), _radii[1]*Sin(_theta) }; }
+Ellipse(const SVectorF2& radii, const Float theta) { return {radii[0] * Cos(theta), radii[1] * Sin(theta)}; }
 
 constexpr SVectorF2
-Circle(const Float _radius, const Float _theta) { return Ellipse({_radius, _radius}, _theta); }
+Circle(const Float radius, const Float theta) { return Ellipse({radius, radius}, theta); }
 
 constexpr SVectorF3
 Ellipsoid(const SVectorF3& _radii, const Float _theta, const Float _phi)

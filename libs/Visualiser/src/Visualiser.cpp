@@ -12,47 +12,47 @@ namespace aprn::vis {
 Visualiser::Visualiser()
    : Visualiser(1920, 1080) {}
 
-Visualiser::Visualiser(GLint _window_width, GLint _window_height)
-   : OpenGLWindow(_window_width, _window_height), Cameras{{"Main", Camera()}}, ActiveCamera(Cameras["Main"])
+Visualiser::Visualiser(GLint window_width, GLint window_height)
+   : OpenGLWindow(window_width, window_height), Cameras{{"Main", Camera()}}, ActiveCamera(Cameras["Main"])
 {
 //   Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
 }
 
 void
-Visualiser::Add(Model& _model, const std::string& _name)
+Visualiser::Add(Model& model, const std::string& name)
 {
-   const std::string& name = _name.empty() ? "model_" + ToString(Models.size()) : _name;
-   auto model = std::make_shared<Model>(std::move(_model));
-   model->Init();
-   Add(model, name);
+   const std::string& id = name.empty() ? "model_" + ToString(Models.size()) : name;
+   auto mod = std::make_shared<Model>(std::move(model));
+   mod->Init();
+   Add(mod, id);
 }
 
 void
-Visualiser::Add(Camera&& _camera, const std::string& _name)
+Visualiser::Add(Camera&& camera, const std::string& name)
 {
-   const std::string& name = _name.empty() ? "camera_" + ToString(Cameras.size()) : _name;
-   Cameras.emplace(name, std::move(_camera));
+   const std::string& id = name.empty() ? "camera_" + ToString(Cameras.size()) : name;
+   Cameras.emplace(id, std::move(camera));
 }
 
 void
-Visualiser::Add(DirectionalLight&& _light, const std::string& _name)
+Visualiser::Add(DirectionalLight&& light, const std::string& name)
 {
-   const std::string& name = _name.empty() ? "d-light_" + ToString(DirectionalLights.size()) : _name;
-   DirectionalLights.emplace(name, std::move(_light));
+   const std::string& id = name.empty() ? "d-light_" + ToString(DirectionalLights.size()) : name;
+   DirectionalLights.emplace(id, std::move(light));
 }
 
 void
-Visualiser::Add(PointLight&& _light, const std::string& _name)
+Visualiser::Add(PointLight&& light, const std::string& name)
 {
-   const std::string& name = _name.empty() ? "p-light_" + ToString(PointLights.size()) : _name;
-   PointLights.emplace(name, std::move(_light));
+   const std::string& id = name.empty() ? "p-light_" + ToString(PointLights.size()) : name;
+   PointLights.emplace(id, std::move(light));
 }
 
 void
-Visualiser::Add(SpotLight&& _light, const std::string& _name)
+Visualiser::Add(SpotLight&& light, const std::string& name)
 {
-   const std::string& name = _name.empty() ? "s-light_" + ToString(SpotLights.size()) : _name;
-   SpotLights.emplace(name, std::move(_light));
+   const std::string& id = name.empty() ? "s-light_" + ToString(SpotLights.size()) : name;
+   SpotLights.emplace(id, std::move(light));
 }
 
 void
@@ -95,7 +95,7 @@ Visualiser::Init()
 }
 
 void
-Visualiser::Add(std::shared_ptr<Model> _model, const std::string& _model_name) { Models[_model_name] = _model; }
+Visualiser::Add(std::shared_ptr<Model> model, const std::string& name) { Models[name] = model; }
 
 void
 Visualiser::AddTextures()

@@ -16,14 +16,14 @@
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
-* Concrete Action Class Full Specialisations
+* Action Class Full Specialisations
 ***************************************************************************************************************************************************************/
 template<ActionType type>
 struct Action : public ActionBase
 {
-   Action(Model& _model) : ActionBase(_model, type, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
+   Action(Model& model) : ActionBase(model, type, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
 
-   void Do(const Float _global_time) override {}
+   void Do(const Float global_time) override {}
 };
 
 ///** Ramp
@@ -33,50 +33,13 @@ struct Action : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& _model, RampType _ramp_type, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+//   Action(Model& model, RampType _ramp_type, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 //
-//   void Do(const Float _global_time) override;
+//   void Do(const Float global_time) override;
 //
 // private:
 //   RampType Ramp{RampType::Scale};
 //};
-
-/** Scale
-***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Scale<type>
-class Action<type> final : public ActionBase
-{
- public:
-   Action(Model& _model, Float _scale, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
-
-   Action(Model& _model, const glm::vec3& _scales, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
-
-   void Do(const Float _global_time) override;
-
- private:
-   const glm::vec3 Scales{One};
-};
-
-/** Rotate
-***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Rotate<type>
-class Action<type> final : public ActionBase
-{
- public:
-   Action(Model& _model, Float _angle, const glm::vec3& _axis, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
-
-   Action(Model& _model, Float _angle, const glm::vec3& _axis, const glm::vec3& _ref_point, Float _start_time, Float _end_time,
-          std::function<Float(Float)> _reparam = Linear);
-
-   void Do(const Float _global_time) override;
-
- private:
-   std::function<Float(Float)> Angle;
-   const glm::vec3             Axis;
-   const glm::vec3             Reference;
-};
 
 /** Offset
 ***************************************************************************************************************************************************************/
@@ -85,26 +48,86 @@ requires Offset<type>
 class Action<type> final : public ActionBase
 {
  public:
-   Action(Model& _model, const glm::vec3& _position_offset);
+   Action(Model& model, const glm::vec3& position_offset);
 
-   Action(Model& _model, Float _angle_offset, const glm::vec3& _axis);
+   Action(Model& model, Float angle_offset, const glm::vec3& axis);
 
-   void Do(const Float _global_time) override;
+   void Do(const Float global_time) override;
 
  private:
    glm::vec3 Position;
-   Float Angle;
+   Float     Angle;
    glm::vec3 Axis;
 };
 
-///** Reflect
+/** Scale
+***************************************************************************************************************************************************************/
+template<ActionType type>
+requires Scale<type>
+class Action<type> final : public ActionBase
+{
+ public:
+   Action(Model& model, Float _scale, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   Action(Model& model, const glm::vec3& scales, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   void Do(const Float global_time) override;
+
+ private:
+   const glm::vec3 Scales{One};
+};
+
+/** Translation
+***************************************************************************************************************************************************************/
+template<ActionType type>
+requires Translation<type>
+class Action<type> final : public ActionBase
+{
+ public:
+   Action(Model& model, const glm::vec3& disp_or_posi, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   Action(Model& model, StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time);
+
+   template<class D>
+   Action(Model& model, const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   void Do(const Float global_time) override;
+
+ private:
+   std::function<glm::vec3(Float)> Displacement;
+};
+
+/** Rotation
+***************************************************************************************************************************************************************/
+template<ActionType type>
+requires Rotation<type>
+class Action<type> final : public ActionBase
+{
+ public:
+   Action(Model& model, Float angle, const glm::vec3& axis, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   Action(Model& model, Float angle, const glm::vec3& axis, const glm::vec3& ref_point, Float start_time, Float end_time,
+          std::function<Float(Float)> reparam = Linear);
+
+   Action(Model& model, const glm::vec3& angular_velocity, Float start_time = Zero, std::function<Float(Float)> ramp = Identity);
+
+   void Do(const Float global_time) override;
+
+ private:
+   std::function<Float(Float)> Angle;
+   const glm::vec3             Axis;
+   const glm::vec3             Reference;
+   Float                       AngularSpeed;
+};
+
+///** Reflection
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
-//requires Reflect<type>
+//requires Reflection<type>
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& _model, const SVectorF3& _normal, const SVectorF3& _ref_point, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+//   Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -116,24 +139,6 @@ class Action<type> final : public ActionBase
 //};
 //
 
-/** Move
-***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Move<type>
-class Action<type> final : public ActionBase
-{
- public:
-   Action(Model& _model, const glm::vec3& _disp_or_posi, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
-
-   template<class D>
-   Action(Model& _model, const mnfld::Curve<D, 3>& _path, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
-
-   void Do(const Float _global_time) override;
-
- private:
-   std::function<glm::vec3(Float)> Displacement;
-};
-
 ///** Morph
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
@@ -141,7 +146,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& _model, const Model& _other_actor, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+//   Action(Model& model, const Model& _other_actor, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -159,7 +164,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& _model, Float _new_colour, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+//   Action(Model& model, Float _new_colour, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 //
 //   void
 //   Do() override;
@@ -176,7 +181,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& _model, Float _new_colour, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+//   Action(Model& model, Float _new_colour, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 //
 //   void
 //   Do() override;

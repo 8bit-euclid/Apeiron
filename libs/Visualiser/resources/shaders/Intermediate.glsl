@@ -95,17 +95,17 @@ float CalculateDirectionalShadow()
    return shadow;
 }
 
-vec4 CalculateLightByDirection(Light _light, vec3 _direction, float _shadow_factor)
+vec4 CalculateLightByDirection(Light light, vec3 _direction, float _shadow_factor)
 {
-   const vec4 ambient_colour = _light.AmbientIntensity * _light.Colour;
+   const vec4 ambient_colour = light.AmbientIntensity * light.Colour;
 
    const float diffuse_factor = max(dot(-v_data_in.Normal, normalize(_direction)), 0.0f);
-   const vec4 diffuse_colour = diffuse_factor * _light.DiffuseIntensity * _light.Colour;
+   const vec4 diffuse_colour = diffuse_factor * light.DiffuseIntensity * light.Colour;
 
    const vec3 fragment_to_camera = normalize(u_camera_position - v_data_in.FragmentPosition);
    const vec3 reflected_ray = normalize(reflect(_direction, v_data_in.Normal));
    const float specular_factor = pow(max(dot(fragment_to_camera, reflected_ray), 0.0f), u_material.Smoothness);
-   const vec4 specular_colour = specular_factor * u_material.SpecularIntensity * _light.Colour;
+   const vec4 specular_colour = specular_factor * u_material.SpecularIntensity * light.Colour;
 
    return ambient_colour + (1.0f - _shadow_factor) * (diffuse_colour + specular_colour);
 }

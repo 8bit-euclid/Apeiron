@@ -58,7 +58,7 @@ constexpr Quadrilateral<dim>::Quadrilateral(const SVectorF<dim>& _v0, const SVec
 }
 
 template<size_t dim>
-constexpr Quadrilateral<dim>::Quadrilateral(const Float _length, const Float _height, const Float _angle)
+constexpr Quadrilateral<dim>::Quadrilateral(const Float _length, const Float _height, const Float angle)
 {
 
 }

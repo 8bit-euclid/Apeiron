@@ -13,44 +13,47 @@
 
 namespace aprn::vis {
 
-/** Reparametriser Functors
+/** Reparametriser/Ramp Functors
 ***************************************************************************************************************************************************************/
-constexpr auto Linear = [](Float _t){ return func::Linear(_t, One, Zero); };
+constexpr auto Identity = [](Float t){ return One; };
+constexpr auto Linear   = [](Float t){ return func::Linear(t, One, Zero); };
 
-//constexpr auto Sigmoid = [](Float _t){ return _t; };
+//constexpr auto Sigmoid = [](Float t){ return t; };
 //
 //template<size_t shape, size_t location>
-//constexpr auto SigmoidMod = [](Float _t)
+//constexpr auto SigmoidMod = [](Float t)
 //                            {
 //                               static_assert(isBounded<true, true, true>(location, 0ul, 100ul), "The sigmoid centre location must be a percentage.");
-//                               return _t;
+//                               return t;
 //                            };
 
 /** Action Types and Sub-Types
 ***************************************************************************************************************************************************************/
 enum class ActionType // NOTE: The order is important - higher-up actions must be performed first.
 {
-   /** Static actions, i.e. the model centroid position is unchanged. */
+   /** Model centroid invariant actions. */
    RampUp,
    RampDown,
    Scale,
    OffsetOrientation,
-   Rotate,
+   RotateBy,
+   RotateAt,
 
-   /** Dynamic actions, i.e. the model centroid position is changed. */
+   /** Model centroid variant actions. */
    OffsetPosition,
    Reflect,
-   RotateAbout,
-   ReflectAbout,
-   Move,
+   RevolveBy,
+   RevolveAt,
+   MoveBy,
    MoveTo,
-   MoveAlong,
-   TrackMotionOf,
+   MoveAt,
+   Trace,
+   TrackPositionOf,
    TrackOrientationOf,
    MorphTo,
    MorphFrom,
 
-   /** Appearance-related actions. */
+   /** Model appearance-related actions. */
    SetStrokeColour,
    SetFillColour,
    Glow,
@@ -60,17 +63,32 @@ enum class ActionType // NOTE: The order is important - higher-up actions must b
 enum class RampType { Trace, Scale, Fade, Blur };
 enum class BlinkType { Sine, Triangle, Square };
 
+/** NOTE: This custom comparator must order the above actions in reverse order, as OpenGL post-multiplies the model matrix for each new action. */
+struct ActionTypeComparator { bool operator()(const ActionType& a, const ActionType& b) const { return static_cast<size_t>(a) > static_cast<size_t>(b); } };
+
+bool isTimeParametrised(ActionType type);
+
 /** Action Concepts
 ***************************************************************************************************************************************************************/
 typedef ActionType AT;
-template<AT type> concept Ramp      = isEnumSame<type, AT::RampUp>()          || isEnumSame<type, AT::RampDown>();
-template<AT type> concept Scale     = isEnumSame<type, AT::Scale>();
-template<AT type> concept Rotate    = isEnumSame<type, AT::Rotate>()          || isEnumSame<type, AT::RotateAbout>();
-template<AT type> concept Offset    = isEnumSame<type, AT::OffsetPosition>()  || isEnumSame<type, AT::OffsetOrientation>();
-template<AT type> concept Reflect   = isEnumSame<type, AT::Reflect>()         || isEnumSame<type, AT::ReflectAbout>();
-template<AT type> concept Move      = isEnumSame<type, AT::Move>()            || isEnumSame<type, AT::MoveTo>()            || isEnumSame<type, AT::MoveAlong>();
-template<AT type> concept Morph     = isEnumSame<type, AT::MorphTo>()         || isEnumSame<type, AT::MorphFrom>();
-template<AT type> concept SetColour = isEnumSame<type, AT::SetStrokeColour>() || isEnumSame<type, AT::SetFillColour>();
+template<AT type> concept Ramp        = isEnumSame<type, AT::RampUp>() ||
+                                        isEnumSame<type, AT::RampDown>();
+template<AT type> concept Scale       = isEnumSame<type, AT::Scale>();
+template<AT type> concept Rotation    = isEnumSame<type, AT::RotateBy>() ||
+                                        isEnumSame<type, AT::RevolveBy>() ||
+                                        isEnumSame<type, AT::RotateAt>() ||
+                                        isEnumSame<type, AT::RevolveAt>();
+template<AT type> concept Offset      = isEnumSame<type, AT::OffsetPosition>() ||
+                                        isEnumSame<type, AT::OffsetOrientation>();
+template<AT type> concept Reflection  = isEnumSame<type, AT::Reflect>();
+template<AT type> concept Translation = isEnumSame<type, AT::MoveBy>() ||
+                                        isEnumSame<type, AT::MoveTo>() ||
+                                        isEnumSame<type, AT::MoveAt>() ||
+                                        isEnumSame<type, AT::Trace>();
+template<AT type> concept Morph       = isEnumSame<type, AT::MorphTo>() ||
+                                        isEnumSame<type, AT::MorphFrom>();
+template<AT type> concept SetColour   = isEnumSame<type, AT::SetStrokeColour>() ||
+                                        isEnumSame<type, AT::SetFillColour>();
 
 /** Abstract Action Base Class
 ***************************************************************************************************************************************************************/
@@ -78,12 +96,14 @@ class Model;
 class ActionBase
 {
  public:
-   ActionBase(Model& _model, ActionType _action_type);
+   ActionBase(Model& model, ActionType _action_type);
 
-   ActionBase(Model& _model, ActionType _action_type, Float _start_time, Float _end_time, std::function<Float(Float)> _reparam = Linear);
+   ActionBase(Model& model, ActionType _action_type, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+
+   ActionBase(Model& model, ActionType _action_type, Float start_time, std::function<Float(Float)> ramp = Identity);
 
    virtual void
-   Do(const Float _global_time) = 0;
+   Do(const Float global_time) = 0;
 
    inline ActionType
    GetType() const { return Type; }
@@ -95,14 +115,15 @@ class ActionBase
    friend class Model;
 
    std::optional<Float>
-   ComputeParameter(const Float _global_time);
+   ComputeParameter(const Float global_time);
 
    std::reference_wrapper<Model>     Actor;
    ActionType                        Type;
    const Float                       StartTime;
    const Float                       EndTime;
-   const Float                       ParameterNormaliser;
-   const std::function<Float(Float)> Reparametriser;
+   Float                             ParameterNormaliser;
+   std::function<Float(Float)>       Reparametriser;
+   std::function<Float(Float)>       Ramp;
    bool Status{false};
 };
 
