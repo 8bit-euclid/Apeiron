@@ -25,26 +25,26 @@ class Visualiser
  public:
    Visualiser();
 
-   Visualiser(GLint _window_width, GLint _window_height);
+   Visualiser(GLint window_width, GLint window_height);
 
    ~Visualiser() = default;
 
-   void Add(Model& _model, const std::string& _name = "");
+   void Add(Model& model, const std::string& name = "");
 
-   void Add(Camera&& _camera, const std::string& _name = "");
+   void Add(Camera&& camera, const std::string& name = "");
 
-   void Add(DirectionalLight&& _light, const std::string& _name = "");
+   void Add(DirectionalLight&& light, const std::string& name = "");
 
-   void Add(PointLight&& _light, const std::string& _name = "");
+   void Add(PointLight&& light, const std::string& name = "");
 
-   void Add(SpotLight&& _light, const std::string& _name = "");
+   void Add(SpotLight&& light, const std::string& name = "");
 
    void Render();
 
  private:
    void Init();
 
-   void Add(std::shared_ptr<Model> _model, const std::string& _model_name);
+   void Add(std::shared_ptr<Model> model, const std::string& name);
 
    void AddTextures();
 

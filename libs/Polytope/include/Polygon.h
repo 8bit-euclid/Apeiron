@@ -58,11 +58,11 @@ struct Quadrilateral : public Polygon<PolytopeCategory::Quadrilateral, dim>
   constexpr Quadrilateral(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2, const SVectorF<dim>& _v3);
 
   /** Parallelogram with prescribed length and height. Defaults to a rectangle. */
-  constexpr Quadrilateral(const Float _length, const Float _height, const Float _angle = 90.0);
+  constexpr Quadrilateral(const Float _length, const Float _height, const Float angle = 90.0);
 
   /** Regular Parallelogram with prescribed side length. Defaults to a square. */
-  constexpr Quadrilateral(const Float _side_length, const Float _angle = 90.0)
-    : Quadrilateral<dim>::Quadrilateral(_side_length, _side_length, _angle) {}
+  constexpr Quadrilateral(const Float _side_length, const Float angle = 90.0)
+    : Quadrilateral<dim>::Quadrilateral(_side_length, _side_length, angle) {}
 };
 
 template<size_t dim = 3>

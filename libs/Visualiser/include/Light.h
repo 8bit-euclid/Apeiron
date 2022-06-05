@@ -31,9 +31,9 @@ class Light
  protected:
    Light();
 
-   Light(const Light& _light) = delete;
+   Light(const Light& light) = delete;
 
-   Light(Light&& _light) noexcept;
+   Light(Light&& light) noexcept;
 
    Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
 
@@ -46,9 +46,9 @@ class Light
 
    Shadow& GetShadowMap() { return ShadowMap; }
 
-   Light& operator=(const Light& _light) = delete;
+   Light& operator=(const Light& light) = delete;
 
-   Light& operator=(Light&& _light) noexcept;
+   Light& operator=(Light&& light) noexcept;
 
  protected:
    glm::vec4 Colour;
@@ -95,9 +95,9 @@ class PointLightBase : public Light
    PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
                   const SVector3<GLfloat>& _attenuation_coefficients);
 
-   PointLightBase(const PointLightBase<derived>& _light) = delete;
+   PointLightBase(const PointLightBase<derived>& light) = delete;
 
-   PointLightBase(PointLightBase<derived>&& _light) noexcept;
+   PointLightBase(PointLightBase<derived>&& light) noexcept;
 
  public:
    ~PointLightBase();
@@ -151,7 +151,7 @@ class PointLight : public Detail::PointLightBase<PointLight>
 class SpotLight : public Detail::PointLightBase<SpotLight>
 {
  public:
-   SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _cone_angle, GLfloat _ambient_intensity,
+   SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
              GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients);
 
  private:

@@ -79,34 +79,34 @@ Normalise(const Vector<T, D>& _v)
 /***************************************************************************************************************************************************************
 * Vector Angle/Alignment/Rotation
 ***************************************************************************************************************************************************************/
-template<bool orient_angle = false, typename T, class D>
+template<bool orientangle = false, typename T, class D>
 constexpr Float
 ComputeAngle(const Vector<T, D>& _v0, const Vector<T, D>& _v1, const SVectorF3& _orient = zAxis3)
 {
-  const auto small_angle = Arccos(InnerProduct(Normalise(_v0), Normalise(_v1)));
-  if constexpr(!orient_angle) return small_angle;
-  else return Sgn(InnerProduct(CrossProduct(_v0, _v1), _orient)) * small_angle;
+  const auto smallangle = Arccos(InnerProduct(Normalise(_v0), Normalise(_v1)));
+  if constexpr(!orientangle) return smallangle;
+  else return Sgn(InnerProduct(CrossProduct(_v0, _v1), _orient)) * smallangle;
 }
 
 template<typename T, class D>
 constexpr bool
-isAligned(const Vector<T, D>& _v0, const Vector<T, D>& _v1, const Float _angle_thresh = TwelfthPi)
+isAligned(const Vector<T, D>& _v0, const Vector<T, D>& _v1, const Float angle_thresh = TwelfthPi)
 {
   const auto angle = ComputeAngle(_v0, _v1);
-  return isBounded(_angle_thresh, Zero, HalfPi) ? angle < _angle_thresh || angle > (Pi - _angle_thresh) :
+  return isBounded(angle_thresh, Zero, HalfPi) ? angle < angle_thresh || angle > (Pi - angle_thresh) :
                                                   throw std::domain_error("Angle threshold is out of bounds.");
 }
 
 template<typename T, class D>
 constexpr D
-RotateAbout(const Vector<T, D>& _vector, const Float& _angle, const SVectorF3& _axis = zAxis3)
+RotateAbout(const Vector<T, D>& _vector, const Float& angle, const SVectorF3& axis = zAxis3)
 {
   return D{};
 }
 
 template<typename T, class D>
 constexpr D
-RotateTowards(const Vector<T, D>& _vector, const Float& _angle, const Vector<T, D>& _reference)
+RotateTowards(const Vector<T, D>& _vector, const Float& angle, const Vector<T, D>& _reference)
 {
   return D{};
 }

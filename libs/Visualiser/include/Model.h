@@ -25,15 +25,15 @@ class Model
  public:
    Model();
 
-   Model(const Model& _model);
+   Model(const Model& model);
 
-   Model(Model&& _model) noexcept;
+   Model(Model&& model) noexcept;
 
    ~Model();
 
    void Init();
 
-   void Update(Float _global_time);
+   void Update(Float global_time);
 
    void Render();
 
@@ -43,31 +43,40 @@ class Model
    ************************************************************************************************************************************************************/
    Model& SetColour(const SVectorF3& _rgb_colour);
 
-   Model& SetMaterial(const std::string& _name, Float _specular_intensity, Float _smoothness);
+   Model& SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness);
 
    Model& SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
-   Model& Scale(Float _factor, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& OffsetPosition(const SVectorF3& displacement);
 
-   Model& Scale(const SVectorF3& _factors, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& OffsetOrientation(Float angle, const SVectorF3& axis);
 
-   Model& OffsetPosition(const SVectorF3& _displacement);
+   Model& Scale(Float factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
-   Model& OffsetOrientation(Float _angle, const SVectorF3& _axis);
+   Model& Scale(const SVectorF3& factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
-   Model& Rotate(Float _angle, const SVectorF3& _axis, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& MoveBy(const SVectorF3& _displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
-   Model& RotateAbout(Float _angle, const SVectorF3& _axis, const SVectorF3& _refe_point, Float _start_time, Float _end_time,
-                      const std::function<Float(Float)>& _reparam = Linear);
+   Model& MoveTo(const SVectorF3& position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
-   Model& Move(const SVectorF3& _displacement, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& MoveAt(const SVectorF3& velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
 
-   Model& MoveTo(const SVectorF3& _position, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time = InfFloat<>);
 
    template<class D>
-   Model& MoveAlong(const mnfld::Curve<D, 3>& _path, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam = Linear);
+   Model& Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+
+   Model& RotateBy(Float angle, const SVectorF3& axis, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+
+   Model& RotateAt(const SVectorF3& angular_velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
+
+   Model& RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point, Float start_time, Float end_time,
+                    const std::function<Float(Float)>& reparam = Linear);
+
+   Model& RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time = Zero,
+                    const std::function<Float(Float)>& ramp = Identity);
 
    /** Getters
    ************************************************************************************************************************************************************/
@@ -76,9 +85,9 @@ class Model
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
-   Model& operator=(const Model& _model);
+   Model& operator=(const Model& model);
 
-   Model& operator=(Model&& _model) noexcept;
+   Model& operator=(Model&& model) noexcept;
 
  private:
    friend class Visualiser;
@@ -91,27 +100,27 @@ class Model
 
    void Reset();
 
-   void Scale(const glm::vec3& _factors);
+   void Scale(const glm::vec3& factors);
 
-   void Translate(const glm::vec3& _displacement);
+   void Translate(const glm::vec3& displacement);
 
-   void Rotate(const GLfloat _angle, const glm::vec3& _axis);
+   void Rotate(const GLfloat angle, const glm::vec3& axis);
 
    /** Model Properties
    ************************************************************************************************************************************************************/
-   Mesh                                   Geometry;
-   List<SPtr<Model>>                      SubModels;
-   std::optional<std::string>             TextureSpec;
-   std::optional<Material>                MaterialSpec;
-   std::map<ActionType, SPtr<ActionBase>> Actions;
-   glm::vec3                              Centroid;
-   glm::vec4                              StrokeColour;
-   glm::vec4                              FillColour;
-   glm::mat4                              ModelMatrix{1.0f};
-   glm::mat4                              PreviousActions{1.0f};
-   Float                                  EntryTime{Zero};
-   Float                                  ExitTime{InfFloat<>};
-   bool                                   isInitialised{false};
+   Mesh                                                         Geometry;
+   List<SPtr<Model>>                                            SubModels;
+   std::optional<std::string>                                   TextureSpec;
+   std::optional<Material>                                      MaterialSpec;
+   std::map<ActionType, SPtr<ActionBase>, ActionTypeComparator> Actions;
+   glm::vec3                                                    Centroid;
+   glm::vec4                                                    StrokeColour;
+   glm::vec4                                                    FillColour;
+   glm::mat4                                                    ModelMatrix{1.0f};
+   glm::mat4                                                    PreviousActions{1.0f};
+   Float                                                        EntryTime{Zero};
+   Float                                                        ExitTime{InfFloat<>};
+   bool                                                         isInitialised{false};
 
    /** Data Buffer Objects
    ************************************************************************************************************************************************************/

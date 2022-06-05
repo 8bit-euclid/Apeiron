@@ -96,7 +96,7 @@ std::string
 GetTextureUniformString(const std::string& _type_string);
 
 std::string
-GetTextureFileDirectory(const std::string& _name);
+GetTextureFileDirectory(const std::string& name);
 
 std::optional<std::string>
 GetTextureFilePath(const std::string& _file_directory, TextureType _type);

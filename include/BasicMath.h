@@ -120,10 +120,10 @@ Round(const Float& _value) { return _value < Floor(_value) + Half ? Floor(_value
 ***************************************************************************************************************************************************************/
 /** Convert degrees to radians. */
 constexpr Float
-DegToRad(const Float& _angle_degrees) { return _angle_degrees * Pi / 180.0; }
+DegToRad(const Float& angle_degrees) { return angle_degrees * Pi / 180.0; }
 
 /** Convert radians to degrees. */
 constexpr Float
-RadToDeg(const Float& _angle_radians) { return _angle_radians * 180.0 / Pi; }
+RadToDeg(const Float& angle_radians) { return angle_radians * 180.0 / Pi; }
 
 }

@@ -2,7 +2,9 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/Functional)
 
 set(SOURCE_FILES
         include/Explicit.h
-        src/Explicit.cpp)
+        include/Piecewise.h
+        src/Explicit.cpp
+        src/Piecewise.cpp)
 
 set(LINK_LIBRARIES
         DataContainerLibrary

@@ -52,15 +52,15 @@ class Shader
 
    inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
 
-   void UseModel(const Model& _model);
+   void UseModel(const Model& model);
 
    void UseMaterial(const Material& _material);
 
    void UseTexture(const Texture& _texture, const std::string& _uniform_name, const UInt _slot);
 
-   void UseCamera(Camera& _camera);
+   void UseCamera(Camera& camera);
 
-   void UseLight(const Light& _light);
+   void UseLight(const Light& light);
 
    void SetDirectionalShadowMap(const UInt _slot);
 
@@ -75,17 +75,17 @@ class Shader
    void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
 
    /** Setting Shader Uniforms */
-   void SetUniform1i(const std::string& _name, GLint _value);
+   void SetUniform1i(const std::string& name, GLint _value);
 
-   void SetUniform1f(const std::string& _name, GLfloat _value);
+   void SetUniform1f(const std::string& name, GLfloat _value);
 
-   void SetUniform2f(const std::string& _name, GLfloat _value0, GLfloat _value1);
+   void SetUniform2f(const std::string& name, GLfloat _value0, GLfloat _value1);
 
-   void SetUniform3f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
+   void SetUniform3f(const std::string& name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
 
-   void SetUniform4f(const std::string& _name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
+   void SetUniform4f(const std::string& name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
 
-   void SetUniformMatrix4f(const std::string& _name, const glm::mat4& _proj_matrix);
+   void SetUniformMatrix4f(const std::string& name, const glm::mat4& _proj_matrix);
 
 private:
    /** Private interface
@@ -103,7 +103,7 @@ private:
    void Delete();
 
    /** Uniform Support Functions */
-   int GetUniformLocation(const std::string& _name);
+   int GetUniformLocation(const std::string& name);
 
    /** Private members
    ************************************************************************************************************************************************************/

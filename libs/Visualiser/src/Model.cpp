@@ -8,18 +8,18 @@ namespace aprn::vis {
 Model::Model()
    : VAO(), VBO(), EBO() {}
 
-Model::Model(const Model& _model)
+Model::Model(const Model& model)
    : Model()
 {
    ASSERT(!isInitialised, "Cannot copy construct a model if it has already been initialised.")
-   *this = _model;
+   *this = model;
 }
 
-Model::Model(Model&& _model) noexcept
+Model::Model(Model&& model) noexcept
    : Model()
 {
    ASSERT(!isInitialised, "Cannot move construct a model if it has already been initialised.")
-   *this = std::move(_model);
+   *this = std::move(model);
 }
 
 Model::~Model() { Delete(); }
@@ -48,10 +48,10 @@ Model::Init()
 }
 
 void
-Model::Update(Float _global_time)
+Model::Update(Float global_time)
 {
    Reset();
-   for(auto& [_, action] : Actions) action->Do(_global_time);
+   for(auto& [_, action] : Actions) action->Do(global_time);
 }
 
 void
@@ -84,9 +84,9 @@ Model::SetColour(const SVectorF3& _rgb_colour)
 }
 
 Model&
-Model::SetMaterial(const std::string& _name, Float _specular_intensity, Float _smoothness)
+Model::SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness)
 {
-   MaterialSpec.emplace(_name, _specular_intensity, _smoothness);
+   MaterialSpec.emplace(name, _specular_intensity, _smoothness);
    return *this;
 }
 
@@ -100,21 +100,6 @@ Model::SetTexture(const std::string& _material, const std::string& _item, size_t
 /** Set Model Actions
 ***************************************************************************************************************************************************************/
 Model&
-Model::Scale(Float _factor, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
-{
-   Scale(SVectorF3(_factor), _start_time, _end_time, _reparam);
-   return *this;
-}
-
-Model&
-Model::Scale(const SVectorF3& _factors, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
-{
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(_factors), _start_time, _end_time);
-   Actions.insert({ActionType::Scale, ptr});
-   return *this;
-}
-
-Model&
 Model::OffsetPosition(const SVectorF3& _displacement)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(_displacement));
@@ -123,55 +108,100 @@ Model::OffsetPosition(const SVectorF3& _displacement)
 }
 
 Model&
-Model::OffsetOrientation(Float _angle, const SVectorF3& _axis)
+Model::OffsetOrientation(Float angle, const SVectorF3& axis)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetOrientation>>(*this, _angle, SArrayToGlmVec(_axis));
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetOrientation>>(*this, angle, SArrayToGlmVec(axis));
    Actions.insert({ActionType::OffsetOrientation, ptr});
    return *this;
 }
 
 Model&
-Model::Rotate(Float _angle, const SVectorF3& _axis, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
+Model::Scale(Float _factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Rotate>>(*this, _angle, SArrayToGlmVec(_axis), _start_time, _end_time);
-   Actions.insert({ActionType::Rotate, ptr});
+   Scale(SVectorF3(_factor), start_time, end_time, reparam);
    return *this;
 }
 
 Model&
-Model::RotateAbout(Float _angle, const SVectorF3& _axis, const SVectorF3& _refe_point, Float _start_time, Float _end_time,
-                        const std::function<Float(Float)>& _reparam)
+Model::Scale(const SVectorF3& _factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr =
-      std::make_shared<Action<ActionType::RotateAbout>>(*this, _angle, SArrayToGlmVec(_axis), SArrayToGlmVec(_refe_point), _start_time, _end_time);
-   Actions.insert({ActionType::RotateAbout, ptr});
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(_factors), start_time, end_time);
+   Actions.insert({ActionType::Scale, ptr});
    return *this;
 }
 
 Model&
-Model::Move(const SVectorF3& _displacement, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
+Model::MoveBy(const SVectorF3& _displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Move>>(*this, SArrayToGlmVec(_displacement), _start_time, _end_time);
-   Actions.insert({ActionType::Move, ptr});
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(_displacement), start_time, end_time);
+   Actions.insert({ActionType::MoveBy, ptr});
    return *this;
 }
 
 Model&
-Model::MoveTo(const SVectorF3& _position, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
+Model::MoveTo(const SVectorF3& _position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(_position), _start_time, _end_time);
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(_position), start_time, end_time);
    Actions.insert({ActionType::MoveTo, ptr});
+   return *this;
+}
+
+//Model&
+//Model::MoveAt(const SVectorF3& velocity, Float start_time, const std::function<Float(Float)>& ramp)
+//{
+//   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAt>>(*this, SArrayToGlmVec(_position), start_time, end_time);
+//   Actions.insert({ActionType::MoveAt, ptr});
+//   return *this;
+//}
+
+Model&
+Model::Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time)
+{
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
+   Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
 
 template<class D>
 Model&
-Model::MoveAlong(const mnfld::Curve<D, 3>& _path, Float _start_time, Float _end_time, const std::function<Float(Float)>& _reparam)
+Model::Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAlong>>(*this, _path, _start_time, _end_time);
-   Actions.insert({ActionType::MoveAlong, ptr});
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
+   Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
+
+Model&
+Model::RotateBy(Float angle, const SVectorF3& axis, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
+{
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateBy>>(*this, angle, SArrayToGlmVec(axis), start_time, end_time);
+   Actions.insert({ActionType::RotateBy, ptr});
+   return *this;
+}
+
+Model&
+Model::RotateAt(const SVectorF3& angular_velocity, Float start_time, const std::function<Float(Float)>& ramp)
+{
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateAt>>(*this, SArrayToGlmVec(angular_velocity), start_time, ramp);
+   Actions.insert({ActionType::RotateAt, ptr});
+   return *this;
+}
+
+Model&
+Model::RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point, Float start_time, Float end_time,
+                 const std::function<Float(Float)>& reparam)
+{
+   SPtr<ActionBase> ptr =
+      std::make_shared<Action<ActionType::RevolveBy>>(*this, angle, SArrayToGlmVec(axis), SArrayToGlmVec(refe_point), start_time, end_time);
+   Actions.insert({ActionType::RevolveBy, ptr});
+   return *this;
+}
+
+//Model&
+//Model::RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time, const std::function<Float(Float)>& ramp)
+//{
+//   return <#initializer#>;
+//}
 
 /** Getters
 ***************************************************************************************************************************************************************/
@@ -181,47 +211,47 @@ Model::GetModelMatrix() const { return ModelMatrix; }
 /** Assignment Operators
 ***************************************************************************************************************************************************************/
 Model&
-Model::operator=(const Model& _model)
+Model::operator=(const Model& model)
 {
    ASSERT(!isInitialised, "Cannot yet copy assign a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Geometry        = _model.Geometry;
-   SubModels       = _model.SubModels;
-   TextureSpec     = _model.TextureSpec;
-   MaterialSpec    = _model.MaterialSpec;
-   Actions         = _model.Actions;
-   Centroid        = _model.Centroid;
-   StrokeColour    = _model.StrokeColour;
-   FillColour      = _model.FillColour;
-   ModelMatrix     = _model.ModelMatrix;
-   PreviousActions = _model.PreviousActions;
-   EntryTime       = _model.EntryTime;
-   ExitTime        = _model.ExitTime;
-   isInitialised   = _model.isInitialised;
+   Geometry        = model.Geometry;
+   SubModels       = model.SubModels;
+   TextureSpec     = model.TextureSpec;
+   MaterialSpec    = model.MaterialSpec;
+   Actions         = model.Actions;
+   Centroid        = model.Centroid;
+   StrokeColour    = model.StrokeColour;
+   FillColour      = model.FillColour;
+   ModelMatrix     = model.ModelMatrix;
+   PreviousActions = model.PreviousActions;
+   EntryTime       = model.EntryTime;
+   ExitTime        = model.ExitTime;
+   isInitialised   = model.isInitialised;
 
    return *this;
 }
 
 Model&
-Model::operator=(Model&& _model) noexcept
+Model::operator=(Model&& model) noexcept
 {
    ASSERT(!isInitialised, "Cannot yet move assign a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Geometry        = std::move(_model.Geometry);
-   SubModels       = std::move(_model.SubModels);
-   TextureSpec     = std::move(_model.TextureSpec);
-   MaterialSpec    = std::move(_model.MaterialSpec);
-   Centroid        = std::move(_model.Centroid);
-   StrokeColour    = std::move(_model.StrokeColour);
-   FillColour      = std::move(_model.FillColour);
-   ModelMatrix     = std::move(_model.ModelMatrix);
-   PreviousActions = std::move(_model.PreviousActions);
-   EntryTime       = std::move(_model.EntryTime);
-   ExitTime        = std::move(_model.ExitTime);
-   isInitialised   = std::move(_model.isInitialised);
-   Actions         = std::move(_model.Actions);
+   Geometry        = std::move(model.Geometry);
+   SubModels       = std::move(model.SubModels);
+   TextureSpec     = std::move(model.TextureSpec);
+   MaterialSpec    = std::move(model.MaterialSpec);
+   Centroid        = std::move(model.Centroid);
+   StrokeColour    = std::move(model.StrokeColour);
+   FillColour      = std::move(model.FillColour);
+   ModelMatrix     = std::move(model.ModelMatrix);
+   PreviousActions = std::move(model.PreviousActions);
+   EntryTime       = std::move(model.EntryTime);
+   ExitTime        = std::move(model.ExitTime);
+   isInitialised   = std::move(model.isInitialised);
+   Actions         = std::move(model.Actions);
 
    // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
    for(auto& [_, action] : Actions) action->Actor = std::ref(*this);
@@ -247,13 +277,13 @@ void
 Model::Reset() { ModelMatrix = glm::mat4(1.0); }
 
 void
-Model::Scale(const glm::vec3& _factors) { ModelMatrix = glm::scale(ModelMatrix, _factors); }
+Model::Scale(const glm::vec3& factors) { ModelMatrix = glm::scale(ModelMatrix, factors); }
 
 void
-Model::Translate(const glm::vec3& _displacement) { ModelMatrix = glm::translate(ModelMatrix, _displacement); }
+Model::Translate(const glm::vec3& displacement) { ModelMatrix = glm::translate(ModelMatrix, displacement); }
 
 void
-Model::Rotate(const GLfloat _angle, const glm::vec3& _axis) { ModelMatrix = glm::rotate(ModelMatrix, _angle, _axis); }
+Model::Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix = glm::rotate(ModelMatrix, angle, axis); }
 
 }
 

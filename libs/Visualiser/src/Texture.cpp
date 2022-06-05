@@ -184,7 +184,7 @@ std::string
 GetTextureUniformString(const std::string& _type_string) { return GetTextureUniformString(GetTextureType(_type_string)); }
 
 std::string
-GetTextureFileDirectory(const std::string& _name) { return "libs/Visualiser/resources/textures/" + _name + "/"; }
+GetTextureFileDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
 
 std::optional<std::string>
 GetTextureFilePath(const std::string& _file_directory, TextureType _type)

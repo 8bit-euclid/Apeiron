@@ -44,9 +44,9 @@ class ModelFactory
    template<class... svectors>
    static Model Polygon(const svectors& ..._v);
 
-   static Model Arc(GLfloat _radius, GLfloat _angle);
+   static Model Arc(GLfloat _radius, GLfloat angle);
 
-   static Model Sector(GLfloat _radius, GLfloat _angle);
+   static Model Sector(GLfloat _radius, GLfloat angle);
 
    static Model Circle(GLfloat _radius);
 
