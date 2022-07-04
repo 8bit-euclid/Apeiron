@@ -1,13 +1,6 @@
 #include "../include/Global.h"
-#include "../libs/Visualiser/include/Visualiser.h"
-#include "../libs/Polytope/include/Polygon.h"
-#include "../libs/Visualiser/test/VisualiserTest.h"
-
-#include "../libs/DataContainer/include/MultiArray.h"
-#include "../libs/Tensor/include/Tensor.h"
-#include "../libs/LinearAlgebra/include/Vector.h"
-#include "../libs/LinearAlgebra/include/VectorOperations.h"
-#include "../libs/Manifold/include/Curve.h"
+#include "Visualiser/include/Visualiser.h"
+#include "Visualiser/include/Scene.h"
 
 using namespace aprn;
 using namespace aprn::vis;
@@ -15,14 +8,25 @@ using namespace aprn::vis;
 int main(void)
 {
    Visualiser visualiser;
+   Scene scene(1000);
    Model model;
 
    // Cube
    model = ModelFactory::Cube(1.0);
    model.SetColour({1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
-        .Trace({[](Float t){ return Three*std::sin(TwoThird * t); }, [](Float t){ return Zero; }, [](Float t){ return Zero; }}, 2.0);
-   visualiser.Add(model, "Cube");
+        .Trace([](Float t){ return SVectorF3{ Three*std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
+//        .Trace({[](Float t){ return Three*std::sin(TwoThird * t); }, [](Float t){ return Zero; }, [](Float t){ return Zero; }}, 2.0);
+   scene.Add(model, "Cube");
+
+//   // Floor
+//   model = ModelFactory::Square(10.0);
+//   model.SetMaterial("Paper", 0.1, 16.0)
+//        .SetColour({1, 1, 1});
+////        .SetTexture("Paper", "", 2, 4)
+////        .OffsetPosition({0.0f, -2.0f, 0.0f})
+////        .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
+//   scene.Add(model);
 
    // Floor
    model = ModelFactory::Square(10.0);
@@ -30,24 +34,26 @@ int main(void)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
-   visualiser.Add(model);
+   scene.Add(model);
 
    // Wall 0
    model = ModelFactory::Square(5.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({2.5f, 0.5f, -5.0f});
-   visualiser.Add(model);
+   scene.Add(model);
 
    // Wall 1
    model = ModelFactory::Square(5.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   visualiser.Add(model);
+   scene.Add(model);
 
-   visualiser.Add(PointLight(glm::vec3(0.0, 2.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3 < GLfloat > {0.3, 0.1, 0.0}));
+   scene.Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
+//   scene.Add(PointLight(glm::vec3(0.0, 4.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.5, 0.1, 0.0}));
 
+   visualiser.Add(scene);
    visualiser.Render();
 
    return 0;

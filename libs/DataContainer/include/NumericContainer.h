@@ -63,7 +63,7 @@ public:
   /** Entry randomisation. */
   void Randomise();
 
-  static void ResetRandomiser(const T _min, const T _max);
+  static void ResetRandomiser(const T min, const T max);
 
   /** Derived class access. */
   constexpr derived&

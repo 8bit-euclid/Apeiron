@@ -22,46 +22,67 @@ constexpr size_t nDigits(std::convertible_to<size_t> auto _number)
 /***************************************************************************************************************************************************************
 * Min, Max, and Bounding Functions
 ***************************************************************************************************************************************************************/
-/** Min value. */
+/** Get minimum value. */
 template<typename T>
-constexpr T Min(const T& _a, const T& _b) { return std::min(_a, _b); }
+constexpr T
+Min(const T& a, const T& b) { return std::min(a, b); }
 
-/** Max value. */
+/** Get maximum value. */
 template<typename T>
-constexpr T Max(const T& _a, const T& _b) { return std::max(_a, _b); }
+constexpr T
+Max(const T& a, const T& b) { return std::max(a, b); }
 
-/** Minmax values in a pair. */
+/** Minimise value. */
 template<typename T>
-constexpr std::pair<T, T> MinMax(const T& _a, const T& _b) { return std::minmax(_a, _b); }
+constexpr void
+Minimise(T& value, const T& other) { value = Min(value, other); }
 
-/** Bound value between a minimum and a maximum. */
+/** Maximise value. */
 template<typename T>
-constexpr T Bound(const T& _value, const T& _min, const T& _max)
-{ return _min < _max ? Max(Min(_value, _max), _min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound."); }
+constexpr void
+Maximise(T& value, const T& other) { value = Max(value, other); }
+
+/** Min/Max values in a pair of values. */
+template<typename T>
+constexpr std::pair<T, T>
+MinMax(const T& a, const T& b) { return std::minmax(a, b); }
+
+/** Get the clipped value between a minimum and a maximum. */
+template<typename T>
+constexpr T
+Clipped(const T& value, const T& min, const T& max)
+{
+   return min < max ? Max(Min(value, max), min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
+}
+
+/** Clip a value between a minimum and a maximum. */
+template<typename T>
+constexpr void
+Clip(T& value, const T& min, const T& max) { value = Clipped(value, min, max); }
 
 /** Min value, given a first and last iterator. */
 template<class iter>
 constexpr IterType<iter>
-MinEntry(const iter _first, const iter _last) { return *std::min_element(_first, _last); }
+MinEntry(const iter first, const iter last) { return *std::min_element(first, last); }
 
 /** Max value, given a first and last iterator. */
 template<class iter>
 constexpr IterType<iter>
-MaxEntry(const iter _first, const iter _last) { return *std::max_element(_first, _last); }
+MaxEntry(const iter first, const iter last) { return *std::max_element(first, last); }
 
 /** Minmax values in a pair, given a first and last iterator. */
 template<class iter>
 constexpr std::pair<IterType<iter>, IterType<iter>>
-MinMaxEntries(const iter _first, const iter _last)
+MinMaxEntries(const iter first, const iter last)
 {
-  auto [min_iter, max_iter] = std::minmax_element(_first, _last);
+  auto [min_iter, max_iter] = std::minmax_element(first, last);
   return {*min_iter, *max_iter};
 }
 
-/** Bound values from a first to a last iterator between a minimum and a maximum. */
+/** Clipped values from a first to a last iterator between a minimum and a maximum. */
 template<class iter, typename T>
 constexpr void
-BoundEntries(iter _first, iter _last, const T& _min, const T& _max) { for(auto it = _first; it != _last; ++it) *it = Bound(*it, _min, _max); }
+BoundEntries(iter first, iter last, const T& min, const T& max) { FOR_ITER(it, first, last) Clip(*it, min, max); }
 
 /***************************************************************************************************************************************************************
 * Signum and Absolute Value Functions
@@ -69,13 +90,13 @@ BoundEntries(iter _first, iter _last, const T& _min, const T& _max) { for(auto i
 /** Signum function. */
 template<typename T>
 constexpr T
-Sgn(const T& _value, const int _zero_sign = 1)
+Sgn(const T& value, const int zero_sign = 1)
 {
-  switch(_zero_sign)
+  switch(zero_sign)
   {
-    case -1: return _value > static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
-    case  0: return (static_cast<T>(0) < _value) - (_value < static_cast<T>(0));
-    case  1: return _value >= static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
+    case -1: return value > static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
+    case  0: return (static_cast<T>(0) < value) - (value < static_cast<T>(0));
+    case  1: return value >= static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
     default: EXIT("Unrecognised sign for zero.")
   }
 }
@@ -83,19 +104,19 @@ Sgn(const T& _value, const int _zero_sign = 1)
 /** Check if a value is positive. */
 template<typename T>
 constexpr bool
-isPositive(const T& _value, const int _zero_sign = 1)
-{ return _zero_sign != 0 ? Sgn(_value, _zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
+isPositive(const T& value, const int zero_sign = 1)
+{ return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
 
 /** Check if a value is negative. */
 template<typename T>
 constexpr bool
-isNegative(const T& _value, const int _zero_sign = 1)
-{ return _zero_sign != 0 ? Sgn(_value, _zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
+isNegative(const T& value, const int zero_sign = 1)
+{ return zero_sign != 0 ? Sgn(value, zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
 
 /** Absolute value. */
 template<typename T>
 constexpr T
-Abs(const T& _value) { return _value < static_cast<T>(0) ? -_value : _value; }
+Abs(const T& value) { return value < static_cast<T>(0) ? -value : value; }
 
 /***************************************************************************************************************************************************************
 * Numerical Rounding Functions
@@ -103,17 +124,17 @@ Abs(const T& _value) { return _value < static_cast<T>(0) ? -_value : _value; }
 /** Floor function. */
 template<typename integer_T = int64_t>
 constexpr Float
-Floor(const Float& _value) { return static_cast<integer_T>(_value) - (static_cast<integer_T>(_value) > _value); }
+Floor(const Float& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
 
 /** Ceiling function. */
 template<typename integer_T = int64_t>
 constexpr Float
-Ceil(const Float& _value) { return static_cast<integer_T>(_value) + (static_cast<integer_T>(_value) < _value); }
+Ceil(const Float& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
 
 /** Rounding function. */
 template<typename integer_T = int64_t>
 constexpr Float
-Round(const Float& _value) { return _value < Floor(_value) + Half ? Floor(_value) : Ceil(_value); }
+Round(const Float& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
 
 /***************************************************************************************************************************************************************
 * Mathematical Conversions

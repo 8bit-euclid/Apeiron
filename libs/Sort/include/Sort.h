@@ -13,7 +13,7 @@ struct SortObject
 
   SortObject() {}
 
-  SortObject(const size_t _index, const StaticArray<T, n_values>& _values) : Index(_index), Values(_values) {}
+  SortObject(const size_t index, const StaticArray<T, n_values>& _values) : Index(index), Values(_values) {}
 };
 
 template<typename T, unsigned int n_values = 1>
@@ -38,19 +38,19 @@ class Sort
     SortObjects.reserve(_n_sort_objects);
   }
 
-  inline void AddSortObject(const size_t _index, const StaticArray<T, n_values>& _values)
+  inline void AddSortObject(const size_t index, const StaticArray<T, n_values>& _values)
   {
-    SortObjects.emplace_back(_index, _values);
+    SortObjects.emplace_back(index, _values);
   }
 
   inline void SortAll(const bool _is_sort_in_ascending = true)
   {
-    std::sort(SortObjects.begin(), SortObjects.end(), [](const SortObject<T, n_values>& _a, const SortObject<T, n_values>& _b)
+    std::sort(SortObjects.begin(), SortObjects.end(), [](const SortObject<T, n_values>& a, const SortObject<T, n_values>& b)
                                                       {
                                                         FOR(i, n_values)
                                                         {
-                                                          if(_a[i] < _b[i]) return true;
-                                                          else if(_a[i] > _b[i]) return false;
+                                                          if(a[i] < b[i]) return true;
+                                                          else if(a[i] > b[i]) return false;
                                                           else continue;
                                                         }
                                                       });

@@ -81,7 +81,7 @@ GLint
 GetOpenGLType(TextureType _type);
 
 std::string
-GetTextureName(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
+GetTextureName(const std::string& _material, const std::string& item, size_t index, size_t _resolution);
 
 std::string
 GetTextureTypeString(TextureType _type);

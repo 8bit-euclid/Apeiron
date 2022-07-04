@@ -192,7 +192,7 @@ void NumericContainer<T, derived>::Randomise() { FOR_EACH(entry, Derived()) entr
 
 template<typename T, class derived>
 requires Arithmetic<T>
-void NumericContainer<T, derived>::ResetRandomiser(const T _min, const T _max) { Randomiser.Reset(_min, _max); }
+void NumericContainer<T, derived>::ResetRandomiser(const T min, const T max) { Randomiser.Reset(min, max); }
 
 template<typename T, class D>
 requires Arithmetic<T>

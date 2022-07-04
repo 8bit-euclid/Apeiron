@@ -74,19 +74,19 @@ TEST_F(ApeironTest, MinMax)
   EXPECT_EQ(MinMax(maxFloat, minFloat).second, maxFloat);
 }
 
-TEST_F(ApeironTest, Bound)
+TEST_F(ApeironTest, Clipped)
 {
   const int minInt = -Abs(RandomInt());
   const int maxInt = Abs(RandomInt()) + 1;
   const int integer = RandomInt();
-  EXPECT_GE(Bound(integer, minInt, maxInt), minInt);
-  EXPECT_LE(Bound(integer, minInt, maxInt), maxInt);
+  EXPECT_GE(Clipped(integer, minInt, maxInt), minInt);
+  EXPECT_LE(Clipped(integer, minInt, maxInt), maxInt);
 
   const Float minFloat = -Abs(RandomFloat());
   const Float maxFloat = Abs(RandomFloat()) + One;
   const Float floating = RandomFloat();
-  EXPECT_GE(Bound(floating, minFloat, maxFloat), minFloat);
-  EXPECT_LE(Bound(floating, minFloat, maxFloat), maxFloat);
+  EXPECT_GE(Clipped(floating, minFloat, maxFloat), minFloat);
+  EXPECT_LE(Clipped(floating, minFloat, maxFloat), maxFloat);
 }
 
 TEST_F(ApeironTest, MinEntry)

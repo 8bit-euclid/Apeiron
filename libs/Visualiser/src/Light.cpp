@@ -73,7 +73,7 @@ PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcep
    : Light(std::move(light)), iPointLight(std::move(light.iPointLight)), Position(std::move(light.Position)),
      AttenuationCoefficients(std::move(light.AttenuationCoefficients)), LightSpaceMatrices(std::move(light.LightSpaceMatrices))
 {
-   nPointLights++; // Note: only incremented because the destructor on the 'moved' object will decrement.
+   nPointLights++; // Note: only incremented because the destructor of the 'moved' object will decrement.
 }
 
 template<class derived>

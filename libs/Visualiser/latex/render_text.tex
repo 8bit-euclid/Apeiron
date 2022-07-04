@@ -1,0 +1,44 @@
+\documentclass[border=0bp,varwidth]{standalone}
+% \documentclass[preview]{standalone}
+% \documentclass{standalone}
+% \documentclass{article}
+
+\usepackage{graphicx, atbegshi}
+\usepackage{luatexbase}
+\usepackage{xcolor}
+
+% \usepackage{fontspec}
+% \usepackage{unicode-math}
+\usepackage[utopia]{mathdesign}
+% \usepackage{fourier}
+% \usepackage[varg]{txfonts}
+% \usepackage{mathptmx}
+% \usepackage[charter]{mathdesign}
+% \usepackage[utopia]{mathdesign}
+% \usepackage[XITS]{mathdesign}
+% \usepackage{pxfonts}
+% \usepackage{mathpazo}
+% \usepackage{txfonts}
+\usepackage{newtx}
+
+% \setmainfont{XITS}
+% \setmathfont{XITS Math}
+% \usepackage[olddefault]{fontsetup}
+
+\directlua{require("write_boxes")}
+% \pagecolor[rgb]{0,0,0}
+\color[rgb]{1,1,1}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3ex plus 0.5ex minus 0.2ex}
+
+\AddToHook{shipout/before}{\directlua{write_boxes.shipout()}}
+
+\begin{document}
+
+This is a test $x^2$. $p_4(x) = a_0 + a_1x + a_2x^2 + a_3x^3 + a_4x^4$. $\frac{\partial\phi}{\partial x} = \frac{1}{V}\int_{\partial V} \phi dA$.
+
+This is another test $e = mc^2$.
+
+This is yet another test with a slightly more complicated mathematical equation: $s = u\tau + \frac{1}{2}a\tau^2$.
+
+\end{document}

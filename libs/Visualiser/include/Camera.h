@@ -24,13 +24,13 @@ class Camera
 
    void SetOrientation(const glm::vec3& _position, GLfloat _pitch, GLfloat _yaw);
 
-   void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& _field_of_view = -1.0, const GLfloat& _near_plane = 0.0, const GLfloat& _far_plane = 0.0);
+   void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& field_of_view = -1.0, const GLfloat& near_plane = 0.0, const GLfloat& far_plane = 0.0);
 
    void KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time);
 
-   void MousePositionControl(const SVectorF2& _cursor_displacement);
+   void MousePositionControl(const SVectorF2& cursor_displacement);
 
-   void MouseWheelControl(const SVectorF2& _wheel_displacement);
+   void MouseWheelControl(const SVectorF2& wheel_displacement);
 
    void UpdateViewMatrix();
 
@@ -46,7 +46,7 @@ class Camera
    GetProjectionMatrix() const { return ProjectionMatrix; }
 
  private:
-   void BoundPitch() { Pitch = Bound(Pitch, -89.0f, 89.0f); }
+   void ClipPitch() { Clip(Pitch, -89.0f, 89.0f); }
 
    glm::vec3 Position;
    glm::vec3 Front;

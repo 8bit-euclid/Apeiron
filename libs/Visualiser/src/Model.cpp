@@ -51,7 +51,7 @@ void
 Model::Update(Float global_time)
 {
    Reset();
-   for(auto& [_, action] : Actions) action->Do(global_time);
+   FOR_EACH(_, action, Actions) action->Do(global_time);
 }
 
 void
@@ -91,9 +91,9 @@ Model::SetMaterial(const std::string& name, Float _specular_intensity, Float _sm
 }
 
 Model&
-Model::SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
+Model::SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution)
 {
-   TextureSpec.emplace(GetTextureName(_material, _item, _index, _resolution));
+   TextureSpec.emplace(GetTextureName(_material, item, index, _resolution));
    return *this;
 }
 
@@ -162,6 +162,14 @@ Model::Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time,
    return *this;
 }
 
+Model&
+Model::Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time)
+{
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
+   Actions.insert({ActionType::Trace, ptr});
+   return *this;
+}
+
 template<class D>
 Model&
 Model::Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
@@ -202,11 +210,6 @@ Model::RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point
 //{
 //   return <#initializer#>;
 //}
-
-/** Getters
-***************************************************************************************************************************************************************/
-const glm::mat4&
-Model::GetModelMatrix() const { return ModelMatrix; }
 
 /** Assignment Operators
 ***************************************************************************************************************************************************************/
@@ -254,7 +257,7 @@ Model::operator=(Model&& model) noexcept
    Actions         = std::move(model.Actions);
 
    // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
-   for(auto& [_, action] : Actions) action->Actor = std::ref(*this);
+   FOR_EACH(_, action, Actions) action->Actor = std::ref(*this);
 
    return *this;
 }
@@ -266,7 +269,7 @@ Model::operator=(Model&& model) noexcept
 void
 Model::ComputeLifespan()
 {
-   for(auto& [_, action] : Actions)
+   FOR_EACH(_, action, Actions)
    {
       EntryTime = Min(EntryTime, action->StartTime);
       ExitTime  = Max(ExitTime,  action->EndTime);

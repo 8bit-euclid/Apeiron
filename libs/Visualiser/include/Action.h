@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../Functional/include/Explicit.h"
-#include "../../Manifold/include/Curve.h"
+#include "Functional/include/Explicit.h"
+#include "Manifold/include/Curve.h"
 
 #include "ActionBase.h"
+#include "Model.h"
 
 #include <functional>
 #include <memory>
@@ -14,6 +15,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace aprn::vis {
+
+//class Model;
 
 /***************************************************************************************************************************************************************
 * Action Class Full Specialisations
@@ -87,6 +90,8 @@ class Action<type> final : public ActionBase
    Action(Model& model, const glm::vec3& disp_or_posi, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 
    Action(Model& model, StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time);
+
+   Action(Model& model, std::function<SVectorF3(Float)> path, Float start_time, Float end_time);
 
    template<class D>
    Action(Model& model, const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);

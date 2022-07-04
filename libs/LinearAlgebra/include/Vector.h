@@ -54,15 +54,15 @@ class StaticVector : public StaticArray<T, N>,
    constexpr StaticVector()
      : BaseArray() {}
 
-   explicit constexpr StaticVector(const T& _value)
-     : BaseArray(_value) {}
+   explicit constexpr StaticVector(const T& value)
+     : BaseArray(value) {}
 
-   constexpr StaticVector(const std::initializer_list<T>& _list)
-     : BaseArray(_list) {}
+   constexpr StaticVector(const std::initializer_list<T>& list)
+     : BaseArray(list) {}
 
    template<class iter>
-   constexpr StaticVector(const iter _first, const iter _last)
-     : BaseArray(_first, _last) {}
+   constexpr StaticVector(const iter first, const iter last)
+     : BaseArray(first, last) {}
 
    /** Operators */
    using BaseArray::operator[];
@@ -87,15 +87,15 @@ class DynamicVector : public DynamicArray<T>,
    explicit DynamicVector(const size_t _size)
      : BaseArray(_size) {}
 
-   DynamicVector(const size_t _size, const T& _value)
-     : BaseArray(_size, _value) {}
+   DynamicVector(const size_t _size, const T& value)
+     : BaseArray(_size, value) {}
 
-   DynamicVector(const std::initializer_list<T>& _list)
-     : BaseArray(_list) {}
+   DynamicVector(const std::initializer_list<T>& list)
+     : BaseArray(list) {}
 
    template<class iter>
-   DynamicVector(const iter _first, const iter _last)
-     : BaseArray(_first, _last) {}
+   DynamicVector(const iter first, const iter last)
+     : BaseArray(first, last) {}
 
    /** Operators */
    using BaseArray::operator[];

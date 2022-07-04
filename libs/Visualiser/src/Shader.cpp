@@ -112,9 +112,9 @@ void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_
 /***************************************************************************************************************************************************************
 * Setting Shader Uniforms
 ***************************************************************************************************************************************************************/
-void Shader::SetUniform1i(const std::string& name, GLint _value) { GLCall(glUniform1i(GetUniformLocation(name), _value)); }
+void Shader::SetUniform1i(const std::string& name, GLint value) { GLCall(glUniform1i(GetUniformLocation(name), value)); }
 
-void Shader::SetUniform1f(const std::string& name, GLfloat _value) { GLCall(glUniform1f(GetUniformLocation(name), _value)); }
+void Shader::SetUniform1f(const std::string& name, GLfloat value) { GLCall(glUniform1f(GetUniformLocation(name), value)); }
 
 void Shader::SetUniform2f(const std::string& name, GLfloat _value0, GLfloat _value1) { GLCall(glUniform2f(GetUniformLocation(name), _value0, _value1)); }
 

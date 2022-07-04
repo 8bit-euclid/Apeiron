@@ -61,10 +61,10 @@ namespace aprn{
 * Numerical Error Handling
 ***************************************************************************************************************************************************************/
 
-#define ASSERT_NUMBER(_value) ASSERT(isNumber(_value), "The passed value is not a number.");
+#define ASSERT_NUMBER(value) ASSERT(isNumber(value), "The passed value is not a number.");
 
-#define DEBUG_ASSERT_NUMBER(_value) DEBUG_ASSERT(isNumber(_value), "The passed value is not a number.");
+#define DEBUG_ASSERT_NUMBER(value) DEBUG_ASSERT(isNumber(value), "The passed value is not a number.");
 
-#define ASSERT_VALID_NUMBER(_value) if(std::isnan(_value) || std::isinf(_value)) EXIT(std::fpclassify(ax) == 0 ? "NaN detected\n\t\t" : "Inf detected\n\t\t");
+#define ASSERT_VALID_NUMBER(value) if(std::isnan(value) || std::isinf(value)) EXIT(std::fpclassify(ax) == 0 ? "NaN detected\n\t\t" : "Inf detected\n\t\t");
 
 }

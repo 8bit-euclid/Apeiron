@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <limits>
 #include <memory>
 #include <type_traits>
 
@@ -25,7 +26,7 @@ struct Bool
 {
    constexpr Bool() : Bool(false) {}
 
-   constexpr Bool(const bool _value) : Value(_value) {}
+   constexpr Bool(const bool value) : Value(value) {}
 
    constexpr operator bool() const { return Value; }
 
@@ -94,30 +95,27 @@ template<typename T = Float> requires std::floating_point<T> constexpr T SignalN
 
 /** Check if a value is NaN. */
 template<typename T>
-constexpr bool isNaN(const T _value = T()) { return std::isnan(_value); }
+constexpr bool
+isNaN(const T value = T()) { return std::isnan(value); }
 
 /** Check if a value is infinity. */
 template<typename T>
-constexpr bool isInfinity(const T _value = T()) { return std::isinf(_value); }
+constexpr bool
+isInfinity(const T value = T()) { return std::isinf(value); }
 
 /***************************************************************************************************************************************************************
 * Other Types
 ***************************************************************************************************************************************************************/
 
-/** Pointers */
+/** Smart pointers/reference wrappers. */
 template<class type> using UPtr = std::unique_ptr<type>;
 template<class type> using SPtr = std::shared_ptr<type>;
 template<class type> using WPtr = std::weak_ptr<type>;
+template<class type> using RWpr = std::reference_wrapper<type>;
 
 /***************************************************************************************************************************************************************
 * Type Checking
 ***************************************************************************************************************************************************************/
-
-/** Check if two enums are the same. */
-template<auto T1, auto T2>
-requires std::is_enum_v<decltype(T1)> && std::is_enum_v<decltype(T2)>
-constexpr bool
-isEnumSame() { return T1 == T2; }
 
 /** Check if two data types are the same. */
 template<class T1, class T2>
@@ -153,6 +151,17 @@ isArithmetic(const T = T{}) { return isIntegral<T>() || isFloatingPoint<T>(); }
 template<typename T>
 constexpr bool
 isStringLiteral(const T& = T{}) { return isTypeSame<T, char*>() || isTypeSame<T, std::string>(); }
+
+/** Check if the data type is an enum type. */
+template<typename T>
+constexpr bool
+isEnum(const T = T{}) { return std::is_enum_v<T>(); }
+
+/** Check if two enums are the same. */
+template<auto T1, auto T2>
+requires std::is_enum_v<decltype(T1)> && std::is_enum_v<decltype(T2)>
+constexpr bool
+isEnumSame() { return T1 == T2; }
 
 /** Get the type category of the given data type (integer, floating-point, etc.). */
 template<typename T>
