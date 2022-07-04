@@ -1,10 +1,10 @@
 #***************************************************************************************************************************************************************
-# Configure Compile Settings
+# Configure compile settings
 #***************************************************************************************************************************************************************
 cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
 
 project(Apeiron)
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_BUILD_TYPE Debug)
 
 # Set compiler standard
@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
-# Setup Build, Library, and Binary Directories
+# Setup build, library, and bin directories
 #***************************************************************************************************************************************************************
 set(BUILD_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
 set(LIB_DIRECTORY "${BUILD_DIRECTORY}/lib")
@@ -34,11 +34,11 @@ set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 
 #***************************************************************************************************************************************************************
-# Build Instructions for OpenGL Tools.
+# Build instructions for OpenGL tools.
 #***************************************************************************************************************************************************************
-find_package(OpenGL REQUIRED)
+find_package(OpenGL   REQUIRED)
 find_package(GLEW 2.2 REQUIRED)
-find_package(glm REQUIRED)
+find_package(glm      REQUIRED)
 #find_package(imgui REQUIRED)
 
 #find_path(STB_INCLUDE_DIRS "stb.h")
@@ -62,11 +62,36 @@ target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
 target_link_libraries(ImGui glfw)
 
 #***************************************************************************************************************************************************************
-# Setup Project Sub-directories.
+# Build instructions for other third-party libraries.
+#***************************************************************************************************************************************************************
+#add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/MicroTeX)
+#find_package(SigC++)
+#find_package(Freetype)
+#find_package(Cairo)
+#find_package(Cairomm)
+#find_package(pango)
+#find_package(pangomm)
+#find_package(glib)
+#find_package(glibmm)
+#find_package(harfbuzz)
+#
+#include_directories(${SigC++_INCLUDE_DIRS})
+#include_directories(${FREETYPE_INCLUDE_DIRS})
+#include_directories(${Cairo_INCLUDE_DIRS})
+#include_directories(${Cairomm_INCLUDE_DIRS})
+#include_directories(${PANGO_INCLUDE_DIRS})
+#include_directories(${PANGOMM_INCLUDE_DIRS})
+#include_directories(${GLIB_INCLUDE_DIRS})
+#include_directories(${GLIBMM_INCLUDE_DIRS})
+#include_directories(${HARFBUZZ_INCLUDE_DIRS})
+
+#***************************************************************************************************************************************************************
+# Setup project sub-directories.
 #***************************************************************************************************************************************************************
 include_directories(${PROJECT_SOURCE_DIR}/libs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/DataContainer)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Benchmark)
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/FileManager)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Functional)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Graph)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/LinearAlgebra)
@@ -77,7 +102,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Tensor)
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/Visualiser)
 
 #***************************************************************************************************************************************************************
-# Apeiron Binary Build Instructions.
+# Apeiron binary build instructions.
 #***************************************************************************************************************************************************************
 set(APEIRON_SOURCE_FILES
         src/main.cpp)
@@ -85,6 +110,7 @@ set(APEIRON_SOURCE_FILES
 set(APEIRON_LINK_LIBRARIES
         DataContainerLibrary
         BenchmarkLibrary
+        FileManagerLibrary
         FunctionalLibrary
         GraphLibrary
         LinearAlgebraLibrary
@@ -103,10 +129,16 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
         ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
         ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
 
-target_link_libraries(${PROJECT_NAME} ${APEIRON_LINK_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES} glfw glm ImGui)
+target_link_libraries(${PROJECT_NAME}
+        ${APEIRON_LINK_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        ${GLEW_LIBRARIES}
+        glfw
+        glm
+        ImGui)
 
 #***************************************************************************************************************************************************************
-# GoogleTest Build Instructions.
+# GoogleTest build instructions.
 #***************************************************************************************************************************************************************
 enable_testing()
 
@@ -136,8 +168,3 @@ target_link_libraries(UnitTestArray            gtest gtest_main)
 target_link_libraries(UnitTestCurve            gtest gtest_main)
 target_link_libraries(UnitTestNumericContainer gtest gtest_main)
 target_link_libraries(UnitTestVector           gtest gtest_main)
-
-#add_test(UnitTestArray ${BIN_DIRECTORY}/UnitTestArray)
-#add_test(UnitTestBasicMath ${BIN_DIRECTORY}/UnitTestBasicMath)
-#add_test(UnitTestComparators ${BIN_DIRECTORY}/UnitTestComparators)
-#add_test(UnitTestMath ${BIN_DIRECTORY}/UnitTestMath)

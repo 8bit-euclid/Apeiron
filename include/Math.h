@@ -60,10 +60,10 @@ InverseTrigonometricSeries(const T x, const T sum, const int n, const T t)
 ***************************************************************************************************************************************************************/
 template<typename T, T... sequence>
 constexpr T
-GetInteger(std::integer_sequence<T, sequence...>, size_t _index)
+GetInteger(std::integer_sequence<T, sequence...>, size_t index)
 {
   constexpr T sequence_array[] = {sequence...};
-  return sequence_array[_index];
+  return sequence_array[index];
 }
 
 /***************************************************************************************************************************************************************
@@ -77,10 +77,10 @@ Sum(const T... _values) { return (_values + ... + 0); }
 /** Sum the terms of a sequence between two iterators. */
 template<class iter>
 constexpr auto
-Sum(const iter _first, const iter _last)
+Sum(const iter first, const iter last)
 {
   typedef typename std::iterator_traits<iter>::value_type data_type;
-  return std::accumulate(_first, _last, static_cast<data_type>(0));
+  return std::accumulate(first, last, static_cast<data_type>(0));
 }
 
 /** Product the terms of a sequence with each other. */
@@ -91,10 +91,10 @@ Product(const T... _values) { return (_values * ... * 1); }
 /** Product the terms of a sequence between two iterators. */
 template<class iter>
 constexpr auto
-Product(const iter _first, const iter _last)
+Product(const iter first, const iter last)
 {
   typedef typename std::iterator_traits<iter>::value_type data_type;
-  return std::accumulate(_first, _last, static_cast<data_type>(1), std::multiplies<data_type>());
+  return std::accumulate(first, last, static_cast<data_type>(1), std::multiplies<data_type>());
 }
 
 /** Division function. */

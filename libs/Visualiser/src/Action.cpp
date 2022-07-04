@@ -3,6 +3,7 @@
 
 #include "../include/Action.h"
 #include "../include/Model.h"
+#include "../include/GLTypes.h"
 
 namespace aprn::vis {
 
@@ -88,6 +89,15 @@ Action<type>::Action(Model& model, StaticArray<std::function<Float(Float)>, 3> p
    : ActionBase(model, type, start_time, end_time, [](Float){return Zero;})
 {
    if(type == ActionType::Trace) this->Displacement = [path](Float t){ return glm::vec3(path[0](t), path[1](t), path[2](t)); };
+   else throw std::invalid_argument("Unrecognised action type.");
+}
+
+template<ActionType type>
+requires Translation<type>
+Action<type>::Action(Model& model, std::function<SVectorF3(Float)> path, Float start_time, Float end_time)
+   : ActionBase(model, type, start_time, end_time, [](Float){return Zero;})
+{
+   if(type == ActionType::Trace) this->Displacement = [path](Float t){ return SArrayToGlmVec(path(t)); };
    else throw std::invalid_argument("Unrecognised action type.");
 }
 

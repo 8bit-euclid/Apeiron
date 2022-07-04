@@ -10,7 +10,7 @@ namespace aprn {
 /***************************************************************************************************************************************************************
 * Type Concepts
 ***************************************************************************************************************************************************************/
-template<typename T> concept Enumerator    = std::is_enum_v<T>;
+template<typename T> concept Enumerator    = isEnum<T>();
 template<typename T> concept Boolean       = isBoolean<T>();
 template<typename T> concept Integral      = isIntegral<T>();
 template<typename T> concept FloatingPoint = isFloatingPoint<T>();

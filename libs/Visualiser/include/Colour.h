@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../LinearAlgebra/include/Vector.h"
+#include "LinearAlgebra/include/Vector.h"
 
 namespace aprn::vis {
 
-enum class ColourType
+enum class ColourModel
 {
    RGB,
    HSV,
@@ -13,10 +13,10 @@ enum class ColourType
    CMYK
 };
 
-struct Colour
+struct ColourSpec
 {
-   SVectorF4 Values;
-   ColourType Type{ColourType::RGB};
+   SVectorF4   Values{};
+   ColourModel Type{ColourModel::RGB};
 };
 
 }

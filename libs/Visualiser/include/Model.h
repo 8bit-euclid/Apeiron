@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../DataContainer/include/Array.h"
-#include "../../DataContainer/include/List.h"
+#include "DataContainer/include/Array.h"
+#include "DataContainer/include/List.h"
 
 #include "Action.h"
 #include "Buffers.h"
@@ -45,7 +45,7 @@ class Model
 
    Model& SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness);
 
-   Model& SetTexture(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution);
+   Model& SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution);
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
@@ -65,6 +65,8 @@ class Model
 
    Model& Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time = InfFloat<>);
 
+   Model& Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time = InfFloat<>);
+
    template<class D>
    Model& Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
@@ -78,22 +80,23 @@ class Model
    Model& RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time = Zero,
                     const std::function<Float(Float)>& ramp = Identity);
 
-   /** Getters
-   ************************************************************************************************************************************************************/
-   const glm::mat4&
-   GetModelMatrix() const;
-
    /** Assignment Operators
    ************************************************************************************************************************************************************/
    Model& operator=(const Model& model);
 
    Model& operator=(Model&& model) noexcept;
 
+   /** Members Accessors
+   ************************************************************************************************************************************************************/
+   inline const glm::mat4&
+   GetModelMatrix() const { return ModelMatrix; }
+
  private:
    friend class Visualiser;
-   friend class TestTexture2D;
+   friend class Scene;
    friend class ModelFactory;
    friend class ActionBase;
+   friend class TestTexture2D;
    template<ActionType type> friend class Action;
 
    void ComputeLifespan();
@@ -106,13 +109,13 @@ class Model
 
    void Rotate(const GLfloat angle, const glm::vec3& axis);
 
-   /** Model Properties
+   /** Model Attributes
    ************************************************************************************************************************************************************/
    Mesh                                                         Geometry;
-   List<SPtr<Model>>                                            SubModels;
+   std::unordered_map<std::string, SPtr<Model>>                 SubModels;
+   std::map<ActionType, SPtr<ActionBase>, ActionTypeComparator> Actions;
    std::optional<std::string>                                   TextureSpec;
    std::optional<Material>                                      MaterialSpec;
-   std::map<ActionType, SPtr<ActionBase>, ActionTypeComparator> Actions;
    glm::vec3                                                    Centroid;
    glm::vec4                                                    StrokeColour;
    glm::vec4                                                    FillColour;
@@ -122,12 +125,12 @@ class Model
    Float                                                        ExitTime{InfFloat<>};
    bool                                                         isInitialised{false};
 
-   /** Data Buffer Objects
+   /** Data Buffers
    ************************************************************************************************************************************************************/
-   VertexArray                            VAO;
-   VertexBuffer                           VBO;
-   IndexBuffer                            EBO;
-   std::optional<ShaderStorageBuffer>     SSBO;
+   VertexArray                        VAO;
+   VertexBuffer                       VBO;
+   IndexBuffer                        EBO;
+   std::optional<ShaderStorageBuffer> SSBO;
 };
 
 }

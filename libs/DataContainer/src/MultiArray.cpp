@@ -47,23 +47,23 @@ MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<size_t> aut
 
 template<typename T, class derived>
 constexpr auto
-MultiArray<T, derived>::ComputeMultiIndex(size_t _index) const
+MultiArray<T, derived>::ComputeMultiIndex(size_t index) const
 {
   EXIT("Yet to complete.")
 
 //  constexpr auto& dims = Derived().Dimensions;
 //  constexpr auto& n_entries = Derived().nEntries;
 //
-//  DEBUG_ASSERT(isBounded(_index, 0, n_entries), "The passed index ", _index, " should be in the range [0, ", n_entries, "].")
+//  DEBUG_ASSERT(isBounded(index, 0, n_entries), "The passed index ", index, " should be in the range [0, ", n_entries, "].")
 //
 //  StaticArray<size_t, dims.size()> res;
 
 //  size_t factor = Multiply(dims...);
 //  for (size_t i = sizeof...(dims); i != 0; --i) {
 //    factor /= dims[i - 1];
-//    res[i - 1] = _index / factor;
+//    res[i - 1] = index / factor;
 //    assert(res[i - 1] < dims[i - 1]);
-//    _index -= res[i - 1] * factor;
+//    index -= res[i - 1] * factor;
 //  }
 //  return res;
   return 0;
@@ -123,8 +123,8 @@ constexpr StaticMultiArray<T, dims...>::StaticMultiArray()
   : StaticMultiArray(GetStaticInitValue<T>()) {}
 
 template<typename T, size_t ...dims>
-constexpr StaticMultiArray<T, dims...>::StaticMultiArray(const T _value)
-  : Entries(_value)
+constexpr StaticMultiArray<T, dims...>::StaticMultiArray(const T value)
+  : Entries(value)
 {
   STATIC_ASSERT(0 < sizeof...(dims), "A multi-dimensional array must have at least 1 dimension.")
 }

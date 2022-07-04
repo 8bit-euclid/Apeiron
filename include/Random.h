@@ -56,13 +56,13 @@ class Random<T, TypeCategory::Integral> : public RandomBase<T, TypeCategory::Int
 public:
   Random() : Distribution(-1, 1) {}
 
-  Random(const T _min, const T _max) :  Distribution(_min, _max) {}
+  Random(const T min, const T max) :  Distribution(min, max) {}
 
   /** Overloaded subscript operator to generate a random integer. */
   inline T operator()() override { return Distribution(this->Generator); }
 
   /** Reset min/max bounds for the distribution. */
-  void Reset(const T _min, const T _max) { Distribution = std::uniform_int_distribution<T>(_min, _max); }
+  void Reset(const T min, const T max) { Distribution = std::uniform_int_distribution<T>(min, max); }
 
 private:
   std::uniform_int_distribution<T> Distribution;
@@ -77,13 +77,13 @@ class Random<T, TypeCategory::FloatingPoint> : public RandomBase<T, TypeCategory
 public:
   Random() : Distribution(-One, One) {}
 
-  Random(const T _min, const T _max) : Distribution(_min, _max) {}
+  Random(const T min, const T max) : Distribution(min, max) {}
 
   /** Overloaded subscript operator to generate a random floating-point value. */
   inline T operator()() override { return Distribution(this->Generator); }
 
   /** Reset min/max bounds for the distribution. */
-  void Reset(const T _min, const T _max) { Distribution = std::uniform_real_distribution<T>(_min, _max); }
+  void Reset(const T min, const T max) { Distribution = std::uniform_real_distribution<T>(min, max); }
 
 private:
   std::uniform_real_distribution<T> Distribution;

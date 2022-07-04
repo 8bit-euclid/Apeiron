@@ -24,7 +24,7 @@ public:
   ComputeLinearIndex(const std::convertible_to<size_t> auto... _multi_index) const;
 
   constexpr auto
-  ComputeMultiIndex(size_t _index) const;
+  ComputeMultiIndex(size_t index) const;
 
   /** Operator overloads. */
   constexpr T&
@@ -71,7 +71,7 @@ public:
   /** Constructors. */
   constexpr StaticMultiArray();
 
-  explicit constexpr StaticMultiArray(const T _value);
+  explicit constexpr StaticMultiArray(const T value);
 
 private:
   constexpr static StaticArray<size_t, sizeof...(dims)> Dimensions{dims...};

@@ -28,7 +28,7 @@ TestMenu::~TestMenu()
 
 void TestMenu::OnImGuiRender()
 {
-   for(auto [name, test] : Tests) if(ImGui::Button(name.c_str())) pCurrentTest = test;
+   FOR_EACH(name, test, Tests) if(ImGui::Button(name.c_str())) pCurrentTest = test;
 }
 
 /***************************************************************************************************************************************************************

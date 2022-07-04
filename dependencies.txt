@@ -1,0 +1,4 @@
+MicroTex:
+    libtinyxml2-dev
+    libgtkmm-3.0-dev
+    libgtksourceviewmm-3.0-dev

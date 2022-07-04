@@ -16,7 +16,7 @@ constexpr static GLint mKeys{1024};
 class Window
 {
  public:
-   Window(GLint _width, GLint _height);
+   Window(GLint width, GLint height);
 
    ~Window();
 
@@ -67,19 +67,19 @@ class Window
    HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
 
    static void APIENTRY
-   glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum _severity, GLsizei length, const char* message, const void* userParam);
+   glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
-   Float             CurrentTime{};
-   Float             PreviousTime{};
-   Float             DeltaTime{};
-   SVectorF2         PreviousMousePosition;
-   SVectorF2         MouseDisplacement;
-   SVectorF2         MouseWheelDisplacement;
-   SVector2<GLint>   WindowDimensions;
-   SVector2<GLint>   ViewportDimensions;
-   SArrayB<mKeys>    Keys;
-   GLFWwindow*       GlfwWindow;
-   bool              isFirstMouseMovement;
+   Float           CurrentTime{};
+   Float           PreviousTime{};
+   Float           DeltaTime{};
+   SVectorF2       PreviousMousePosition;
+   SVectorF2       MouseDisplacement;
+   SVectorF2       MouseWheelDisplacement;
+   SVector2<GLint> WindowDimensions;
+   SVector2<GLint> ViewportDimensions;
+   SArrayB<mKeys>  Keys;
+   GLFWwindow*     GlfwWindow;
+   bool            isFirstMouseMovement;
 };
 
 }

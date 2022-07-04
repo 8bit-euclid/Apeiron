@@ -14,10 +14,10 @@ public:
   ~List() = default;
 
   /** Size and Index Range-checking ***************************************************************************************************************************/
-  void IndexBoundCheck(const size_t _index) const
+  void IndexBoundCheck(const size_t index) const
   {
     DEBUG_ASSERT(this->size(), "The list has not yet been sized.")
-    DEBUG_ASSERT(isBounded(_index, size_t(0), this->size()), "The list index ", _index, " must be in the range [0, ", this->size() - 1, "].")
+    DEBUG_ASSERT(isBounded(index, size_t(0), this->size()), "The list index ", index, " must be in the range [0, ", this->size() - 1, "].")
   }
 
   void SizeCheck(const size_t _size0, const size_t _size1) const
@@ -26,26 +26,26 @@ public:
   }
 
   /** Subscript Operator Overloads ****************************************************************************************************************************/
-  T& operator[](const size_t _index)
+  T& operator[](const size_t index)
   {
-    IndexBoundCheck(_index);
+    IndexBoundCheck(index);
     auto iterator = this->begin();
-    FOR(i, _index) ++iterator;
+    FOR(i, index) ++iterator;
     return *iterator;
   }
 
-  const T& operator[](const size_t _index) const
+  const T& operator[](const size_t index) const
   {
-    IndexBoundCheck(_index);
+    IndexBoundCheck(index);
     auto iterator = this->begin();
-    FOR(i, _index) ++iterator;
+    FOR(i, index) ++iterator;
     return *iterator;
   }
 
   /** Assignment Operator Overloads ***************************************************************************************************************************/
-  List& operator=(const T& _value) noexcept
+  List& operator=(const T& value) noexcept
   {
-    FOR_EACH(entry, *this) entry = _value;
+    FOR_EACH(entry, *this) entry = value;
     return *this;
   }
 

@@ -75,9 +75,9 @@ class Shader
    void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
 
    /** Setting Shader Uniforms */
-   void SetUniform1i(const std::string& name, GLint _value);
+   void SetUniform1i(const std::string& name, GLint value);
 
-   void SetUniform1f(const std::string& name, GLfloat _value);
+   void SetUniform1f(const std::string& name, GLfloat value);
 
    void SetUniform2f(const std::string& name, GLfloat _value0, GLfloat _value1);
 

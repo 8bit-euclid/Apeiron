@@ -8,15 +8,16 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Public Interface
 ***************************************************************************************************************************************************************/
-Window::Window(GLint _width, GLint _height)
-  : WindowDimensions{_width, _height}
+Window::Window(GLint width, GLint height)
+  : WindowDimensions{width, height}
 {
-   Open(_width, _height);
+   Open(width, height);
 }
 
 Window::~Window() { glfwTerminate(); }
 
-void Window::Open(GLint _width, GLint _height)
+void
+Window::Open(GLint _width, GLint _height)
 {
   if(!glfwInit())
   {
@@ -100,11 +101,14 @@ void Window::Open(GLint _width, GLint _height)
   glfwSetWindowUserPointer(GlfwWindow, this);
 }
 
-bool Window::isOpen() const { return !glfwWindowShouldClose(GlfwWindow); }
+bool
+Window::isOpen() const { return !glfwWindowShouldClose(GlfwWindow); }
 
-void Window::Close() { glfwSetWindowShouldClose(GlfwWindow, GL_TRUE); }
+void
+Window::Close() { glfwSetWindowShouldClose(GlfwWindow, GL_TRUE); }
 
-bool Window::isViewPortModified()
+bool
+Window::isViewPortModified()
 {
   DEBUG_ASSERT(isOpen(), "The OpenGL window is not open.")
 
@@ -120,22 +124,28 @@ bool Window::isViewPortModified()
   else return false;
 }
 
-void Window::ResetViewPort() const { GLCall(glViewport(0, 0, ViewportDimensions[0], ViewportDimensions[1])); }
+void
+Window::ResetViewPort() const { GLCall(glViewport(0, 0, ViewportDimensions[0], ViewportDimensions[1])); }
 
-void Window::SwapBuffers() { glfwSwapBuffers(GlfwWindow); }
+void
+Window::SwapBuffers() { glfwSwapBuffers(GlfwWindow); }
 
-void Window::ResetTime() const { glfwSetTime(Zero); }
+void
+Window::ResetTime() const { glfwSetTime(Zero); }
 
-void Window::ComputeDeltaTime()
+void
+Window::ComputeDeltaTime()
 {
    CurrentTime = glfwGetTime();
    DeltaTime = CurrentTime - PreviousTime;
    PreviousTime = CurrentTime;
 }
 
-Float Window::GetCurrentTime() const { return CurrentTime; }
+Float
+Window::GetCurrentTime() const { return CurrentTime; }
 
-Float Window::GetDeltaTime() const { return DeltaTime; }
+Float
+Window::GetDeltaTime() const { return DeltaTime; }
 
 GLfloat
 Window::ComputeViewportAspectRatio() const { return static_cast<GLfloat>(ViewportDimensions[0]) / static_cast<GLfloat>(ViewportDimensions[1]); }
@@ -173,14 +183,16 @@ Window::GetFrameBufferSize() const
   return { width, height };
 }
 
-void Window::CreateCallBacks() const
+void
+Window::CreateCallBacks() const
 {
   glfwSetKeyCallback(GlfwWindow, HandleKeys);
   glfwSetCursorPosCallback(GlfwWindow, HandleMousePosition);
   glfwSetScrollCallback(GlfwWindow, HandleMouseWheel);
 }
 
-void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
+void
+Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
 {
   // Get pointer to the Window object which contains _p_window.
   Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));
@@ -196,7 +208,8 @@ void Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _co
   }
 }
 
-void Window::HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord)
+void
+Window::HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord)
 {
   Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));
 
@@ -210,13 +223,15 @@ void Window::HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord,
   p_window->PreviousMousePosition = {_x_coord, _y_coord};
 }
 
-void Window::HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset)
+void
+Window::HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset)
 {
   Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));
   p_window->MouseWheelDisplacement = {0.0, _y_offset};
 }
 
-void Window::glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum _severity, GLsizei length, const char* message, const void* userParam)
+void
+Window::glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam)
 {
   // Ignore insignificant error/warning codes
   if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
@@ -225,7 +240,7 @@ void Window::glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum
   std::cout << "Debug message (" << id << "): " << message << std::endl;
 
   // Write error source
-  switch(_source)
+  switch(source)
   {
     case GL_DEBUG_SOURCE_API:               std::cout << "Source: API"; break;
     case GL_DEBUG_SOURCE_WINDOW_SYSTEM:     std::cout << "Source: Window System"; break;
@@ -237,7 +252,7 @@ void Window::glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum
   std::cout << std::endl;
 
   // Write error type
-  switch(_type)
+  switch(type)
   {
     case GL_DEBUG_TYPE_ERROR:               std::cout << "Type: Error"; break;
     case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: Deprecated Behaviour"; break;
@@ -252,7 +267,7 @@ void Window::glDebugOutput(GLenum _source, GLenum _type, unsigned int id, GLenum
   std::cout << std::endl;
 
   // Write error severity
-  switch(_severity)
+  switch(severity)
   {
     case GL_DEBUG_SEVERITY_HIGH:            std::cout << "Severity: high"; break;
     case GL_DEBUG_SEVERITY_MEDIUM:          std::cout << "Severity: medium"; break;

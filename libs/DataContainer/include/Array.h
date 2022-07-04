@@ -19,17 +19,17 @@ class Array
 
  public:
    /** Size and Index Range-checking */
-   constexpr void IndexBoundCheck(const size_t _index) const;
+   constexpr void IndexBoundCheck(const size_t index) const;
 
    constexpr void SizeCheck(const size_t _size0, const size_t _size1) const;
 
    /** Subscript Operator Overloads */
-   constexpr T& operator[](const size_t _index);
+   constexpr T& operator[](const size_t index);
 
-   constexpr const T& operator[](const size_t _index) const;
+   constexpr const T& operator[](const size_t index) const;
 
    /** Assignment Operator Overloads */
-   constexpr derived& operator=(const std::convertible_to<T> auto _value) noexcept;
+   constexpr derived& operator=(const std::convertible_to<T> auto value) noexcept;
 
    constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
 
@@ -61,12 +61,12 @@ class StaticArray : public std::array<T, N>,
    /** Constructors */
    constexpr StaticArray();
 
-   explicit constexpr StaticArray(const T& _value);
+   explicit constexpr StaticArray(const T& value);
 
-   constexpr StaticArray(const std::initializer_list<T>& _list);
+   constexpr StaticArray(const std::initializer_list<T>& list);
 
    template<class iter>
-   constexpr StaticArray(const iter _first, const iter _last);
+   constexpr StaticArray(const iter first, const iter last);
 
    /** Operators */
    using Base::operator[];
@@ -90,12 +90,12 @@ public:
 
   explicit DynamicArray(const size_t _size);
 
-  DynamicArray(const size_t _size, const T& _value);
+  DynamicArray(const size_t _size, const T& value);
 
-  DynamicArray(const std::initializer_list<T>& _list);
+  DynamicArray(const std::initializer_list<T>& list);
 
   template<class iter>
-  DynamicArray(const iter _first, const iter _last);
+  DynamicArray(const iter first, const iter last);
 
   /** Operators */
   using Base::operator[];
@@ -114,10 +114,10 @@ template<typename T> using SArray2 = SArray<T, 2>;
 template<typename T> using SArray3 = SArray<T, 3>;
 template<typename T> using SArray4 = SArray<T, 4>;
 
-template<size_t N>   using SArrayB = SArray<Bool, N>;
-template<size_t N>   using SArrayU = SArray<size_t, N>;
-template<size_t N>   using SArrayI = SArray<int, N>;
-template<size_t N>   using SArrayF = SArray<Float, N>;
+template<size_t N> using SArrayB = SArray<Bool, N>;
+template<size_t N> using SArrayU = SArray<size_t, N>;
+template<size_t N> using SArrayI = SArray<int, N>;
+template<size_t N> using SArrayF = SArray<Float, N>;
 
 /***************************************************************************************************************************************************************
 * Dynamic Array Aliases

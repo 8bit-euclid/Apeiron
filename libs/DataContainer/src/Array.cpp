@@ -13,10 +13,10 @@ namespace aprn {
 /** Size and Index Range-checking */
 template<typename T, class derived>
 constexpr void
-Array<T, derived>::IndexBoundCheck(const size_t _index) const
+Array<T, derived>::IndexBoundCheck(const size_t index) const
 {
   DEBUG_ASSERT(!Derived().empty(), "The array has not yet been sized.")
-  DEBUG_ASSERT(isBounded(_index, size_t(0), Derived().size()), "The array index ", _index, " must be in the range [0, ", Derived().size() - 1, "].")
+  DEBUG_ASSERT(isBounded(index, size_t(0), Derived().size()), "The array index ", index, " must be in the range [0, ", Derived().size() - 1, "].")
 }
 
 template<typename T, class derived>
@@ -29,26 +29,26 @@ Array<T, derived>::SizeCheck(const size_t _size0, const size_t _size1) const
 /** Subscript Operator Overloads */
 template<typename T, class derived>
 constexpr T&
-Array<T, derived>::operator[](const size_t _index)
+Array<T, derived>::operator[](const size_t index)
 {
-  IndexBoundCheck(_index);
-  return *(Derived().begin() + _index);
+  IndexBoundCheck(index);
+  return *(Derived().begin() + index);
 }
 
 template<typename T, class derived>
 constexpr const T&
-Array<T, derived>::operator[](const size_t _index) const
+Array<T, derived>::operator[](const size_t index) const
 {
-  IndexBoundCheck(_index);
-  return *(Derived().begin() + _index);
+  IndexBoundCheck(index);
+  return *(Derived().begin() + index);
 }
 
 /** Assignment Operator Overloads */
 template<typename T, class derived>
 constexpr derived&
-Array<T, derived>::operator=(const std::convertible_to<T> auto _value) noexcept
+Array<T, derived>::operator=(const std::convertible_to<T> auto value) noexcept
 {
-  FOR_EACH(entry, Derived()) entry = static_cast<T>(_value);
+  FOR_EACH(entry, Derived()) entry = static_cast<T>(value);
   return Derived();
 }
 
@@ -96,23 +96,23 @@ constexpr StaticArray<T, size>::StaticArray()
   : StaticArray(GetStaticInitValue<T>()) {}
 
 template<typename T, size_t size>
-constexpr StaticArray<T, size>::StaticArray(const T& _value)
-  : std::array<T, size>(detail::InitStaticArray<T, size>(_value)) {}
+constexpr StaticArray<T, size>::StaticArray(const T& value)
+  : std::array<T, size>(detail::InitStaticArray<T, size>(value)) {}
 
 template<typename T, size_t size>
-constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& _list)
-  : std::array<T, size>(detail::InitStaticArray<T, size>(_list))
+constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& list)
+  : std::array<T, size>(detail::InitStaticArray<T, size>(list))
 {
-  ASSERT(size == _list.size(), "The initializer list should be of size ", size, ".")
+  ASSERT(size == list.size(), "The initializer list should be of size ", size, ".")
 }
 
 template<typename T, size_t size>
 template<class iter>
-constexpr StaticArray<T, size>::StaticArray(const iter _first, const iter _last)
-  : std::array<T, size>(detail::InitStaticArray<T, size>(_first, _last))
+constexpr StaticArray<T, size>::StaticArray(const iter first, const iter last)
+  : std::array<T, size>(detail::InitStaticArray<T, size>(first, last))
 {
   STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<iter>::value_type>()), "Mismatch in the iterator data type.")
-  ASSERT(size == std::distance(_first, _last), "The number of iterators must equal the array size ", size, ".")
+  ASSERT(size == std::distance(first, last), "The number of iterators must equal the array size ", size, ".")
 }
 
 /***************************************************************************************************************************************************************
@@ -127,17 +127,17 @@ DynamicArray<T>::DynamicArray(const size_t _size)
   : DynamicArray(_size, GetDynamicInitValue<T>()) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const size_t _size, const T& _value)
-  : std::vector<T>(_size, _value) {}
+DynamicArray<T>::DynamicArray(const size_t _size, const T& value)
+  : std::vector<T>(_size, value) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const std::initializer_list<T>& _list)
-  : std::vector<T>(_list) {}
+DynamicArray<T>::DynamicArray(const std::initializer_list<T>& list)
+  : std::vector<T>(list) {}
 
 template<typename T>
 template<class iter>
-DynamicArray<T>::DynamicArray(const iter _first, const iter _last)
-  : std::vector<T>(_first, _last) {}
+DynamicArray<T>::DynamicArray(const iter first, const iter last)
+  : std::vector<T>(first, last) {}
 
 }
 

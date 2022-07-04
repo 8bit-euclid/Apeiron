@@ -36,15 +36,15 @@ public:
   constexpr StaticMatrix()
     : BaseMultiArray() {}
 
-  explicit constexpr StaticMatrix(const T& _value)
-    : BaseMultiArray(_value) {}
+  explicit constexpr StaticMatrix(const T& value)
+    : BaseMultiArray(value) {}
 
-  explicit constexpr StaticMatrix(const std::initializer_list<T>& _list)
-    : BaseMultiArray(_list) {}
+  explicit constexpr StaticMatrix(const std::initializer_list<T>& list)
+    : BaseMultiArray(list) {}
 
   template<class iter>
-  constexpr StaticMatrix(const iter _first, const iter _last)
-    : BaseMultiArray(_first, _last) {}
+  constexpr StaticMatrix(const iter first, const iter last)
+    : BaseMultiArray(first, last) {}
 
 private:
   friend Matrix<T, BaseMultiArray>;
@@ -67,15 +67,15 @@ public:
   explicit DynamicMatrix(const size_t _size)
     : BaseMultiArray(_size) {}
 
-  DynamicMatrix(const size_t _size, const T& _value)
-    : BaseMultiArray(_size, _value) {}
+  DynamicMatrix(const size_t _size, const T& value)
+    : BaseMultiArray(_size, value) {}
 
-  explicit DynamicMatrix(const std::initializer_list<T>& _list)
-    : BaseMultiArray(_list) {}
+  explicit DynamicMatrix(const std::initializer_list<T>& list)
+    : BaseMultiArray(list) {}
 
   template<class iter>
-  DynamicMatrix(const iter _first, const iter _last)
-    : BaseMultiArray(_first, _last) {}
+  DynamicMatrix(const iter first, const iter last)
+    : BaseMultiArray(first, last) {}
 
 private:
   friend Matrix<T, BaseMultiArray>;

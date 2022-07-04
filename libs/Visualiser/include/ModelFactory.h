@@ -17,6 +17,9 @@ namespace aprn::vis {
 
 class ModelFactory
 {
+ protected:
+   ModelFactory() = default;
+
  public:
    /** 1D models
    ************************************************************************************************************************************************************/
@@ -75,9 +78,6 @@ class ModelFactory
    static Model Cylinder(GLfloat _radius, GLfloat _height);
 
    static Model Cone(GLfloat _radius, GLfloat _height);
-
- private:
-   ModelFactory() = default;
 };
 
 }

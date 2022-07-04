@@ -133,10 +133,10 @@ GetOpenGLType(TextureType _type)
 }
 
 std::string
-GetTextureName(const std::string& _material, const std::string& _item, size_t _index, size_t _resolution)
+GetTextureName(const std::string& _material, const std::string& item, size_t index, size_t _resolution)
 {
    ASSERT(_resolution == 1 || _resolution == 2 || _resolution == 4 || _resolution == 8, "Only 1K, 2K, 4K, and 8K resolutions are recognised.")
-   return _material + "/" + _item + "/" + ToString(_index) + "/" + ToString(_resolution) + "K";
+   return _material + "/" + (item.empty() ? "" : item + "/") + ToString(index) + "/" + ToString(_resolution) + "K";
 }
 
 std::string
