@@ -443,11 +443,6 @@ TEST_F(VectorTest, CrossProduct)
   EXPECT_NEAR(Magnitude(CrossProduct(random0, random1)), Magnitude(random0)*Magnitude(random1)*Sin(ComputeAngle(random0, random1)), Two*Small);
 }
 
-TEST_F(VectorTest, LpNorm)
-{
-  EXPECT_TRUE(false);
-}
-
 TEST_F(VectorTest, L1Norm)
 {
   EXPECT_DOUBLE_EQ(L1Norm(FloatStaticVector), std::accumulate(FloatStaticVector.begin(), FloatStaticVector.end(), Zero));

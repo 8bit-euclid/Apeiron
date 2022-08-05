@@ -5,7 +5,7 @@
 #include "Types.h"
 #include "BasicMath.h"
 
-namespace aprn{
+namespace aprn {
 
 constexpr Float RelativeTolerance = Small;
 constexpr Float ZeroTolerance = Small;

@@ -3,7 +3,7 @@
 - [ ] C++ Modules integration
 - [ ] Stack frame write-out
 - [ ] Dependency list
-- [ ] Coverall/Git Actions
+- [ ] Coverall/Git _Actions
 - [ ] Use chronos duration for time units
 - [ ] Use pure virtual interfaces where possible
 

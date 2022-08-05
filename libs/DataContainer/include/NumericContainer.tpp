@@ -1,14 +1,10 @@
-#ifndef NUMERIC_CONT_TEMPLATE_DEF
-#define NUMERIC_CONT_TEMPLATE_DEF
-
-#include "../include/NumericContainer.h"
+#pragma once
 
 namespace aprn {
 namespace detail {
 
 /** Scalar arithmetic operator overloads. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
 NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto _scalar) const
 {
@@ -17,8 +13,7 @@ NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto _scala
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
 NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto _scalar) const
 {
@@ -27,8 +22,7 @@ NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto _scala
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
 NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto _scalar) const
 {
@@ -37,8 +31,7 @@ NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto _scala
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
 NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto _scalar) const
 {
@@ -48,8 +41,7 @@ NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto _scala
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived&
 NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto _scalar)
 {
@@ -57,8 +49,7 @@ NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto _scal
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived&
 NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto _scalar)
 {
@@ -66,8 +57,7 @@ NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto _scal
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived&
 NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto _scalar)
 {
@@ -75,8 +65,7 @@ NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto _scal
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived&
 NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto _scalar)
 {
@@ -86,8 +75,7 @@ NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto _scal
 }
 
 /** Entry-wise binary arithmetic operator overloads. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container) const
@@ -97,8 +85,7 @@ NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& _container) const
@@ -108,8 +95,7 @@ NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& _container
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& _container) const
@@ -119,8 +105,7 @@ NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& _container
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
 NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container) const
@@ -135,8 +120,7 @@ NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container
   return out;
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _container)
@@ -145,8 +129,7 @@ NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _containe
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _container)
@@ -155,8 +138,7 @@ NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _containe
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _container)
@@ -165,8 +147,7 @@ NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _containe
   return Derived();
 }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
 NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _container)
@@ -180,33 +161,22 @@ NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _containe
 }
 
 /** Entry-wise unary operator overloads. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
 NumericContainer<T, derived>::operator-() const { return -1 * Derived(); }
 
 /** Entry randomisation. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 void NumericContainer<T, derived>::Randomise() { FOR_EACH(entry, Derived()) entry = Randomiser(); }
 
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 void NumericContainer<T, derived>::ResetRandomiser(const T min, const T max) { Randomiser.Reset(min, max); }
-
-template<typename T, class D>
-requires Arithmetic<T>
-Random<T> NumericContainer<T, D>::Randomiser = Random<T>();
 
 }//Detail
 
 /** Stand-alone Operator overloads. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived
-operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container)
-{ return _container.Derived() * _scalar; }
+operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container) { return _container.Derived() * _scalar; }
 
 }//aprn
-
-#endif

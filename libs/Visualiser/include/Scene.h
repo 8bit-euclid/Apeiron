@@ -27,21 +27,21 @@ class Scene
 
    Scene(Scene&& other) noexcept = default;
 
-   void Add(Model& model, const std::string& name = "");
+   Scene& Add(Model& model, const std::string& name = "");
 
-   void Add(DirectionalLight&& light, const std::string& name = "");
+   Scene& Add(TeXBox& tex_box, const std::string& name = "");
 
-   void Add(PointLight&& light, const std::string& name = "");
+   Scene& Add(DirectionalLight&& light, const std::string& name = "");
 
-   void Add(SpotLight&& light, const std::string& name = "");
+   Scene& Add(PointLight&& light, const std::string& name = "");
 
-   inline bool isCurrent(const Float current_time) { return StartTime <= current_time && current_time < EndTime; }
+   Scene& Add(SpotLight&& light, const std::string& name = "");
+
+   inline bool isCurrent(const Float current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
 
  private:
    friend class Visualiser;
    friend class Transition;
-
-   void Add(std::shared_ptr<Model> model, const std::string& name);
 
    void Init(const Float start_time);
 
@@ -55,22 +55,22 @@ class Scene
 
    void RenderModels(Shader& shader);
 
-   template<class type> using Map = std::unordered_map<std::string, type>;
-   std::string               Name;
-   Map<SPtr<Model>>          Models;
-   Map<DirectionalLight>     DirectionalLights;
-   Map<PointLight>           PointLights;
-   Map<SpotLight>            SpotLights;
-   Map<TeXBox>               TeXBoxes;
-   Map<Map<SPtr<Texture>>>   Textures;
-   SPtr<Scene>               PrevScene{nullptr};
-   SPtr<Scene>               NextScene{nullptr};
-   std::optional<Transition> TransitionToNext;
-   Float                     Duration;
-   Float                     StartTime;
-   Float                     EndTime;
-   bool                      AdjustDuration{false};
-   static bool               isSingleScene;
+   template<class type> using UMap = std::unordered_map<std::string, type>;
+   std::string            _Title;
+   UMap<SPtr<Model>>      _Models;
+   UMap<SPtr<TeXBox>>     _TeXBoxes;
+   UMap<DirectionalLight> _DLights;
+   UMap<PointLight>       _PLights;
+   UMap<SpotLight>        _SLights;
+   UMap<UMap<Texture&>>   _Textures;
+   Transition             _Transition{};
+   Scene*                 _PrevScene{nullptr};
+   Scene*                 _NextScene{nullptr};
+   Float                  _Duration;
+   Float                  _StartTime;
+   Float                  _EndTime;
+   bool                   _AdjustDuration{false};
+   static bool            _isSingleScene;
 };
 
 }

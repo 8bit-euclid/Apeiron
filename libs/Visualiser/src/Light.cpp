@@ -48,7 +48,7 @@ DirectionalLight::DirectionalLight(glm::vec3 _direction, glm::vec4 _rgba_colour,
 /***************************************************************************************************************************************************************
 * Point Light Abstract Base Class
 ***************************************************************************************************************************************************************/
-namespace Detail {
+namespace detail {
 
 template<class derived>
 PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour,
@@ -81,9 +81,9 @@ PointLightBase<derived>::~PointLightBase() { nPointLights--; }
 
 }
 
-template class Detail::PointLightBase<PointLight>;
-template class Detail::PointLightBase<SpotLight>;
-template<class derived> UInt Detail::PointLightBase<derived>::nPointLights = 0;
+template class detail::PointLightBase<PointLight>;
+template class detail::PointLightBase<SpotLight>;
+template<class derived> UInt detail::PointLightBase<derived>::nPointLights = 0;
 
 /***************************************************************************************************************************************************************
 * Point Light Class

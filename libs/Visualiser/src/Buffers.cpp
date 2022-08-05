@@ -1,11 +1,16 @@
 #include "../include/Buffers.h"
+#include <GLFW/glfw3.h>
 
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
-Buffer::Buffer() { GLCall(glGenBuffers(1, &ID)); }
+Buffer::Buffer()
+{
+   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
+   GLCall(glGenBuffers(1, &ID));
+}
 
 Buffer::~Buffer() { Delete(); }
 
@@ -101,7 +106,11 @@ ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& _data) const
 /***************************************************************************************************************************************************************
 * Vertex Array Class
 ***************************************************************************************************************************************************************/
-VertexArray::VertexArray() { GLCall(glGenVertexArrays(1, &ID)); }
+VertexArray::VertexArray()
+{
+   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
+   GLCall(glGenVertexArrays(1, &ID));
+}
 
 VertexArray::~VertexArray() { Delete(); }
 
@@ -142,7 +151,11 @@ VertexArray::Delete()
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-FrameBuffer::FrameBuffer() { GLCall(glGenFramebuffers(1, &ID)); }
+FrameBuffer::FrameBuffer()
+{
+   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
+   GLCall(glGenFramebuffers(1, &ID));
+}
 
 FrameBuffer::FrameBuffer(FrameBuffer&& _fbo) noexcept
 {

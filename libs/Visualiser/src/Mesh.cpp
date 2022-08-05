@@ -4,11 +4,11 @@
 namespace aprn::vis {
 
 template<typename T>
-void VertexAttributeLayout::AddAttribute(const GLuint _n_values)
+void VertexAttributeLayout::AddAttribute(const GLuint n_values)
 {
   constexpr GLenum typeEnum = GLTypeEnum<T>();
-  Attributes.emplace_back(typeEnum, _n_values, (typeEnum == GL_UNSIGNED_BYTE ? GL_TRUE : GL_FALSE));
-  Stride += _n_values * GLTypeSize(typeEnum);
+  Attributes.emplace_back(typeEnum, n_values, (typeEnum == GL_UNSIGNED_BYTE ? GL_TRUE : GL_FALSE));
+  Stride += n_values * GLTypeSize(typeEnum);
 }
 
 Mesh::Mesh()

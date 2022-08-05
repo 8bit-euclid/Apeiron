@@ -1,9 +1,7 @@
-#ifndef ACTION_TEMPLATE_DEF
-#define ACTION_TEMPLATE_DEF
+//#pragma once
 
-#include "../include/Action.h"
-#include "../include/Model.h"
-#include "../include/GLTypes.h"
+#include "Model.h"
+#include "GLTypes.h"
 
 namespace aprn::vis {
 
@@ -78,7 +76,7 @@ Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Float start_ti
    switch(type)
    {
       case ActionType::MoveBy: this->Displacement = [&disp_or_posi](Float t){ return (float)t * disp_or_posi; }; break;
-      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Float t){ return (float)t * (disp_or_posi - model.Centroid); }; break;
+      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Float t){ return (float)t * (disp_or_posi - model._Centroid); }; break;
       default: throw std::invalid_argument("Unrecognised action type.");
    }
 }
@@ -107,7 +105,7 @@ template<class D>
 Action<type>::Action(Model& model, const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, std::function<Float(Float)> reparam)
    : ActionBase(model, type, start_time, end_time, reparam)
 {
-   if(type == ActionType::Trace) this->Displacement = [centroid = model.Centroid, path](Float t){ return path.Point(t) - centroid; };
+   if(type == ActionType::Trace) this->Displacement = [centroid = model._Centroid, path](Float t){ return path.Point(t) - centroid; };
    else throw std::invalid_argument("Unrecognised action type.");
 }
 
@@ -218,6 +216,4 @@ Action<type>::Do(const Float global_time)
 //}
 
 }
-
-#endif //ACTION_TEMPLATE_DEF
 

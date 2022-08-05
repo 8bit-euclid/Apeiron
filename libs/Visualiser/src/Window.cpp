@@ -19,86 +19,84 @@ Window::~Window() { glfwTerminate(); }
 void
 Window::Open(GLint _width, GLint _height)
 {
-  if(!glfwInit())
-  {
-    glfwTerminate();
-    EXIT("Failed to Initialise GLFW.")
-  }
+   if(!glfwInit())
+   {
+     glfwTerminate();
+     EXIT("Failed to Initialise GLFW.")
+   }
 
-  // Window properties
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Enforces backward incompatibility
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+   // Window properties
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Enforces backward incompatibility
+   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #ifdef GL_DEBUG_MODE
-  glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+   glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
 
-  // Framebuffer properties
-//  glfwWindowHint(GLFW_RED_BITS, 8);
-//  glfwWindowHint(GLFW_GREEN_BITS, 8);
-//  glfwWindowHint(GLFW_BLUE_BITS, 8);
-//  glfwWindowHint(GLFW_ALPHA_BITS, 8);
+   // Framebuffer properties
+//   glfwWindowHint(GLFW_RED_BITS, 8);
+//   glfwWindowHint(GLFW_GREEN_BITS, 8);
+//   glfwWindowHint(GLFW_BLUE_BITS, 8);
+//   glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
-  // Anti-aliasing properties
-  glfwWindowHint(GLFW_SAMPLES, 24);
-  GLCall(glEnable(GL_MULTISAMPLE));
+   // Anti-aliasing properties
+   glfwWindowHint(GLFW_SAMPLES, 24);
+   GLCall(glEnable(GL_MULTISAMPLE));
 
-  // Create a window and its OpenGL context.
-  WindowDimensions = {_width, _height};
+   // Create a window and its OpenGL context.
+   WindowDimensions = {_width, _height};
    GlfwWindow = glfwCreateWindow(_width, _height, "Apeiron Visualiser", nullptr, nullptr);
-  if(!GlfwWindow)
-  {
-    glfwTerminate();
-    EXIT("Could not create an OpenGL window.")
-  }
+   if(!GlfwWindow)
+   {
+     glfwTerminate();
+     EXIT("Could not create an OpenGL window.")
+   }
 
-  // Set context for GLEW to use
-  glfwMakeContextCurrent(GlfwWindow);
-  glfwSwapInterval(1);
+   // Set context for GLEW to use
+   glfwMakeContextCurrent(GlfwWindow);
+   glfwSwapInterval(1);
 
-  // Set viewport dimensions
-  auto [width, height] = GetFrameBufferSize();
-  ViewportDimensions[0] = width;
-  ViewportDimensions[1] = height;
+   // Set viewport dimensions
+   std::tie(ViewportDimensions[0], ViewportDimensions[1]) = GetFrameBufferSize();
 
-  // Handle key mouse inputs
-  CreateCallBacks();
-//  glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  glfwSetInputMode(GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+   // Handle key mouse inputs
+   CreateCallBacks();
+//   glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+   glfwSetInputMode(GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  // Allow modern extension features
-  glewExperimental = GL_TRUE;
+   // Allow modern extension features
+   glewExperimental = GL_TRUE;
 
-  // Initialise GLEW
-  if(glewInit() != GLEW_OK)
-  {
-    glfwDestroyWindow(GlfwWindow);
-    glfwTerminate();
-    EXIT("Failed to Initialise GLEW.")
-  }
-  else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
+   // Initialise GLEW
+   if(glewInit() != GLEW_OK)
+   {
+     glfwDestroyWindow(GlfwWindow);
+     glfwTerminate();
+     EXIT("Failed to Initialise GLEW.")
+   }
+//   else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
 
-  // Initialise OpenGL debug output
+   // Initialise OpenGL debug output
 #ifdef GL_DEBUG_MODE
-  int flags;
-  GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
-  if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-  {
-    GLCall(glEnable(GL_DEBUG_OUTPUT));
-    GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-    GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
-    GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
-  }
+   int flags;
+   GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
+   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+   {
+     GLCall(glEnable(GL_DEBUG_OUTPUT));
+     GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+     GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
+     GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
+   }
 #endif
 
-  GLCall(glEnable(GL_DEPTH_TEST));
-  GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+   GLCall(glEnable(GL_DEPTH_TEST));
+   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
-//  GLCall(glEnable(GL_BLEND));
-//  GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+//   GLCall(glEnable(GL_BLEND));
+//   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-  glfwSetWindowUserPointer(GlfwWindow, this);
+   glfwSetWindowUserPointer(GlfwWindow, this);
 }
 
 bool

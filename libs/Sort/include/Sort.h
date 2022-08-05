@@ -60,7 +60,7 @@ class Sort
 
   inline size_t GetIndex(const size_t _i_object)
   {
-    return SortObjects[_i_object].Index;
+    return SortObjects[_i_object]._Index;
   }
 
   inline const StaticArray<T, n_values>& GetValues(const size_t _i_object)

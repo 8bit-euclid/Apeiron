@@ -44,7 +44,7 @@ struct VertexAttributeLayout
    VertexAttributeLayout() : Stride(0) {};
 
    template<typename T>
-   void AddAttribute(GLuint _n_values);
+   void AddAttribute(GLuint n_values);
 
    DynamicArray<VertexAttribute> Attributes;
    GLuint                        Stride;
@@ -61,7 +61,6 @@ class Mesh
 
  private:
    friend class Model;
-   friend class TestTexture2D;
    friend class ModelFactory;
 
    VertexAttributeLayout VertexLayout;

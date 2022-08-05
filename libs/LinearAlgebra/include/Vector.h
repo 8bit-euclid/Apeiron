@@ -84,11 +84,11 @@ class DynamicVector : public DynamicArray<T>,
    DynamicVector()
      : BaseArray() {}
 
-   explicit DynamicVector(const size_t _size)
-     : BaseArray(_size) {}
+   explicit DynamicVector(const size_t size)
+     : BaseArray(size) {}
 
-   DynamicVector(const size_t _size, const T& value)
-     : BaseArray(_size, value) {}
+   DynamicVector(const size_t size, const T& value)
+     : BaseArray(size, value) {}
 
    DynamicVector(const std::initializer_list<T>& list)
      : BaseArray(list) {}

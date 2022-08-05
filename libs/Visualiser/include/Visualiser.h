@@ -1,8 +1,9 @@
 #pragma once
 
-//#include "../include/Global.h"
-#include "../../DataContainer/include/Array.h"
+#include "../../../include/Global.h"
+#include "DataContainer/include/Array.h"
 #include "Camera.h"
+#include "GlyphSheet.h"
 #include "ModelFactory.h"
 #include "Light.h"
 #include "Model.h"
@@ -18,6 +19,8 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+
+#include <map>
 
 namespace aprn::vis {
 
@@ -56,16 +59,16 @@ class Visualiser
 
    void RenderScene();
 
-   template<class type> using Map = std::unordered_map<std::string, type>;
-
-   Map<Scene>        Scenes;
-   Map<Camera>       Cameras;
-   Map<Shader>       Shaders;
-   Map<Map<Texture>> Textures;
-   Camera*           ActiveCamera;
-   Scene*            CurrentScene;
-   Window            OpenGLWindow;
-   bool              wasViewPortModified;
+   template<class type> using UMap = std::unordered_map<std::string, type>;
+   UMap<Scene>                      _Scenes;
+   UMap<Camera>                     _Cameras;
+   UMap<Shader>                     _Shaders;
+   UMap<UMap<Texture>>              _Textures;
+   std::map<Font, List<GlyphSheet>> _GlyphSheets;
+   Camera*                          _ActiveCamera;
+   Scene*                           _CurrentScene;
+   Window                           _OpenGLWindow;
+   bool                             _isViewPortModified;
 };
 
 }

@@ -64,11 +64,11 @@ public:
   DynamicMatrix()
     : BaseMultiArray() {}
 
-  explicit DynamicMatrix(const size_t _size)
-    : BaseMultiArray(_size) {}
+  explicit DynamicMatrix(const size_t size)
+    : BaseMultiArray(size) {}
 
-  DynamicMatrix(const size_t _size, const T& value)
-    : BaseMultiArray(_size, value) {}
+  DynamicMatrix(const size_t size, const T& value)
+    : BaseMultiArray(size, value) {}
 
   explicit DynamicMatrix(const std::initializer_list<T>& list)
     : BaseMultiArray(list) {}

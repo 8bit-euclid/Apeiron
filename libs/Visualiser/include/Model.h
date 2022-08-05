@@ -31,8 +31,6 @@ class Model
 
    ~Model();
 
-   void Init();
-
    void Update(Float global_time);
 
    void Render();
@@ -41,11 +39,15 @@ class Model
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetColour(const SVectorF3& _rgb_colour);
+   Model& SetColour(const SVectorF3& rgb_colour);
 
    Model& SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness);
 
    Model& SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution);
+
+   Model& Add(Model& sub_model, const std::string& name);
+
+   Model& Add(Model&& sub_model, const std::string& name);
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
@@ -89,15 +91,16 @@ class Model
    /** Members Accessors
    ************************************************************************************************************************************************************/
    inline const glm::mat4&
-   GetModelMatrix() const { return ModelMatrix; }
+   GetModelMatrix() const { return _ModelMatrix; }
 
- private:
+ protected:
    friend class Visualiser;
    friend class Scene;
    friend class ModelFactory;
    friend class ActionBase;
-   friend class TestTexture2D;
    template<ActionType type> friend class Action;
+
+   void Init();
 
    void ComputeLifespan();
 
@@ -111,26 +114,28 @@ class Model
 
    /** Model Attributes
    ************************************************************************************************************************************************************/
-   Mesh                                                         Geometry;
-   std::unordered_map<std::string, SPtr<Model>>                 SubModels;
-   std::map<ActionType, SPtr<ActionBase>, ActionTypeComparator> Actions;
-   std::optional<std::string>                                   TextureSpec;
-   std::optional<Material>                                      MaterialSpec;
-   glm::vec3                                                    Centroid;
-   glm::vec4                                                    StrokeColour;
-   glm::vec4                                                    FillColour;
-   glm::mat4                                                    ModelMatrix{1.0f};
-   glm::mat4                                                    PreviousActions{1.0f};
-   Float                                                        EntryTime{Zero};
-   Float                                                        ExitTime{InfFloat<>};
-   bool                                                         isInitialised{false};
+   template<class type> using Map = std::unordered_map<std::string, type>;
+
+   Mesh                                           _Mesh;
+   Map<SPtr<Model>>                               _SubModels;
+   std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
+   std::optional<std::string>                     _Texture;
+   std::optional<Material>                        _Material;
+   Colour                                         _StrokeColour;
+   Colour                                         _FillColour;
+   glm::vec3                                      _Centroid;
+   glm::mat4                                      _ModelMatrix{1.0f};
+   glm::mat4                                      _PreviousActions{1.0f};
+   Float                                          _EntryTime{Zero};
+   Float                                          _ExitTime{InfFloat<>};
+   bool                                           _isInitialised{false};
 
    /** Data Buffers
    ************************************************************************************************************************************************************/
-   VertexArray                        VAO;
-   VertexBuffer                       VBO;
-   IndexBuffer                        EBO;
-   std::optional<ShaderStorageBuffer> SSBO;
+   VertexArray                        _VAO;
+   VertexBuffer                       _VBO;
+   IndexBuffer                        _EBO;
+   std::optional<ShaderStorageBuffer> _SSBO;
 };
 
 }
