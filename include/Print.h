@@ -18,16 +18,12 @@ enum class PrintFormat
 
 /** Comma operator overload or output stream. */
 template<typename T>
-std::ostream& operator,(std::ostream& _out, const T& _data)
-{
-  _out << _data;
-  return _out;
-}
+std::ostream& operator,(std::ostream& out, const T& data) { return out << data; }
 
 /** Set print format. */
-inline void SetFormat(const PrintFormat _print_format)
+inline void SetFormat(const PrintFormat format)
 {
-  switch(_print_format)
+  switch(format)
   {
     case PrintFormat::Fixed:
       std::cout << std::fixed;
@@ -47,31 +43,22 @@ inline void SetFormat(const PrintFormat _print_format)
 }
 
 /** Set precision of the output. */
-inline void SetPrecision(const int _significant_figures)
-{
-  std::cout << std::setprecision(_significant_figures);
-}
+inline void SetPrecision(const int _significant_figures) { std::cout << std::setprecision(_significant_figures); }
 
 /** Flush output stream. */
-inline void Flush()
-{
-  std::cout << std::flush;
-}
+inline void Flush() { std::cout << std::flush; }
 
 /** Print a new line. */
 template<char sep = ' '>
-inline void Print()
-{
-  std::cout << '\b',' ','\n';
-}
+inline void Print() { std::cout << '\b',' ','\n'; }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
 template<char sep = ' ', typename T, typename... Ts>
-inline void Print(const T& _data, Ts... _trailing_data)
+inline void Print(const T& data, Ts... trailing_data)
 {
-  std::cout << _data;
+  std::cout << data;
   if(sep != '\0') std::cout << sep;
-  Print<sep>(_trailing_data...);
+  Print<sep>(trailing_data...);
 }
 
 ///** Print the current stack trace to screen. */

@@ -2,7 +2,7 @@
 #define MULTIARRAY_TEMPLATE_DEF
 
 #include "../../../include/Global.h"
-#include "../include/MultiArray.h"
+#include "MultiArray.h"
 
 namespace aprn {
 

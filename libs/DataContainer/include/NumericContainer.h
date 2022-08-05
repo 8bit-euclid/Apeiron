@@ -73,16 +73,15 @@ public:
   Derived() const noexcept { return static_cast<const derived&>(*this); }
 
 private:
-  static Random<T> Randomiser;
+  inline static Random<T> Randomiser = Random<T>();
 };
 
 }//detail
 
 /** Stand-alone Operator overloads. */
-template<typename T, class derived>
-requires Arithmetic<T>
+template<Arithmetic T, class derived>
 constexpr derived operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container);
 
 }//aprn
 
-#include "../src/NumericContainer.cpp"
+#include "NumericContainer.tpp"

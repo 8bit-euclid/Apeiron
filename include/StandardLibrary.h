@@ -3,6 +3,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdint>
+#include <ctype.h>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>

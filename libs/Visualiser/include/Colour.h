@@ -13,7 +13,7 @@ enum class ColourModel
    CMYK
 };
 
-struct ColourSpec
+struct Colour
 {
    SVectorF4   Values{};
    ColourModel Type{ColourModel::RGB};

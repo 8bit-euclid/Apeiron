@@ -3,97 +3,87 @@
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
-* Public Interface
+* Model Public Interface
 ***************************************************************************************************************************************************************/
 Model::Model()
-   : VAO(), VBO(), EBO() {}
+   : _VAO(), _VBO(), _EBO() {}
 
 Model::Model(const Model& model)
    : Model()
 {
-   ASSERT(!isInitialised, "Cannot copy construct a model if it has already been initialised.")
+   ASSERT(!_isInitialised, "Cannot copy construct a model if it has already been initialised.")
    *this = model;
 }
 
 Model::Model(Model&& model) noexcept
    : Model()
 {
-   ASSERT(!isInitialised, "Cannot move construct a model if it has already been initialised.")
+   ASSERT(!_isInitialised, "Cannot yet move construct a model if it has already been initialised.")
    *this = std::move(model);
 }
 
 Model::~Model() { Delete(); }
 
 void
-Model::Init()
-{
-   if(isInitialised) return;
-
-   // Compute vertex normals
-   Geometry.ComputeVertexNormals();
-
-   // Load vertex and index buffer objects
-   VAO.Bind();
-   VBO.Init(Geometry.Vertices);
-   EBO.Init(Geometry.Indices);
-
-   // Add vertex buffer to vertex array object
-   VAO.AddBuffer(VBO, Geometry.GetVertexLayout());
-   VAO.Unbind();
-
-   // Compute entry/exit times
-   ComputeLifespan();
-
-   isInitialised = true;
-}
-
-void
 Model::Update(Float global_time)
 {
    Reset();
-   FOR_EACH(_, action, Actions) action->Do(global_time);
+   FOR_EACH(_, action, _Actions) action->Do(global_time);
 }
 
 void
 Model::Render()
 {
-   VAO.Bind();
-   EBO.Bind();
+   _VAO.Bind();
+   _EBO.Bind();
 
-   GLCall(glDrawElements(GL_TRIANGLES, EBO.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+   GLCall(glDrawElements(GL_TRIANGLES, _EBO.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
 
-   EBO.Unbind();
-   VAO.Unbind();
+   _EBO.Unbind();
+   _VAO.Unbind();
 }
 
 void
 Model::Delete()
 {
-   VBO.Delete();
-   VAO.Delete();
-   EBO.Delete();
+   _VBO.Delete();
+   _VAO.Delete();
+   _EBO.Delete();
 }
 
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
 Model&
-Model::SetColour(const SVectorF3& _rgb_colour)
+Model::SetColour(const SVectorF3& rgb_colour)
 {
-   FOR_EACH(vertex, Geometry.Vertices) vertex.Colour = SArrayToGlmVec(_rgb_colour);
+   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
    return *this;
 }
 
 Model&
 Model::SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness)
 {
-   MaterialSpec.emplace(name, _specular_intensity, _smoothness);
+   _Material.emplace(name, _specular_intensity, _smoothness);
    return *this;
 }
 
 Model&
 Model::SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution)
 {
-   TextureSpec.emplace(GetTextureName(_material, item, index, _resolution));
+   _Texture.emplace(GetTextureName(_material, item, index, _resolution));
+   return *this;
+}
+
+Model&
+Model::Add(Model& sub_model, const std::string& name) { return Add(std::move(sub_model), name); }
+
+Model&
+Model::Add(Model&& sub_model, const std::string& name)
+{
+   const std::string& id = name.empty() ? "SubModel_" + ToString(_SubModels.size()) : name;
+   auto pmodel = std::make_shared<Model>(std::move(sub_model));
+   pmodel->Init();
+   _SubModels[id] = pmodel;
    return *this;
 }
 
@@ -103,7 +93,7 @@ Model&
 Model::OffsetPosition(const SVectorF3& _displacement)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(_displacement));
-   Actions.insert({ActionType::OffsetPosition, ptr});
+   _Actions.insert({ActionType::OffsetPosition, ptr});
    return *this;
 }
 
@@ -111,7 +101,7 @@ Model&
 Model::OffsetOrientation(Float angle, const SVectorF3& axis)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetOrientation>>(*this, angle, SArrayToGlmVec(axis));
-   Actions.insert({ActionType::OffsetOrientation, ptr});
+   _Actions.insert({ActionType::OffsetOrientation, ptr});
    return *this;
 }
 
@@ -126,7 +116,7 @@ Model&
 Model::Scale(const SVectorF3& _factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(_factors), start_time, end_time);
-   Actions.insert({ActionType::Scale, ptr});
+   _Actions.insert({ActionType::Scale, ptr});
    return *this;
 }
 
@@ -134,7 +124,7 @@ Model&
 Model::MoveBy(const SVectorF3& _displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(_displacement), start_time, end_time);
-   Actions.insert({ActionType::MoveBy, ptr});
+   _Actions.insert({ActionType::MoveBy, ptr});
    return *this;
 }
 
@@ -142,7 +132,7 @@ Model&
 Model::MoveTo(const SVectorF3& _position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(_position), start_time, end_time);
-   Actions.insert({ActionType::MoveTo, ptr});
+   _Actions.insert({ActionType::MoveTo, ptr});
    return *this;
 }
 
@@ -158,7 +148,7 @@ Model&
 Model::Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   Actions.insert({ActionType::Trace, ptr});
+   _Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
 
@@ -166,7 +156,7 @@ Model&
 Model::Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   Actions.insert({ActionType::Trace, ptr});
+   _Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
 
@@ -175,7 +165,7 @@ Model&
 Model::Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   Actions.insert({ActionType::Trace, ptr});
+   _Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
 
@@ -183,7 +173,7 @@ Model&
 Model::RotateBy(Float angle, const SVectorF3& axis, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateBy>>(*this, angle, SArrayToGlmVec(axis), start_time, end_time);
-   Actions.insert({ActionType::RotateBy, ptr});
+   _Actions.insert({ActionType::RotateBy, ptr});
    return *this;
 }
 
@@ -191,7 +181,7 @@ Model&
 Model::RotateAt(const SVectorF3& angular_velocity, Float start_time, const std::function<Float(Float)>& ramp)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateAt>>(*this, SArrayToGlmVec(angular_velocity), start_time, ramp);
-   Actions.insert({ActionType::RotateAt, ptr});
+   _Actions.insert({ActionType::RotateAt, ptr});
    return *this;
 }
 
@@ -201,7 +191,7 @@ Model::RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point
 {
    SPtr<ActionBase> ptr =
       std::make_shared<Action<ActionType::RevolveBy>>(*this, angle, SArrayToGlmVec(axis), SArrayToGlmVec(refe_point), start_time, end_time);
-   Actions.insert({ActionType::RevolveBy, ptr});
+   _Actions.insert({ActionType::RevolveBy, ptr});
    return *this;
 }
 
@@ -216,22 +206,23 @@ Model::RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point
 Model&
 Model::operator=(const Model& model)
 {
-   ASSERT(!isInitialised, "Cannot yet copy assign a model if it has already been initialised.")
+   ASSERT(model._SubModels.empty() && model._Actions.empty(), "Can currently only copy empty models.")
+   ASSERT(!_isInitialised, "Cannot yet copy assign a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Geometry        = model.Geometry;
-   SubModels       = model.SubModels;
-   TextureSpec     = model.TextureSpec;
-   MaterialSpec    = model.MaterialSpec;
-   Actions         = model.Actions;
-   Centroid        = model.Centroid;
-   StrokeColour    = model.StrokeColour;
-   FillColour      = model.FillColour;
-   ModelMatrix     = model.ModelMatrix;
-   PreviousActions = model.PreviousActions;
-   EntryTime       = model.EntryTime;
-   ExitTime        = model.ExitTime;
-   isInitialised   = model.isInitialised;
+   _Mesh            = model._Mesh;
+   _SubModels       = model._SubModels;
+   _Texture         = model._Texture;
+   _Material        = model._Material;
+   _Actions         = model._Actions;
+   _Centroid        = model._Centroid;
+   _StrokeColour    = model._StrokeColour;
+   _FillColour      = model._FillColour;
+   _ModelMatrix     = model._ModelMatrix;
+   _PreviousActions = model._PreviousActions;
+   _EntryTime       = model._EntryTime;
+   _ExitTime        = model._ExitTime;
+   _isInitialised   = model._isInitialised;
 
    return *this;
 }
@@ -239,54 +230,80 @@ Model::operator=(const Model& model)
 Model&
 Model::operator=(Model&& model) noexcept
 {
-   ASSERT(!isInitialised, "Cannot yet move assign a model if it has already been initialised.")
+   ASSERT(!_isInitialised, "Cannot yet move assign a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Geometry        = std::move(model.Geometry);
-   SubModels       = std::move(model.SubModels);
-   TextureSpec     = std::move(model.TextureSpec);
-   MaterialSpec    = std::move(model.MaterialSpec);
-   Centroid        = std::move(model.Centroid);
-   StrokeColour    = std::move(model.StrokeColour);
-   FillColour      = std::move(model.FillColour);
-   ModelMatrix     = std::move(model.ModelMatrix);
-   PreviousActions = std::move(model.PreviousActions);
-   EntryTime       = std::move(model.EntryTime);
-   ExitTime        = std::move(model.ExitTime);
-   isInitialised   = std::move(model.isInitialised);
-   Actions         = std::move(model.Actions);
+   _Mesh            = std::move(model._Mesh);
+   _SubModels       = std::move(model._SubModels);
+   _Texture         = std::move(model._Texture);
+   _Material        = std::move(model._Material);
+   _Centroid        = std::move(model._Centroid);
+   _StrokeColour    = std::move(model._StrokeColour);
+   _FillColour      = std::move(model._FillColour);
+   _ModelMatrix     = std::move(model._ModelMatrix);
+   _PreviousActions = std::move(model._PreviousActions);
+   _EntryTime       = std::move(model._EntryTime);
+   _ExitTime        = std::move(model._ExitTime);
+   _isInitialised   = std::move(model._isInitialised);
+   _Actions         = std::move(model._Actions);
+
+   // Reset moved-from model. Note: need to specifically invoke the copy assigment operator here, NOT the move assignment operator.
+   model = Unmove(Model());
 
    // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
-   FOR_EACH(_, action, Actions) action->Actor = std::ref(*this);
+   FOR_EACH(_, action, _Actions) action->Actor = std::ref(*this);
 
    return *this;
 }
 
 
 /***************************************************************************************************************************************************************
-* Private Interface
+* Model Protected Interface
 ***************************************************************************************************************************************************************/
+void
+Model::Init()
+{
+   if(_isInitialised) return;
+
+   // Compute vertex normals
+   _Mesh.ComputeVertexNormals();
+
+   // Load vertex and index buffer objects
+   _VAO.Bind();
+   _VBO.Init(_Mesh.Vertices);
+   _EBO.Init(_Mesh.Indices);
+
+   // Add vertex buffer to vertex array object
+   _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
+   _VAO.Unbind();
+
+   // Compute entry/exit times
+   ComputeLifespan();
+
+   _isInitialised = true;
+}
+
 void
 Model::ComputeLifespan()
 {
-   FOR_EACH(_, action, Actions)
+   FOR_EACH(_, action, _Actions)
    {
-      EntryTime = Min(EntryTime, action->StartTime);
-      ExitTime  = Max(ExitTime,  action->EndTime);
+      _EntryTime = Min(_EntryTime, action->StartTime);
+      _ExitTime  = Max(_ExitTime, action->EndTime);
    }
 }
 
 void
-Model::Reset() { ModelMatrix = glm::mat4(1.0); }
+Model::Reset() { _ModelMatrix = glm::mat4(1.0); }
 
 void
-Model::Scale(const glm::vec3& factors) { ModelMatrix = glm::scale(ModelMatrix, factors); }
+Model::Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
 
 void
-Model::Translate(const glm::vec3& displacement) { ModelMatrix = glm::translate(ModelMatrix, displacement); }
+Model::Translate(const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
 
 void
-Model::Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix = glm::rotate(ModelMatrix, angle, axis); }
+Model::Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
 
 }
 

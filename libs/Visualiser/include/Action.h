@@ -5,7 +5,7 @@
 #include "Manifold/include/Curve.h"
 
 #include "ActionBase.h"
-#include "Model.h"
+//#include "Model.h"
 
 #include <functional>
 #include <memory>
@@ -16,7 +16,7 @@
 
 namespace aprn::vis {
 
-//class Model;
+class Model;
 
 /***************************************************************************************************************************************************************
 * Action Class Full Specialisations
@@ -198,4 +198,4 @@ class Action<type> final : public ActionBase
 
 }
 
-#include "../src/Action.cpp"
+#include "Action.tpp"

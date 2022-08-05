@@ -106,4 +106,4 @@ private:
 
 }
 
-#include "../src/MultiArray.cpp"
+#include "MultiArray.tpp"

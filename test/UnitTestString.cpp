@@ -20,16 +20,16 @@ TEST_F(ApeironTest, ToString)
 
 TEST_F(ApeironTest, ToNumber)
 {
-   EXPECT_EQ(ToNumber("1"),            1);
-   EXPECT_EQ(ToNumber<int>("1"),       1);
-   EXPECT_EQ(ToNumber<long>("1"),      1);
+   EXPECT_EQ(ToNumber("1")           , 1);
+   EXPECT_EQ(ToNumber<int>("1")      , 1);
+   EXPECT_EQ(ToNumber<long>("1")     , 1);
    EXPECT_EQ(ToNumber<long long>("1"), 1);
 
-   EXPECT_EQ(ToNumber<float>("5.5"),       5.5);
-   EXPECT_EQ(ToNumber<double>("5.5"),      5.5);
+   EXPECT_EQ(ToNumber<float>("5.5")      , 5.5);
+   EXPECT_EQ(ToNumber<double>("5.5")     , 5.5);
    EXPECT_EQ(ToNumber<long double>("5.5"), 5.5);
-   EXPECT_EQ(ToNumber<double>("5.5e10"),   5.5e10);
-   EXPECT_EQ(ToNumber<double>("5.5e-3"),   0.0055);
+   EXPECT_EQ(ToNumber<double>("5.5e-3")  , 0.0055);
+   EXPECT_EQ(ToNumber<double>("5.5e10")  , 5.5e10);
 }
 
 TEST_F(ApeironTest, isSubstring)
@@ -41,6 +41,9 @@ TEST_F(ApeironTest, isSubstring)
    EXPECT_TRUE(isSubstring("rue"  , "True"));
    EXPECT_TRUE(isSubstring(""     , "True"));
    EXPECT_TRUE(isSubstring("wo wo", "Two words"));
+   EXPECT_TRUE(isSubstring(" "    , "Two words"));
+   EXPECT_TRUE(isSubstring("\t"   , "Two\twords"));
+   EXPECT_TRUE(isSubstring("\n"   , "Two\nwords"));
 
    EXPECT_FALSE(isSubstring("T"   , "False"));
    EXPECT_FALSE(isSubstring("r"   , "False"));
@@ -49,6 +52,22 @@ TEST_F(ApeironTest, isSubstring)
    EXPECT_FALSE(isSubstring("p"   , "False"));
    EXPECT_FALSE(isSubstring("Pal" , "False"));
    EXPECT_FALSE(isSubstring("wo o", "Two words"));
+   EXPECT_FALSE(isSubstring("\t"  , "Two words"));
+   EXPECT_FALSE(isSubstring("\n"  , "Two words"));
+   EXPECT_FALSE(isSubstring(" "   , "Two\twords"));
+   EXPECT_FALSE(isSubstring("\n"  , "Two\twords"));
+   EXPECT_FALSE(isSubstring(" "   , "Two\nwords"));
+   EXPECT_FALSE(isSubstring("\t"  , "Two\nwords"));
+
+   // Test raw string literals
+   EXPECT_TRUE(isSubstring("\\pi"  , R"(2\pi)"));
+   EXPECT_TRUE(isSubstring(R"(\pi)", R"(2\pi)"));
+   EXPECT_TRUE(isSubstring(R"(\pi)", "2\\pi"));
+   EXPECT_TRUE(isSubstring(R"(\)"  , R"(2\pi)"));
+   EXPECT_TRUE(isSubstring("\\"    , R"(2\pi)"));
+   EXPECT_TRUE(isSubstring("   "   , R"(Two   words)"));
+   EXPECT_TRUE(isSubstring("\n    ", R"(Two
+    words)"));
 }
 
 TEST_F(ApeironTest, Replace)
@@ -58,7 +77,7 @@ TEST_F(ApeironTest, Replace)
    EXPECT_EQ(Replace("u"    , "e" , "True")     , "Tree");
    EXPECT_EQ(Replace("e"    , "D" , "True")     , "TruD");
    EXPECT_EQ(Replace("rue"  , "oe", "True")     , "Toe");
-   EXPECT_EQ(Replace(""     , "-" , "True")     , "-T-r-u-e-");
+   EXPECT_EQ(Replace(""     , "-" , "True")     , "True");
    EXPECT_EQ(Replace("wo wo", "u" , "Two words"), "Turds");
 }
 
@@ -71,6 +90,7 @@ TEST_F(ApeironTest, Remove)
    EXPECT_EQ(Remove("rue"  , "True")     , "T");
    EXPECT_EQ(Remove(""     , "True")     , "True");
    EXPECT_EQ(Remove("wo wo", "Two words"), "Trds");
+   EXPECT_EQ(Remove("{"    , "args{1}{2}"), "args1}2}");
 }
 
 TEST_F(ApeironTest, Split)
@@ -107,6 +127,137 @@ TEST_F(ApeironTest, Split)
    }
 
    EXPECT_EQ(Split("Test character split.").size(), 21);
+}
+
+TEST_F(ApeironTest, GetFirstEnclosure)
+{
+   std::string enclosure;
+   bool was_found;
+
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Test (this).", '(', ')');
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "this");
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Test (this).", '(', ')', true);
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "(this)");
+
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Now [test] (this).", '[', ']');
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "test");
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Now [test] (this).", '[', ']', true);
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "[test]");
+
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Now (test (this) nested) case.", '(', ')');
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "test (this) nested");
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Now (test (this) nested) case.", '(', ')', true);
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "(test (this) nested)");
+
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Test $this$ too.", '$', '$');
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "this");
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Test $this$ too.", '$', '$', true);
+   EXPECT_TRUE(was_found);
+   EXPECT_EQ(enclosure, "$this$");
+
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Next, test (this).", '[', ']');
+   EXPECT_FALSE(was_found);
+   EXPECT_EQ(enclosure, "");
+   std::tie(enclosure, was_found) = GetFirstEnclosure("Next, test (this).", '[', ']', true);
+   EXPECT_FALSE(was_found);
+   EXPECT_EQ(enclosure, "");
+
+
+   EXPECT_DEATH(GetFirstEnclosure("Also test $this.", '$', '$'), "");
+   EXPECT_DEATH(GetFirstEnclosure("Also test $this.", '$', '$', true), "");
+   EXPECT_DEATH(GetFirstEnclosure("Finally, test {this.", '{', '}'), "");
+   EXPECT_DEATH(GetFirstEnclosure("Finally, test {this.", '{', '}', true), "");
+}
+
+TEST_F(ApeironTest, GetFirstEnclosureChain)
+{
+   std::vector<std::string> enclosure_chain;
+
+   enclosure_chain = GetFirstEnclosureChain("Test (this) (first).", '(', ')');
+   EXPECT_EQ(enclosure_chain.size(), 1);
+   EXPECT_EQ(enclosure_chain[0], "this");
+   enclosure_chain = GetFirstEnclosureChain("Test (this) (first).", '(', ')', true);
+   EXPECT_EQ(enclosure_chain.size(), 1);
+   EXPECT_EQ(enclosure_chain[0], "(this)");
+
+   enclosure_chain = GetFirstEnclosureChain("Test [this][sentence] [next].", '[', ']');
+   EXPECT_EQ(enclosure_chain.size(), 2);
+   EXPECT_EQ(enclosure_chain[0], "this");
+   EXPECT_EQ(enclosure_chain[1], "sentence");
+   enclosure_chain = GetFirstEnclosureChain("Test [this][sentence] [next].", '[', ']', true);
+   EXPECT_EQ(enclosure_chain.size(), 2);
+   EXPECT_EQ(enclosure_chain[0], "[this]");
+   EXPECT_EQ(enclosure_chain[1], "[sentence]");
+
+   enclosure_chain = GetFirstEnclosureChain("[test [this] [nested]][case] [also].", '[', ']');
+   EXPECT_EQ(enclosure_chain.size(), 2);
+   EXPECT_EQ(enclosure_chain[0], "test [this] [nested]");
+   EXPECT_EQ(enclosure_chain[1], "case");
+   enclosure_chain = GetFirstEnclosureChain("[test [this] [nested]][case] [also].", '[', ']', true);
+   EXPECT_EQ(enclosure_chain.size(), 2);
+   EXPECT_EQ(enclosure_chain[0], "[test [this] [nested]]");
+   EXPECT_EQ(enclosure_chain[1], "[case]");
+
+   enclosure_chain = GetAllEnclosures("Next, (test)(this).", '[', ']');
+   EXPECT_TRUE(enclosure_chain.empty());
+   enclosure_chain = GetAllEnclosures("Next, (test)(this).", '[', ']', true);
+   EXPECT_TRUE(enclosure_chain.empty());
+
+   EXPECT_DEATH(GetAllEnclosures("Also {test}{this.", '{', '}'), "");
+   EXPECT_DEATH(GetAllEnclosures("Also {test}{this.", '{', '}', true), "");
+}
+
+TEST_F(ApeironTest, GetAllEnclosures)
+{
+   std::vector<std::string> enclosures;
+
+   enclosures = GetAllEnclosures("Test (this) (first).", '(', ')');
+   EXPECT_EQ(enclosures.size(), 2);
+   EXPECT_EQ(enclosures[0], "this");
+   EXPECT_EQ(enclosures[1], "first");
+   enclosures = GetAllEnclosures("Test (this) (first).", '(', ')', true);
+   EXPECT_EQ(enclosures.size(), 2);
+   EXPECT_EQ(enclosures[0], "(this)");
+   EXPECT_EQ(enclosures[1], "(first)");
+
+   enclosures = GetAllEnclosures("[Test] [this] [second].", '[', ']');
+   EXPECT_EQ(enclosures.size(), 3);
+   EXPECT_EQ(enclosures[0], "Test");
+   EXPECT_EQ(enclosures[1], "this");
+   EXPECT_EQ(enclosures[2], "second");
+   enclosures = GetAllEnclosures("[Test] [this] [second].", '[', ']', true);
+   EXPECT_EQ(enclosures.size(), 3);
+   EXPECT_EQ(enclosures[0], "[Test]");
+   EXPECT_EQ(enclosures[1], "[this]");
+   EXPECT_EQ(enclosures[2], "[second]");
+
+   enclosures = GetAllEnclosures("[Now], [test [this] [nested]] [case].", '[', ']');
+   EXPECT_EQ(enclosures.size(), 3);
+   EXPECT_EQ(enclosures[0], "Now");
+   EXPECT_EQ(enclosures[1], "test [this] [nested]");
+   EXPECT_EQ(enclosures[2], "case");
+   enclosures = GetAllEnclosures("[Now], [test [this] [nested]] [case].", '[', ']', true);
+   EXPECT_EQ(enclosures.size(), 3);
+   EXPECT_EQ(enclosures[0], "[Now]");
+   EXPECT_EQ(enclosures[1], "[test [this] [nested]]");
+   EXPECT_EQ(enclosures[2], "[case]");
+
+   enclosures = GetAllEnclosures("Next, test (this).", '[', ']');
+   EXPECT_TRUE(enclosures.empty());
+   enclosures = GetAllEnclosures("Next, test (this).", '[', ']', true);
+   EXPECT_TRUE(enclosures.empty());
+
+   EXPECT_DEATH(GetAllEnclosures("Also test $this.", '$', '$'), "");
+   EXPECT_DEATH(GetAllEnclosures("Also test $this.", '$', '$', true), "");
+   EXPECT_DEATH(GetAllEnclosures("Finally, test {this.", '{', '}'), "");
+   EXPECT_DEATH(GetAllEnclosures("Finally, test {this.", '{', '}', true), "");
 }
 
 }

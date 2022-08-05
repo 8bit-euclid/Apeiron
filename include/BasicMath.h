@@ -72,11 +72,11 @@ MaxEntry(const iter first, const iter last) { return *std::max_element(first, la
 
 /** Minmax values in a pair, given a first and last iterator. */
 template<class iter>
-constexpr std::pair<IterType<iter>, IterType<iter>>
+constexpr Pair<IterType<iter>>
 MinMaxEntries(const iter first, const iter last)
 {
   auto [min_iter, max_iter] = std::minmax_element(first, last);
-  return {*min_iter, *max_iter};
+  return { *min_iter, *max_iter };
 }
 
 /** Clipped values from a first to a last iterator between a minimum and a maximum. */
@@ -105,13 +105,17 @@ Sgn(const T& value, const int zero_sign = 1)
 template<typename T>
 constexpr bool
 isPositive(const T& value, const int zero_sign = 1)
-{ return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
+{
+   return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative.");
+}
 
 /** Check if a value is negative. */
 template<typename T>
 constexpr bool
 isNegative(const T& value, const int zero_sign = 1)
-{ return zero_sign != 0 ? Sgn(value, zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative."); }
+{
+   return zero_sign != 0 ? Sgn(value, zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative.");
+}
 
 /** Absolute value. */
 template<typename T>

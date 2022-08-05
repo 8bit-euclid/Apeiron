@@ -108,10 +108,12 @@ isInfinity(const T value = T()) { return std::isinf(value); }
 ***************************************************************************************************************************************************************/
 
 /** Smart pointers/reference wrappers. */
-template<class type> using UPtr = std::unique_ptr<type>;
-template<class type> using SPtr = std::shared_ptr<type>;
-template<class type> using WPtr = std::weak_ptr<type>;
-template<class type> using RWpr = std::reference_wrapper<type>;
+template<class T> using UPtr = std::unique_ptr<T>;
+template<class T> using SPtr = std::shared_ptr<T>;
+template<class T> using WPtr = std::weak_ptr<T>;
+template<class T> using RWpr = std::reference_wrapper<T>;
+
+template<class T1, class T2 = T1> using Pair = std::pair<T1, T2>;
 
 /***************************************************************************************************************************************************************
 * Type Checking
@@ -180,7 +182,7 @@ template<class iter>
 using IterType = typename std::iterator_traits<iter>::value_type;
 
 /***************************************************************************************************************************************************************
-* Type Initialisation
+* Static/Dynamic Type Initialisation
 ***************************************************************************************************************************************************************/
 
 /** Get the initial value for each type category. */
@@ -215,5 +217,9 @@ T GetDynamicInitValue()
 template <typename T>
 requires std::is_enum_v<T>
 constexpr auto EnumToInt(T e) noexcept { return static_cast<std::underlying_type_t<T>>(e); }
+
+/** Convert an rvalue reference to an lvalue reference. */
+template <typename T>
+constexpr T& Unmove(T&& t) noexcept { return t; }
 
 }

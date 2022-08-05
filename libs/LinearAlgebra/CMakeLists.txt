@@ -1,14 +1,5 @@
 include_directories(${PROJECT_SOURCE_DIR}/libs/LinearAlgebra)
 
-set(SOURCE_FILES
-        include/Matrix.h
-        include/Vector.h
-        include/VectorOperations.h
-        src/Matrix.cpp
-        src/Vector.cpp)
-
-set(LINK_LIBRARIES
-        DataContainerLibrary)
-
-add_library(LinearAlgebraLibrary ${SOURCE_FILES})
-target_link_libraries(LinearAlgebraLibrary ${LINK_LIBRARIES})
+add_library(LinearAlgebraLibrary INTERFACE)
+target_include_directories(LinearAlgebraLibrary INTERFACE include/)
+target_link_libraries(LinearAlgebraLibrary INTERFACE DataContainerLibrary)

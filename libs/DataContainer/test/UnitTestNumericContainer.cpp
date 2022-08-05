@@ -34,7 +34,7 @@ template<typename T>
 struct DynamicNumericContainer : public DynamicArray<T>,
                                 public NumericContainer<T, DynamicNumericContainer<T>>
 {
-  DynamicNumericContainer(const size_t _size) : DynamicArray<T>::DynamicArray(_size) {}
+  DynamicNumericContainer(const size_t size) : DynamicArray<T>::DynamicArray(size) {}
 };
 
 /***************************************************************************************************************************************************************

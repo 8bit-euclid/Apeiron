@@ -11,12 +11,12 @@ namespace aprn
 class ArrayTest : public testing::Test
 {
 public:
-  StaticArray<bool, ContainerSize> BoolStaticArray;
-  StaticArray<int, ContainerSize> IntStaticArray;
+  StaticArray<bool , ContainerSize> BoolStaticArray;
+  StaticArray<int  , ContainerSize> IntStaticArray;
   StaticArray<Float, ContainerSize> FloatStaticArray;
 
-  DynamicArray<Bool> BoolDynamicArray;
-  DynamicArray<int> IntDynamicArray;
+  DynamicArray<Bool>  BoolDynamicArray;
+  DynamicArray<int>   IntDynamicArray;
   DynamicArray<Float> FloatDynamicArray;
 
   ArrayTest()

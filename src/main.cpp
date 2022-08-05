@@ -7,6 +7,14 @@ using namespace aprn::vis;
 
 int main(void)
 {
+//   PING
+//   const char c = 'a';
+//   const auto str = std::string(1, c);PING
+//   Print(str);
+//   Glyph glyph(c);PING
+//   EXIT("ljlnkjnsd")
+
+
    Visualiser visualiser;
    Scene scene(1000);
    Model model;
@@ -48,10 +56,9 @@ int main(void)
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   scene.Add(model);
-
-   scene.Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
-//   scene.Add(PointLight(glm::vec3(0.0, 4.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.5, 0.1, 0.0}));
+   scene.Add(model)
+        .Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
+//        .Add(PointLight(glm::vec3(0.0, 4.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.5, 0.1, 0.0}));
 
    visualiser.Add(scene);
    visualiser.Render();

@@ -55,20 +55,18 @@ template<typename T, size_t N>
 class StaticArray : public std::array<T, N>,
                     public Array<T, StaticArray<T, N>>
 {
-   using Base = Array<T, StaticArray<T, N>>;
+   using Base     = Array<T, StaticArray<T, N>>;
+   using Iterator = typename StaticArray<T, N>::iterator;
 
  public:
-   /** Constructors */
    constexpr StaticArray();
 
    explicit constexpr StaticArray(const T& value);
 
    constexpr StaticArray(const std::initializer_list<T>& list);
 
-   template<class iter>
-   constexpr StaticArray(const iter first, const iter last);
+   constexpr StaticArray(Iterator first, Iterator last);
 
-   /** Operators */
    using Base::operator[];
    using Base::operator=;
 
@@ -82,26 +80,34 @@ template<typename T>
 class DynamicArray : public std::vector<T>,
                      public Array<T, DynamicArray<T>>
 {
-  using Base = Array<T, DynamicArray<T>>;
+   using Base     = Array<T, DynamicArray<T>>;
+   using Iterator = typename DynamicArray<T>::iterator;
 
-public:
-  /** Constructors */
-  DynamicArray();
+ public:
+   DynamicArray();
 
-  explicit DynamicArray(const size_t _size);
+   explicit DynamicArray(const size_t size);
 
-  DynamicArray(const size_t _size, const T& value);
+   DynamicArray(const size_t size, const T& value);
 
-  DynamicArray(const std::initializer_list<T>& list);
+   DynamicArray(const std::initializer_list<T>& list);
 
-  template<class iter>
-  DynamicArray(const iter first, const iter last);
+   DynamicArray(Iterator first, Iterator last);
 
-  /** Operators */
-  using Base::operator[];
-  using Base::operator=;
+   void Append(const T& value);
 
-  friend Base;
+   void Append(T&& value) noexcept;
+
+   void Append(const DynamicArray<T>& other);
+
+   void Append(DynamicArray<T>&& other) noexcept;
+
+   void Append(Iterator first, Iterator last, const bool move_all = false);
+
+   using Base::operator[];
+   using Base::operator=;
+
+   friend Base;
 };
 
 /***************************************************************************************************************************************************************
@@ -131,4 +137,4 @@ using DArrayF = DArray<Float>;
 
 }
 
-#include "../src/Array.cpp"
+#include "Array.tpp"

@@ -14,6 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 # Set default, debug, and release flags
 set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
 #set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
@@ -60,30 +61,6 @@ file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/b
 add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
 target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
 target_link_libraries(ImGui glfw)
-
-#***************************************************************************************************************************************************************
-# Build instructions for other third-party libraries.
-#***************************************************************************************************************************************************************
-#add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/MicroTeX)
-#find_package(SigC++)
-#find_package(Freetype)
-#find_package(Cairo)
-#find_package(Cairomm)
-#find_package(pango)
-#find_package(pangomm)
-#find_package(glib)
-#find_package(glibmm)
-#find_package(harfbuzz)
-#
-#include_directories(${SigC++_INCLUDE_DIRS})
-#include_directories(${FREETYPE_INCLUDE_DIRS})
-#include_directories(${Cairo_INCLUDE_DIRS})
-#include_directories(${Cairomm_INCLUDE_DIRS})
-#include_directories(${PANGO_INCLUDE_DIRS})
-#include_directories(${PANGOMM_INCLUDE_DIRS})
-#include_directories(${GLIB_INCLUDE_DIRS})
-#include_directories(${GLIBMM_INCLUDE_DIRS})
-#include_directories(${HARFBUZZ_INCLUDE_DIRS})
 
 #***************************************************************************************************************************************************************
 # Setup project sub-directories.
@@ -154,9 +131,10 @@ add_executable(UnitTestMath             ${PROJECT_SOURCE_DIR}/test/UnitTestMath.
 add_executable(UnitTestString           ${PROJECT_SOURCE_DIR}/test/UnitTestString.cpp)
 
 add_executable(UnitTestArray            ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
-add_executable(UnitTestCurve            ${PROJECT_SOURCE_DIR}/libs/Manifold/test/UnitTestCurve.cpp)
 add_executable(UnitTestNumericContainer ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestNumericContainer.cpp)
+add_executable(UnitTestParseTeX         ${PROJECT_SOURCE_DIR}/libs/Visualiser/test/UnitTestParseTeX.cpp)
 add_executable(UnitTestVector           ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/test/UnitTestVector.cpp)
+add_executable(UnitTestCurve            ${PROJECT_SOURCE_DIR}/libs/Manifold/test/UnitTestCurve.cpp)
 
 # Link with gtest, gtest_main, and associated libraries.
 target_link_libraries(UnitTestBasicMath        gtest gtest_main)
@@ -164,7 +142,8 @@ target_link_libraries(UnitTestComparators      gtest gtest_main)
 target_link_libraries(UnitTestMath             gtest gtest_main)
 target_link_libraries(UnitTestString           gtest gtest_main)
 
-target_link_libraries(UnitTestArray            gtest gtest_main)
-target_link_libraries(UnitTestCurve            gtest gtest_main)
-target_link_libraries(UnitTestNumericContainer gtest gtest_main)
-target_link_libraries(UnitTestVector           gtest gtest_main)
+target_link_libraries(UnitTestArray            gtest gtest_main DataContainerLibrary)
+target_link_libraries(UnitTestNumericContainer gtest gtest_main DataContainerLibrary)
+target_link_libraries(UnitTestVector           gtest gtest_main LinearAlgebraLibrary)
+target_link_libraries(UnitTestCurve            gtest gtest_main ManifoldLibrary)
+target_link_libraries(UnitTestParseTeX         gtest gtest_main VisualiserLibrary)

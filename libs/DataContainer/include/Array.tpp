@@ -1,8 +1,6 @@
-#ifndef ARRAY_TEMPLATE_DEF
-#define ARRAY_TEMPLATE_DEF
+#pragma once
 
-#include "../include/Array.h"
-#include "../include/Detail.h"
+#include "Detail.h"
 
 namespace aprn {
 
@@ -107,11 +105,10 @@ constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& list
 }
 
 template<typename T, size_t size>
-template<class iter>
-constexpr StaticArray<T, size>::StaticArray(const iter first, const iter last)
+constexpr StaticArray<T, size>::StaticArray(Iterator first, Iterator last)
   : std::array<T, size>(detail::InitStaticArray<T, size>(first, last))
 {
-  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<iter>::value_type>()), "Mismatch in the iterator data type.")
+  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<Iterator>::value_type>()), "Mismatch in the iterator data type.")
   ASSERT(size == std::distance(first, last), "The number of iterators must equal the array size ", size, ".")
 }
 
@@ -119,27 +116,44 @@ constexpr StaticArray<T, size>::StaticArray(const iter first, const iter last)
 * Dynamic Array Class
 ***************************************************************************************************************************************************************/
 template<typename T>
-DynamicArray<T>::DynamicArray()
-  : std::vector<T>() {}
+DynamicArray<T>::DynamicArray() : std::vector<T>() {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const size_t _size)
-  : DynamicArray(_size, GetDynamicInitValue<T>()) {}
+DynamicArray<T>::DynamicArray(const size_t size) : DynamicArray(size, GetDynamicInitValue<T>()) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const size_t _size, const T& value)
-  : std::vector<T>(_size, value) {}
+DynamicArray<T>::DynamicArray(const size_t size, const T& value) : std::vector<T>(size, value) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const std::initializer_list<T>& list)
-  : std::vector<T>(list) {}
+DynamicArray<T>::DynamicArray(const std::initializer_list<T>& list) : std::vector<T>(list) {}
 
 template<typename T>
-template<class iter>
-DynamicArray<T>::DynamicArray(const iter first, const iter last)
-  : std::vector<T>(first, last) {}
+DynamicArray<T>::DynamicArray(Iterator first, Iterator last) : std::vector<T>(first, last) {}
 
+template<typename T>
+void
+DynamicArray<T>::Append(const T& value) { this->push_back(value); }
+
+template<typename T>
+void
+DynamicArray<T>::Append(T&& value) noexcept { this->emplace_back(std::move(value)); }
+
+template<typename T>
+void
+DynamicArray<T>::Append(const DynamicArray<T>& other) { Append(other.cbegin(), other.cend(), false); }
+
+template<typename T>
+void
+DynamicArray<T>::Append(DynamicArray<T>&& other) noexcept { Append(other.begin(), other.end(), true); }
+
+template<typename T>
+void
+DynamicArray<T>::Append(Iterator first, Iterator last, const bool move_all)
+{
+   this->reserve(this->size() + std::distance(first, last));
+   if(!move_all) this->insert(this->end(), first, last);
+   else this->insert(this->end(), std::make_move_iterator(first), std::make_move_iterator(last));
 }
 
-#endif //ARRAY_TEMPLATE_DEF
+}
 

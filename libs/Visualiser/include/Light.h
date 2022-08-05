@@ -84,7 +84,7 @@ class DirectionalLight : public Light
 /***************************************************************************************************************************************************************
 * Point Light Abstract Base Class
 ***************************************************************************************************************************************************************/
-namespace Detail {
+namespace detail {
 
 template<class derived>
 class PointLightBase : public Light
@@ -136,7 +136,7 @@ class PointLightBase : public Light
 /***************************************************************************************************************************************************************
 * Point Light Class
 ***************************************************************************************************************************************************************/
-class PointLight : public Detail::PointLightBase<PointLight>
+class PointLight : public detail::PointLightBase<PointLight>
 {
  public:
    PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
@@ -148,7 +148,7 @@ class PointLight : public Detail::PointLightBase<PointLight>
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-class SpotLight : public Detail::PointLightBase<SpotLight>
+class SpotLight : public detail::PointLightBase<SpotLight>
 {
  public:
    SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
