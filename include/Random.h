@@ -2,7 +2,6 @@
 
 #include "Debug.h"
 #include "Types.h"
-#include "StandardLibrary.h"
 
 #include <chrono>
 #include <random>
@@ -27,7 +26,7 @@ protected:
   std::mt19937 Generator;
 };
 
-/** Forward declaration of Random class and templatededuction guide. */
+/** Forward declaration of Random class and template deduction guide. */
 template<typename T, TypeCategory cat = GetTypeCategory<T>()> class Random;
 template<typename T> Random(T, T) -> Random<T>;
 

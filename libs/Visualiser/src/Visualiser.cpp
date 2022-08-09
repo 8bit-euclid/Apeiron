@@ -17,14 +17,14 @@ Visualiser::Visualiser(GLint window_width, GLint window_height)
 void
 Visualiser::Add(Scene& scene, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Scene_" + ToString(_Scenes.size()) : name;
+   const std::string& id = name.empty() ? "Scene_" + ToStr(_Scenes.size()) : name;
    _Scenes.emplace(id, std::move(scene));
 }
 
 void
 Visualiser::Add(Camera&& camera, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Camera_" + ToString(_Cameras.size()) : name;
+   const std::string& id = name.empty() ? "Camera_" + ToStr(_Cameras.size()) : name;
    _Cameras.emplace(id, std::move(camera));
 }
 

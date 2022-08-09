@@ -54,11 +54,11 @@ void Shader::UseLight(const Light& light)
    const LightType type = light.Type;
    const UInt id        = light.GetIndex();
    std::string uniform_name   = type == LightType::Directional ? "u_directional_light" :
-                                type == LightType::Point       ? "u_point_lights[" + ToString(id) + "]" :
-                                type == LightType::Spot        ? "u_spot_lights[" + ToString(id) + "]" :
+                                type == LightType::Point ? "u_point_lights[" + ToStr(id) + "]" :
+                                type == LightType::Spot ? "u_spot_lights[" + ToStr(id) + "]" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
-   std::string light_position = type == LightType::Point       ? "u_point_light_positions[" + ToString(id) + "]" :
-                                type == LightType::Spot        ? "u_spot_light_positions[" + ToString(id) + "]" :
+   std::string light_position = type == LightType::Point ? "u_point_light_positions[" + ToStr(id) + "]" :
+                                type == LightType::Spot ? "u_spot_light_positions[" + ToStr(id) + "]" :
                                 type == LightType::Directional ? "\0" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
    std::string base_suffix = type == LightType::Spot ? ".Point" : "\0";
@@ -96,7 +96,7 @@ void Shader::UseLight(const Light& light)
 
 void Shader::SetDirectionalShadowMap(const UInt _slot) { SetUniform1i("u_directional_light.Shadow", _slot); }
 
-void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt _slot) { SetUniform1i("u_point_lights[" + ToString(_i_point_light) + "].Shadow", _slot); }
+void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt _slot) { SetUniform1i("u_point_lights[" + ToStr(_i_point_light) + "].Shadow", _slot); }
 
 void Shader::SetPointPosition(const glm::vec3& _position) { SetUniform3f("u_plight_position", _position.x, _position.y, _position.z); }
 
@@ -106,7 +106,7 @@ void Shader::SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix
 
 void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices)
 {
-   FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices[" + ToString(i) + "]", _light_space_matrices[i]);
+   FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices[" + ToStr(i) + "]", _light_space_matrices[i]);
 }
 
 /***************************************************************************************************************************************************************
@@ -234,7 +234,7 @@ int Shader::GetUniformLocation(const std::string& name)
   if(UniformLocationCache.contains(name)) return UniformLocationCache[name];
 
   GLCall(int location = glGetUniformLocation(ID, name.c_str()));
-  if(areWarningsOn && location < 0) WARNING("Could not find the location for uniform ", name)
+  if(areWarningsOn && location < 0) WARN("Could not find the location for uniform ", name)
   UniformLocationCache[name] = location;
 
   return location;

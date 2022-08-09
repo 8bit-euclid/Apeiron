@@ -26,8 +26,8 @@ private:
 * Static Matrix Class
 ***************************************************************************************************************************************************************/
 template<typename T, size_t M, size_t N>
-class StaticMatrix : public StaticMultiArray<T, M, N>,
-                     public Matrix<T, StaticMatrix<T, M, N>>
+class StaticMatrix final : public StaticMultiArray<T, M, N>,
+                           public Matrix<T, StaticMatrix<T, M, N>>
 {
   using BaseMultiArray = StaticMultiArray<T, M, N>;
 
@@ -54,8 +54,8 @@ private:
 * Dynamic Matrix Class
 ***************************************************************************************************************************************************************/
 template<typename T>
-class DynamicMatrix : public DynamicMultiArray<T>,
-                      public Matrix<T, DynamicMatrix<T>>
+class DynamicMatrix final : public DynamicMultiArray<T>,
+                            public Matrix<T, DynamicMatrix<T>>
 {
   using BaseMultiArray = DynamicMultiArray<T>;
 

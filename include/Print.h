@@ -3,6 +3,8 @@
 #include "Debug.h"
 #include "Loops.h"
 
+#include <iomanip>
+
 namespace aprn {
 
 enum class PrintFormat
@@ -43,10 +45,16 @@ inline void SetFormat(const PrintFormat format)
 }
 
 /** Set precision of the output. */
-inline void SetPrecision(const int _significant_figures) { std::cout << std::setprecision(_significant_figures); }
+inline void SetPrecision(const int n) { std::cout << std::setprecision(n); }
 
 /** Flush output stream. */
 inline void Flush() { std::cout << std::flush; }
+
+/** Suppress screen write-outs. */
+inline void StopCout() { std::cout.setstate(std::ios_base::failbit); }
+
+/** Reset screen write-outs. */
+inline void ResetCout() { std::cout.clear(); }
 
 /** Print a new line. */
 template<char sep = ' '>
@@ -54,10 +62,10 @@ inline void Print() { std::cout << '\b',' ','\n'; }
 
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
 template<char sep = ' ', typename T, typename... Ts>
-inline void Print(const T& data, Ts... trailing_data)
+inline void Print(const T& data, const Ts&... trailing_data)
 {
   std::cout << data;
-  if(sep != '\0') std::cout << sep;
+  if constexpr(sep != '\0') std::cout << sep;
   Print<sep>(trailing_data...);
 }
 

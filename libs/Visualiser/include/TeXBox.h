@@ -8,10 +8,12 @@
 
 namespace aprn::vis {
 
-class TeXBox : public Model
+class TeXBox final : public Model
 {
  public:
    TeXBox() = default;
+
+   TeXBox(const char* str, const std::string& label);
 
    TeXBox(const std::string& str, const std::string& label);
 

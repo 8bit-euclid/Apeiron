@@ -1,13 +1,11 @@
 include_directories(${PROJECT_SOURCE_DIR}/libs/FileManager)
 
 set(SOURCE_FILES
-        include/FileIO.h
-        include/FileHandler.h
-        include/FileReader.h
-        include/FileWriter.h
-        src/FileHandler.cpp
-        src/FileReader.cpp
-        src/FileWriter.cpp)
+        include/File.h
+        include/File.tpp
+        include/FileSystem.h
+        src/File.cpp
+        src/FileSystem.cpp)
 
 set(LINK_LIBRARIES)
 

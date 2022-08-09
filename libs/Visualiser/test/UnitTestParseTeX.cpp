@@ -29,7 +29,6 @@ TEST_F(ParseTeXTest, ParseTeXString)
                                    R"(An n\textsuperscript{th}-order polynomial can be expressed as $$ P_n(x) = \sum_{i = 0}^n c_ix^i. $$)",
                                    R"(The Divergence Theorem for volume $V$ bounded by surface $A$: $\int_V \nabla\cdot\bm{u} dV = \oint_A \bm{u}\cdot\bm{n} dA$.)"})
    {
-      const bool is_double_braced = std::count_if(tex_str.begin(), tex_str.begin() + 2, [](auto c){ return c == '$'; }) == 2;
       auto iter = tex_str.begin();
       const auto glyphs = ParseTeXString(iter, tex_str.end());
 
@@ -86,7 +85,7 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
    {
       auto iter = g.begin();
       const auto glyph = ParseTeXGlyph(iter, g.end(), true);
-      const auto script_count = std::count_if(g.begin(), g.end(), [](auto c){ return c == AnyOf('_', '^'); });
+      const auto script_count = std::count_if(g.begin(), g.end(), [](auto c){ return c == OneOf('_', '^'); });
 
       std::string str_check = g;
       std::string str       = glyph._Text;
@@ -97,7 +96,7 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
 
       EXPECT_EQ(str_check.substr(0, str.length()), str);
       EXPECT_EQ(glyph._SubGlyphs.size(), script_count);
-      const auto iter_check = std::find_if(g.begin(), g.end(), [](auto c){ return c == AnyOf(' ', ',', '.', ':'); });
+      const auto iter_check = std::find_if(g.begin(), g.end(), [](auto c){ return c == OneOf(' ', ',', '.', ':'); });
       EXPECT_EQ(iter, iter_check);
       EXPECT_TRUE(glyph._Render);
    }
@@ -129,7 +128,7 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
 
    // Non-math mode words
    auto find_end = [](const std::string& cmd)
-      { return std::find_if(cmd.begin(), cmd.end(), [](auto c){ return c == AnyOf(' ', ',', '.', ';', ':', '('); }); };
+      { return std::find_if(cmd.begin(), cmd.end(), [](auto c){ return c == OneOf(' ', ',', '.', ';', ':', '('); }); };
    for(const std::string cmd: {"\\etal", "\\pagebreak", "\\textbf{bold} font", "\\cite{Newton}, ", "\\hfill{5}: "})
    {
       auto iter = cmd.begin();
@@ -161,7 +160,7 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
    {
       auto iter = cmd.begin();
       const auto glyph = ParseTeXCommand(iter, cmd.end(), true);
-      const auto iter_check_reverse = std::find_if(cmd.rbegin(), cmd.rend(), [](auto c){ return c == AnyOf(' ', ',', '.', ':'); });
+      const auto iter_check_reverse = std::find_if(cmd.rbegin(), cmd.rend(), [](auto c){ return c == OneOf(' ', ',', '.', ':'); });
       const auto iter_check = (iter_check_reverse + 1).base();
 
       EXPECT_EQ(glyph._Text, std::string(cmd.begin(), iter_check));
@@ -187,14 +186,13 @@ TEST_F(ParseTeXTest, ParseTeXMath)
                                    R"($$ P_5(x) = c_0 + c_1x + c_2x^2 + c_3x^3 + c_4x^4 + c_5x^5 $$;)",
                                    R"($$ \int_V \nabla\cdot\bm{u}\ dV = \oint_A \bm{u}\cdot\bm{n} dA.$$,)"})
    {
-      const bool is_double_braced = std::count_if(tex_str.begin(), tex_str.begin() + 2, [](auto c){ return c == '$'; }) == 2;
       auto iter = tex_str.begin();
       const auto glyphs = ParseTeXMath(iter, tex_str.end());
 
       std::string glyph_str;
       FOR_EACH(glyph, glyphs) glyph_str.append(glyph._Text);
       EXPECT_EQ(glyph_str, tex_str.substr(0, glyph_str.length()));
-      auto iter_check = std::find_if(tex_str.rbegin(), tex_str.rend(), [](auto c){ return c == AnyOf(' ', ',', '.', ';'); });
+      auto iter_check = std::find_if(tex_str.rbegin(), tex_str.rend(), [](auto c){ return c == OneOf(' ', ',', '.', ';'); });
       EXPECT_EQ(iter, (iter_check + 1).base());
    }
 
@@ -212,7 +210,7 @@ TEST_F(ParseTeXTest, ParseAllTeXScriptText)
 {
    for(const std::string str: {"x^2_{i}", "\\tau_0^3 ", "\\sum_{i}^N x", "\\int_{0}^T t^2 dt"})
    {
-      auto iter_start = std::find_if(str.begin(), str.end(), [](auto c){return c == AnyOf('_', '^');});
+      auto iter_start = std::find_if(str.begin(), str.end(), [](auto c){return c == OneOf('_', '^');});
       auto iter = iter_start;
       auto [glyphs, script_text] = ParseAllTeXScriptText(iter, str.end());
 
@@ -232,7 +230,7 @@ TEST_F(ParseTeXTest, ParseAllTeXScriptText)
       }
 
       // Second script text
-      iter_start = std::find_if(iter_start + 1, str.end(), [](auto c){return c == AnyOf('_', '^');});
+      iter_start = std::find_if(iter_start + 1, str.end(), [](auto c){return c == OneOf('_', '^');});
       if(*(iter_start + 1) != '{') // Not braced
       {
          EXPECT_EQ(glyphs[1]._Text, std::string(1, *(iter_start + 1)));
@@ -396,7 +394,7 @@ TEST_F(ParseTeXTest, ParseTeXScriptText)
 {
    for(const std::string str: {"x^2", "\\tau_0 ", "(x + 1)^3 + 1", "\\sum_i x", "\\sum_{i} n", "c_{5}x^5", "e^{x}"})
    {
-      const auto iter_start = std::find_if(str.begin(), str.end(), [](auto c){return c == AnyOf('_', '^');});
+      const auto iter_start = std::find_if(str.begin(), str.end(), [](auto c){return c == OneOf('_', '^');});
       auto iter = iter_start;
       const auto glyphs = ParseTeXScriptText(iter, str.end());
       EXPECT_EQ(glyphs.size(), 1);

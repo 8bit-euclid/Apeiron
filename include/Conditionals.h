@@ -10,36 +10,36 @@ namespace aprn {
 ***************************************************************************************************************************************************************/
 namespace detail {
 
-/** AnyOf helper struct for a variable number of arguments. */
+/** OneOf helper struct for a variable number of arguments. */
 template<typename ...Ts>
-struct VariadicAnyOfHelper
+struct VariadicOneOfHelper
 {
-   constexpr VariadicAnyOfHelper(Ts... values) : Values(std::move(values)...) {}
+   constexpr VariadicOneOfHelper(Ts... values) : Values(std::move(values)...) {}
 
    template<typename T>
    [[nodiscard]] friend constexpr bool
-   operator==(T lhs, const VariadicAnyOfHelper& rhs) noexcept { return std::apply([&](auto... vals){ return ((lhs == vals) || ...); }, rhs.Values); }
+   operator==(T lhs, const VariadicOneOfHelper& rhs) noexcept { return std::apply([&](auto... vals){ return ((lhs == vals) || ...); }, rhs.Values); }
 
    template<typename T>
    [[nodiscard]] friend constexpr bool
-   operator!=(T lhs, const VariadicAnyOfHelper& rhs) noexcept { return !operator==(lhs, rhs); }
+   operator!=(T lhs, const VariadicOneOfHelper& rhs) noexcept { return !operator==(lhs, rhs); }
 
    std::tuple<Ts...> Values;
 };
 
-/** AnyOf helper struct for entries of an STL container type. */
+/** OneOf helper struct for entries of an STL container type. */
 template<typename Cont>
-struct ContainerAnyOfHelper
+struct ContainerOneOfHelper
 {
-   constexpr ContainerAnyOfHelper(Cont const& values) : Values(values) {}
+   constexpr ContainerOneOfHelper(Cont const& values) : Values(values) {}
 
    template<typename T>
    [[nodiscard]] friend constexpr bool
-   operator==(T&& lhs, ContainerAnyOfHelper&& rhs) noexcept { return std::any_of(cbegin(rhs.Values), cend(rhs.Values), [&](auto val){ return lhs == val; }); }
+   operator==(T&& lhs, ContainerOneOfHelper&& rhs) noexcept { return std::any_of(cbegin(rhs.Values), cend(rhs.Values), [&](auto val){ return lhs == val; }); }
 
    template<typename T>
    [[nodiscard]] friend constexpr bool
-   operator!=(T&& lhs, ContainerAnyOfHelper&& rhs) noexcept { return !operator==(std::move(lhs), std::move(rhs)); }
+   operator!=(T&& lhs, ContainerOneOfHelper&& rhs) noexcept { return !operator==(std::move(lhs), std::move(rhs)); }
 
    const Cont& Values;
 };
@@ -62,11 +62,11 @@ constexpr bool isContainer_v = decltype(isContainer<T>(0))::value;
 /** Check for equality with 'any of' the entries in a list of arguments or entries in an STL container. */
 template<typename ...Ts>
 [[nodiscard]] constexpr auto
-AnyOf(Ts&&... values)
+OneOf(Ts&&... values)
 {
    using namespace detail;
-   if constexpr(sizeof...(Ts) == 1 && isContainer_v<std::tuple_element_t<0, std::tuple<Ts...>>>) return ContainerAnyOfHelper(std::forward<Ts>(values)...);
-   else return VariadicAnyOfHelper(std::forward<Ts>(values)...);
+   if constexpr(sizeof...(Ts) == 1 && isContainer_v<std::tuple_element_t<0, std::tuple<Ts...>>>) return ContainerOneOfHelper(std::forward<Ts>(values)...);
+   else return VariadicOneOfHelper(std::forward<Ts>(values)...);
 }
 
 }

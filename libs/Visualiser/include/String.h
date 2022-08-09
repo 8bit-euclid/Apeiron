@@ -7,10 +7,12 @@
 
 namespace aprn::vis {
 
-class String : public Model
+class String final : public Model
 {
  public:
    String() = default;
+
+   String(const char* str, const std::string& label = "");
 
    String(const std::string& str, const std::string& label = "");
 

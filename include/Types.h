@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <concepts>
 #include <limits>
 #include <memory>
@@ -29,6 +30,8 @@ struct Bool
    constexpr Bool(const bool value) : Value(value) {}
 
    constexpr operator bool() const { return Value; }
+
+   friend std::ostream& operator<<(std::ostream& stream, const Bool value) { return stream << std::boolalpha << value.Value; }
 
  private:
    bool Value;
