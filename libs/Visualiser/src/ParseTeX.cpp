@@ -8,7 +8,7 @@ namespace aprn::vis {
 Glyph ParseTeXChar(const char c)
 {
    Glyph glyph(c);
-   if(c == AnyOf(' ', '\t', '\n', '$')) glyph.DoNotRender();
+   if(c == OneOf(' ', '\t', '\n', '$')) glyph.DoNotRender();
    return glyph;
 }
 
@@ -18,11 +18,11 @@ Glyph ParseTeXChar(const char c)
 size_t
 CountGlyphChars(const Glyph& glyph)
 {
-   EXIT("TODO")
+//   EXIT("TODO")
    return 0;
 }
 
-bool isGlyphString(const std::string& tex_str)
+bool isGlyphString(const std::string_view& tex_str)
 {
    if(tex_str.empty()) return false;
 
@@ -31,7 +31,7 @@ bool isGlyphString(const std::string& tex_str)
    if(tex_str.length() == (!is_cmd ? 1 : 2)) return true; // Single character TeX commands
    else if(is_cmd) // All TeX word commands
    {
-      std::string bare_str = tex_str;
+      std::string bare_str(tex_str);
       const auto [is_word, _] = isTeXWordCommand(bare_str.begin(), bare_str.end());
 
       if(is_word)
@@ -45,7 +45,7 @@ bool isGlyphString(const std::string& tex_str)
          const size_t cmd_prefix_len = std::distance(bare_str.begin(), end_iter);
          ASSERT(cmd_prefix_len <= bare_str.length(), "Could not correctly identify the end of the command prefix.")
 
-         return cmd_prefix_len == bare_str.length() || std::all_of(end_iter, bare_str.end(), [](char c){return c == AnyOf('_', '^');}); // e.g. \sum_{i=0}^N
+         return cmd_prefix_len == bare_str.length() || std::all_of(end_iter, bare_str.end(), [](char c){return c == OneOf('_', '^');}); // e.g. \sum_{i=0}^N
       }
    }
    return false;

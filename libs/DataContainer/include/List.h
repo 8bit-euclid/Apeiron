@@ -49,11 +49,11 @@ public:
     return *this;
   }
 
-  List& operator=(const std::initializer_list<T>& _value_list)
+  List& operator=(const std::initializer_list<T>& value_list)
   {
-    SizeCheck(_value_list.size(), this->size());
+    SizeCheck(value_list.size(), this->size());
     size_t index(0);
-    FOR_EACH(entry, _value_list) (*this)[index++] = entry;
+    FOR_EACH(entry, value_list) (*this)[index++] = entry;
     return *this;
   }
 };

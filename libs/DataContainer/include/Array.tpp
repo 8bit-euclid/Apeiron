@@ -52,12 +52,12 @@ Array<T, derived>::operator=(const std::convertible_to<T> auto value) noexcept
 
 template<typename T, class derived>
 constexpr derived&
-Array<T, derived>::operator=(const std::initializer_list<T>& _value_list) noexcept
+Array<T, derived>::operator=(const std::initializer_list<T>& value_list) noexcept
 {
-  SizeCheck(_value_list.size(), Derived().size());
-  size_t index(0);
-  FOR_EACH(entry, _value_list) Derived()[index++] = entry;
-  return Derived();
+   if constexpr(isTypeSame<derived, DynamicArray<T>>()) Derived().resize(value_list.size());
+   size_t index(0);
+   FOR_EACH(entry, value_list) Derived()[index++] = entry;
+   return Derived();
 }
 
 /** Comparison Operator Overloads */
@@ -105,10 +105,11 @@ constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& list
 }
 
 template<typename T, size_t size>
-constexpr StaticArray<T, size>::StaticArray(Iterator first, Iterator last)
+template<class Iter>
+constexpr StaticArray<T, size>::StaticArray(Iter first, Iter last)
   : std::array<T, size>(detail::InitStaticArray<T, size>(first, last))
 {
-  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<Iterator>::value_type>()), "Mismatch in the iterator data type.")
+  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<Iter>::value_type>()), "Mismatch in the iterator data type.")
   ASSERT(size == std::distance(first, last), "The number of iterators must equal the array size ", size, ".")
 }
 
@@ -128,7 +129,8 @@ template<typename T>
 DynamicArray<T>::DynamicArray(const std::initializer_list<T>& list) : std::vector<T>(list) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(Iterator first, Iterator last) : std::vector<T>(first, last) {}
+template<class Iter>
+DynamicArray<T>::DynamicArray(Iter first, Iter last) : std::vector<T>(first, last) {}
 
 template<typename T>
 void
@@ -147,12 +149,21 @@ void
 DynamicArray<T>::Append(DynamicArray<T>&& other) noexcept { Append(other.begin(), other.end(), true); }
 
 template<typename T>
+template<class Iter>
 void
-DynamicArray<T>::Append(Iterator first, Iterator last, const bool move_all)
+DynamicArray<T>::Append(Iter first, Iter last, const bool move_all)
 {
    this->reserve(this->size() + std::distance(first, last));
    if(!move_all) this->insert(this->end(), first, last);
    else this->insert(this->end(), std::make_move_iterator(first), std::make_move_iterator(last));
+}
+
+template<typename T>
+void
+DynamicArray<T>::Erase()
+{
+   this->clear();
+   this->shrink_to_fit();
 }
 
 }

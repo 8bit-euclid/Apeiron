@@ -32,7 +32,7 @@ Scene::Scene(Scene& prev_scene, Float duration, bool adjust_duration)
 Scene&
 Scene::Add(Model& model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
+   const std::string& id = name.empty() ? "Model_" + ToStr(_Models.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(model));
    pmodel->Init();
    _Models[id] = pmodel;
@@ -42,7 +42,7 @@ Scene::Add(Model& model, const std::string& name)
 Scene&
 Scene::Add(TeXBox& tex_box, const std::string& name)
 {
-   const std::string& id = name.empty() ? "TeXBox_" + ToString(_TeXBoxes.size()) : name;
+   const std::string& id = name.empty() ? "TeXBox_" + ToStr(_TeXBoxes.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
    ptex_box->Init();
    _Models[id] = ptex_box;
@@ -52,7 +52,7 @@ Scene::Add(TeXBox& tex_box, const std::string& name)
 Scene&
 Scene::Add(DirectionalLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "D-light_" + ToString(_DLights.size()) : name;
+   const std::string& id = name.empty() ? "D-light_" + ToStr(_DLights.size()) : name;
    _DLights.emplace(id, std::move(light));
    return *this;
 }
@@ -60,7 +60,7 @@ Scene::Add(DirectionalLight&& light, const std::string& name)
 Scene&
 Scene::Add(PointLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "P-light_" + ToString(_PLights.size()) : name;
+   const std::string& id = name.empty() ? "P-light_" + ToStr(_PLights.size()) : name;
    _PLights.emplace(id, std::move(light));
    return *this;
 }
@@ -68,7 +68,7 @@ Scene::Add(PointLight&& light, const std::string& name)
 Scene&
 Scene::Add(SpotLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "S-light_" + ToString(_SLights.size()) : name;
+   const std::string& id = name.empty() ? "S-light_" + ToStr(_SLights.size()) : name;
    _SLights.emplace(id, std::move(light));
    return *this;
 }

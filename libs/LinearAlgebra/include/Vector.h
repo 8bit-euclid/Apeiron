@@ -43,8 +43,8 @@ class Vector : public detail::NumericContainer<T, derived>
 * Static Vector Class
 ***************************************************************************************************************************************************************/
 template<typename T, size_t N>
-class StaticVector : public StaticArray<T, N>,
-                     public Vector<T, StaticVector<T, N>>
+class StaticVector final : public StaticArray<T, N>,
+                           public Vector<T, StaticVector<T, N>>
 {
    using BaseArray = StaticArray<T, N>;
    friend Vector<T, BaseArray>;
@@ -73,8 +73,8 @@ class StaticVector : public StaticArray<T, N>,
 * Dynamic Vector Class
 ***************************************************************************************************************************************************************/
 template<typename T>
-class DynamicVector : public DynamicArray<T>,
-                      public Vector<T, DynamicVector<T>>
+class DynamicVector final : public DynamicArray<T>,
+                            public Vector<T, DynamicVector<T>>
 {
    using BaseArray = DynamicArray<T>;
    friend Vector<T, BaseArray>;

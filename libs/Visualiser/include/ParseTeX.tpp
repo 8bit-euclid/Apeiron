@@ -65,13 +65,13 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
    if(has_args)
    {
-      if(trailing_char != AnyOf('_', '^'))
+      if(trailing_char != OneOf('_', '^'))
       {
          ASSERT(trailing_char == '{', "Expected at least one argument after the command ", cmd, ", but there is no trailing { brace.")
 
          const auto enclosures = GetFirstEnclosureChain(cmd_prefix_end, last, '{', '}', true);
          const int  n_args     = enclosures.size();
-         ASSERT(n_args == AnyOf(1, 2), "Expected either one or two arguments for command ", cmd, ", but none were found.")
+         ASSERT(n_args == OneOf(1, 2), "Expected either one or two arguments for command ", cmd, ", but none were found.")
 
          // Parse enclosures and add all items as sub-glyphs.
          FOR_EACH(encl, enclosures)
@@ -91,7 +91,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
       }
       else
       {
-         ASSERT(trailing_char == AnyOf('_', '^'),
+         ASSERT(trailing_char == OneOf('_', '^'),
                 "Expected to parse a superscript/subscript but got the following trailing character: ", std::string{trailing_char}, ".")
 
          // Check for subscripts/superscripts. If there are any, add them as sub-glyphs of this glyph.
@@ -153,7 +153,7 @@ ParseAllTeXScriptText(Iter& current, const Iter last)
    glyphs.reserve(2);
 
    FOR(i, 2)
-      if(*current == AnyOf('_', '^'))
+      if(*current == OneOf('_', '^'))
       {
          const bool is_braced = *(current + 1) == '{';
 
@@ -183,7 +183,7 @@ isTeXCommandEnd(const Iter current, const Iter last)
 {
    if(current == last) return true;
    const auto c = *current;
-   return c == AnyOf(' ', '.', ',', ';', ':', '(', '[', '\t', '\n', '\\') || std::isdigit(c) ||
+   return c == OneOf(' ', '.', ',', ';', ':', '(', '[', '\t', '\n', '\\') || std::isdigit(c) ||
           (!std::isalpha(*(current - 1)) && std::isalpha(c)); // Note: assumes base string has at least one char before current iterator.
 }
 
@@ -230,17 +230,17 @@ GetTeXCommandInfo(const Iter current, const Iter last)
 
    if(char_cmd) // Single characters - no trailing args, and render if not a spacing character
    {
-      const bool not_spacing_char = cmd_prefix != AnyOf("!", ",", ":", ">", ";", " ");
+      const bool not_spacing_char = cmd_prefix != OneOf("!", ",", ":", ">", ";", " ");
       return { cmd_prefix_end, false, not_spacing_char };
    }
    else if(isTeXCommandEnd(cmd_prefix_end, last)) // Word command without trailing arguments
    {
-      const bool not_spacing_word = cmd_prefix != AnyOf("quad", "qquad");
+      const bool not_spacing_word = cmd_prefix != OneOf("quad", "qquad");
       return { cmd_prefix_end, false, not_spacing_word };
    }
    else // Word command with trailing arguments
    {
-      const bool not_spacing_word = cmd_prefix != AnyOf("dec" , "decc" , "deccc" , "inc" , "incc" , "inccc",
+      const bool not_spacing_word = cmd_prefix != OneOf("dec", "decc", "deccc", "inc", "incc", "inccc",
                                                         "vdec", "vdecc", "vdeccc", "vinc", "vincc", "vinccc");
       return { cmd_prefix_end, true, not_spacing_word };
    }
@@ -250,7 +250,7 @@ template<CharIterator Iter>
 DArray<Glyph>
 ParseTeXScriptText(Iter& current, const Iter last)
 {
-   ASSERT(*current == AnyOf('_', '^'), "TeX superscript/subscript text must begin with either an underscore or a carat.")
+   ASSERT(*current == OneOf('_', '^'), "TeX superscript/subscript text must begin with either an underscore or a carat.")
 
    DArray<Glyph> glyphs;
    glyphs.reserve(std::distance(current, last));

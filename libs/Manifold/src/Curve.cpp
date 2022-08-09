@@ -58,7 +58,7 @@ Segment<ambient_dim>::ComputePoint(const SVectorF1& t)
 {
   const Float maxBound = this->isUnitSpeed ? this->DirectionMagnitude : One;
   return isBounded<true, true>(t[0], Zero, maxBound) ? Line<ambient_dim>::ComputePoint(t) :
-         throw std::domain_error("The parameter must be in the range [0, " + ToString(maxBound) + "] for this segment.");
+         throw std::domain_error("The parameter must be in the range [0, " + ToStr(maxBound) + "] for this segment.");
 }
 
 template<size_t ambient_dim>
@@ -87,13 +87,13 @@ SegmentChain<ambient_dim>::ComputePoint(const SVectorF1& t)
 {
   const Float upper_bound = isUnitSpeed ? ChainLength : One;
   const Float param_length = isBounded<true, true, true>(t[0], Zero, upper_bound) ? t[0] * (isUnitSpeed ? One : ChainLength) :
-                             throw std::domain_error("The parameter must be in the range [0, " + ToString(upper_bound) + "] for this segment.");
+                             throw std::domain_error("The parameter must be in the range [0, " + ToStr(upper_bound) + "] for this segment.");
   const auto iter = std::find_if(CumulativeLengths.begin(), CumulativeLengths.end(), [param_length](auto _l){ return param_length <= _l; });
   const auto index = std::distance(CumulativeLengths.begin(), iter);
   const Float param = param_length - (index != 0 ? CumulativeLengths[index - 1] : Zero);
 
   return isBounded<true, true>(param, Zero, Segments[index].Length()) ? Segments[index].ComputePoint({param}) :
-         throw std::domain_error("The parameter for segment " + ToString(index) + " in the chain is out of bounds.");
+         throw std::domain_error("The parameter for segment " + ToStr(index) + " in the chain is out of bounds.");
 }
 
 template<size_t ambient_dim>

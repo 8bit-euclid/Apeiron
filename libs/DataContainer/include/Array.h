@@ -31,7 +31,7 @@ class Array
    /** Assignment Operator Overloads */
    constexpr derived& operator=(const std::convertible_to<T> auto value) noexcept;
 
-   constexpr derived& operator=(const std::initializer_list<T>& _value_list) noexcept;
+   constexpr derived& operator=(const std::initializer_list<T>& value_list) noexcept;
 
    /** Comparison Operator Overloads */
    constexpr bool operator==(const Array<T, derived>& _other) noexcept;
@@ -55,8 +55,7 @@ template<typename T, size_t N>
 class StaticArray : public std::array<T, N>,
                     public Array<T, StaticArray<T, N>>
 {
-   using Base     = Array<T, StaticArray<T, N>>;
-   using Iterator = typename StaticArray<T, N>::iterator;
+   using Base = Array<T, StaticArray<T, N>>;
 
  public:
    constexpr StaticArray();
@@ -65,12 +64,11 @@ class StaticArray : public std::array<T, N>,
 
    constexpr StaticArray(const std::initializer_list<T>& list);
 
-   constexpr StaticArray(Iterator first, Iterator last);
+   template<class Iter>
+   constexpr StaticArray(Iter first, Iter last);
 
    using Base::operator[];
    using Base::operator=;
-
-   friend Base;
 };
 
 /***************************************************************************************************************************************************************
@@ -81,7 +79,6 @@ class DynamicArray : public std::vector<T>,
                      public Array<T, DynamicArray<T>>
 {
    using Base     = Array<T, DynamicArray<T>>;
-   using Iterator = typename DynamicArray<T>::iterator;
 
  public:
    DynamicArray();
@@ -92,7 +89,8 @@ class DynamicArray : public std::vector<T>,
 
    DynamicArray(const std::initializer_list<T>& list);
 
-   DynamicArray(Iterator first, Iterator last);
+   template<class Iter>
+   DynamicArray(Iter first, Iter last);
 
    void Append(const T& value);
 
@@ -102,12 +100,13 @@ class DynamicArray : public std::vector<T>,
 
    void Append(DynamicArray<T>&& other) noexcept;
 
-   void Append(Iterator first, Iterator last, const bool move_all = false);
+   template<class Iter>
+   void Append(Iter first, Iter last, const bool move_all = false);
+
+   void Erase();
 
    using Base::operator[];
    using Base::operator=;
-
-   friend Base;
 };
 
 /***************************************************************************************************************************************************************

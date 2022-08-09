@@ -6,15 +6,15 @@
 
 namespace aprn {
 
-TEST_F(ApeironTest, ToString)
+TEST_F(ApeironTest, ToStr)
 {
-   std::string str = ToString(1);
+   std::string str = ToStr(1);
    EXPECT_EQ(str, "1");
 
-   str = ToString(5) + "s";
+   str = ToStr(5) + "s";
    EXPECT_EQ(str, "5s");
 
-   str = ToString(10.5) + "m";
+   str = ToStr(10.5) + "m";
    EXPECT_EQ(str, "10.5m");
 }
 

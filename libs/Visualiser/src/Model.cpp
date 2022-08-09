@@ -80,7 +80,7 @@ Model::Add(Model& sub_model, const std::string& name) { return Add(std::move(sub
 Model&
 Model::Add(Model&& sub_model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "SubModel_" + ToString(_SubModels.size()) : name;
+   const std::string& id = name.empty() ? "SubModel_" + ToStr(_SubModels.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(sub_model));
    pmodel->Init();
    _SubModels[id] = pmodel;

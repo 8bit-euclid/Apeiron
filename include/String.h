@@ -9,7 +9,7 @@ namespace aprn {
 /** Convert to a string. */
 template<typename T>
 inline std::string
-ToString(const T& _number)
+ToStr(const T& _number)
 {
    std::stringstream str_buffer;
    str_buffer << _number << std::endl;
@@ -21,14 +21,14 @@ ToString(const T& _number)
 /** Convert a string to a number. */
 template<typename T = int>
 inline T
-ToNumber(const std::string& _str)
+ToNumber(const std::string& str)
 {
-   if constexpr(isTypeSame<T, int>())              return std::stoi(_str);
-   else if constexpr(isTypeSame<T, long>())        return std::stol(_str);
-   else if constexpr(isTypeSame<T, long long>())   return std::stoll(_str);
-   else if constexpr(isTypeSame<T, float>())       return std::stof(_str);
-   else if constexpr(isTypeSame<T, double>())      return std::stod(_str);
-   else if constexpr(isTypeSame<T, long double>()) return std::stold(_str);
+   if constexpr(isTypeSame<T, int>())              return std::stoi(str);
+   else if constexpr(isTypeSame<T, long>())        return std::stol(str);
+   else if constexpr(isTypeSame<T, long long>())   return std::stoll(str);
+   else if constexpr(isTypeSame<T, float>())       return std::stof(str);
+   else if constexpr(isTypeSame<T, double>())      return std::stod(str);
+   else if constexpr(isTypeSame<T, long double>()) return std::stold(str);
 }
 
 /** Peek at the character at the given position, if it lies within the bounds of the string interators. */
@@ -42,13 +42,13 @@ PeekAt(unsigned position, const Iter first, const Iter last)
 
 /** Check if the first string is a substring of the second. */
 inline bool
-isSubstring(const std::string& substr, const std::string& str) { return str.find(substr) != std::string::npos; }
+isSubstring(const std::string_view& substr, const std::string_view& str) { return str.find(substr) != std::string::npos; }
 
 /** Replace a substring with another substring, in a string. */
 inline std::string
-Replace(const std::string& from_str, const std::string& to_str, const std::string& str)
+Replace(const std::string_view& from_str, const std::string_view& to_str, const std::string_view& str)
 {
-   if(from_str.empty()) return str;
+   if(from_str.empty()) return std::string(str);
 
    std::string out_str(str);
    size_t start_pos{};
@@ -62,11 +62,11 @@ Replace(const std::string& from_str, const std::string& to_str, const std::strin
 
 /** Remove a substring from another string. */
 inline std::string
-Remove(const std::string& substr, const std::string& str) { return Replace(substr, "", str); }
+Remove(const std::string_view& substr, const std::string& str) { return Replace(substr, "", str); }
 
 /** Split a string into substrings given a delimiter. */
 inline std::vector<std::string>
-Split(std::string input, const std::string& delimiter = "")
+Split(std::string input, const std::string_view& delimiter = "")
 {
    if(delimiter == "")
    {

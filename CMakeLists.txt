@@ -132,6 +132,7 @@ add_executable(UnitTestString           ${PROJECT_SOURCE_DIR}/test/UnitTestStrin
 
 add_executable(UnitTestArray            ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestArray.cpp)
 add_executable(UnitTestNumericContainer ${PROJECT_SOURCE_DIR}/libs/DataContainer/test/UnitTestNumericContainer.cpp)
+add_executable(UnitTestFileHandler      ${PROJECT_SOURCE_DIR}/libs/FileManager/test/UnitTestFileHandler.cpp)
 add_executable(UnitTestParseTeX         ${PROJECT_SOURCE_DIR}/libs/Visualiser/test/UnitTestParseTeX.cpp)
 add_executable(UnitTestVector           ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/test/UnitTestVector.cpp)
 add_executable(UnitTestCurve            ${PROJECT_SOURCE_DIR}/libs/Manifold/test/UnitTestCurve.cpp)
@@ -144,6 +145,7 @@ target_link_libraries(UnitTestString           gtest gtest_main)
 
 target_link_libraries(UnitTestArray            gtest gtest_main DataContainerLibrary)
 target_link_libraries(UnitTestNumericContainer gtest gtest_main DataContainerLibrary)
+target_link_libraries(UnitTestFileHandler      gtest gtest_main FileManagerLibrary)
 target_link_libraries(UnitTestVector           gtest gtest_main LinearAlgebraLibrary)
 target_link_libraries(UnitTestCurve            gtest gtest_main ManifoldLibrary)
 target_link_libraries(UnitTestParseTeX         gtest gtest_main VisualiserLibrary)
