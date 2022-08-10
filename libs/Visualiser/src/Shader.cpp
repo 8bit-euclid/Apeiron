@@ -142,12 +142,12 @@ ShaderSourceCode Shader::Parse(const std::string& _file_path)
 
   std::string line;
   std::stringstream string_stream[static_cast<UInt>(ShaderType::nTypes)];
-  ShaderType type;
+  ShaderType type{};
   while(getline(stream, line))
   {
     if(line.find("#shader") != std::string::npos)
     {
-      if(line.find("vertex") != std::string::npos) type = ShaderType::Vertex;
+      if(line.find("vertex") != std::string::npos)        type = ShaderType::Vertex;
       else if(line.find("geometry") != std::string::npos) type = ShaderType::Geometry;
       else if(line.find("fragment") != std::string::npos) type = ShaderType::Fragment;
     }

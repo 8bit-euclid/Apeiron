@@ -28,7 +28,10 @@ bool isGlyphString(const std::string_view& tex_str)
 
    const bool is_cmd = tex_str.front() == '\\';
 
-   if(tex_str.length() == (!is_cmd ? 1 : 2)) return true; // Single character TeX commands
+   if(tex_str.length() == (!is_cmd ? 1 : 2)) // Single character glyphs/TeX commands
+   {
+      return true;
+   }
    else if(is_cmd) // All TeX word commands
    {
       std::string bare_str(tex_str);
@@ -45,7 +48,7 @@ bool isGlyphString(const std::string_view& tex_str)
          const size_t cmd_prefix_len = std::distance(bare_str.begin(), end_iter);
          ASSERT(cmd_prefix_len <= bare_str.length(), "Could not correctly identify the end of the command prefix.")
 
-         return cmd_prefix_len == bare_str.length() || std::all_of(end_iter, bare_str.end(), [](char c){return c == OneOf('_', '^');}); // e.g. \sum_{i=0}^N
+         return cmd_prefix_len == bare_str.length() || std::all_of(end_iter, bare_str.end(), [](char c){ return c == OneOf('_', '^'); }); // e.g. \sum_{i=0}^N
       }
    }
    return false;

@@ -57,9 +57,9 @@ public:
 
   void SetUp() override
   {
-    FOR_EACH(entry, IntStaticContainer) entry = RandomInt();
-    FOR_EACH(entry, IntDynamicContainer) entry = RandomInt();
-    FOR_EACH(entry, FloatStaticContainer) entry = RandomFloat();
+    FOR_EACH(entry, IntStaticContainer)    entry = RandomInt();
+    FOR_EACH(entry, IntDynamicContainer)   entry = RandomInt();
+    FOR_EACH(entry, FloatStaticContainer)  entry = RandomFloat();
     FOR_EACH(entry, FloatDynamicContainer) entry = RandomFloat();
   }
 };

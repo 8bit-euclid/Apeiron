@@ -38,9 +38,9 @@ class Glyph final : public Model
  public:
    Glyph() = default;
 
-   Glyph(const char tex_char, const std::string& label = "");
+   explicit Glyph(const char tex_char, const std::string& label = "");
 
-   Glyph(const std::string& tex_str, const std::string& label = "");
+   explicit Glyph(const std::string& tex_str, const std::string& label = "");
 
    Glyph& Set(const char tex_char);
 

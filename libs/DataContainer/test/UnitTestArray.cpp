@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include "../../../include/Random.h"
 #include "../include/Array.h"
 
 #ifdef DEBUG_MODE

@@ -40,7 +40,7 @@ String::Add(const Glyph& glyph)
 String&
 String::Add(const DArray<Glyph>& glyphs)
 {
-   FOR_EACH(glyph, glyphs) Add(glyph);
+   FOR_EACH_CONST(glyph, glyphs) Add(glyph);
    return *this;
 }
 
@@ -118,7 +118,6 @@ String::Parse(const std::string& str)
 {
    auto current = str.begin();
    return ParseTeXString(current, str.end());
-   ASSERT(current == str.end(), "Could not correctly parse the giveb TeX string.")
 }
 
 }

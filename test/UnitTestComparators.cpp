@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../include/Global.h"
+#include "../include/Random.h"
 #include "ApeironTest.h"
 
 #ifdef DEBUG_MODE

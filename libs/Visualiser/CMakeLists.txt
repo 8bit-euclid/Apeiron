@@ -57,7 +57,6 @@ set(LINK_LIBRARIES
         DataContainerLibrary
         FunctionalLibrary
         LinearAlgebraLibrary
-        ImGui
         glfw)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})

@@ -119,10 +119,10 @@ class ActionBase
    std::optional<Float>
    ComputeParameter(const Float global_time);
 
+   RWpr<Model>                 Actor;
+   ActionType                  Type;
    const Float                 StartTime;
    const Float                 EndTime;
-   ActionType                  Type;
-   RWpr<Model>                 Actor;
    Float                       ParameterNormaliser;
    std::function<Float(Float)> Reparametriser;
    std::function<Float(Float)> Ramp;

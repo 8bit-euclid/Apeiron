@@ -13,11 +13,13 @@ namespace aprn::mnfld {
 template<class derived, size_t manifold_dim, size_t ambient_dim = 3>
 class Manifold
 {
-   static_assert(manifold_dim <= ambient_dim, "The dimension of a manifold cannot be larger than that of the ambient space.");
+   static_assert(manifold_dim <= ambient_dim, "The dimension of a manifold cannot be larger than that of the ambient space in which it is embedded.");
+
+ protected:
+   using Vect  = SVectorF<ambient_dim>;
+   using Param = SVectorF<manifold_dim>;
 
  public:
-   using Vect = SVectorF<ambient_dim>;
-
    constexpr Manifold();
 
    constexpr Vect
@@ -34,16 +36,16 @@ class Manifold
 
  protected:
    virtual constexpr Vect
-   ComputePoint(const Vect& _params) = 0;
+   ComputePoint(const Param& _params) = 0;
 
    virtual constexpr Vect
-   ComputeTangent(const Vect& _params) = 0;
+   ComputeTangent(const Param& _params) = 0;
 
    virtual constexpr Vect
-   ComputeBitangent(const Vect& _params) = 0;
+   ComputeBitangent(const Param& _params) = 0;
 
    virtual constexpr Vect
-   ComputeNormal(const Vect& _params) = 0;
+   ComputeNormal(const Param& _params) = 0;
 
  private:
    constexpr void
@@ -59,4 +61,4 @@ class Manifold
 
 }
 
-#include "../src/Manifold.cpp"
+#include "Manifold.tpp"

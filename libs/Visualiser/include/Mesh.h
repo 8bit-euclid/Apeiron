@@ -6,19 +6,9 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wpedantic"
-//#include "old_header.hpp"
-//#pragma GCC diagnostic pop
-
 namespace aprn::vis {
 
-enum class ShadingType
-{
-   Flat,
-   Phong,
-   None
-};
+enum class ShadingType { Flat, Phong };
 
 struct Vertex
 {
@@ -66,7 +56,7 @@ class Mesh
    VertexAttributeLayout VertexLayout;
    DynamicArray<Vertex>  Vertices;
    DynamicArray<GLuint>  Indices;
-   ShadingType           Shading{ShadingType::None};
+   ShadingType           Shading{ShadingType::Flat};
 };
 
 }

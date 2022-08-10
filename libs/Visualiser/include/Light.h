@@ -66,7 +66,7 @@ class DirectionalLight : public Light
  public:
    DirectionalLight();
 
-   DirectionalLight(glm::vec3 _direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
+   DirectionalLight(glm::vec3 direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
 
    UInt GetIndex() const override { return 0; }
 
@@ -151,7 +151,7 @@ class PointLight : public detail::PointLightBase<PointLight>
 class SpotLight : public detail::PointLightBase<SpotLight>
 {
  public:
-   SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
+   SpotLight(const glm::vec3& _position, const glm::vec3& direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
              GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients);
 
  private:

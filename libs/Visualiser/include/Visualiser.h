@@ -16,9 +16,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
 
 #include <map>
 
@@ -60,6 +57,7 @@ class Visualiser
    void RenderScene();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
+   Window                           _OpenGLWindow;
    UMap<Scene>                      _Scenes;
    UMap<Camera>                     _Cameras;
    UMap<Shader>                     _Shaders;
@@ -67,7 +65,6 @@ class Visualiser
    std::map<Font, List<GlyphSheet>> _GlyphSheets;
    Camera*                          _ActiveCamera;
    Scene*                           _CurrentScene;
-   Window                           _OpenGLWindow;
    bool                             _isViewPortModified;
 };
 

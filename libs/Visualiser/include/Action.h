@@ -5,7 +5,7 @@
 #include "Manifold/include/Curve.h"
 
 #include "ActionBase.h"
-//#include "Model.h"
+#include "GLTypes.h"
 
 #include <functional>
 #include <memory>

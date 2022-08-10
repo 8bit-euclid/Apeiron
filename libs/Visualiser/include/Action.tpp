@@ -1,7 +1,4 @@
-//#pragma once
-
 #include "Model.h"
-#include "GLTypes.h"
 
 namespace aprn::vis {
 
@@ -75,8 +72,8 @@ Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Float start_ti
 {
    switch(type)
    {
-      case ActionType::MoveBy: this->Displacement = [&disp_or_posi](Float t){ return (float)t * disp_or_posi; }; break;
-      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Float t){ return (float)t * (disp_or_posi - model._Centroid); }; break;
+      case ActionType::MoveBy: this->Displacement = [&disp_or_posi](Float t){ return static_cast<float>(t) * disp_or_posi; }; break;
+      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Float t){ return static_cast<float>(t) * (disp_or_posi - model._Centroid); }; break;
       default: throw std::invalid_argument("Unrecognised action type.");
    }
 }
