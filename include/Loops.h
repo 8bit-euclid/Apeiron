@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Macros.h"
+
 namespace aprn{
 
 /***************************************************************************************************************************************************************
@@ -29,7 +31,7 @@ namespace detail {
 ***************************************************************************************************************************************************************/
 #define FOR_EACH_CONST2(item, list) for(const auto& item : (list))
 
-#define FOR_EACH_CONST3(key, value, map) for(const auto& [key, value] : (map))
+#define FOR_EACH_CONST3(key, value, map) for([[maybe_unused]] const auto& [key, value] : (map))
 
 }
 

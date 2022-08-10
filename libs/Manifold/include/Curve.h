@@ -19,10 +19,10 @@ template<size_t ambient_dim = 2>
 class Line : public Curve<Line<ambient_dim>, ambient_dim>
 {
  public:
-   constexpr Line(const SVectorF<ambient_dim>& _direction, const SVectorF<ambient_dim>& _coordinate = SVectorF<ambient_dim>{});
+   constexpr Line(const SVectorF<ambient_dim>& direction, const SVectorF<ambient_dim>& coordinate = SVectorF<ambient_dim>{});
 
    constexpr void
-   SetIfUnitSpeed(const bool _is_unit_speed) noexcept { isUnitSpeed = _is_unit_speed; }
+   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
 
  protected:
    friend Curve<Line<ambient_dim>, ambient_dim>;
@@ -49,10 +49,10 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
 /** Ray
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Ray : public Line<ambient_dim>
+class Ray final : public Line<ambient_dim>
 {
  public:
-   constexpr Ray(const SVectorF<ambient_dim>& _direction, const SVectorF<ambient_dim>& _start = SVectorF<ambient_dim>{});
+   constexpr Ray(const SVectorF<ambient_dim>& direction, const SVectorF<ambient_dim>& _start = SVectorF<ambient_dim>{});
 
  private:
    constexpr SVectorF<ambient_dim>
@@ -62,7 +62,7 @@ class Ray : public Line<ambient_dim>
 /** Segment
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Segment : public Line<ambient_dim>
+class Segment final : public Line<ambient_dim>
 {
  public:
    constexpr Segment(const SVectorF<ambient_dim>& _start, const SVectorF<ambient_dim>& _end);
@@ -79,14 +79,14 @@ class Segment : public Line<ambient_dim>
 /** Segment Chain
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class SegmentChain : public Curve<SegmentChain<ambient_dim>, ambient_dim>
+class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 {
  public:
    template<class D>
    SegmentChain(const Array<SVectorF<ambient_dim>, D>& _vertices, const bool _is_closed = false);
 
    constexpr void
-   SetIfUnitSpeed(const bool _is_unit_speed) noexcept { isUnitSpeed = _is_unit_speed; }
+   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
 
  private:
    constexpr SVectorF<ambient_dim>
@@ -115,13 +115,13 @@ class SegmentChain : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 /** Circle
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Circle : public Curve<Circle<ambient_dim>, ambient_dim>
+class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 {
  public:
    Circle(const Float _radius, const SVectorF<ambient_dim>& _centre = SVectorF<ambient_dim>{});
 
    constexpr void
-   SetIfUnitSpeed(const bool _is_unit_speed) noexcept { isUnitSpeed = _is_unit_speed; }
+   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
 
  private:
    constexpr SVectorF<ambient_dim>
@@ -147,7 +147,7 @@ class Circle : public Curve<Circle<ambient_dim>, ambient_dim>
 /** Ellipse
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Ellipse : public Curve<Ellipse<ambient_dim>, ambient_dim>
+class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
 {
  public:
    Ellipse(const Float _x_radius, const Float _y_radius, const SVectorF<ambient_dim>& _centre = SVectorF<ambient_dim>{});
@@ -193,4 +193,4 @@ class Ellipse : public Curve<Ellipse<ambient_dim>, ambient_dim>
 
 }
 
-#include "../src/Curve.cpp"
+#include "Curve.tpp"

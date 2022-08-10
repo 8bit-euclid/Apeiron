@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include "../include/Global.h"
+#include "../include/Random.h"
 
 namespace aprn{
 

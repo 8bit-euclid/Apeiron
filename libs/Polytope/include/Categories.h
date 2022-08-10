@@ -43,19 +43,19 @@ template<PolytopeCategory cat>
 constexpr size_t
 PolytopeDimension()
 {
-  return cat == PolytopeCategory::Triangle ||
+  return cat == PolytopeCategory::Triangle      ||
          cat == PolytopeCategory::Quadrilateral ||
-         cat == PolytopeCategory::Pentagon ||
-         cat == PolytopeCategory::Hexagon ||
-         cat == PolytopeCategory::Septagon ||
-         cat == PolytopeCategory::Octagon ||
+         cat == PolytopeCategory::Pentagon      ||
+         cat == PolytopeCategory::Hexagon       ||
+         cat == PolytopeCategory::Septagon      ||
+         cat == PolytopeCategory::Octagon       ||
          cat == PolytopeCategory::Arbitrary2D ? 2 :
 
-         cat == PolytopeCategory::Tetrahedron ||
-         cat == PolytopeCategory::Cuboid ||
-         cat == PolytopeCategory::Octahedron ||
-         cat == PolytopeCategory::Dodecahedron ||
-         cat == PolytopeCategory::Icosahedron ||
+         cat == PolytopeCategory::Tetrahedron   ||
+         cat == PolytopeCategory::Cuboid        ||
+         cat == PolytopeCategory::Octahedron    ||
+         cat == PolytopeCategory::Dodecahedron  ||
+         cat == PolytopeCategory::Icosahedron   ||
          cat == PolytopeCategory::Arbitrary3D ? 3 :
          throw std::invalid_argument("The dimension cannot be determined for the given polytope category.");
 }
@@ -80,18 +80,18 @@ template<PolytopeCategory cat>
 constexpr size_t
 PolytopeVertexCount()
 {
-  return cat == PolytopeCategory::Triangle ? 3 :
-         cat == PolytopeCategory::Quadrilateral ? 4 :
-         cat == PolytopeCategory::Pentagon ? 5 :
-         cat == PolytopeCategory::Hexagon ? 6 :
-         cat == PolytopeCategory::Septagon ? 7 :
-         cat == PolytopeCategory::Octagon ? 8 :
+  return cat == PolytopeCategory::Triangle      ?  3 :
+         cat == PolytopeCategory::Quadrilateral ?  4 :
+         cat == PolytopeCategory::Pentagon      ?  5 :
+         cat == PolytopeCategory::Hexagon       ?  6 :
+         cat == PolytopeCategory::Septagon      ?  7 :
+         cat == PolytopeCategory::Octagon       ?  8 :
 
-         cat == PolytopeCategory::Tetrahedron ? 4 :
-         cat == PolytopeCategory::Cuboid ? 8 :
-         cat == PolytopeCategory::Octahedron ? 6 :
-         cat == PolytopeCategory::Dodecahedron ? 20 :
-         cat == PolytopeCategory::Icosahedron ? 12 :
+         cat == PolytopeCategory::Tetrahedron   ?  4 :
+         cat == PolytopeCategory::Cuboid        ?  8 :
+         cat == PolytopeCategory::Octahedron    ?  6 :
+         cat == PolytopeCategory::Dodecahedron  ? 20 :
+         cat == PolytopeCategory::Icosahedron   ? 12 :
          throw std::invalid_argument("The vertex count cannot be determined for the given polytope category.");
 }
 
@@ -101,11 +101,11 @@ constexpr size_t
 PolytopeFaceCount()
 {
   return PolytopeDimension<cat>() == 2 ? PolytopeVertexCount<cat>() :
-         cat == PolytopeCategory::Tetrahedron ? 4 :
-         cat == PolytopeCategory::Cuboid ? 6 :
-         cat == PolytopeCategory::Octahedron ? 8 :
+         cat == PolytopeCategory::Tetrahedron  ?  4 :
+         cat == PolytopeCategory::Cuboid       ?  6 :
+         cat == PolytopeCategory::Octahedron   ?  8 :
          cat == PolytopeCategory::Dodecahedron ? 12 :
-         cat == PolytopeCategory::Icosahedron ? 20 :
+         cat == PolytopeCategory::Icosahedron  ? 20 :
          throw std::invalid_argument("The face count cannot be determined for the given polytope category.");
 }
 
@@ -115,11 +115,11 @@ constexpr size_t
 PolytopeFaceVertexCount()
 {
   return PolytopeDimension<cat>() == 2 ? 2 :
-         cat == PolytopeCategory::Tetrahedron ? 4 :
-         cat == PolytopeCategory::Cuboid ? 6 :
-         cat == PolytopeCategory::Octahedron ? 8 :
+         cat == PolytopeCategory::Tetrahedron  ?  4 :
+         cat == PolytopeCategory::Cuboid       ?  6 :
+         cat == PolytopeCategory::Octahedron   ?  8 :
          cat == PolytopeCategory::Dodecahedron ? 12 :
-         cat == PolytopeCategory::Icosahedron ? 20 :
+         cat == PolytopeCategory::Icosahedron  ? 20 :
          throw std::invalid_argument("The face vertex count cannot be determined for the given polytope category.");
 }
 

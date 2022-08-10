@@ -5,8 +5,8 @@ set(SOURCE_FILES
         include/Curve.h
         include/Manifold.h
         include/Surface.h
-        src/Curve.cpp
-        src/Manifold.cpp
+        include/Curve.tpp
+        include/Manifold.tpp
         src/Surface.cpp)
 
 set(LINK_LIBRARIES

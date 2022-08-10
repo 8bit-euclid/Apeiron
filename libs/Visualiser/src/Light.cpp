@@ -37,8 +37,8 @@ Light::operator=(Light&& light) noexcept
 DirectionalLight::DirectionalLight()
   : Light(), Direction(glm::vec3(0.0, -1.0, 0.0)) {}
 
-DirectionalLight::DirectionalLight(glm::vec3 _direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity)
-  : Light(LightType::Directional, _rgba_colour, _ambient_intensity, _diffuse_intensity), Direction(_direction)
+DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity)
+  : Light(LightType::Directional, _rgba_colour, _ambient_intensity, _diffuse_intensity), Direction(direction)
 {
   const glm::mat4&& proj_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, 20.0f);
   const glm::mat4&& view_matrix = glm::lookAt(-10.0f * Direction, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
@@ -95,9 +95,9 @@ PointLight::PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& _direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
+SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
                      GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients)
   : PointLightBase(LightType::Spot, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients),
-                   Direction(glm::normalize(_direction)), ConeAngle(_coneangle), CosConeAngle(std::cos(DegToRad(_coneangle))) {}
+                   Direction(glm::normalize(direction)), ConeAngle(_coneangle), CosConeAngle(std::cos(DegToRad(_coneangle))) {}
 
 }

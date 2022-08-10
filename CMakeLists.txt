@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
 project(Apeiron)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Release)
 
 # Set compiler standard
 set(CXX_STANDARD_REQUIRED ON)
@@ -13,8 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Set default, debug, and release flags
 set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
@@ -40,27 +40,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 find_package(OpenGL   REQUIRED)
 find_package(GLEW 2.2 REQUIRED)
 find_package(glm      REQUIRED)
-#find_package(imgui REQUIRED)
-
-#find_path(STB_INCLUDE_DIRS "stb.h")
 
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${GLEW_INCLUDE_DIRS})
 include_directories(${GLM_INCLUDE_DIRS})
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL     "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL    "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/GLFW)
 add_subdirectory(${PROJECT_SOURCE_DIR}/thirdparty/glm)
-
-# Compile ImGui as static library
-set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/thirdparty/imgui)
-file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/backends/imgui_impl_glfw.cpp ${IMGUI_INCLUDE_DIRS}/backends/imgui_impl_opengl3.cpp)
-add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
-target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
-target_link_libraries(ImGui glfw)
 
 #***************************************************************************************************************************************************************
 # Setup project sub-directories.
@@ -111,8 +101,7 @@ target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
         glfw
-        glm
-        ImGui)
+        glm)
 
 #***************************************************************************************************************************************************************
 # GoogleTest build instructions.

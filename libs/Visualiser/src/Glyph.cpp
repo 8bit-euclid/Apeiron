@@ -85,7 +85,7 @@ Glyph::Add(std::string&& str) { _Text.append(std::move(str)); }
 void
 Glyph::Init()
 {
-   _N_Char = CountGlyphChars(_Text);
+   _N_Char = CountGlyphChars(*this);
 
    // Compute the position, height, and width of this glyph.
 

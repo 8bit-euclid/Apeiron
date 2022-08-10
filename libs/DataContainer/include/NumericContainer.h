@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../../../include/Global.h"
+#include "../../../include/Concepts.h"
+#include "../../../include/Random.h"
 
 namespace aprn {
 namespace detail {

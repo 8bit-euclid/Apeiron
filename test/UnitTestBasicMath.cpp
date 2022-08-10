@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../include/Global.h"
+#include "../include/Random.h"
 #include "ApeironTest.h"
 
 #ifdef DEBUG_MODE
@@ -16,19 +17,19 @@ TEST_F(ApeironTest, nDigits)
 
    FOR(i, max_number)
    {
-      const auto number = RandomNumber();
+      const auto num = RandomNumber();
 
       // Manually count digits.
       size_t n_digits(0);
-      if(0 <= number && number <= 9) n_digits = 1;
-      else if(10 <= number && number <= 99) n_digits = 2;
-      else if(100 <= number && number <= 999) n_digits = 3;
-      else if(1000 <= number && number <= 9999) n_digits = 4;
-      else if(10000 <= number && number <= 99999) n_digits = 5;
-      else if(100000 == number) n_digits = 6;
+      if     (num <= 9)                     n_digits = 1;
+      else if(10 <= num && num <= 99)       n_digits = 2;
+      else if(100 <= num && num <= 999)     n_digits = 3;
+      else if(1000 <= num && num <= 9999)   n_digits = 4;
+      else if(10000 <= num && num <= 99999) n_digits = 5;
+      else if(100000 == num)                n_digits = 6;
       else EXIT("Ensure that the maximum number of digits for this test is 6.")
 
-      EXPECT_EQ(nDigits(number), n_digits);
+      EXPECT_EQ(nDigits(num), n_digits);
    }
 }
 
