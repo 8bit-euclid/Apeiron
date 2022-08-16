@@ -96,12 +96,12 @@ template<typename T = Float> requires std::floating_point<T> constexpr T InfFloa
 template<typename T = Float> requires std::floating_point<T> constexpr T QuietNaN    (std::numeric_limits<T>::quiet_NaN());
 template<typename T = Float> requires std::floating_point<T> constexpr T SignalNaN   (std::numeric_limits<T>::signaling_NaN());
 
-/** Check if a value is NaN. */
+/** Init if a value is NaN. */
 template<typename T>
 constexpr bool
 isNaN(const T value = T()) { return std::isnan(value); }
 
-/** Check if a value is infinity. */
+/** Init if a value is infinity. */
 template<typename T>
 constexpr bool
 isInfinity(const T value = T()) { return std::isinf(value); }
@@ -122,47 +122,47 @@ template<class T1, class T2 = T1> using Pair = std::pair<T1, T2>;
 * Type Checking
 ***************************************************************************************************************************************************************/
 
-/** Check if two data types are the same. */
+/** Init if two data types are the same. */
 template<class T1, class T2>
 constexpr bool
 isTypeSame() { return std::is_same_v<T1, T2>; }
 
-/** Check if the data types of a sequence of values are the same. */
+/** Init if the data types of a sequence of values are the same. */
 template<typename T, typename... Ts>
 constexpr bool
 isTypeHomogeneous() { return (isTypeSame<T, Ts>() && ...); }
 
-/** Check if the data type is a boolean type. */
+/** Init if the data type is a boolean type. */
 template<typename T>
 constexpr bool
 isBoolean(const T = T{}) { return isTypeSame<T, bool>() || isTypeSame<T, Bool>(); }
 
-/** Check if the data type is an integer type. Note: does not include booleans. */
+/** Init if the data type is an integer type. Note: does not include booleans. */
 template<typename T>
 constexpr bool
 isIntegral(const T = T{}) { return std::is_integral_v<T> && !isBoolean<T>(); }
 
-/** Check if the data type is a floating-point type. */
+/** Init if the data type is a floating-point type. */
 template<typename T>
 constexpr bool
 isFloatingPoint(const T = T{}) { return std::is_floating_point_v<T>; }
 
-/** Check if the data type is a number type (floating-point or integer type). */
+/** Init if the data type is a number type (floating-point or integer type). */
 template<typename T>
 constexpr bool
 isArithmetic(const T = T{}) { return isIntegral<T>() || isFloatingPoint<T>(); }
 
-/** Check if the data type is a number type (floating-point or integer type). */
+/** Init if the data type is a number type (floating-point or integer type). */
 template<typename T>
 constexpr bool
 isStringLiteral(const T& = T{}) { return isTypeSame<T, char*>() || isTypeSame<T, std::string>(); }
 
-/** Check if the data type is an enum type. */
+/** Init if the data type is an enum type. */
 template<typename T>
 constexpr bool
 isEnum(const T = T{}) { return std::is_enum_v<T>(); }
 
-/** Check if two enums are the same. */
+/** Init if two enums are the same. */
 template<auto T1, auto T2>
 requires std::is_enum_v<decltype(T1)> && std::is_enum_v<decltype(T2)>
 constexpr bool

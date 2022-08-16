@@ -24,47 +24,57 @@ enum class Mode
 template<typename T>
 concept ModeType = isTypeSame<T, Mode>();
 
-class File
+template<bool wide>
+class BaseFile
 {
+   template<typename T1, typename T2> using ConditionalType = std::conditional_t<!wide, T1, T2>;
+
  public:
-   File() = default;
+   BaseFile() = default;
 
-   File(const fs::path& file_path, ModeType auto... open_modes);
+   BaseFile(const Path& file_path, ModeType auto... open_modes);
 
-   ~File();
+   ~BaseFile();
 
-   void Open(const fs::path& file_path, ModeType auto... open_modes);
+   void Open(const Path& file_path, ModeType auto... open_modes);
 
    void Close();
 
-   auto ReadLine(std::string& line);
+   void Read(ConditionalType<std::string, std::wstring>& line);
 
-   std::string ReadLine();
+   void Write(const ConditionalType<std::string_view, std::wstring_view>& str);
 
-   void Write(const std::string_view& str);
+   template<char sep = '\0', typename T, typename... Ts>
+   void Read(T& data, Ts&... trailing_data);
 
    template<char sep = '\0', typename T, typename... Ts>
    void Write(const T& data, const Ts&... trailing_data);
 
-   bool isReadable() const;
-
-   bool isWritable() const;
-
    inline bool isOpen() const { return _Stream.is_open(); }
+
+   inline bool isValid() const { return _Stream.good(); }
 
    inline bool isEnd() const { return _Stream.eof(); }
 
    inline void SetPrecision(const unsigned n) { _Stream << std::setprecision(n); }
 
  private:
-   void Check(const fs::path& file_path) const;
+   void Init(const Path& file_path);
 
-   fs::path                    _Path;
-   std::fstream                _Stream;
+   bool isReadable() const;
+
+   bool isWritable() const;
+
+   using FileStream = std::basic_fstream<ConditionalType<char, wchar_t>>;
+   Path                        _Path;
+   FileStream                  _Stream;
    DArray<Mode>                _Modes;
    mutable std::optional<bool> _isReadable;
    mutable std::optional<bool> _isWritable;
 };
+
+typedef BaseFile<false> File;
+typedef BaseFile<true>  WFile;
 
 }
 

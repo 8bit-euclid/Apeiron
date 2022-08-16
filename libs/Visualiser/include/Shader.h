@@ -40,11 +40,11 @@ class Shader
    /** Module Interface */
    Shader();
 
-   Shader(const std::string& _file_path);
+   Shader(const std::string& file_path);
 
    ~Shader();
 
-   void Read(const std::string& _file_path);
+   void Read(const std::string& file_path);
 
    inline void Bind() const { GLCall(glUseProgram(ID)); }
 
@@ -92,7 +92,7 @@ private:
    ************************************************************************************************************************************************************/
 
    /** Shader Parsing, Compilation, Installation, and Deletion functions. */
-   ShaderSourceCode Parse(const std::string& _file_path);
+   ShaderSourceCode Parse(const std::string& file_path);
 
    void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
 

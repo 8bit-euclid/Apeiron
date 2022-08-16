@@ -114,7 +114,9 @@ class Model
 
    /** Model Attributes
    ************************************************************************************************************************************************************/
-   template<class type> using Map = std::unordered_map<std::string, type>;
+   template<class type>
+   using Map    = std::unordered_map<std::string, type>;
+   using ATComp = ActionTypeComparator;
 
    Mesh                                           _Mesh;
    Map<SPtr<Model>>                               _SubModels;
@@ -132,10 +134,10 @@ class Model
 
    /** Data Buffers
    ************************************************************************************************************************************************************/
-   VertexArray                        _VAO;
-   VertexBuffer                       _VBO;
-   IndexBuffer                        _EBO;
-   std::optional<ShaderStorageBuffer> _SSBO;
+   VertexArray                                    _VAO;
+   VertexBuffer                                   _VBO;
+   IndexBuffer                                    _EBO;
+   std::optional<ShaderStorageBuffer>             _SSBO;
 };
 
 }

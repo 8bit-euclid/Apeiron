@@ -38,9 +38,10 @@ ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode)
    {
       // Parse single character and check for trailing superscripts/subscripts.
       Glyph glyph = ParseTeXChar(*(current++));
-      if(glyph.isRendered())
+      if(glyph.isRendered() && *current == OneOf('_', '^'))
       {
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
+         glyph.Add(Glyph(glyph.GetText())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }
@@ -96,6 +97,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
          // Check for subscripts/superscripts. If there are any, add them as sub-glyphs of this glyph.
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
+         glyph.Add(Glyph(glyph.GetText())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }

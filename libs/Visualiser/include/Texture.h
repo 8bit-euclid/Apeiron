@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "../../LinearAlgebra/include/Vector.h"
+#include "LinearAlgebra/include/Vector.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
 
@@ -28,7 +28,7 @@ enum class TextureType
 class Texture
 {
  public:
-   Texture(const TextureType _type, const std::string& _file_path);
+   Texture(const TextureType _type, const std::string& file_path);
 
    Texture(const TextureType _type, const bool _is_fbo_attachment);
 
@@ -38,10 +38,10 @@ class Texture
 
    ~Texture();
 
-   void Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type, const GLint _wrap_type,
+   void Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type, const GLint wrap_type,
              const SVector4<GLfloat>& _border_colour = {1.0f, 1.0f, 1.0f, 1.0f});
 
-   void Read(const std::string& _file_path, const GLint _wrap_type);
+   void Read(const std::string& file_path, const GLint wrap_type);
 
    void Bind(UInt _slot = 0) const;
 

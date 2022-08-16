@@ -12,14 +12,14 @@ Shader::Shader()
    ASSERT(ID, "Could not create shader program.")
 }
 
-Shader::Shader(const std::string& _file_path)
-   : Shader() { Read(_file_path); }
+Shader::Shader(const std::string& file_path)
+   : Shader() { Read(file_path); }
 
 Shader::~Shader() { Delete(); }
 
-void Shader::Read(const std::string &_file_path)
+void Shader::Read(const std::string &file_path)
 {
-   auto source = Parse(_file_path);
+   auto source = Parse(file_path);
    Create(source.Vertex, source.Geometry, source.Fragment);
 }
 
@@ -136,9 +136,9 @@ void Shader::SetUniformMatrix4f(const std::string& name, const glm::mat4& _proj_
 /***************************************************************************************************************************************************************
 * Shader Parsing, Compilation, and Installation
 ***************************************************************************************************************************************************************/
-ShaderSourceCode Shader::Parse(const std::string& _file_path)
+ShaderSourceCode Shader::Parse(const std::string& file_path)
 {
-  std::ifstream stream(_file_path);
+  std::ifstream stream(file_path);
 
   std::string line;
   std::stringstream string_stream[static_cast<UInt>(ShaderType::nTypes)];

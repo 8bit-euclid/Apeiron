@@ -60,17 +60,17 @@ PolytopeDimension()
          throw std::invalid_argument("The dimension cannot be determined for the given polytope category.");
 }
 
-/** Check if a polytope is static, i.e. is its information known at compile-time? */
+/** Init if a polytope is static, i.e. is its information known at compile-time? */
 template<PolytopeCategory cat>
 constexpr bool
 isStaticPolytope() { return cat != PolytopeCategory::Arbitrary2D && cat != PolytopeCategory::Arbitrary3D; }
 
-/** Check if a polytope is dynamic, i.e. is its information not known at compile-time? */
+/** Init if a polytope is dynamic, i.e. is its information not known at compile-time? */
 template<PolytopeCategory cat>
 constexpr bool
 isDynamicPolytope() { return !isStaticPolytope<cat>(); }
 
-/** Check of a polytope in a given category is an n-polytope. */
+/** Init of a polytope in a given category is an n-polytope. */
 template<PolytopeCategory cat, size_t t_N>
 constexpr bool
 isNPolytope() { return PolytopeDimension<cat>() == t_N; }

@@ -66,7 +66,6 @@ enum class BlinkType { Sine, Triangle, Square };
 
 /** NOTE: This custom comparator must order the above actions in reverse order, as OpenGL post-multiplies the model matrix for each new action. */
 struct ActionTypeComparator { bool operator()(const ActionType& a, const ActionType& b) const { return static_cast<size_t>(a) > static_cast<size_t>(b); } };
-typedef ActionTypeComparator ATComp;
 
 bool isTimeParametrised(ActionType type);
 

@@ -2,6 +2,8 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
+#include "FileManager/include/FileSystem.h"
+
 #include "Camera.h"
 #include "GlyphSheet.h"
 #include "ModelFactory.h"
@@ -40,9 +42,11 @@ class Visualiser
  private:
    void Init();
 
-   void LoadTextures();
-
    void InitScenes();
+
+   void InitTeXBoxes();
+
+   void InitTextures();
 
    void StartFrame();
 
@@ -57,15 +61,14 @@ class Visualiser
    void RenderScene();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   Window                           _OpenGLWindow;
-   UMap<Scene>                      _Scenes;
-   UMap<Camera>                     _Cameras;
-   UMap<Shader>                     _Shaders;
-   UMap<UMap<Texture>>              _Textures;
-   std::map<Font, List<GlyphSheet>> _GlyphSheets;
-   Camera*                          _ActiveCamera;
-   Scene*                           _CurrentScene;
-   bool                             _isViewPortModified;
+   Window              _OpenGLWindow;
+   UMap<Scene>         _Scenes;
+   UMap<Camera>        _Cameras;
+   UMap<Shader>        _Shaders;
+   UMap<UMap<Texture>> _Textures;
+   Camera*             _ActiveCamera;
+   Scene*              _CurrentScene;
+   bool                _isViewPortModified{};
 };
 
 }

@@ -55,6 +55,7 @@ set(LINK_LIBRARIES
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
         DataContainerLibrary
+        FileManagerLibrary
         FunctionalLibrary
         LinearAlgebraLibrary
         glfw)

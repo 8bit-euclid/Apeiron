@@ -31,6 +31,16 @@ class Scene
 
    Scene& Add(TeXBox& tex_box, const std::string& name = "");
 
+   Scene& Add(DirectionalLight& light, const std::string& name = "");
+
+   Scene& Add(PointLight& light, const std::string& name = "");
+
+   Scene& Add(SpotLight& light, const std::string& name = "");
+
+   Scene& Add(Model&& model, const std::string& name = "");
+
+   Scene& Add(TeXBox&& tex_box, const std::string& name = "");
+
    Scene& Add(DirectionalLight&& light, const std::string& name = "");
 
    Scene& Add(PointLight&& light, const std::string& name = "");
@@ -70,7 +80,7 @@ class Scene
    Float                  _StartTime;
    Float                  _EndTime;
    bool                   _AdjustDuration{false};
-   static bool            _isSingleScene;
+   inline static bool     _isSingleScene{true};
 };
 
 }

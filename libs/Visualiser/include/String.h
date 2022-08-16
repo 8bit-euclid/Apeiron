@@ -39,19 +39,14 @@ class String final : public Model
  private:
    friend class TeXBox;
 
-   void Init();
+   void Init(UInt16& index_offset);
 
    void SetAnchor(const SVectorF3* anchor);
 
    DArray<Glyph> Parse(const std::string& str);
 
-   inline bool areIndicesOffset() const { return _Glyphs.front()->isIndexOffset(); }
-
-   inline void OffsetIndices(GlyphSheet::IndexType offset) { FOR_EACH(glyph, _Glyphs) glyph->OffsetIndex(offset); }
-
    std::string         _Label;
    std::string         _Text;
-   unsigned            _N_Char{};
    DArray<SPtr<Glyph>> _Glyphs;
    const SVectorF3*    _Anchor; // Bottom-left corner of the parent TeX-box
    Float               _Width;

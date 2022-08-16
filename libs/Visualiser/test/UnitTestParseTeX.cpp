@@ -95,7 +95,7 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
       str       = Remove("}", str);
 
       EXPECT_EQ(str_check.substr(0, str.length()), str);
-      EXPECT_EQ(glyph._SubGlyphs.size(), script_count);
+      EXPECT_EQ(glyph._SubGlyphs.size(), script_count + static_cast<bool>(script_count));
       const auto iter_check = std::find_if(g.begin(), g.end(), [](auto c){ return c == OneOf(' ', ',', '.', ':'); });
       EXPECT_EQ(iter, iter_check);
       EXPECT_TRUE(glyph._Render);
@@ -249,11 +249,6 @@ TEST_F(ParseTeXTest, ParseAllTeXScriptText)
 /***************************************************************************************************************************************************************
 * Test TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
-TEST_F(ParseTeXTest, CountGlyphChars)
-{
-
-}
-
 TEST_F(ParseTeXTest, isGlyphString)
 {
    // Test single characters and TeX commands (ordinary strings and raw literal strings)

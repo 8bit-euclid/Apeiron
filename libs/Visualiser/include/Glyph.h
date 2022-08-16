@@ -62,11 +62,11 @@ class Glyph final : public Model
 
    void Add(const DArray<Glyph>& glyphs);
 
+   void Add(const std::string& str);
+
    void Add(Glyph&& glyph);
 
    void Add(DArray<Glyph>&& glyphs);
-
-   void Add(const std::string& str);
 
    void Add(std::string&& str);
 
@@ -79,30 +79,25 @@ class Glyph final : public Model
  private:
    friend class String;
 
-   void Init();
+   void Init(UInt16& index_offset);
 
-   bool isCompound() const;
-
-   bool isIndexOffset() const;
-
-   void OffsetIndex(GlyphSheet::IndexType offset);
+   inline bool isCompound() const { return !_SubGlyphs.empty(); }
 
    inline void SetAnchor(const SVectorF3* anchor) { _Anchor = anchor; }
 
    std::string               _Label;
    std::string               _Text;
-   GlyphSheet::IndexType     _Index{};
-   size_t                    _N_Char{};
+   GlyphSheet::IndexT        _Index;
    GlyphAttribute<Colour>    _Colour{};
    GlyphAttribute<SVectorF2> _Scale{{One, One}};
    GlyphAttribute<bool>      _isItalic{false};
    GlyphAttribute<bool>      _isBold{false};
    const SVectorF3*          _Anchor{}; // Bottom-left corner of the parent TeX-box
+   const GlyphSheet*         _GlyphSheet{};
    GlyphBox<Float>           _Box;
-   GlyphBox<int>*            _GlyphSheetBox{};
-   GlyphSheet*               _GlyphSheet{};
    DArray<SPtr<Glyph>>       _SubGlyphs;
    bool                      _Render{true};
+   bool                      _isInit{false};
 
    /** Friend unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;

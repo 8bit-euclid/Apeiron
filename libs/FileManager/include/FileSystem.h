@@ -10,83 +10,94 @@
 namespace aprn::flmgr {
 
 namespace fs = std::filesystem;
+typedef fs::path Path;
 
 /***************************************************************************************************************************************************************
 * File Handling Functions
 ***************************************************************************************************************************************************************/
-inline fs::path
-FileName(const std::string_view& file_path) { return fs::path(file_path).filename(); }
+inline Path
+FileName(const std::string_view& file_path) { return Path(file_path).filename(); }
 
 inline bool
-FileExists(const fs::path& file_path) { return fs::exists(file_path); }
+FileExists(const Path& file_path) { return fs::exists(file_path); }
 
 inline bool
-FileIsEmpty(const fs::path& file_path)
+FileIsEmpty(const Path& file_path)
 {
    ASSERT(FileExists(file_path), "The file/directory ", file_path.filename(), " does not exist.")
    return fs::is_empty(file_path);
 }
 
 inline void
-ClearFile(const fs::path& file_path)
+ClearFile(const Path& file_path)
 {
    ASSERT(FileExists(file_path), "The file ", file_path.filename(), " does not exist.")
    fs::resize_file(file_path, 0);
 }
 
 inline bool
-DeleteFile(const fs::path& file_path)
+DeleteFile(const Path& file_path)
 {
    ASSERT(FileExists(file_path), "The file/directory ", file_path.filename(), " does not exist.")
    return fs::remove(file_path);
 }
 
 inline void
-MoveFile(const fs::path& from_file_path, const fs::path& to_dir_path)
+MoveFile(const Path& from_file_path, const Path& to_dir_path)
 {
    ASSERT(FileExists(from_file_path), "The file ", from_file_path.filename(), " does not exist.")
 
-   fs::path target = to_dir_path / from_file_path.filename();
+   Path target = to_dir_path / from_file_path.filename();
    fs::rename(from_file_path, target);
 }
 
 void
-CopyFile(const fs::path& from_file_path, const fs::path& to_dir_path);
+CopyFile(const Path& from_file_path, const Path& to_dir_path);
 
 /***************************************************************************************************************************************************************
 * Directory Handling Functions
 ***************************************************************************************************************************************************************/
 inline bool
-isDirectory(const fs::path& path) { return fs::is_directory(path); }
+isDirectory(const Path& path) { return fs::is_directory(path); }
 
 inline bool
-DirectoryExists(const fs::path& dir_path) { return FileExists(dir_path) && isDirectory(dir_path); }
+DirectoryExists(const Path& dir_path) { return FileExists(dir_path) && isDirectory(dir_path); }
+
+inline void
+CreateDirectory(const Path& dir_path)
+{
+   ASSERT(DirectoryExists(dir_path.parent_path()), "The parent directory of the given path ", dir_path.filename(), " does not exist.")
+   fs::create_directory(dir_path);
+}
+
+inline void
+CreateDirectories(const Path& dir_path) { fs::create_directories(dir_path); }
 
 inline bool
-DirectoryIsEmpty(const fs::path& dir_path)
+DirectoryIsEmpty(const Path& dir_path)
 {
    ASSERT(DirectoryExists(dir_path), "The directory ", dir_path.filename(), " does not exist.")
    return FileIsEmpty(dir_path) && isDirectory(dir_path);
 }
 
 inline void
-ClearDirectory(const fs::path& dir_path) { FOR_EACH_CONST(entry, fs::directory_iterator(dir_path)) fs::remove_all(entry.path()); }
+ClearDirectory(const Path& dir_path) { FOR_EACH(entry, fs::directory_iterator(dir_path)) fs::remove_all(entry.path()); }
 
 inline bool
-DeleteDirectory(const fs::path& dir_path)
+DeleteDirectory(const Path& dir_path)
 {
    ClearDirectory(dir_path);
    return DeleteFile(dir_path);
 }
 
 void
-CopyDirectory(const fs::path& from_dir_path, const fs::path& to_dir_path);
+CopyDirectory(const Path& from_dir_path, const Path& to_dir_path);
 
 inline void
 MoveDirectory(const std::string_view& from_dir_path, const std::string_view& to_dir_path)
 {
    CopyDirectory(from_dir_path, to_dir_path);
-   DEBUG_WARN_IF(!DeleteDirectory(from_dir_path), "Failed to delete the directory ", fs::path(from_dir_path).filename(), " during move operation.")
+   DEBUG_WARN_IF(!DeleteDirectory(from_dir_path), "Failed to delete the directory ", Path(from_dir_path).filename(), " during move operation.")
 }
 
 /***************************************************************************************************************************************************************
@@ -100,7 +111,7 @@ RunCommand(const std::string& cmd, const bool show_output = false)
 }
 
 inline int
-RunCommandFrom(const std::string& cmd, const fs::path& dir_path, const bool show_output = false)
+RunCommandFrom(const std::string& cmd, const Path& dir_path, const bool show_output = false)
 {
    ASSERT(isDirectory(dir_path), "The given path must be a directory.")
    return RunCommand("cd " + dir_path.string() + "; " + cmd, show_output);
@@ -110,7 +121,7 @@ inline void
 RunCommands(const DArray<std::string>& cmds, const bool show_output = false) { FOR_EACH_CONST(cmd, cmds) RunCommand(cmd, show_output); }
 
 inline void
-RunCommandsFrom(const DArray<std::string>& cmds, const fs::path& dir_path, const bool show_output = false)
+RunCommandsFrom(const DArray<std::string>& cmds, const Path& dir_path, const bool show_output = false)
 {
    FOR_EACH_CONST(cmd, cmds) RunCommandFrom(cmd, dir_path, show_output);
 }
@@ -123,15 +134,15 @@ CommandExists(const std::string& cmd)
 }
 
 inline void
-CompileTeXFile(const std::string& tex_compiler, fs::path tex_path)
+CompileTeXFile(const std::string& tex_compiler, const Path& tex_path)
 {
-   ASSERT(CommandExists(tex_compiler), "Please install ", tex_compiler, " to convert a .pdf file to a .png file.")
+   ASSERT(CommandExists(tex_compiler), "Please install ", tex_compiler, " to compile a .tex file or use a different compiler.")
    ASSERT(tex_path.extension() == ".tex", "The given file has the extension ", tex_path.extension(), ". Expected a .tex file.")
    RunCommandFrom(tex_compiler + " " + tex_path.filename().string(), tex_path.parent_path());
 }
 
 inline void
-ConvertPDFtoPNG(fs::path pdf_path, const unsigned pixel_density = 600)
+ConvertPDFtoPNG(Path pdf_path, const unsigned pixel_density = 600)
 {
    ASSERT(CommandExists("magick"), "Please install Magick to convert a .pdf file to a .png file.")
    ASSERT(pdf_path.extension() == ".pdf", "The given file has the extension ", pdf_path.extension(), ". Expected a .pdf file.")

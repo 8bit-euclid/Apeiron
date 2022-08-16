@@ -207,8 +207,8 @@ Model::RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point
 Model&
 Model::operator=(const Model& model)
 {
-   ASSERT(model._SubModels.empty() && model._Actions.empty(), "Can currently only copy empty models.")
-   ASSERT(!_isInitialised, "Cannot yet copy assign a model if it has already been initialised.")
+   ASSERT(!_isInitialised, "Cannot yet copy assign to a model if it has already been initialised.")
+   ASSERT(!model._isInitialised, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
    _Mesh            = model._Mesh;
@@ -231,7 +231,8 @@ Model::operator=(const Model& model)
 Model&
 Model::operator=(Model&& model) noexcept
 {
-   ASSERT(!_isInitialised, "Cannot yet move assign a model if it has already been initialised.")
+   ASSERT(!_isInitialised, "Cannot yet move assign to a model if it has already been initialised.")
+   ASSERT(!model._isInitialised, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
    _Mesh            = std::move(model._Mesh);
@@ -248,7 +249,8 @@ Model::operator=(Model&& model) noexcept
    _isInitialised   = std::move(model._isInitialised);
    _Actions         = std::move(model._Actions);
 
-   // Reset moved-from model. Note: need to specifically invoke the copy assigment operator here, NOT the move assignment operator.
+   // Reset moved-from model as it is now in an undefined state. Note: need to specifically invoke the copy assigment operator here,
+   // NOT the move assignment operator.
    model = Unmove(Model());
 
    // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model

@@ -34,8 +34,6 @@ ParseAllTeXScriptText(Iter& current, const Iter last);
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
-size_t CountGlyphChars(const Glyph& glyph);
-
 bool isGlyphString(const std::string_view& tex_str);
 
 template<CharIterator Iter>

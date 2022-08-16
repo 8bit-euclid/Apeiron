@@ -1,5 +1,6 @@
 #include "../include/Visualiser.h"
 
+#include <execution>
 #include <optional>
 #include <string>
 
@@ -61,73 +62,27 @@ Visualiser::Init()
    _Shaders.emplace("DirectionalShadow", "libs/Visualiser/resources/shaders/DirectionalShadow.glsl");
    _Shaders.emplace("PointShadow", "libs/Visualiser/resources/shaders/PointShadow.glsl");
 
-   // Load requires textures and initialise scenes
-   LoadTextures();
+   // Initialise scenes, tex-boxes, and textures.
    InitScenes();
+   InitTeXBoxes();
+   InitTextures();
 
    // Set clock time to zero
    _OpenGLWindow.ResetTime();
 }
 
 void
-Visualiser::LoadTextures()
-{
-   // Load model textures
-   FOR_EACH(_, scene, _Scenes)
-      FOR_EACH_CONST(_, model, scene._Models)
-         if(model->_Texture.has_value() && !_Textures.contains(model->_Texture.value()))
-         {
-            // Add all files associated to the given texture
-            const auto& texture_name = model->_Texture.value();
-            const auto  texture_list = {TextureType::Diffuse,
-                                        TextureType::Normal,
-                                        TextureType::Displacement}; // Add appropriate enums if more textures are to be read
-            UMap<Texture> texture_files;
-            FOR_EACH_CONST(texture_type, texture_list)
-            {
-               auto path = GetTextureFilePath(GetTextureFileDirectory(texture_name), texture_type);
-               if(path.has_value())
-               {
-                  texture_files.emplace(GetTextureTypeString(texture_type), std::move(Texture{texture_type, path.value()}));
-                  if(texture_type == TextureType::Displacement)
-                  {
-//                     Print<'\0'>("Please enter the height map scale for texture ", texture_name, ": ");
-                     Float displacement_map_scale;
-//                     std::cin >> displacement_map_scale;
-                     displacement_map_scale = 0.08;
-                     texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
-                  }
-               }
-               else EXIT("Could not locate the texture files of texture ", texture_name)
-            }
-
-            // Add texture files to the list of textures
-            _Textures.emplace(texture_name, std::move(texture_files));
-
-            // Point to the textures from the scene
-            UMap<Texture&> texture_file_map;
-            FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-            scene._Textures.emplace(texture_name, texture_file_map);
-         }
-
-   // Load font/glyph sheets as textures
-   FOR_EACH(_, scene, _Scenes)
-      FOR_EACH_CONST(_, tex_box, scene._TeXBoxes)
-      {
-
-      }
-}
-
-void
 Visualiser::InitScenes()
 {
-   auto first_scene_it = std::find_if(_Scenes.begin(), _Scenes.end(), [](const auto& entry){return entry.second._PrevScene == nullptr;});
+   auto first_scene_it = std::find_if(_Scenes.begin(), _Scenes.end(), [](const auto& entry){ return entry.second._PrevScene == nullptr; });
    ASSERT(first_scene_it != _Scenes.end(), "Could not locate the first scene.")
 
    _CurrentScene = &first_scene_it->second;
    Scene* current_scene(_CurrentScene);
    size_t scene_count{};
    Float  start_time{};
+
+   // Loop through scenes
    do
    {
       // Update current scene if it isn't the first iteration
@@ -143,9 +98,7 @@ Visualiser::InitScenes()
             transition.Init(start_time);
             start_time = transition._EndTime;
          }
-
-         // Move to next scene
-         current_scene = current_scene->_NextScene;
+         current_scene = current_scene->_NextScene; // Move over to the next scene
       }
 
       // Initialise current scene and update count
@@ -155,6 +108,58 @@ Visualiser::InitScenes()
    while(current_scene->_NextScene);
 
    ASSERT(scene_count == _Scenes.size(), "There was a mismatch in the total number of scenes.")
+}
+
+void
+Visualiser::InitTeXBoxes()
+{
+   // Linearise pointers to all TeX-boxes to allow for parallel initialisation.
+   DArray<std::pair<size_t, TeXBox*>> tex_boxes;
+   tex_boxes.reserve(10 * _Scenes.size());
+   FOR_EACH(_, scene, _Scenes) FOR_EACH(_, tex_box, scene._TeXBoxes) tex_boxes.push_back({ tex_boxes.size(), tex_box.get() });
+
+   // Initialise LaTeX compilation directory, compile all LaTeX source code, and generate glyph sheets.
+   TeXBox::InitTeXDirectory();
+   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
+}
+
+void
+Visualiser::InitTextures()
+{
+   // Load model textures
+   FOR_EACH(_, scene, _Scenes)
+      FOR_EACH_CONST(_, model, scene._Models)
+         if(model->_Texture.has_value() && !_Textures.contains(model->_Texture.value()))
+         {
+            // Add all files associated to the given texture
+            const auto& texture_name = model->_Texture.value();
+            const auto  texture_list = {TextureType::Diffuse,
+                                        TextureType::Normal,
+                                        TextureType::Displacement}; // Add appropriate enums if more textures are to be read
+            UMap<Texture> texture_files;
+            FOR_EACH_CONST(texture_type, texture_list)
+            {
+               const auto path = GetTextureFilePath(GetTextureFileDirectory(texture_name), texture_type);
+               if(path.has_value())
+               {
+                  texture_files.emplace(GetTextureTypeString(texture_type), Texture(texture_type, path.value()));
+                  if(texture_type == TextureType::Displacement)
+                  {
+                     const Float displacement_map_scale = 0.08; // TODO: Temporarily hard-code
+                     texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
+                  }
+               }
+               else EXIT("Could not locate the texture files of texture ", texture_name)
+            }
+
+            // Add texture files to the list of textures
+            _Textures.emplace(texture_name, std::move(texture_files));
+
+            // Point to the textures from the scene
+            UMap<Texture&> texture_file_map;
+            FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+            scene._Textures.emplace(texture_name, texture_file_map);
+         }
 }
 
 void

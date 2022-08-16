@@ -30,7 +30,22 @@ Scene::Scene(Scene& prev_scene, Float duration, bool adjust_duration)
 }
 
 Scene&
-Scene::Add(Model& model, const std::string& name)
+Scene::Add(Model& model, const std::string& name) { return Add(std::move(model), name); }
+
+Scene&
+Scene::Add(TeXBox& tex_box, const std::string& name) { return Add(std::move(tex_box), name); }
+
+Scene&
+Scene::Add(DirectionalLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(PointLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(SpotLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(Model&& model, const std::string& name)
 {
    const std::string& id = name.empty() ? "Model_" + ToStr(_Models.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(model));
@@ -40,12 +55,13 @@ Scene::Add(Model& model, const std::string& name)
 }
 
 Scene&
-Scene::Add(TeXBox& tex_box, const std::string& name)
+Scene::Add(TeXBox&& tex_box, const std::string& name)
 {
    const std::string& id = name.empty() ? "TeXBox_" + ToStr(_TeXBoxes.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-   ptex_box->Init();
-   _Models[id] = ptex_box;
+   // Note: must not intialise the tex-box (or its underlying model) here. This is done collectively in InitTeXBoxes().
+   _Models[id]   = ptex_box;
+   _TeXBoxes[id] = ptex_box;
    return *this;
 }
 
@@ -98,8 +114,6 @@ Scene::Init(const Float start_time)
 /***************************************************************************************************************************************************************
 * Private Interface
 ***************************************************************************************************************************************************************/
-bool Scene::_isSingleScene = true;
-
 void
 Scene::UpdateModels(const Float current_time) { FOR_EACH(_, model, _Models) model->Update(current_time); }
 

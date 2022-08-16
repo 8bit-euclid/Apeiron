@@ -13,7 +13,7 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set default, debug, and release flags
-set(CMAKE_CXX_FLAGS "-Wall -DNDEBUG")
+set(CMAKE_CXX_FLAGS " -fopenmp -Wall -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
@@ -33,6 +33,12 @@ set(CMAKE_BUILD_DIRECTORY ${BUILD_DIRECTORY})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIRECTORY})
 set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
+
+#***************************************************************************************************************************************************************
+# Build instructions for OpenMP.
+#***************************************************************************************************************************************************************
+find_package(OpenMP REQUIRED)
+include_directories(${OPENMP_INCLUDE_DIRS})
 
 #***************************************************************************************************************************************************************
 # Build instructions for OpenGL tools.
@@ -100,6 +106,7 @@ target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
+        ${OPENMP_LIBRARIES}
         glfw
         glm)
 
