@@ -32,7 +32,6 @@ String::Add(const Glyph& glyph)
    // Allocate new memory for the glyph, initialise it, and add it as a sub-model of this string.
    const std::string& glyph_id = !glyph._Label.empty() ? glyph._Label : "Glyph_" + ToStr(_Glyphs.size());
    _Glyphs.push_back(std::make_shared<Glyph>(glyph));
-   _Glyphs.back()->Init();
    _SubModels.emplace(glyph_id, _Glyphs.back());
    return *this;
 }
@@ -83,24 +82,16 @@ String::SetBold(bool is_bold)
 * String Private Interface
 ***************************************************************************************************************************************************************/
 void
-String::Init()
+String::Init(UInt16& index_offset)
 {
    // Compute the position, height, and width of this string.
-   GlyphSheet::IndexType offset{};
    _Text.clear();
    FOR_EACH(glyph, _Glyphs)
    {
       // Add contribution from the glyph to the TeX string.
-      glyph->Init();
+      glyph->Init(index_offset);
       _Text += glyph->_Text;
-
-      // Add and update index offset.
-      glyph->OffsetIndex(offset);
-      offset += glyph->_N_Char;
    }
-
-   // Set total number of characters associated to this string.
-   _N_Char = offset;
 
    // Embed string into a rectangular model with the same position, height, and width, and initialise model.
    Model::Init();

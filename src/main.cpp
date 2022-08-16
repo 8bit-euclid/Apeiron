@@ -25,33 +25,24 @@ int main(void)
 //
 //   EXIT("TEST")
 
-
-
-
-
-
    Visualiser visualiser;
-   Scene scene(1000);
+   Scene scene(1000.0);
    Model model;
 
-   TeXBox teXBox(R"(This is a test: $p_4(x) = a_0 + a_1x + a_2x^2 + a_3x^3 + a_4x^4$.)", "");
+//   scene.Add(TeXBox(R"(This is a test $e = mc^2$.)", ""));
+//   scene.Add(TeXBox(R"(This is another test: $p_4(x) = a_0 + a_1x + a_2x^2 + a_3x^3 + a_4x^4$.)", ""));
+//   scene.Add(TeXBox(R"(This is yet \textbf{another} test with a \textit{slightly} more complicated mathematical equation: $s = u\tau + \frac{1}{2}a\tau^2$.)", ""));
+
+//   scene.Add(TeXBox(R"($\sum$)", ""));
+   scene.Add(TeXBox(R"(Test $\tau$ and $\sum$,)", ""));
+//   scene.Add(TeXBox(R"(This is \textbf{Bold}, \textit{italic} polynomial: $p_2(x) = a_0 + a_1x + a_2x^2$. Equation with commands and a fraction: $s = u\tau + \frac{1}{2}a\tau^2$.)", ""));
 
    // Cube
    model = ModelFactory::Cube(1.0);
    model.SetColour({1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
         .Trace([](Float t){ return SVectorF3{ Three*std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
-//        .Trace({[](Float t){ return Three*std::sin(TwoThird * t); }, [](Float t){ return Zero; }, [](Float t){ return Zero; }}, 2.0);
    scene.Add(model, "Cube");
-
-//   // Floor
-//   model = ModelFactory::Square(10.0);
-//   model.SetMaterial("Paper", 0.1, 16.0)
-//        .SetColour({1, 1, 1});
-////        .SetTexture("Paper", "", 2, 4)
-////        .OffsetPosition({0.0f, -2.0f, 0.0f})
-////        .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
-//   scene.Add(model);
 
    // Floor
    model = ModelFactory::Square(10.0);
@@ -75,7 +66,15 @@ int main(void)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
    scene.Add(model)
         .Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
-//        .Add(PointLight(glm::vec3(0.0, 4.0, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.4, 0.8, SVector3<GLfloat>{0.5, 0.1, 0.0}));
+
+//   // Floor
+//   model = ModelFactory::Square(10.0);
+//   model.SetMaterial("Paper", 0.1, 16.0)
+//        .SetColour({1, 1, 1});
+////        .SetTexture("Paper", "", 2, 4)
+////        .OffsetPosition({0.0f, -2.0f, 0.0f})
+////        .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
+//   scene.Add(model);
 
    visualiser.Add(scene);
    visualiser.Render();

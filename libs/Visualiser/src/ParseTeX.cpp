@@ -15,23 +15,13 @@ Glyph ParseTeXChar(const char c)
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
-size_t
-CountGlyphChars(const Glyph& glyph)
-{
-//   EXIT("TODO")
-   return 0;
-}
-
 bool isGlyphString(const std::string_view& tex_str)
 {
    if(tex_str.empty()) return false;
 
    const bool is_cmd = tex_str.front() == '\\';
 
-   if(tex_str.length() == (!is_cmd ? 1 : 2)) // Single character glyphs/TeX commands
-   {
-      return true;
-   }
+   if(tex_str.length() == (!is_cmd ? 1 : 2)) return true; // Single character glyphs/TeX commands
    else if(is_cmd) // All TeX word commands
    {
       std::string bare_str(tex_str);

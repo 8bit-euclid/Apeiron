@@ -56,17 +56,36 @@ inline void StopCout() { std::cout.setstate(std::ios_base::failbit); }
 /** Reset screen write-outs. */
 inline void ResetCout() { std::cout.clear(); }
 
-/** Print a new line. */
-template<char sep = ' '>
-inline void Print() { std::cout << '\b',' ','\n'; }
-
 /** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
 template<char sep = ' ', typename T, typename... Ts>
 inline void Print(const T& data, const Ts&... trailing_data)
 {
-  std::cout << data;
-  if constexpr(sep != '\0') std::cout << sep;
-  Print<sep>(trailing_data...);
+   // Write first data element to the appropriate output stream.
+   std::cout << data;
+
+   // Write trailing data and/or handle base case.
+   if constexpr(sizeof...(trailing_data))
+   {
+      if constexpr(sep != '\0') std::cout << sep; // Add separator.
+      Print<sep>(trailing_data...);
+   }
+   else std::cout << "\n";
+}
+
+/** Print an arbitrary number of arguments to screen separated by a prescribed separator. */
+template<char sep = ' ', typename T, typename... Ts>
+inline void WPrint(const T& data, const Ts&... trailing_data)
+{
+   // Write first data element to the appropriate output stream.
+   std::wcout << data;
+
+   // Write trailing data and/or handle base case.
+   if constexpr(sizeof...(trailing_data))
+   {
+      if constexpr(sep != '\0') std::wcout << sep; // Add separator.
+      WPrint<sep>(trailing_data...);
+   }
+   else std::wcout << "\n";
 }
 
 }//aprn

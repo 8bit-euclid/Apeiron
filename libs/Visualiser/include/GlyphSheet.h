@@ -4,50 +4,30 @@
 #include "DataContainer/include/Array.h"
 #include "Visualiser/include/Texture.h"
 
+#include <string_view>
+#include <unordered_map>
+
 namespace aprn::vis {
 
-/***************************************************************************************************************************************************************
-* Font Enumerators
-***************************************************************************************************************************************************************/
-enum class Font
-{
-   ComputerModern,
-   LatinModern,
-   TeXGyre
-};
-
-/***************************************************************************************************************************************************************
-* Glyph Box Class
-***************************************************************************************************************************************************************/
-template<typename T = int>
+template<typename T = Int64>
 struct GlyphBox
 {
+   wchar_t     Char;
    T           Width;
    T           Height;
    T           Depth;
    SVector2<T> Position;
-   Float       SkewAngle;
 };
 
-/***************************************************************************************************************************************************************
-* Glyph Sheet Class
-***************************************************************************************************************************************************************/
-class GlyphSheet
+struct GlyphSheet
 {
- public:
-   typedef unsigned IndexType;
-   constexpr static Float ScaleFactor{One};
+   typedef UInt16 IndexT;
+   template<class type> using Map = std::unordered_map<IndexT, type>;
 
-   GlyphSheet(Font font_name, IndexType glyph_index);
-
-   void Generate();
-
- private:
-   template<class type> using Map = std::map<IndexType, type>;
-   Map<GlyphBox<int>> _Boxes;
-   Texture*           _Texture;
-   int                _Width;
-   int                _Height;
+   Map<GlyphBox<Int64>> Boxes;
+   SPtr<Texture>        Image;
+   Int64                Width;
+   Int64                Height;
 };
 
 }

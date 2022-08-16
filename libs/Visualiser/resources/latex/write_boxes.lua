@@ -24,9 +24,9 @@ local function write_pos()
     local x, y = pdf.getpos()
     file = io.open("positions.txt", "a")
     if scale_dims then
-      file:write(string.format("%.5f\t%.5f\n", x / scale, y / scale))
+      file:write(string.format("\n%.5f\t%.5f", x / scale, y / scale))
     else
-      file:write(x, "\t", y, "\n")
+      file:write('\n', x, '\t', y)
     end
     file:close()
 end
@@ -65,9 +65,9 @@ local function draw_elements(box)
 
       file = io.open("attributes.txt", "a")
       if scale_dims then
-        file:write(c, string.format("\t%.5f\t%.5f\t%.5f\n", wd, ht, dp))
+        file:write('\n', c, string.format("\t%.5f\t%.5f\t%.5f", wd, ht, dp))
       else
-        file:write(c, "\t", head.width, "\t", head.height, "\t", head.depth, "\n")
+        file:write('\n', c, '\t', head.width, '\t', head.height, '\t', head.depth)
       end
       file:close()
 

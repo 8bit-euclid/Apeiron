@@ -2,12 +2,19 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
+#include "FileManager/include/FileSystem.h"
+
 #include "Glyph.h"
-#include "Visualiser/include/Model.h"
+#include "Model.h"
 #include "String.h"
 
 namespace aprn::vis {
 
+namespace fm = flmgr;
+
+/***************************************************************************************************************************************************************
+* TeXBox Class
+***************************************************************************************************************************************************************/
 class TeXBox final : public Model
 {
  public:
@@ -51,19 +58,36 @@ class TeXBox final : public Model
 
  private:
    friend class Scene;
+   friend class Visualiser;
 
-   void Init();
+   void Init(const size_t id);
+
+   void CreateTeXBoxImage();
+
+   void CreateGlyphSheet();
 
    void ComputeDimensions();
 
    void ComputeScale();
 
+   void SetCompileDirectory(const size_t id);
+
+   static void InitTeXDirectory();
+
    std::string              _Label;
    std::string              _Text;
    DArray<SPtr<String>>     _Strings;
    SVectorF3                _Anchor; // Bottom-left corner
+   GlyphSheet               _GlyphSheet;
    std::optional<SVectorF2> _Scale;
    std::optional<SVectorF2> _Dimensions;
+   fm::Path                 _CompileDirectory;
+
+   typedef const flmgr::Path Path;
+   inline static Path _LaTeXDirectory = "./libs/Visualiser/data/latex";
+   inline static Path _LaTeXTemplate  = "./libs/Visualiser/resources/latex/texbox.tex";
+   inline static Path _LuaTeXTemplate = "./libs/Visualiser/resources/latex/write_boxes.lua";
 };
+
 
 }

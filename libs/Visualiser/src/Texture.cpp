@@ -1,7 +1,7 @@
 #include "../include/Texture.h"
 #include "../resources/external/stb_image/stb_image.h"
 
-#include <filesystem>
+#include "FileManager/include/FileSystem.h"
 
 namespace aprn::vis {
 
@@ -12,10 +12,10 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Public Interface
 ***************************************************************************************************************************************************************/
-Texture::Texture(const TextureType _type, const std::string& _file_path)
+Texture::Texture(const TextureType _type, const std::string& file_path)
    : Texture(_type, false)
 {
-   Read(_file_path, GL_CLAMP_TO_EDGE);
+   Read(file_path, GL_CLAMP_TO_EDGE);
 }
 
 Texture::Texture(const TextureType _type, const bool _is_fbo_attachment)
@@ -36,7 +36,7 @@ Texture::~Texture() { Delete(); }
 
 void
 Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
-                   const GLint _wrap_type, const SVector4<GLfloat>& _border_colour)
+                   const GLint wrap_type, const SVector4<GLfloat>& _border_colour)
 {
   Width = _width;
   Height = _height;
@@ -51,20 +51,20 @@ Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_f
   // OpenGL type-specific settings
   if(opengl_type == GL_TEXTURE_2D)
   {
-    if(_wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
+    if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
 
-    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, _wrap_type));
-    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
 
     GLCall(glTexImage2D(opengl_type, 0, _internal_format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer.get()));
   }
   else if(opengl_type == GL_TEXTURE_CUBE_MAP)
   {
-    ASSERT(_wrap_type == GL_CLAMP_TO_EDGE, "Only GL_CLAMP_TO_EDGE is currently supported for cube maps.")
+    ASSERT(wrap_type == GL_CLAMP_TO_EDGE, "Only GL_CLAMP_TO_EDGE is currently supported for cube maps.")
 
-    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, _wrap_type));
-    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, _wrap_type));
-    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_R, _wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
+    GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_R, wrap_type));
 
     FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _internal_format, Width, Height, 0, _format, _data_type, nullptr)); }
   }
@@ -75,18 +75,18 @@ Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_f
 }
 
 void
-Texture::Read(const std::string& _file_path, const GLint _wrap_type)
+Texture::Read(const std::string& file_path, const GLint wrap_type)
 {
    stbi_set_flip_vertically_on_load(1);
    int width, height;
-   LocalBuffer.reset(stbi_load(_file_path.c_str(), &width, &height, &BitsPerPixel, 0));
-   ASSERT(LocalBuffer, "Could not load file \"", _file_path, "\" to texture.")
+   LocalBuffer.reset(stbi_load(file_path.c_str(), &width, &height, &BitsPerPixel, 0));
+   ASSERT(LocalBuffer, "Could not load file \"", file_path, "\" to texture.")
 
    std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
                                      BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
                                      BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
                                      throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(BitsPerPixel) + ".";
-   Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, _wrap_type);
+   Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, wrap_type);
    stbi_image_free(LocalBuffer.get());
 }
 
@@ -196,7 +196,7 @@ GetTextureFilePath(const std::string& _file_directory, TextureType _type)
    {
       // Try finding a .png file first, failing which, find a .jpg file
       for(const auto& ext : {".png", ".jpg"})
-         if(std::filesystem::exists(file_path + ext))
+         if(flmgr::FileExists(file_path + ext))
          {
             file_path.append(ext);
             return std::make_optional<std::string>(file_path);
