@@ -5,16 +5,16 @@ namespace aprn::vis {
 Camera::Camera()
   : Camera(glm::vec3(0.0f, 0.0f, 0.0), 0.0f, 0.0f) {}
 
-Camera::Camera(const glm::vec3& _position, GLfloat _pitch, GLfloat _yaw)
-  : Position(_position), Front(glm::vec3(0.0f, 0.0f, -1.0f)), Pitch(_pitch), Yaw(_yaw), AspectRatio(0.0), FieldOfView(45.0), NearPlane(0.0),
+Camera::Camera(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw)
+  : Position(position), Front(glm::vec3(0.0f, 0.0f, -1.0f)), Pitch(_pitch), Yaw(_yaw), AspectRatio(0.0), FieldOfView(45.0), NearPlane(0.0),
     FarPlane(0.0)
 {
   SetOrientation(Position, Pitch, Yaw);
 }
 
-void Camera::SetOrientation(const glm::vec3& _position, GLfloat _pitch, GLfloat _yaw)
+void Camera::SetOrientation(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw)
 {
-  Position = _position;
+  Position = position;
 
   auto pitch = glm::radians(_pitch);
   auto yaw   = glm::radians(_yaw);

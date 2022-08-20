@@ -1,29 +1,24 @@
-#include "../include/Shadow.h"
-#include "include/HDR.h"
-
+#include "../include/HDR.h"
 
 namespace aprn::vis {
 
 HDR::HDR()
-  : ColourBuffer(TextureType::Diffuse, true), FBO()
-{
-
-}
+  : _ColourBuffer(TextureType::Diffuse, true), _FBO() {}
 
 void
-HDR::Init(GLsizei width, GLsizei height)
+HDR::Init(const GLsizei width, const GLsizei height)
 {
-//  ColourBuffer.Init(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
-//
-//  FBO.Bind();
-//
-//  FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, ColourBuffer.GetID());
-//  FBO.Draw(GL_NONE);
-//  FBO.Read(GL_NONE);
-//
-//  ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
-//
-//  FBO.Unbind();
+  _ColourBuffer.Init(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
+
+  _FBO.Bind();
+
+  _FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, _ColourBuffer.ID());
+  _FBO.Draw(GL_NONE);
+  _FBO.Read(GL_NONE);
+
+  ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
+
+  _FBO.Unbind();
 }
 
 void
@@ -39,7 +34,7 @@ HDR::Finalise() const
 }
 
 void
-HDR::ReadFrom(UInt _texture_slot) const
+HDR::ReadFrom(const UInt texture_slot) const
 {
 
 }

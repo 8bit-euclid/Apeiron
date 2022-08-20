@@ -130,9 +130,9 @@ Model::MoveBy(const SVectorF3& _displacement, Float start_time, Float end_time, 
 }
 
 Model&
-Model::MoveTo(const SVectorF3& _position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
+Model::MoveTo(const SVectorF3& position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(_position), start_time, end_time);
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(position), start_time, end_time);
    _Actions.insert({ActionType::MoveTo, ptr});
    return *this;
 }
@@ -140,7 +140,7 @@ Model::MoveTo(const SVectorF3& _position, Float start_time, Float end_time, cons
 //Model&
 //Model::MoveAt(const SVectorF3& velocity, Float start_time, const std::function<Float(Float)>& ramp)
 //{
-//   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAt>>(*this, SArrayToGlmVec(_position), start_time, end_time);
+//   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAt>>(*this, SArrayToGlmVec(position), start_time, end_time);
 //   Actions.insert({ActionType::MoveAt, ptr});
 //   return *this;
 //}
