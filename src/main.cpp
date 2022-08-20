@@ -65,6 +65,7 @@ int main(void)
         .SetTexture("Brick", "Wall", 1, 2)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
    scene.Add(model)
+//        .Add(PointLight(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 2.5, 2.5, {0.01, 0.5, 0.5}), "Sun");
         .Add(DirectionalLight(glm::vec3(0.0, -1.0, -1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 0.3, 0.6), "Sun");
 
 //   // Floor

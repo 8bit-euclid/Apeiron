@@ -35,7 +35,7 @@ class Light
 
    Light(Light&& light) noexcept;
 
-   Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
+   Light(LightType _light_type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
  public:
    ~Light() = default;
@@ -66,7 +66,7 @@ class DirectionalLight : public Light
  public:
    DirectionalLight();
 
-   DirectionalLight(glm::vec3 direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity);
+   DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
    UInt GetIndex() const override { return 0; }
 
@@ -92,8 +92,8 @@ class PointLightBase : public Light
  protected:
    PointLightBase() = delete;
 
-   PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-                  const SVector3<GLfloat>& _attenuation_coefficients);
+   PointLightBase(LightType _light_type, const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
+                  const SVector3<GLfloat>& attenuation_coefficients);
 
    PointLightBase(const PointLightBase<derived>& light) = delete;
 
@@ -139,8 +139,8 @@ class PointLightBase : public Light
 class PointLight : public detail::PointLightBase<PointLight>
 {
  public:
-   PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-              const SVector3<GLfloat>& _attenuation_coefficients);
+   PointLight(const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
+              const SVector3<GLfloat>& attenuation_coefficients);
 
    friend class Shader;
 };
@@ -151,8 +151,8 @@ class PointLight : public detail::PointLightBase<PointLight>
 class SpotLight : public detail::PointLightBase<SpotLight>
 {
  public:
-   SpotLight(const glm::vec3& _position, const glm::vec3& direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
-             GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients);
+   SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat _coneangle, GLfloat ambient_intensity,
+             GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients);
 
  private:
    friend class Shader;

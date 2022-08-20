@@ -12,8 +12,8 @@ Light::Light(Light&& light) noexcept
   : Colour(std::move(light.Colour)), AmbientIntensity(std::move(light.AmbientIntensity)), DiffuseIntensity(std::move(light.DiffuseIntensity)),
     ShadowMap(std::move(light.ShadowMap)), Type(std::move(light.Type)) {}
 
-Light::Light(LightType _light_type, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity)
-  : Colour(_rgba_colour), AmbientIntensity(_ambient_intensity), DiffuseIntensity(_diffuse_intensity),
+Light::Light(LightType _light_type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
+  : Colour(rgba_colour), AmbientIntensity(ambient_intensity), DiffuseIntensity(diffuse_intensity),
     ShadowMap(_light_type == LightType::Point || _light_type == LightType::Spot), Type(_light_type)
 {
    ShadowMap.Init(2048, 2048);
@@ -37,8 +37,8 @@ Light::operator=(Light&& light) noexcept
 DirectionalLight::DirectionalLight()
   : Light(), Direction(glm::vec3(0.0, -1.0, 0.0)) {}
 
-DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity)
-  : Light(LightType::Directional, _rgba_colour, _ambient_intensity, _diffuse_intensity), Direction(direction)
+DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
+  : Light(LightType::Directional, rgba_colour, ambient_intensity, diffuse_intensity), Direction(direction)
 {
   const glm::mat4&& proj_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, 20.0f);
   const glm::mat4&& view_matrix = glm::lookAt(-10.0f * Direction, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
@@ -51,10 +51,10 @@ DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 _rgba_colour, 
 namespace detail {
 
 template<class derived>
-PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& _position, const glm::vec4& _rgba_colour,
-                                        GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-                                        const SVector3<GLfloat>& _attenuation_coefficients)
-  : Light(_light_type, _rgba_colour, _ambient_intensity, _diffuse_intensity), Position(_position), AttenuationCoefficients(_attenuation_coefficients)
+PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& position, const glm::vec4& rgba_colour,
+                                        GLfloat ambient_intensity, GLfloat diffuse_intensity,
+                                        const SVector3<GLfloat>& attenuation_coefficients)
+  : Light(_light_type, rgba_colour, ambient_intensity, diffuse_intensity), Position(position), AttenuationCoefficients(attenuation_coefficients)
 {
   const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, FarPlane); // Note the aspect ratio of 1.0f
 
@@ -88,16 +88,16 @@ template<class derived> UInt detail::PointLightBase<derived>::nPointLights = 0;
 /***************************************************************************************************************************************************************
 * Point Light Class
 ***************************************************************************************************************************************************************/
-PointLight::PointLight(const glm::vec3& _position, const glm::vec4& _rgba_colour, GLfloat _ambient_intensity, GLfloat _diffuse_intensity,
-                       const SVector3<GLfloat>& _attenuation_coefficients)
-  : PointLightBase(LightType::Point, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients) {}
+PointLight::PointLight(const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
+                       const SVector3<GLfloat>& attenuation_coefficients)
+  : PointLightBase(LightType::Point, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients) {}
 
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-SpotLight::SpotLight(const glm::vec3& _position, const glm::vec3& direction, const glm::vec4& _rgba_colour, GLfloat _coneangle, GLfloat _ambient_intensity,
-                     GLfloat _diffuse_intensity, const SVector3<GLfloat>& _attenuation_coefficients)
-  : PointLightBase(LightType::Spot, _position, _rgba_colour, _ambient_intensity, _diffuse_intensity, _attenuation_coefficients),
+SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat _coneangle, GLfloat ambient_intensity,
+                     GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients)
+  : PointLightBase(LightType::Spot, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients),
                    Direction(glm::normalize(direction)), ConeAngle(_coneangle), CosConeAngle(std::cos(DegToRad(_coneangle))) {}
 
 }

@@ -26,7 +26,7 @@ class Shadow
 
    virtual void Finalise() const;
 
-   virtual void ReadFrom(UInt _texture_slot) const;
+   virtual void ReadFrom(UInt texture_slot) const;
 
    inline const Texture& GetDepthMap() const { return DepthMap; }
 

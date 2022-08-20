@@ -20,9 +20,9 @@ class Camera
  public:
    Camera();
 
-   Camera(const glm::vec3& _position, GLfloat _pitch, GLfloat _yaw);
+   Camera(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw);
 
-   void SetOrientation(const glm::vec3& _position, GLfloat _pitch, GLfloat _yaw);
+   void SetOrientation(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw);
 
    void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& field_of_view = -1.0, const GLfloat& near_plane = 0.0, const GLfloat& far_plane = 0.0);
 
