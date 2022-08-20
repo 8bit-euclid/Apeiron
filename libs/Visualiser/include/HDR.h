@@ -16,20 +16,19 @@ class HDR
  public:
    HDR();
 
-   virtual void Init(GLsizei width, GLsizei height);
+   void Init(const GLsizei width, const GLsizei height);
 
-   virtual void WriteTo() const;
+   void WriteTo() const;
 
-   virtual void Finalise() const;
+   void Finalise() const;
 
-   virtual void ReadFrom(UInt _texture_slot) const;
+   void ReadFrom(const UInt texture_slot) const;
 
-   const Texture& GetColourBuffer() const { return ColourBuffer; }
+   const Texture& ColourBuffer() const { return _ColourBuffer; }
 
  protected:
-   bool        isPointLightShadow;
-   Texture     ColourBuffer;
-   FrameBuffer FBO;
+   Texture     _ColourBuffer;
+   FrameBuffer _FBO;
 };
 
 }
