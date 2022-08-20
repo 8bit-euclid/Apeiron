@@ -165,7 +165,7 @@ Scene::RenderDirectionalShadows(Shader& shader)
    shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].GetLightSpaceMatrix());
 
    auto& shadow_map = _DLights["Sun"].GetShadowMap();
-   GLCall(glViewport(0, 0, shadow_map.GetDepthMap().GetWidth(), shadow_map.GetDepthMap().GetHeight()));
+   GLCall(glViewport(0, 0, shadow_map.GetDepthMap().Width(), shadow_map.GetDepthMap().Height()));
 
 //  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
 
@@ -192,7 +192,7 @@ Scene::RenderPointShadows(Shader& shader)
       shader.SetPointFarPlane(PointLight::GetFarPlane());
 
       auto& shadow_map = point_light.GetShadowMap();
-      GLCall(glViewport(0, 0, shadow_map.GetDepthMap().GetWidth(), shadow_map.GetDepthMap().GetHeight()));
+      GLCall(glViewport(0, 0, shadow_map.GetDepthMap().Width(), shadow_map.GetDepthMap().Height()));
 
       shadow_map.WriteTo();
       RenderModels(shader);
@@ -223,12 +223,12 @@ Scene::RenderModels(Shader& shader)
          size_t texture_index = 0;
          FOR_EACH(type_string, texture, _Textures[model->_Texture.value()])
          {
-            const auto& uniform_name = GetTextureUniformString(type_string);
+            const auto& uniform_name = TextureUniformString(type_string);
             shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
             shader.SetUniform1i("u_use_" + uniform_name, 1);
             if(GetTextureType(type_string) == TextureType::Displacement)
             {
-               const auto& scale = texture.GetMapScale();
+               const auto& scale = texture.MapScale();
                ASSERT(scale.has_value(), "The displacement map scale has not been set.")
                shader.SetUniform1f("u_" + uniform_name + "_scale", scale.value());
             }
@@ -241,7 +241,7 @@ Scene::RenderModels(Shader& shader)
       // Switch off texture maps
       if(model->_Texture.has_value())
          FOR_EACH(type_string, _, _Textures[model->_Texture.value()])
-            shader.SetUniform1i("u_use_" + GetTextureUniformString(type_string), 0);
+            shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
    }
 
    // Unbind all textures

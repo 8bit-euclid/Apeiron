@@ -69,9 +69,9 @@ Model::SetMaterial(const std::string& name, Float _specular_intensity, Float _sm
 }
 
 Model&
-Model::SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution)
+Model::SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution)
 {
-   _Texture.emplace(GetTextureName(_material, item, index, _resolution));
+   _Texture.emplace(TextureName(material, item, index, resolution));
    return *this;
 }
 

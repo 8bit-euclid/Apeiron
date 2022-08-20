@@ -16,7 +16,7 @@ class HDR
  public:
    HDR();
 
-   virtual void Init(GLsizei _width, GLsizei _height);
+   virtual void Init(GLsizei width, GLsizei height);
 
    virtual void WriteTo() const;
 

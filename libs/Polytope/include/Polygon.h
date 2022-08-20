@@ -41,7 +41,7 @@ struct Triangle : public Polygon<PolytopeCategory::Triangle, dim>
   constexpr Triangle(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2);
 
   /** Arbitary triangle with a specified base length and height. */
-  constexpr Triangle(const Float _length, const Float _height, const Float _apex_ratio);
+  constexpr Triangle(const Float _length, const Float height, const Float _apex_ratio);
 
   /** Regular triangle. */
   constexpr Triangle(const Float _radius)
@@ -58,7 +58,7 @@ struct Quadrilateral : public Polygon<PolytopeCategory::Quadrilateral, dim>
   constexpr Quadrilateral(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2, const SVectorF<dim>& _v3);
 
   /** Parallelogram with prescribed length and height. Defaults to a rectangle. */
-  constexpr Quadrilateral(const Float _length, const Float _height, const Float angle = 90.0);
+  constexpr Quadrilateral(const Float _length, const Float height, const Float angle = 90.0);
 
   /** Regular Parallelogram with prescribed side length. Defaults to a square. */
   constexpr Quadrilateral(const Float _side_length, const Float angle = 90.0)
@@ -69,8 +69,8 @@ template<size_t dim = 3>
 struct Rectangle : public Quadrilateral<dim>
 {
   /** Rectangle with prescribed length and height. */
-  constexpr Rectangle(const Float _length, const Float _height)
-    : Quadrilateral<dim>(_length, _height) {}
+  constexpr Rectangle(const Float _length, const Float height)
+    : Quadrilateral<dim>(_length, height) {}
 };
 
 template<size_t dim = 3>

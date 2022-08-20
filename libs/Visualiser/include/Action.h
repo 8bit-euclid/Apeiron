@@ -70,7 +70,7 @@ requires Scale<type>
 class Action<type> final : public ActionBase
 {
  public:
-   Action(Model& model, Float _scale, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, Float scale, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 
    Action(Model& model, const glm::vec3& scales, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
 

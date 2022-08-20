@@ -15,10 +15,10 @@ namespace aprn{
 #define PING usleep(100); Print("\nPing from file:", __FILE__, "at line number:", __LINE__); Flush();
 
 /** Throw error without exiting from a given file and line. */
-#define ERROR_FROM(_type, file, line, args...)\
+#define ERROR_FROM(type, file, line, args...)\
 {\
   std::cerr<<"\n=================================================================================================================",\
-             "\n ", _type, ": ", args, \
+             "\n ", type, ": ", args, \
                  FILE_LINE(file, line), \
                "=================================================================================================================\n";\
 }

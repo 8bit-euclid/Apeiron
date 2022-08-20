@@ -11,9 +11,9 @@ HDR::HDR()
 }
 
 void
-HDR::Init(GLsizei _width, GLsizei _height)
+HDR::Init(GLsizei width, GLsizei height)
 {
-//  ColourBuffer.Init(_width, _height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
+//  ColourBuffer.Init(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
 //
 //  FBO.Bind();
 //

@@ -16,7 +16,7 @@ enum class PrintFormat
 };
 
 /** Macros */
-#define Setw(_width) std::setw(_width)
+#define Setw(width) std::setw(width)
 
 /** Comma operator overload or output stream. */
 template<typename T>

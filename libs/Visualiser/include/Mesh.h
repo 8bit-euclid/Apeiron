@@ -21,8 +21,8 @@ struct Vertex
 
 struct VertexAttribute
 {
-   VertexAttribute(const GLenum _type, const GLuint _n_components, const GLboolean _is_normalised)
-     : GLType(_type), nComponents(_n_components), isNormalised(_is_normalised) {}
+   VertexAttribute(const GLenum type, const GLuint _n_components, const GLboolean _is_normalised)
+     : GLType(type), nComponents(_n_components), isNormalised(_is_normalised) {}
 
    GLenum    GLType;
    GLuint    nComponents;

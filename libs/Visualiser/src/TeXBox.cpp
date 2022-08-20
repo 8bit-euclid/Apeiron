@@ -198,7 +198,6 @@ TeXBox::CreateGlyphSheet()
    // Calculate TeX box dimensions (min/max bounds of all glyph boxes).
    using int_T = decltype(_GlyphSheet.Width);
    SVector2<int_T> min_pos(MaxInt<int_T>), max_pos(MinInt<int_T>);
-
    FOR_EACH_CONST(_, glyph, _GlyphSheet.Boxes)
    {
       SArray2<int_T> bott_left = { glyph.Position.x(), glyph.Position.y() - glyph.Depth };
@@ -232,6 +231,13 @@ TeXBox::ComputeScale()
 
 void
 TeXBox::SetCompileDirectory(const size_t id) { _CompileDirectory = _LaTeXDirectory / ("texbox" + ToStr(id)); }
+
+fm::Path
+TeXBox::ImagePath() const
+{
+   ASSERT(!_CompileDirectory.empty(), "The compile directory has not yet been set for this TeXBox.")
+   return _CompileDirectory / _LaTeXTemplate.filename().replace_extension(".png");
+}
 
 void
 TeXBox::InitTeXDirectory()

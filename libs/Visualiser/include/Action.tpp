@@ -45,8 +45,8 @@ Action<type>::Do(const Float global_time)
 ***************************************************************************************************************************************************************/
 template<ActionType type>
 requires Scale<type>
-Action<type>::Action(Model& model, Float _scale, Float start_time, Float end_time, std::function<Float(Float)> reparam)
-   : ActionBase(model, type, start_time, end_time, reparam), Scales(_scale) {}
+Action<type>::Action(Model& model, Float scale, Float start_time, Float end_time, std::function<Float(Float)> reparam)
+   : ActionBase(model, type, start_time, end_time, reparam), Scales(scale) {}
 
 template<ActionType type>
 requires Scale<type>

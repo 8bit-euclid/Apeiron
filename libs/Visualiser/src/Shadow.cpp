@@ -8,14 +8,14 @@ Shadow::Shadow(const bool _is_point_light)
 Shadow::Shadow(Shadow&& _shadow) noexcept
    : DepthMap(std::move(_shadow.DepthMap)), FBO(std::move(_shadow.FBO)), isPointLightShadow(std::move(_shadow.isPointLightShadow)) {}
 
-void Shadow::Init(GLsizei _width, GLsizei _height)
+void Shadow::Init(GLsizei width, GLsizei height)
 {
-  DepthMap.Init(_width, _height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+  DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
   FBO.Bind();
 
-  if(isPointLightShadow) FBO.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap.GetID());
-  else FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap.GetID());
+  if(isPointLightShadow) FBO.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap.ID());
+  else FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap.ID());
 
   FBO.Draw(GL_NONE);
   FBO.Read(GL_NONE);
