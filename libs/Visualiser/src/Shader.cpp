@@ -98,7 +98,7 @@ void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_directio
 
 void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToStr(_i_point_light) + "].Shadow", slot); }
 
-void Shader::SetPointPosition(const glm::vec3& _position) { SetUniform3f("u_plight_position", _position.x, _position.y, _position.z); }
+void Shader::SetPointPosition(const glm::vec3& position) { SetUniform3f("u_plight_position", position.x, position.y, position.z); }
 
 void Shader::SetPointFarPlane(GLfloat _far_plane) { SetUniform1f("u_point_light_far_plane", _far_plane); }
 

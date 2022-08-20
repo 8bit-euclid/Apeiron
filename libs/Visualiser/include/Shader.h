@@ -66,7 +66,7 @@ class Shader
 
    void SetPointShadowMap(const size_t _i_point_light, const UInt slot);
 
-   void SetPointPosition(const glm::vec3& _position);
+   void SetPointPosition(const glm::vec3& position);
 
    void SetPointFarPlane(GLfloat _far_plane);
 

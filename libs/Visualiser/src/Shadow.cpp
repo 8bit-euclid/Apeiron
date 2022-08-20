@@ -37,9 +37,9 @@ void Shadow::Finalise() const
   FBO.Unbind();
 }
 
-void Shadow::ReadFrom(UInt _texture_slot) const
+void Shadow::ReadFrom(UInt texture_slot) const
 {
-  DepthMap.Bind(_texture_slot);
+  DepthMap.Bind(texture_slot);
 }
 
 Shadow&

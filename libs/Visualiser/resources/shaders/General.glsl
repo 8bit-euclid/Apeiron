@@ -218,8 +218,7 @@ uniform sampler2D u_displacement_map;
 
 bool UseNormalMap() { return u_use_diffuse_map && u_use_normal_map; }
 bool UseHeightMap() { return UseNormalMap() && u_use_displacement_map; }
-vec3 CalculateFragmentNormal(const vec2 _texture_coordinate)
-{ return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, _texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
+vec3 CalculateFragmentNormal(const vec2 _texture_coordinate) { return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, _texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
 
 float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
 {
@@ -342,7 +341,8 @@ vec2 CalculateParallax()
    const float max_layers   = 64.0f;
    const float n_layers     = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
    const float layer_height = 1.0 / n_layers;
-   const vec2  offset       = u_displacement_map_scale * fragment_to_camera.xy;
+   const vec2  view_dir     = -fragment_to_camera.xy;
+   const vec2  offset       = u_displacement_map_scale * view_dir.xy;
    const vec2  delta_offset = offset / n_layers;
 
    // Perform steep parallax mapping
@@ -353,13 +353,13 @@ vec2 CalculateParallax()
 //   const float sign = -1.0f;
    while(current_layer_height < current_height)
    {
-      current_texture_coordinate += sign * delta_offset;
+      current_texture_coordinate -= sign * delta_offset;
       current_height = texture(u_displacement_map, current_texture_coordinate).r;
       current_layer_height += layer_height;
    }
 
    // Perform parallax occlusion mapping
-   const vec2 previous_texture_coordinate = current_texture_coordinate - sign * delta_offset;
+   const vec2 previous_texture_coordinate = current_texture_coordinate + sign * delta_offset;
    const float after_height = current_height - current_layer_height;
    const float before_height = texture(u_displacement_map, previous_texture_coordinate).r - current_layer_height + layer_height;
    const float weight = after_height / (after_height - before_height);
