@@ -12,35 +12,35 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Public Interface
 ***************************************************************************************************************************************************************/
-Texture::Texture(const TextureType _type, const std::string& file_path)
-   : Texture(_type, false)
+Texture::Texture(const TextureType type, const std::string& file_path)
+   : Texture(type, false)
 {
    Read(file_path, GL_CLAMP_TO_EDGE);
 }
 
-Texture::Texture(const TextureType _type, const bool _is_fbo_attachment)
-  : ID(0), Width(0), Height(0), BitsPerPixel(0), LocalBuffer(nullptr), Type(_type), isFrameBufferAttachment(_is_fbo_attachment)
+Texture::Texture(const TextureType type, const bool is_fbo_attachment)
+  : _ID(0), _Width(0), _Height(0), _BitsPerPixel(0), _LocalBuffer(nullptr), _Type(type), _isFBOAttachment(is_fbo_attachment)
 {
-  GLCall(glGenTextures(1, &ID));
+  GLCall(glGenTextures(1, &_ID));
 }
 
-Texture::Texture(Texture&& _texture) noexcept
-   : ID(_texture.ID), Width(std::move(_texture.Width)), Height(std::move(_texture.Height)), BitsPerPixel(std::move(_texture.BitsPerPixel)),
-     LocalBuffer(std::move(_texture.LocalBuffer)), MapScale(std::move(_texture.MapScale)), Type(std::move(_texture.Type)),
-     isFrameBufferAttachment(std::move(_texture.isFrameBufferAttachment))
+Texture::Texture(Texture&& texture) noexcept
+   : _ID(texture._ID), _Width(std::move(texture._Width)), _Height(std::move(texture._Height)), _BitsPerPixel(std::move(texture._BitsPerPixel)),
+     _LocalBuffer(std::move(texture._LocalBuffer)), _MapScale(std::move(texture._MapScale)), _Type(std::move(texture._Type)),
+     _isFBOAttachment(std::move(texture._isFBOAttachment))
 {
-   _texture.ID = 0;
+   texture._ID = 0;
 }
 
 Texture::~Texture() { Delete(); }
 
 void
-Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_format, const GLenum _format, const GLenum _data_type,
-                   const GLint wrap_type, const SVector4<GLfloat>& _border_colour)
+Texture::Init(const GLuint width, const GLuint height, const GLint internal_format, const GLenum format, const GLenum data_type,
+                   const GLint wrap_type, const SVector4<GLfloat>& border_colour)
 {
-  Width = _width;
-  Height = _height;
-  const auto opengl_type = GetOpenGLType(Type);
+   _Width = width;
+   _Height = height;
+  const auto opengl_type = OpenGLType(_Type);
 
   Bind();
 
@@ -51,12 +51,12 @@ Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_f
   // OpenGL type-specific settings
   if(opengl_type == GL_TEXTURE_2D)
   {
-    if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, _border_colour.data())); }
+    if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, border_colour.data())); }
 
     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, wrap_type));
     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
 
-    GLCall(glTexImage2D(opengl_type, 0, _internal_format, Width, Height, 0, _format, _data_type, isFrameBufferAttachment ? nullptr : LocalBuffer.get()));
+    GLCall(glTexImage2D(opengl_type, 0, internal_format, _Width, _Height, 0, format, data_type, _isFBOAttachment ? nullptr : _LocalBuffer.get()));
   }
   else if(opengl_type == GL_TEXTURE_CUBE_MAP)
   {
@@ -66,10 +66,10 @@ Texture::Init(const GLuint _width, const GLuint _height, const GLint _internal_f
     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_R, wrap_type));
 
-    FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _internal_format, Width, Height, 0, _format, _data_type, nullptr)); }
+    FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, _Width, _Height, 0, format, data_type, nullptr)); }
   }
 
-  if(!isFrameBufferAttachment) GLCall(glGenerateMipmap(opengl_type));
+  if(!_isFBOAttachment) GLCall(glGenerateMipmap(opengl_type));
 
   Unbind();
 }
@@ -79,43 +79,43 @@ Texture::Read(const std::string& file_path, const GLint wrap_type)
 {
    stbi_set_flip_vertically_on_load(1);
    int width, height;
-   LocalBuffer.reset(stbi_load(file_path.c_str(), &width, &height, &BitsPerPixel, 0));
-   ASSERT(LocalBuffer, "Could not load file \"", file_path, "\" to texture.")
+   _LocalBuffer.reset(stbi_load(file_path.c_str(), &width, &height, &_BitsPerPixel, 0));
+   ASSERT(_LocalBuffer, "Could not load file \"", file_path, "\" to texture.")
 
-   std::pair<GLint, GLenum> format = BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
-                                     BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
-                                     BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
-                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(BitsPerPixel) + ".";
+   std::pair<GLint, GLenum> format = _BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
+                                     _BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
+                                     _BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
+                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(_BitsPerPixel) + ".";
    Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, wrap_type);
-   stbi_image_free(LocalBuffer.get());
+   stbi_image_free(_LocalBuffer.get());
 }
 
 void
-Texture::Bind(UInt _slot) const
+Texture::Bind(UInt slot) const
 {
-  GLCall(glActiveTexture(GL_TEXTURE0 + _slot));
-  GLCall(glBindTexture(GetOpenGLType(Type), ID));
+  GLCall(glActiveTexture(GL_TEXTURE0 + slot));
+  GLCall(glBindTexture(OpenGLType(_Type), _ID));
 }
 
 void
-Texture::Unbind() const { GLCall(glBindTexture(GetOpenGLType(Type), 0)); }
+Texture::Unbind() const { GLCall(glBindTexture(OpenGLType(_Type), 0)); }
 
 void
-Texture::Delete() { GLCall(glDeleteTextures(1, &ID)); }
+Texture::Delete() { GLCall(glDeleteTextures(1, &_ID)); }
 
 Texture&
-Texture::operator=(Texture&& _texture) noexcept
+Texture::operator=(Texture&& texture) noexcept
 {
-   ID                      = _texture.ID;
-   _texture.ID = 0;
+   _ID          = texture._ID;
+   texture._ID = 0;
 
-   Width                   = std::move(_texture.Width);
-   Height                  = std::move(_texture.Height);
-   BitsPerPixel            = std::move(_texture.BitsPerPixel);
-   LocalBuffer             = std::move(_texture.LocalBuffer);
-   MapScale                = std::move(_texture.MapScale);
-   Type                    = std::move(_texture.Type);
-   isFrameBufferAttachment = std::move(_texture.isFrameBufferAttachment);
+   _Width           = std::move(texture._Width);
+   _Height          = std::move(texture._Height);
+   _BitsPerPixel    = std::move(texture._BitsPerPixel);
+   _LocalBuffer     = std::move(texture._LocalBuffer);
+   _MapScale        = std::move(texture._MapScale);
+   _Type            = std::move(texture._Type);
+   _isFBOAttachment = std::move(texture._isFBOAttachment);
 
    return *this;
 }
@@ -124,25 +124,25 @@ Texture::operator=(Texture&& _texture) noexcept
 * TEXTURE STAND-ALONE FUNCTIONS
 ***************************************************************************************************************************************************************/
 GLint
-GetOpenGLType(TextureType _type)
+OpenGLType(TextureType type)
 {
-   if(_type == TextureType::Diffuse || _type == TextureType::Normal ||
-      _type == TextureType::Displacement || _type == TextureType::DirectionalDepth) return GL_TEXTURE_2D;
-   else if(_type == TextureType::PointDepth) return GL_TEXTURE_CUBE_MAP;
+   typedef TextureType TT;
+   if(type == OneOf(TT::Diffuse, TT::Normal, TT::Displacement, TT::DirectionalDepth)) return GL_TEXTURE_2D;
+   else if(type == TT::PointDepth) return GL_TEXTURE_CUBE_MAP;
    else EXIT("Unrecongnised texture type.")
 }
 
 std::string
-GetTextureName(const std::string& _material, const std::string& item, size_t index, size_t _resolution)
+TextureName(const std::string& material, const std::string& item, const size_t index, const size_t resolution)
 {
-   ASSERT(_resolution == 1 || _resolution == 2 || _resolution == 4 || _resolution == 8, "Only 1K, 2K, 4K, and 8K resolutions are recognised.")
-   return _material + "/" + (item.empty() ? "" : item + "/") + ToStr(index) + "/" + ToStr(_resolution) + "K";
+   ASSERT(resolution == OneOf(1U, 2U, 4U), "Only 1K, 2K, and 4K resolutions are recognised.")
+   return material + "/" + (item.empty() ? "" : item + "/") + ToStr(index) + "/" + ToStr(resolution) + "K";
 }
 
 std::string
-GetTextureTypeString(TextureType _type)
+TextureTypeString(TextureType type)
 {
-   switch(_type)
+   switch(type)
    {
       case TextureType::Diffuse:          return "Diffuse";
       case TextureType::Normal:           return "Normal";
@@ -156,22 +156,22 @@ GetTextureTypeString(TextureType _type)
 }
 
 TextureType
-GetTextureType(const std::string& _type_string)
+GetTextureType(const std::string& type_string)
 {
-   if(_type_string == "Diffuse")               return TextureType::Diffuse;
-   else if(_type_string == "Normal")           return TextureType::Normal;
-   else if(_type_string == "Displacement")     return TextureType::Displacement;
-   else if(_type_string == "Roughness")        return TextureType::Roughness;
-   else if(_type_string == "AmbientOcclusion") return TextureType::AmbientOcclusion;
-   else if(_type_string == "DirectionalDepth") return TextureType::DirectionalDepth;
-   else if(_type_string == "PointDepth")       return TextureType::PointDepth;
+   if(type_string == "Diffuse")               return TextureType::Diffuse;
+   else if(type_string == "Normal")           return TextureType::Normal;
+   else if(type_string == "Displacement")     return TextureType::Displacement;
+   else if(type_string == "Roughness")        return TextureType::Roughness;
+   else if(type_string == "AmbientOcclusion") return TextureType::AmbientOcclusion;
+   else if(type_string == "DirectionalDepth") return TextureType::DirectionalDepth;
+   else if(type_string == "PointDepth")       return TextureType::PointDepth;
    else EXIT("Unrecognised texture type.")
 }
 
 std::string
-GetTextureUniformString(TextureType _type)
+TextureUniformString(const TextureType type)
 {
-   switch(_type)
+   switch(type)
    {
       case TextureType::Diffuse:      return "diffuse_map";
       case TextureType::Normal:       return "normal_map";
@@ -181,18 +181,18 @@ GetTextureUniformString(TextureType _type)
 }
 
 std::string
-GetTextureUniformString(const std::string& _type_string) { return GetTextureUniformString(GetTextureType(_type_string)); }
+TextureUniformString(const std::string& type_string) { return TextureUniformString(GetTextureType(type_string)); }
 
 std::string
-GetTextureFileDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
+TextureDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
 
 std::optional<std::string>
-GetTextureFilePath(const std::string& _file_directory, TextureType _type)
+TexturePath(const std::string& file_directory, TextureType type)
 {
-   const auto& texture_str = GetTextureTypeString(_type);
-   std::string file_path = _file_directory + texture_str;
+   const auto& texture_str = TextureTypeString(type);
+   std::string file_path = file_directory + texture_str;
 
-   if(EnumToInt(_type) <= EnumToInt(TextureType::AmbientOcclusion))
+   if(EnumToInt(type) <= EnumToInt(TextureType::AmbientOcclusion))
    {
       // Try finding a .png file first, failing which, find a .jpg file
       for(const auto& ext : {".png", ".jpg"})

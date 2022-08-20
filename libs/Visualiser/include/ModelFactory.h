@@ -34,13 +34,13 @@ class ModelFactory
 
    static Model Triangle(GLfloat _length);
 
-   static Model Triangle(GLfloat _length, GLfloat _height, GLfloat _apex_ratio);
+   static Model Triangle(GLfloat _length, GLfloat height, GLfloat _apex_ratio);
 
    static Model Triangle(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2);
 
    static Model Square(GLfloat _length);
 
-   static Model Rectangle(GLfloat _length, GLfloat _height);
+   static Model Rectangle(GLfloat _length, GLfloat height);
 
    static Model Quadrilateral(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2, const SVector3<GLfloat>& _v3);
 
@@ -63,7 +63,7 @@ class ModelFactory
 
    static Model Cube(GLfloat _length);
 
-   static Model Cuboid(GLfloat _length, GLfloat _width, GLfloat _height);
+   static Model Cuboid(GLfloat _length, GLfloat width, GLfloat height);
 
    static Model Octahedron(GLfloat _length);
 
@@ -75,9 +75,9 @@ class ModelFactory
 
    static Model Ellipsoid(GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z);
 
-   static Model Cylinder(GLfloat _radius, GLfloat _height);
+   static Model Cylinder(GLfloat _radius, GLfloat height);
 
-   static Model Cone(GLfloat _radius, GLfloat _height);
+   static Model Cone(GLfloat _radius, GLfloat height);
 };
 
 }

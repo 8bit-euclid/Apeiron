@@ -19,10 +19,10 @@ Model
 ModelFactory::Triangle(GLfloat _length) { return Triangle(_length, _length * Sin(ThirdPi), Half); }
 
 Model
-ModelFactory::Triangle(GLfloat _length, GLfloat _height, GLfloat _apex_ratio)
+ModelFactory::Triangle(GLfloat _length, GLfloat height, GLfloat _apex_ratio)
 {
    const GLfloat x = Half * static_cast<Float>(_length);
-   const GLfloat y = static_cast<Float>(_height);
+   const GLfloat y = static_cast<Float>(height);
    const GLfloat apex_x = x * (Two * _apex_ratio - One);
 
    return Triangle(SVector3<GLfloat>{-x, Zero, Zero}, SVector3<GLfloat>{x, Zero, Zero}, SVector3<GLfloat>{apex_x, y, Zero});
@@ -35,10 +35,10 @@ Model
 ModelFactory::Square(GLfloat _length) { return Rectangle(_length, _length); }
 
 Model
-ModelFactory::Rectangle(GLfloat _length, GLfloat _height)
+ModelFactory::Rectangle(GLfloat _length, GLfloat height)
 {
    const GLfloat x = Half * static_cast<Float>(_length);
-   const GLfloat y = Half * static_cast<Float>(_height);
+   const GLfloat y = Half * static_cast<Float>(height);
 
    return Quadrilateral(SVector3<GLfloat>{-x, -y, Zero}, SVector3<GLfloat>{x, -y, Zero}, SVector3<GLfloat>{x, y, Zero}, SVector3<GLfloat>{-x, y, Zero});
 }
@@ -162,11 +162,11 @@ Model
 ModelFactory::Cube(GLfloat _length) { return Cuboid(_length, _length, _length); }
 
 Model
-ModelFactory::Cuboid(GLfloat _length, GLfloat _width, GLfloat _height)
+ModelFactory::Cuboid(GLfloat _length, GLfloat width, GLfloat height)
 {
    const GLfloat x = Half * static_cast<Float>(_length);
-   const GLfloat y = Half * static_cast<Float>(_width);
-   const GLfloat z = Half * static_cast<Float>(_height);
+   const GLfloat y = Half * static_cast<Float>(width);
+   const GLfloat z = Half * static_cast<Float>(height);
 
    SVector3<GLfloat> v0{-x, -y,  z};
    SVector3<GLfloat> v1{ x, -y,  z};

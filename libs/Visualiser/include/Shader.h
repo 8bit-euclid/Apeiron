@@ -54,17 +54,17 @@ class Shader
 
    void UseModel(const Model& model);
 
-   void UseMaterial(const Material& _material);
+   void UseMaterial(const Material& material);
 
-   void UseTexture(const Texture& _texture, const std::string& _uniform_name, const UInt _slot);
+   void UseTexture(const Texture& texture, const std::string& _uniform_name, const UInt slot);
 
    void UseCamera(Camera& camera);
 
    void UseLight(const Light& light);
 
-   void SetDirectionalShadowMap(const UInt _slot);
+   void SetDirectionalShadowMap(const UInt slot);
 
-   void SetPointShadowMap(const size_t _i_point_light, const UInt _slot);
+   void SetPointShadowMap(const size_t _i_point_light, const UInt slot);
 
    void SetPointPosition(const glm::vec3& _position);
 
@@ -96,7 +96,7 @@ private:
 
    void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
 
-   GLuint Compile(GLuint _type, const std::string& _source);
+   GLuint Compile(GLuint type, const std::string& _source);
 
    void Attach(GLuint _program, GLuint _shader);
 

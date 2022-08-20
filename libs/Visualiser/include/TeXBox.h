@@ -72,6 +72,8 @@ class TeXBox final : public Model
 
    void SetCompileDirectory(const size_t id);
 
+   fm::Path ImagePath() const;
+
    static void InitTeXDirectory();
 
    std::string              _Label;
@@ -83,7 +85,7 @@ class TeXBox final : public Model
    std::optional<SVectorF2> _Dimensions;
    fm::Path                 _CompileDirectory;
 
-   typedef const flmgr::Path Path;
+   typedef const fm::Path Path;
    inline static Path _LaTeXDirectory = "./libs/Visualiser/data/latex";
    inline static Path _LaTeXTemplate  = "./libs/Visualiser/resources/latex/texbox.tex";
    inline static Path _LuaTeXTemplate = "./libs/Visualiser/resources/latex/write_boxes.lua";

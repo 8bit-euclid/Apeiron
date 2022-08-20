@@ -121,6 +121,23 @@ Visualiser::InitTeXBoxes()
    // Initialise LaTeX compilation directory, compile all LaTeX source code, and generate glyph sheets.
    TeXBox::InitTeXDirectory();
    FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
+
+   // Load model textures. Note: only diffuse texture required.
+   FOR_EACH(_, scene, _Scenes)
+      FOR_EACH_CONST(_, tex_box, scene._TeXBoxes)
+      {
+         const auto texture_name = tex_box->_Label + "_texture";
+         const auto texture_type = TextureType::Diffuse;
+
+         UMap<Texture> texture_files;
+         texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, tex_box->ImagePath()));
+         _Textures.emplace(texture_name, std::move(texture_files));
+
+         // Point to the textures from the scene
+         UMap<Texture&> texture_file_map;
+         FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+         scene._Textures.emplace(texture_name, texture_file_map);
+      }
 }
 
 void
@@ -133,20 +150,20 @@ Visualiser::InitTextures()
          {
             // Add all files associated to the given texture
             const auto& texture_name = model->_Texture.value();
-            const auto  texture_list = {TextureType::Diffuse,
-                                        TextureType::Normal,
-                                        TextureType::Displacement}; // Add appropriate enums if more textures are to be read
+            const auto  texture_list = { TextureType::Diffuse,
+                                         TextureType::Normal,
+                                         TextureType::Displacement }; // Add appropriate enums if more textures are to be read
             UMap<Texture> texture_files;
             FOR_EACH_CONST(texture_type, texture_list)
             {
-               const auto path = GetTextureFilePath(GetTextureFileDirectory(texture_name), texture_type);
+               const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
                if(path.has_value())
                {
-                  texture_files.emplace(GetTextureTypeString(texture_type), Texture(texture_type, path.value()));
+                  texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
                   if(texture_type == TextureType::Displacement)
                   {
                      const Float displacement_map_scale = 0.08; // TODO: Temporarily hard-code
-                     texture_files.at(GetTextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
+                     texture_files.at(TextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
                   }
                }
                else EXIT("Could not locate the texture files of texture ", texture_name)

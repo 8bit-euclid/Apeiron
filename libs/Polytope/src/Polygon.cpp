@@ -43,7 +43,7 @@ constexpr Triangle<dim>::Triangle(const SVectorF<dim>& _v0, const SVectorF<dim>&
 }
 
 template<size_t dim>
-constexpr Triangle<dim>::Triangle(const Float _length, const Float _height, const Float _apex_ratio)
+constexpr Triangle<dim>::Triangle(const Float _length, const Float height, const Float _apex_ratio)
 {
 
 }
@@ -58,7 +58,7 @@ constexpr Quadrilateral<dim>::Quadrilateral(const SVectorF<dim>& _v0, const SVec
 }
 
 template<size_t dim>
-constexpr Quadrilateral<dim>::Quadrilateral(const Float _length, const Float _height, const Float angle)
+constexpr Quadrilateral<dim>::Quadrilateral(const Float _length, const Float height, const Float angle)
 {
 
 }

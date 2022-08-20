@@ -43,7 +43,7 @@ class Model
 
    Model& SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness);
 
-   Model& SetTexture(const std::string& _material, const std::string& item, size_t index, size_t _resolution);
+   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution);
 
    Model& Add(Model& sub_model, const std::string& name);
 
@@ -114,9 +114,8 @@ class Model
 
    /** Model Attributes
    ************************************************************************************************************************************************************/
-   template<class type>
-   using Map    = std::unordered_map<std::string, type>;
-   using ATComp = ActionTypeComparator;
+   template<class T> using Map = std::unordered_map<std::string, T>;
+   using ATComp                = ActionTypeComparator;
 
    Mesh                                           _Mesh;
    Map<SPtr<Model>>                               _SubModels;

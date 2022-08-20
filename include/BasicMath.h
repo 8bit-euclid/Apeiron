@@ -52,7 +52,7 @@ template<typename T>
 constexpr T
 Clipped(const T& value, const T& min, const T& max)
 {
-   return min < max ? Max(Min(value, max), min) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
+   return min < max ? std::clamp(value, min, max) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
 }
 
 /** Clip a value between a minimum and a maximum. */

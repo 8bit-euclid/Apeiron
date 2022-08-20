@@ -25,16 +25,16 @@ void Shader::Read(const std::string &file_path)
 
 void Shader::UseModel(const Model& model) { SetUniformMatrix4f("u_model_matrix", model.GetModelMatrix()); }
 
-void Shader::UseMaterial(const Material& _material)
+void Shader::UseMaterial(const Material& material)
 {
-   SetUniform1f("u_material.SpecularIntensity", _material.SpecularIntensity);
-   SetUniform1f("u_material.Smoothness"       , _material.Smoothness);
+   SetUniform1f("u_material.SpecularIntensity", material.SpecularIntensity);
+   SetUniform1f("u_material.Smoothness"       , material.Smoothness);
 }
 
-void Shader::UseTexture(const Texture& _texture, const std::string& _uniform_name, const UInt _slot)
+void Shader::UseTexture(const Texture& texture, const std::string& _uniform_name, const UInt slot)
 {
-   SetUniform1i(_uniform_name, _slot);
-   _texture.Bind(_slot);
+   SetUniform1i(_uniform_name, slot);
+   texture.Bind(slot);
 }
 
 void Shader::UseCamera(Camera& camera)
@@ -94,9 +94,9 @@ void Shader::UseLight(const Light& light)
    else EXIT("Cannot yet handle the given light type.")
 }
 
-void Shader::SetDirectionalShadowMap(const UInt _slot) { SetUniform1i("u_directional_light.Shadow", _slot); }
+void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_directional_light.Shadow", slot); }
 
-void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt _slot) { SetUniform1i("u_point_lights[" + ToStr(_i_point_light) + "].Shadow", _slot); }
+void Shader::SetPointShadowMap(const size_t _i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToStr(_i_point_light) + "].Shadow", slot); }
 
 void Shader::SetPointPosition(const glm::vec3& _position) { SetUniform3f("u_plight_position", _position.x, _position.y, _position.z); }
 
@@ -201,9 +201,9 @@ void Shader::Create(const std::string& _vertex_shader, const std::string& _geome
   GLCall(glDeleteShader(fs_id));
 }
 
-UInt Shader::Compile(unsigned int _type, const std::string& _source)
+UInt Shader::Compile(unsigned int type, const std::string& _source)
 {
-  GLCall(GLuint shader_ID = glCreateShader(_type));
+  GLCall(GLuint shader_ID = glCreateShader(type));
   const GLchar* src = _source.c_str();
 
   GLCall(glShaderSource(shader_ID, 1, &src, nullptr));
@@ -216,7 +216,7 @@ UInt Shader::Compile(unsigned int _type, const std::string& _source)
   if(!result)
   {
     GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
-    EXIT("Failed to compile ", (_type == GL_VERTEX_SHADER ? "vertex" : _type == GL_GEOMETRY_SHADER ? "geometry" : "fragment"), " shader:\n ", error_log)
+    EXIT("Failed to compile ", (type == GL_VERTEX_SHADER ? "vertex" : type == GL_GEOMETRY_SHADER ? "geometry" : "fragment"), " shader:\n ", error_log)
   }
 
   return shader_ID;

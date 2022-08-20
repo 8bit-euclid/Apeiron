@@ -17,7 +17,7 @@ Window::Window(GLint width, GLint height)
 Window::~Window() { glfwTerminate(); }
 
 void
-Window::Open(GLint _width, GLint _height)
+Window::Open(GLint width, GLint height)
 {
    if(!glfwInit())
    {
@@ -45,8 +45,8 @@ Window::Open(GLint _width, GLint _height)
    GLCall(glEnable(GL_MULTISAMPLE));
 
    // Create a window and its OpenGL context.
-   WindowDimensions = {_width, _height};
-   GlfwWindow = glfwCreateWindow(_width, _height, "Apeiron Visualiser", nullptr, nullptr);
+   WindowDimensions = {width, height};
+   GlfwWindow = glfwCreateWindow(width, height, "Apeiron Visualiser", nullptr, nullptr);
    if(!GlfwWindow)
    {
      glfwTerminate();

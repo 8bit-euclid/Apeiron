@@ -42,7 +42,7 @@ struct RegularTetrahedron : public Tetrahedron
 
 struct TrirectangularTetrahedron : public Tetrahedron
 {
-  TrirectangularTetrahedron(const Float _length, const Float _height, const Float _width, const bool _flip_horizontally = false);
+  TrirectangularTetrahedron(const Float _length, const Float height, const Float width, const bool _flip_horizontally = false);
 };
 
 /***************************************************************************************************************************************************************
