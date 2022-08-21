@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  BUILD_TYPE: Debug
+
 jobs:
   build:
 
@@ -23,14 +26,9 @@ jobs:
       - name: Configure CMake
         run: ./configure
 
-      - name: Make
-        working-directory: ${{github.workspace}}/build
-        run: make Apeiron
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: Make Check
+      - name: Test
         working-directory: ${{github.workspace}}/build
-        run: make check
-
-      - name: Make Distcheck
-        working-directory: ${{github.workspace}}/build
-        run: cd build && make distcheck
+        run: ctest -C ${{env.BUILD_TYPE}}
