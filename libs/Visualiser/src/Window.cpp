@@ -9,10 +9,7 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-  : WindowDimensions{width, height}
-{
-   Open(width, height);
-}
+   : WindowDimensions{width, height} { Open(width, height); }
 
 Window::~Window() { glfwTerminate(); }
 

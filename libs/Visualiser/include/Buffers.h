@@ -17,10 +17,12 @@ namespace aprn::vis {
 struct Buffer
 {
  protected:
-   Buffer();
+   Buffer() = default;
 
  public:
    ~Buffer();
+
+   void Init();
 
    virtual void Bind() const = 0;
 
@@ -28,10 +30,10 @@ struct Buffer
 
    virtual void Delete();
 
-   inline GLuint GetID() const { return ID; }
+   inline GLuint ID() const { return _ID; }
 
  protected:
-   GLuint ID{};
+   GLuint _ID{};
 };
 
 /***************************************************************************************************************************************************************
@@ -39,7 +41,7 @@ struct Buffer
 ***************************************************************************************************************************************************************/
 struct VertexBuffer : public Buffer
 {
-   void Init(const DynamicArray<Vertex>& _vertices) const;
+   void Init(const DynamicArray<Vertex>& _vertices);
 
    void Bind() const override;
 
@@ -91,9 +93,9 @@ struct ShaderStorageBuffer : public Buffer
 class VertexArray
 {
  public:
-   VertexArray();
-
    ~VertexArray();
+
+   void Init();
 
    void AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout);
 
@@ -112,13 +114,15 @@ class VertexArray
 ***************************************************************************************************************************************************************/
 struct FrameBuffer
 {
-   FrameBuffer();
+   FrameBuffer() = default;
 
    FrameBuffer(const FrameBuffer& _fbo) = delete;
 
    FrameBuffer(FrameBuffer&& _fbo) noexcept;
 
    ~FrameBuffer();
+
+   void Init();
 
    void Bind() const;
 

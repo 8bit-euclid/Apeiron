@@ -28,7 +28,7 @@ set(SOURCE_FILES
         include/Transition.h
         include/Visualiser.h
         include/Window.h
-        resources/external/stb_image/stb_image.h
+        ../../dependencies/stb_image/stb_image.h
         include/Action.tpp
         src/ActionBase.cpp
         src/Buffers.cpp
@@ -49,7 +49,7 @@ set(SOURCE_FILES
         src/Transition.cpp
         src/Visualiser.cpp
         src/Window.cpp
-        resources/external/stb_image/stb_image.cpp)
+        ../../dependencies/stb_image/stb_image.cpp)
 
 set(LINK_LIBRARIES
         ${OPENGL_LIBRARIES}
@@ -61,5 +61,5 @@ set(LINK_LIBRARIES
         glfw)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
-target_include_directories(VisualiserLibrary SYSTEM PRIVATE resources/external/stb_image)
+target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../dependencies/stb_image)
 target_link_libraries(VisualiserLibrary ${LINK_LIBRARIES})
