@@ -26,7 +26,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libgl1-mesa-dev libglew-dev
+          sudo apt-get install libgl1-mesa-dev libglew-dev libglew2.2
 
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
