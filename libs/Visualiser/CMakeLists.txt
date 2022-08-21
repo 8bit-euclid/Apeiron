@@ -61,5 +61,5 @@ set(LINK_LIBRARIES
         glfw)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
-target_include_directories(VisualiserLibrary SYSTEM PRIVATE resources/external/stb_image)
+target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../dependencies/stb_image)
 target_link_libraries(VisualiserLibrary ${LINK_LIBRARIES})

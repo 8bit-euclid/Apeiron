@@ -1,7 +1,7 @@
 #include "../include/Texture.h"
-#include "../resources/external/stb_image/stb_image.h"
-
 #include "FileManager/include/FileSystem.h"
+
+#include "../../../dependencies/stb_image/stb_image.h"
 
 namespace aprn::vis {
 
