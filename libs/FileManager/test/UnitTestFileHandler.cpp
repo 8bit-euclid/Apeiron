@@ -13,12 +13,15 @@ namespace fs = std::filesystem;
 class FileHandlerTest : public testing::Test
 {
  public:
-   std::string DataDir{"/home/niran90/Dropbox/Projects/Apeiron/libs/FileManager/test/data"};
+   const std::string DataDir{"../libs/FileManager/test/data"};
 
    FileHandlerTest() {}
 
    void
-   SetUp() override {}
+   SetUp() override
+   {
+
+   }
 };
 
 /***************************************************************************************************************************************************************
