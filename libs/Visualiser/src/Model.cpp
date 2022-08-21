@@ -271,12 +271,13 @@ Model::Init()
    // Compute vertex normals
    _Mesh.ComputeVertexNormals();
 
-   // Load vertex and index buffer objects
-   _VAO.Bind();
+   // Initialise VAO, VBO, and EBO.
+   _VAO.Init();
    _VBO.Init(_Mesh.Vertices);
    _EBO.Init(_Mesh.Indices);
 
    // Add vertex buffer to vertex array object
+   _VAO.Bind();
    _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
    _VAO.Unbind();
 

@@ -13,12 +13,15 @@ namespace fs = std::filesystem;
 class FileHandlerTest : public testing::Test
 {
  public:
-   std::string DataDir{"/home/niran90/Dropbox/Projects/Apeiron/libs/FileManager/test/data"};
+   const std::string DataDir{"../libs/FileManager/test/data"};
 
    FileHandlerTest() {}
 
    void
-   SetUp() override {}
+   SetUp() override
+   {
+
+   }
 };
 
 /***************************************************************************************************************************************************************
@@ -65,7 +68,6 @@ TEST_F(FileHandlerTest, DirectoryExists)
 
 TEST_F(FileHandlerTest, DirectoryIsEmpty)
 {
-   EXPECT_TRUE(DirectoryIsEmpty(DataDir + "/empty_directory"));
    EXPECT_FALSE(DirectoryIsEmpty(DataDir + "/non_empty_directory"));
    EXPECT_DEATH(DirectoryIsEmpty(DataDir + "/non_existant_directory"), "");
 }

@@ -9,9 +9,7 @@ namespace aprn::vis {
 class ParseTeXTest : public testing::Test
 {
  public:
-   Window _Window; // Only need for OpenGL context
-
-   ParseTeXTest() : _Window(1920, 1080) {}
+   ParseTeXTest() {}
 
    void
    SetUp() override {}
