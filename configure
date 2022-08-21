@@ -1,9 +1,8 @@
 WORKDIR=$PWD
-BUILD=~/Dropbox/Projects/Apeiron/build
-if [ ! -d $BUILD ] 
+BUILD=$WORKDIR/build
+if [ ! -d $BUILD ]
 then
-  echo "Directory $BUILD does not exists." 
-  exit 9999
+  mkdir $BUILD
 else
   echo "Configuring CMake files..."
   cd $BUILD
