@@ -41,19 +41,47 @@ find_package(OpenMP REQUIRED)
 include_directories(${OPENMP_INCLUDE_DIRS})
 
 #***************************************************************************************************************************************************************
-# Build instructions for OpenGL tools.
+# Build instructions for OpenGL and its dependencies.
 #***************************************************************************************************************************************************************
-find_package(OpenGL     REQUIRED)
+
+# Find and link OpenGL dependencies.
+find_package(OpenGL REQUIRED)
+include_directories(${OpenGL_INCLUDE_DIRS})
+link_directories(${OpenGL_LIBRARY_DIRS})
+add_definitions(${OpenGL_DEFINITIONS})
+if(NOT OpenGL_FOUND)
+    message("-- Error: OpenGL not found")
+endif(NOT OpenGL_FOUND)
+
+# Find and link GLEW.
 find_package(GLEW 2.1.0 REQUIRED)
-find_package(glm        REQUIRED)
-
-include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${GLEW_INCLUDE_DIRS})
-include_directories(${GLM_INCLUDE_DIRS})
+link_directories(${GLEW_LIBRARY_DIRS})
+add_definitions(${GLEW_DEFINITIONS})
+if(NOT GLEW_FOUND)
+    message("-- Error: GLEW not found")
+endif(NOT GLEW_FOUND)
 
+# Find and link GLFW.
+find_package(glfw3 REQUIRED)
+include_directories(${glfw3_INCLUDE_DIRS})
+link_directories(${glfw3_LIBRARY_DIRS})
+add_definitions(${glfw3_DEFINITIONS})
+if(NOT glfw3_FOUND)
+    message("-- Error: GLFW not found")
+endif(NOT glfw3_FOUND)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL     "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL    "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# Find and link GLM.
+find_package(glm REQUIRED)
+include_directories(${glm_INCLUDE_DIRS})
+link_directories(${glm_LIBRARY_DIRS})
+add_definitions(${glm_DEFINITIONS})
+if(NOT glm_FOUND)
+    message("Error: GLM not found")
+endif(NOT glm_FOUND)
 
 #add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/GLFW)
 #add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/glm)
@@ -106,9 +134,9 @@ target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
-        ${OPENMP_LIBRARIES}
-        glfw
-        glm)
+        ${GLFW_LIBRARIES}
+        ${GLM_LIBRARIES}
+        ${OPENMP_LIBRARIES})
 
 #***************************************************************************************************************************************************************
 # GoogleTest build instructions.
