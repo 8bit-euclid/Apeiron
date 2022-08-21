@@ -13,11 +13,24 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: configure
+
+      - name: Install GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+
+      - name: Configure CMake
         run: ./configure
-      - name: make
-        run: cd build && make
-      - name: make check
-        run: cd build && make check
-      - name: make distcheck
+
+      - name: Make
+        working-directory: ${{github.workspace}}/build
+        run: make
+
+      - name: Make Check
+        working-directory: ${{github.workspace}}/build
+        run: make check
+
+      - name: Make Distcheck
+        working-directory: ${{github.workspace}}/build
         run: cd build && make distcheck
