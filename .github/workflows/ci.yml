@@ -22,7 +22,7 @@ jobs:
           version: 11
           platform: x64
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install libgl1-mesa-dev libglew-dev libglm-dev libglfw3 libglfw3-dev
@@ -33,9 +33,15 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -- -j
 
+      - name: Upload build artifacts
+      - uses: actions/upload-artifact@master
+        with:
+          name: build-artifacts
+          path: ${{github.workspace}}/build
+
   unit-tests:
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
 
     steps:
       - name: CTest
