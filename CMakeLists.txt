@@ -148,6 +148,9 @@ include(FetchContent)
 FetchContent_Declare(GoogleTest URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
 FetchContent_MakeAvailable(GoogleTest)
 
+include(CTest)
+include(GoogleTest)
+
 # Add unit test executables
 add_executable(UnitTestBasicMath        ${PROJECT_SOURCE_DIR}/test/UnitTestBasicMath.cpp)
 add_executable(UnitTestComparators      ${PROJECT_SOURCE_DIR}/test/UnitTestComparators.cpp)
@@ -173,3 +176,15 @@ target_link_libraries(UnitTestFileHandler      gtest gtest_main FileManagerLibra
 target_link_libraries(UnitTestVector           gtest gtest_main LinearAlgebraLibrary)
 target_link_libraries(UnitTestCurve            gtest gtest_main ManifoldLibrary)
 target_link_libraries(UnitTestParseTeX         gtest gtest_main VisualiserLibrary)
+
+# Add tests with CTest
+gtest_discover_tests(UnitTestBasicMath)
+gtest_discover_tests(UnitTestComparators)
+gtest_discover_tests(UnitTestMath)
+gtest_discover_tests(UnitTestString)
+gtest_discover_tests(UnitTestArray)
+gtest_discover_tests(UnitTestNumericContainer)
+gtest_discover_tests(UnitTestFileHandler)
+gtest_discover_tests(UnitTestVector)
+gtest_discover_tests(UnitTestCurve)
+gtest_discover_tests(UnitTestParseTeX)
