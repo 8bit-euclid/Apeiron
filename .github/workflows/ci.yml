@@ -30,14 +30,15 @@ jobs:
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-      - name: Build
+      - name: Build project
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -- -j
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@master
+      - name: Cache build files
+        uses: actions/cache@v3
+        id: cache-build-files  # Unique ID to check for cache hit/miss
         with:
-          name: build-artifacts
-          path: ${{github.workspace}}/build
+          path: ${{github.workspace}}/build # The folder to be cached
+          key: ${{ runner.os }}-build-files-${{ hashFiles('**/Makefile') }}
 
   unit-tests:
     needs: build
