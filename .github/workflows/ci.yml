@@ -25,7 +25,7 @@ jobs:
 
       - name: Make
         working-directory: ${{github.workspace}}/build
-        run: make
+        run: make Apeiron
 
       - name: Make Check
         working-directory: ${{github.workspace}}/build
