@@ -34,7 +34,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -- -j
 
       - name: Upload build artifacts
-      - uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@master
         with:
           name: build-artifacts
           path: ${{github.workspace}}/build
