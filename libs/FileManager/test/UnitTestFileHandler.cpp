@@ -68,7 +68,6 @@ TEST_F(FileHandlerTest, DirectoryExists)
 
 TEST_F(FileHandlerTest, DirectoryIsEmpty)
 {
-   EXPECT_TRUE(DirectoryIsEmpty(DataDir + "/empty_directory"));
    EXPECT_FALSE(DirectoryIsEmpty(DataDir + "/non_empty_directory"));
    EXPECT_DEATH(DirectoryIsEmpty(DataDir + "/non_existant_directory"), "");
 }
