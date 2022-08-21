@@ -45,11 +45,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: CTest
+      - name: Read build file cache
         uses: actions/cache@v3
         with:
           path: ${{github.workspace}}/build
           key: ${{ runner.os }}-build-files-${{ hashFiles('**/Makefile') }}
 
+      - name: CTest
         working-directory: ${{github.workspace}}/build
         run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
