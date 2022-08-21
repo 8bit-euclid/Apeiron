@@ -12,6 +12,7 @@ void Shadow::Init(GLsizei width, GLsizei height)
 {
   DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
+  FBO.Init();
   FBO.Bind();
 
   if(isPointLightShadow) FBO.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap.ID());

@@ -6,21 +6,22 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
-Buffer::Buffer()
+Buffer::~Buffer() { Delete(); }
+
+void
+Buffer::Init()
 {
    ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenBuffers(1, &ID));
+   GLCall(glGenBuffers(1, &_ID));
 }
-
-Buffer::~Buffer() { Delete(); }
 
 void
 Buffer::Delete()
 {
-   if(ID != 0)
+   if(_ID != 0)
    {
-      GLCall(glDeleteBuffers(1, &ID));
-      ID = 0;
+      GLCall(glDeleteBuffers(1, &_ID));
+      _ID = 0;
    }
 }
 
@@ -28,15 +29,16 @@ Buffer::Delete()
 * Vertex Buffer Class
 ***************************************************************************************************************************************************************/
 void
-VertexBuffer::Init(const DynamicArray<Vertex>& _vertices) const
+VertexBuffer::Init(const DynamicArray<Vertex>& _vertices)
 {
+   Buffer::Init();
    Bind();
    Load(_vertices);
    Unbind();
 }
 
 void
-VertexBuffer::Bind() const { GLCall(glBindBuffer(GL_ARRAY_BUFFER, ID)); }
+VertexBuffer::Bind() const { GLCall(glBindBuffer(GL_ARRAY_BUFFER, _ID)); }
 
 void
 VertexBuffer::Unbind() const { GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0)); }
@@ -53,6 +55,7 @@ VertexBuffer::Load(const DynamicArray<Vertex>& _vertices) const
 void
 IndexBuffer::Init(const DynamicArray<GLuint>& _indices)
 {
+   Buffer::Init();
    IndexCount = _indices.size();
    Bind();
    Load(_indices);
@@ -60,7 +63,7 @@ IndexBuffer::Init(const DynamicArray<GLuint>& _indices)
 }
 
 void
-IndexBuffer::Bind() const { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ID)); }
+IndexBuffer::Bind() const { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ID)); }
 
 void
 IndexBuffer::Unbind() const { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)); }
@@ -84,15 +87,16 @@ IndexBuffer::Load(const DynamicArray<GLuint>& _indices) const
 void
 ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& _data)
 {
+   Buffer::Init();
    Bind();
    Load(_data);
 }
 
 void
-ShaderStorageBuffer::Bind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, ID)); }
+ShaderStorageBuffer::Bind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ID)); }
 
 void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ID); }
+ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
 
 void
 ShaderStorageBuffer::Unbind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)); }
@@ -106,13 +110,14 @@ ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& _data) const
 /***************************************************************************************************************************************************************
 * Vertex Array Class
 ***************************************************************************************************************************************************************/
-VertexArray::VertexArray()
+VertexArray::~VertexArray() { Delete(); }
+
+void
+VertexArray::Init()
 {
    ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
    GLCall(glGenVertexArrays(1, &ID));
 }
-
-VertexArray::~VertexArray() { Delete(); }
 
 void
 VertexArray::AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout)
@@ -151,12 +156,6 @@ VertexArray::Delete()
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-FrameBuffer::FrameBuffer()
-{
-   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenFramebuffers(1, &ID));
-}
-
 FrameBuffer::FrameBuffer(FrameBuffer&& _fbo) noexcept
 {
    ID = _fbo.ID;
@@ -164,6 +163,13 @@ FrameBuffer::FrameBuffer(FrameBuffer&& _fbo) noexcept
 }
 
 FrameBuffer::~FrameBuffer() { Delete(); }
+
+void
+FrameBuffer::Init()
+{
+   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
+   GLCall(glGenFramebuffers(1, &ID));
+}
 
 void
 FrameBuffer::Bind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, ID)); }
