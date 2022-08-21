@@ -43,9 +43,9 @@ include_directories(${OPENMP_INCLUDE_DIRS})
 #***************************************************************************************************************************************************************
 # Build instructions for OpenGL tools.
 #***************************************************************************************************************************************************************
-find_package(OpenGL   REQUIRED)
-find_package(GLEW 2.1 REQUIRED)
-find_package(glm      REQUIRED)
+find_package(OpenGL     REQUIRED)
+find_package(GLEW 2.1.0 REQUIRED)
+find_package(glm        REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIRS})
 include_directories(${GLEW_INCLUDE_DIRS})
