@@ -12,7 +12,10 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#pragma once
+#ifndef TENSOR_TEMPLATE_DEF
+#define TENSOR_TEMPLATE_DEF
+
+#include "../include/Tensor.h"
 
 namespace aprn{
 
@@ -74,3 +77,5 @@ DynamicTensor<T>::DynamicTensor(const std::convertible_to<size_t> auto... _dimen
   : Entries(_dimensions...) {}
 
 }
+
+#endif
