@@ -36,3 +36,9 @@ jobs:
       - name: Run CTest
         working-directory: ${{github.workspace}}/build
         run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+
+      - name: Upload coverage reports to Codecov
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov
