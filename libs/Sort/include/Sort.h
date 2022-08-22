@@ -19,68 +19,61 @@
 
 namespace aprn{
 
-template<typename T, int n_values>
+template<typename T, unsigned N>
 struct SortObject
 {
   size_t Index;
-  StaticArray<T, n_values> Values;
+  StaticArray<T, N> Values;
 
   SortObject() {}
 
-  SortObject(const size_t index, const StaticArray<T, n_values>& _values) : Index(index), Values(_values) {}
+  SortObject(const size_t index, const StaticArray<T, N>& values) : Index(index), Values(values) {}
 };
 
-template<typename T, unsigned int n_values = 1>
+template<typename T, unsigned N = 1>
 class Sort
 {
   private:
-  DynamicArray<SortObject<T, n_values>> SortObjects;
+  DynamicArray<SortObject<T, N>> SortObjects;
 
   public:
   Sort() {}
 
-  Sort(const size_t _n_sort_objects)
+  Sort(const size_t object_count)
   {
-    Init(_n_sort_objects);
+    Init(object_count);
   }
 
   ~Sort() = default;
 
-  inline void Init(const size_t _n_sort_objects)
+  inline void Init(const size_t object_count)
   {
     STATIC_ASSERT(isArithmetic<T>(), "Can only sort numerical data types currently.")
-    SortObjects.reserve(_n_sort_objects);
+    SortObjects.reserve(object_count);
   }
 
-  inline void AddSortObject(const size_t index, const StaticArray<T, n_values>& _values)
+  inline void AddSortObject(const size_t index, const StaticArray<T, N>& values)
   {
-    SortObjects.emplace_back(index, _values);
+    SortObjects.emplace_back(index, values);
   }
 
   inline void SortAll(const bool _is_sort_in_ascending = true)
   {
-    std::sort(SortObjects.begin(), SortObjects.end(), [](const SortObject<T, n_values>& a, const SortObject<T, n_values>& b)
+    std::sort(SortObjects.begin(), SortObjects.end(), [](const SortObject<T, N>& a, const SortObject<T, N>& b)
                                                       {
-                                                        FOR(i, n_values)
+                                                        FOR(i, N)
                                                         {
-                                                          if(a[i] < b[i]) return true;
+                                                          if     (a[i] < b[i]) return true;
                                                           else if(a[i] > b[i]) return false;
                                                           else continue;
                                                         }
                                                       });
-
     if(!_is_sort_in_ascending) std::reverse(SortObjects.begin(), SortObjects.end());
   }
 
-  inline size_t GetIndex(const size_t _i_object)
-  {
-    return SortObjects[_i_object]._Index;
-  }
+  inline size_t GetIndex(const size_t i) const { return SortObjects[i]._Index; }
 
-  inline const StaticArray<T, n_values>& GetValues(const size_t _i_object)
-  {
-    return SortObjects[_i_object].Values;
-  }
+  inline const StaticArray<T, N>& GetValues(const size_t i) const { return SortObjects[i].Values; }
 };
 
 }

@@ -24,6 +24,7 @@ HDR::Init(const GLsizei width, const GLsizei height)
 {
   _ColourBuffer.Init(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
 
+  _FBO.Init();
   _FBO.Bind();
 
   _FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, _ColourBuffer.ID());
