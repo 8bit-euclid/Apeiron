@@ -67,12 +67,12 @@ VertexBuffer::Load(const DynamicArray<Vertex>& _vertices) const
 * Index Buffer Class
 ***************************************************************************************************************************************************************/
 void
-IndexBuffer::Init(const DynamicArray<GLuint>& _indices)
+IndexBuffer::Init(const DynamicArray<GLuint>& indices)
 {
    Buffer::Init();
-   IndexCount = _indices.size();
+   IndexCount = indices.size();
    Bind();
-   Load(_indices);
+   Load(indices);
    Unbind();
 }
 
@@ -90,20 +90,20 @@ IndexBuffer::Delete()
 }
 
 void
-IndexBuffer::Load(const DynamicArray<GLuint>& _indices) const
+IndexBuffer::Load(const DynamicArray<GLuint>& indices) const
 {
-   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, IndexCount * sizeof(GLuint), _indices.data(), GL_STATIC_DRAW));
+   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW));
 }
 
 /***************************************************************************************************************************************************************
 * Shader Storage Buffer Class
 ***************************************************************************************************************************************************************/
 void
-ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& _data)
+ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
 {
    Buffer::Init();
    Bind();
-   Load(_data);
+   Load(data);
 }
 
 void
@@ -116,9 +116,9 @@ void
 ShaderStorageBuffer::Unbind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)); }
 
 void
-ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& _data) const
+ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
 {
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, _data.size() * sizeof(glm::vec4), _data.data(), GL_STATIC_DRAW););
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
 }
 
 /***************************************************************************************************************************************************************
@@ -134,21 +134,21 @@ VertexArray::Init()
 }
 
 void
-VertexArray::AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout)
+VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeLayout& vertex_layout)
 {
-   _vertex_buffer.Bind();
+   vertex_buffer.Bind();
 
    GLuint offset(0);
-   FOR(i, _vertex_layout.Attributes.size())
+   FOR(i, vertex_layout.Attributes.size())
    {
-      const auto& element = _vertex_layout.Attributes[i];
-      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, _vertex_layout.Stride, reinterpret_cast<void*>(offset)));
+      const auto& element = vertex_layout.Attributes[i];
+      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, vertex_layout.Stride, reinterpret_cast<void*>(offset)));
       GLCall(glEnableVertexAttribArray(i));
 
       offset += element.nComponents * GLTypeSize(element.GLType);
    }
 
-   _vertex_buffer.Unbind();
+   vertex_buffer.Unbind();
 }
 
 void
@@ -170,10 +170,10 @@ VertexArray::Delete()
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-FrameBuffer::FrameBuffer(FrameBuffer&& _fbo) noexcept
+FrameBuffer::FrameBuffer(FrameBuffer&& fbo) noexcept
 {
-   ID = _fbo.ID;
-   _fbo.ID = 0;
+   ID = fbo.ID;
+   fbo.ID = 0;
 }
 
 FrameBuffer::~FrameBuffer() { Delete(); }
@@ -192,22 +192,31 @@ void
 FrameBuffer::Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
 
 void
-FrameBuffer::AttachTexture(GLenum _attachement, GLuint _mapID) const
+FrameBuffer::AttachTexture(GLenum attachement, GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, _attachement, _mapID, 0));
+   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0));
+   Check();
 }
 
 void
-FrameBuffer::AttachTexture2D(GLenum _attachement, GLuint _mapID) const
+FrameBuffer::AttachTexture2D(GLenum attachement, GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, _attachement, GL_TEXTURE_2D, _mapID, 0));
+   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, GL_TEXTURE_2D, texture_id, 0));
+   Check();
 }
 
 void
-FrameBuffer::Draw(GLenum _mode) const { GLCall(glDrawBuffer(_mode)); }
+FrameBuffer::Check() const
+{
+   GLCall(auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
+   ASSERT(fb_status == GL_FRAMEBUFFER_COMPLETE, "Could not intialise frame buffer. Error code: ", fb_status)
+}
 
 void
-FrameBuffer::Read(GLenum _mode) const { GLCall(glReadBuffer(_mode)); }
+FrameBuffer::Draw(GLenum mode) const { GLCall(glDrawBuffer(mode)); }
+
+void
+FrameBuffer::Read(GLenum mode) const { GLCall(glReadBuffer(mode)); }
 
 void
 FrameBuffer::Delete()
@@ -220,11 +229,11 @@ FrameBuffer::Delete()
 }
 
 FrameBuffer&
-FrameBuffer::operator=(FrameBuffer&& _fbo) noexcept
+FrameBuffer::operator=(FrameBuffer&& fbo) noexcept
 {
    Delete();
-   ID = _fbo.ID;
-   _fbo.ID = 0;
+   ID = fbo.ID;
+   fbo.ID = 0;
 
    return *this;
 }

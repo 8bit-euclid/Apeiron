@@ -167,7 +167,7 @@ Window::GetMouseDisplacement()
    MouseDisplacement[0] = Zero;
    MouseDisplacement[1] = Zero;
 
-   return {x_displacement, y_displacement};
+   return { x_displacement, y_displacement };
 }
 
 SVectorF2
@@ -178,7 +178,7 @@ Window::GetMouseWheelDisplacement()
    MouseWheelDisplacement[0] = Zero;
    MouseWheelDisplacement[1] = Zero;
 
-   return {x_displacement, y_displacement};
+   return { x_displacement, y_displacement };
 }
 
 /***************************************************************************************************************************************************************
@@ -201,7 +201,7 @@ Window::CreateCallBacks() const
 }
 
 void
-Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode)
+Window::HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint mode)
 {
   // Get pointer to the Window object which contains _p_window.
   Window* p_window = static_cast<Window*>(glfwGetWindowUserPointer(_p_window));

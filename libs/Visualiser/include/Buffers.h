@@ -69,7 +69,7 @@ struct VertexBuffer : public Buffer
 ***************************************************************************************************************************************************************/
 struct IndexBuffer : public Buffer
 {
-   void Init(const DynamicArray<GLuint>& _indices);
+   void Init(const DynamicArray<GLuint>& indices);
 
    void Bind() const override;
 
@@ -77,7 +77,7 @@ struct IndexBuffer : public Buffer
 
    void Delete() override;
 
-   void Load(const DynamicArray<GLuint>& _indices) const;
+   void Load(const DynamicArray<GLuint>& indices) const;
 
    inline size_t GetIndexCount() const { return IndexCount; }
 
@@ -90,7 +90,7 @@ struct IndexBuffer : public Buffer
 ***************************************************************************************************************************************************************/
 struct ShaderStorageBuffer : public Buffer
 {
-   void Init(DynamicArray<glm::vec4>& _data);
+   void Init(DynamicArray<glm::vec4>& data);
 
    void Bind() const override;
 
@@ -98,7 +98,7 @@ struct ShaderStorageBuffer : public Buffer
 
    void Unbind() const override;
 
-   void Load(DynamicArray<glm::vec4>& _data) const;
+   void Load(DynamicArray<glm::vec4>& data) const;
 };
 
 /***************************************************************************************************************************************************************
@@ -111,7 +111,7 @@ class VertexArray
 
    void Init();
 
-   void AddBuffer(const VertexBuffer& _vertex_buffer, const VertexAttributeLayout& _vertex_layout);
+   void AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeLayout& vertex_layout);
 
    void Bind() const;
 
@@ -130,9 +130,9 @@ struct FrameBuffer
 {
    FrameBuffer() = default;
 
-   FrameBuffer(const FrameBuffer& _fbo) = delete;
+   FrameBuffer(const FrameBuffer& fbo) = delete;
 
-   FrameBuffer(FrameBuffer&& _fbo) noexcept;
+   FrameBuffer(FrameBuffer&& fbo) noexcept;
 
    ~FrameBuffer();
 
@@ -142,19 +142,21 @@ struct FrameBuffer
 
    void Unbind() const;
 
-   void AttachTexture(GLenum _attachement, GLuint _mapID) const;
+   void AttachTexture(GLenum attachement, GLuint texture_id) const;
 
-   void AttachTexture2D(GLenum _attachement, GLuint _mapID) const;
+   void AttachTexture2D(GLenum attachement, GLuint texture_id) const;
 
-   void Draw(GLenum _mode) const;
+   void Check() const;
 
-   void Read(GLenum _mode) const;
+   void Draw(GLenum mode) const;
+
+   void Read(GLenum mode) const;
 
    void Delete();
 
-   FrameBuffer& operator=(const FrameBuffer& _fbo) = delete;
+   FrameBuffer& operator=(const FrameBuffer& fbo) = delete;
 
-   FrameBuffer& operator=(FrameBuffer&& _fbo) noexcept;
+   FrameBuffer& operator=(FrameBuffer&& fbo) noexcept;
 
  private:
    GLuint ID{};
