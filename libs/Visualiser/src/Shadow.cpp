@@ -16,54 +16,53 @@
 
 namespace aprn::vis {
 
-Shadow::Shadow(const bool _is_point_light)
-  : DepthMap(_is_point_light ? TextureType::PointDepth : TextureType::DirectionalDepth, true), FBO(), isPointLightShadow(_is_point_light) {}
+Shadow::Shadow(const bool is_point_light)
+   : _DepthMap(is_point_light ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _FBO(), _isPointLightShadow(is_point_light) {}
 
-Shadow::Shadow(Shadow&& _shadow) noexcept
-   : DepthMap(std::move(_shadow.DepthMap)), FBO(std::move(_shadow.FBO)), isPointLightShadow(std::move(_shadow.isPointLightShadow)) {}
+Shadow::Shadow(Shadow&& shadow) noexcept
+   : _DepthMap(std::move(shadow._DepthMap)), _FBO(std::move(shadow._FBO)), _isPointLightShadow(std::move(shadow._isPointLightShadow)) {}
 
-void Shadow::Init(GLsizei width, GLsizei height)
+void Shadow::Init(const GLsizei width, const GLsizei height)
 {
-  DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+   _DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, _isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
-  FBO.Init();
-  FBO.Bind();
+   _FBO.Init();
+   _FBO.Bind();
 
-  if(isPointLightShadow) FBO.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap.ID());
-  else FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap.ID());
+   _isPointLightShadow ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
+   _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
 
-  FBO.Draw(GL_NONE);
-  FBO.Read(GL_NONE);
+   _FBO.Draw(GL_NONE);
+   _FBO.Read(GL_NONE);
 
-  ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
+   ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
 
-  FBO.Unbind();
+   _FBO.Unbind();
 }
 
 void Shadow::WriteTo() const
 {
-  FBO.Bind();
-  GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+   _FBO.Bind();
+   GLCall(glClear(GL_DEPTH_BUFFER_BIT));
 }
 
 void Shadow::Finalise() const
 {
-  DepthMap.Unbind();
-  FBO.Unbind();
+   _DepthMap.Unbind();
+   _FBO.Unbind();
 }
 
 void Shadow::ReadFrom(UInt texture_slot) const
 {
-  DepthMap.Bind(texture_slot);
+   _DepthMap.Bind(texture_slot);
 }
 
 Shadow&
-Shadow::operator=(Shadow&& _shadow) noexcept
+Shadow::operator=(Shadow&& shadow) noexcept
 {
-   DepthMap           = std::move(_shadow.DepthMap);
-   FBO                = std::move(_shadow.FBO);
-   isPointLightShadow = std::move(_shadow.isPointLightShadow);
-
+   _DepthMap           = std::move(shadow._DepthMap);
+   _FBO                = std::move(shadow._FBO);
+   _isPointLightShadow = std::move(shadow._isPointLightShadow);
    return *this;
 }
 
