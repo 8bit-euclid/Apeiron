@@ -1,6 +1,7 @@
 # Apeiron
 
-[![CI](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
+[![CI Build](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
+[![License: GPL 3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A collection of high-performance C++ tools for numerical analysis, computational geometric algorithms/data structures, root-finding algorithms, sparse/dense matrix solvers, complex analysis, graph algorithms, visualisation, and other mathematical tools. The library is primarily used for creating educational mathematics content for the YouTube channel Byte-Sized Euclid.
 
