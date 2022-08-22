@@ -192,14 +192,14 @@ void
 FrameBuffer::Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
 
 void
-FrameBuffer::AttachTexture(GLenum attachement, GLuint texture_id) const
+FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) const
 {
    GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0));
    Check();
 }
 
 void
-FrameBuffer::AttachTexture2D(GLenum attachement, GLuint texture_id) const
+FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) const
 {
    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, GL_TEXTURE_2D, texture_id, 0));
    Check();

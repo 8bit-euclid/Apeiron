@@ -72,16 +72,16 @@ class Window
    void CreateCallBacks() const;
 
    static void
-   HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint mode);
+   HandleKeys(GLFWwindow* p_window, const GLint key, const GLint code, const GLint action, const GLint mode);
 
    static void
-   HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord);
+   HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const GLdouble y_coord);
 
    static void
-   HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
+   HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
    static void APIENTRY
-   glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+   glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
    Float           CurrentTime{};
    Float           PreviousTime{};
