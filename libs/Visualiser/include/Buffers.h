@@ -26,95 +26,39 @@
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
+* Buffer Types
+***************************************************************************************************************************************************************/
+enum class BufferType
+{
+   VBO,  // Vertex buffer
+   VAO,  // Vertex array
+   EBO,  // Index buffer
+   FBO,  // Frame buffer
+   RBO,  // Render buffer
+   SSBO  // Shader storage buffer
+};
+
+/***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
+namespace detail {
+
+template<BufferType T>
 class Buffer
 {
+   typedef BufferType BT;
+
  protected:
    Buffer() = default;
 
  public:
+   Buffer(const Buffer<T>& buffer) = delete;
+
+   Buffer(Buffer<T>&& buffer) noexcept;
+
    ~Buffer();
 
    void Init();
-
-   virtual void Bind() const = 0;
-
-   virtual void Unbind() const = 0;
-
-   virtual void Delete();
-
-   inline GLuint ID() const { return _ID; }
-
- protected:
-   GLuint _ID{};
-};
-
-/***************************************************************************************************************************************************************
-* Vertex Buffer Class
-***************************************************************************************************************************************************************/
-class VertexBuffer : public Buffer
-{
- public:
-   void Init(const DynamicArray<Vertex>& vertices);
-
-   void Bind() const override;
-
-   void Unbind() const override;
-
-   void Load(const DynamicArray<Vertex>& vertices) const;
-};
-
-/***************************************************************************************************************************************************************
-* Index Buffer Class
-***************************************************************************************************************************************************************/
-class IndexBuffer : public Buffer
-{
- public:
-   void Init(const DynamicArray<GLuint>& indices);
-
-   void Bind() const override;
-
-   void Unbind() const override;
-
-   void Delete() override;
-
-   void Load(const DynamicArray<GLuint>& indices) const;
-
-   inline size_t GetIndexCount() const { return IndexCount; }
-
- protected:
-   size_t IndexCount;
-};
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-class ShaderStorageBuffer : public Buffer
-{
- public:
-   void Init(DynamicArray<glm::vec4>& data);
-
-   void Bind() const override;
-
-   void BindBase() const;
-
-   void Unbind() const override;
-
-   void Load(DynamicArray<glm::vec4>& data) const;
-};
-
-/***************************************************************************************************************************************************************
-* Vertex Array Class
-***************************************************************************************************************************************************************/
-class VertexArray
-{
- public:
-   ~VertexArray();
-
-   void Init();
-
-   void AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeLayout& vertex_layout);
 
    void Bind() const;
 
@@ -122,30 +66,59 @@ class VertexArray
 
    void Delete();
 
+   Buffer& operator=(const Buffer<T>& buffer) = delete;
+
+   Buffer& operator=(Buffer<T>&& buffer) noexcept;
+
+   inline GLuint ID() const { return _ID; }
+
+ protected:
+   GLuint _ID{};
+
  private:
-   GLuint ID{};
+   void Bind(const GLuint id) const;
+};
+
+}
+
+/***************************************************************************************************************************************************************
+* Vertex Buffer Class
+***************************************************************************************************************************************************************/
+struct VertexBuffer : public detail::Buffer<BufferType::VBO>
+{
+   void Init(const DynamicArray<Vertex>& vertices);
+
+   void Load(const DynamicArray<Vertex>& vertices) const;
+};
+
+/***************************************************************************************************************************************************************
+* Vertex Array Class
+***************************************************************************************************************************************************************/
+struct VertexArray : public detail::Buffer<BufferType::VAO>
+{
+   void AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeLayout& vertex_layout);
+};
+
+/***************************************************************************************************************************************************************
+* Index Buffer Class
+***************************************************************************************************************************************************************/
+struct IndexBuffer : public detail::Buffer<BufferType::EBO>
+{
+   void Init(const DynamicArray<GLuint>& indices);
+
+   void Load(const DynamicArray<GLuint>& indices);
+
+   inline size_t IndexCount() const { return _IndexCount; }
+
+ protected:
+   size_t _IndexCount;
 };
 
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-class FrameBuffer
+struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 {
- public:
-   FrameBuffer() = default;
-
-   FrameBuffer(const FrameBuffer& fbo) = delete;
-
-   FrameBuffer(FrameBuffer&& fbo) noexcept;
-
-   ~FrameBuffer();
-
-   void Init();
-
-   void Bind() const;
-
-   void Unbind() const;
-
    void AttachTexture(GLenum attachement, GLuint texture_id) const;
 
    void AttachTexture2D(GLenum attachement, GLuint texture_id) const;
@@ -157,49 +130,26 @@ class FrameBuffer
    void Draw(GLenum mode) const;
 
    void Read(GLenum mode) const;
-
-   void Delete();
-
-   FrameBuffer& operator=(const FrameBuffer& fbo) = delete;
-
-   FrameBuffer& operator=(FrameBuffer&& fbo) noexcept;
-
- private:
-   GLuint ID{};
 };
 
 /***************************************************************************************************************************************************************
 * Render Buffer Class
 ***************************************************************************************************************************************************************/
-class RenderBuffer
+struct RenderBuffer : public detail::Buffer<BufferType::RBO>
 {
- public:
-   RenderBuffer() = default;
-
-   RenderBuffer(const RenderBuffer& rbo) = delete;
-
-   RenderBuffer(RenderBuffer&& rbo) noexcept;
-
-   ~RenderBuffer();
-
-   void Init();
-
    void Allocate(const GLenum format, const GLsizei width, const GLsizei height);
+};
 
-   void Bind() const;
+/***************************************************************************************************************************************************************
+* Shader Storage Buffer Class
+***************************************************************************************************************************************************************/
+struct ShaderStorageBuffer : public detail::Buffer<BufferType::SSBO>
+{
+   void Init(DynamicArray<glm::vec4>& data);
 
-   void Unbind() const;
+   void BindBase() const;
 
-   void Delete();
-
-   RenderBuffer& operator=(const RenderBuffer& rbo) = delete;
-
-   RenderBuffer& operator=(RenderBuffer&& rbo) noexcept;
-
-   inline GLuint ID() const { return _ID; }
-
- private:
-   GLuint _ID{};
+   void Load(DynamicArray<glm::vec4>& data) const;
 };
 
 }

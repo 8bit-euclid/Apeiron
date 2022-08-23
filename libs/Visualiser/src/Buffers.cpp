@@ -20,23 +20,80 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
-Buffer::~Buffer() { Delete(); }
+namespace detail {
 
+template<BufferType T>
+Buffer<T>::Buffer(Buffer<T>&& buffer) noexcept { *this = std::move(buffer); }
+
+template<BufferType T>
+Buffer<T>::~Buffer() { Delete(); }
+
+template<BufferType T>
 void
-Buffer::Init()
+Buffer<T>::Init()
 {
-   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenBuffers(1, &_ID));
+   ASSERT(glfwGetCurrentContext(), "Cannot intialise buffer without an OpenGL context.")
+
+   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &_ID)); }
+   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &_ID)); }
+   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &_ID)); }
+   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &_ID)); }
+   else throw "Cannot initialise buffer - unrecognised buffer type.";
 }
 
+template<BufferType T>
 void
-Buffer::Delete()
+Buffer<T>::Bind() const { Bind(_ID); }
+
+template<BufferType T>
+void
+Buffer<T>::Unbind() const { Bind(0); }
+
+template<BufferType T>
+void
+Buffer<T>::Delete()
 {
    if(_ID != 0)
    {
-      GLCall(glDeleteBuffers(1, &_ID));
+      if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glDeleteBuffers(1, &_ID)); }
+      else if(T == BT::VAO) { GLCall(glDeleteVertexArrays(1, &_ID)); }
+      else if(T == BT::FBO) { GLCall(glDeleteFramebuffers(1, &_ID)); }
+      else if(T == BT::RBO) { GLCall(glDeleteRenderbuffers(1, &_ID)); }
+      else throw "Cannot delete buffer - unrecognised buffer type.";
       _ID = 0;
    }
+}
+
+template<BufferType T>
+Buffer<T>&
+Buffer<T>::operator=(Buffer<T>&& buffer) noexcept
+{
+   Delete();
+   _ID = buffer._ID;
+   buffer._ID = 0; // Note: must not call buffer.Delete() here!
+   return *this;
+}
+
+template<BufferType T>
+void
+Buffer<T>::Bind(const GLuint id) const
+{
+   if constexpr(T == BT::VBO)  { GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id)); }
+   else if     (T == BT::EBO)  { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id)); }
+   else if     (T == BT::SSBO) { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id)); }
+   else if     (T == BT::FBO)  { GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id)); }
+   else if     (T == BT::RBO)  { GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id)); }
+   else if     (T == BT::VAO)  { GLCall(glBindVertexArray(id)); }
+   else throw "Cannot bind/unbind buffer - unrecognised buffer type.";
+}
+
+template class Buffer<BufferType::VBO>;
+template class Buffer<BufferType::VAO>;
+template class Buffer<BufferType::EBO>;
+template class Buffer<BufferType::FBO>;
+template class Buffer<BufferType::RBO>;
+template class Buffer<BufferType::SSBO>;
+
 }
 
 /***************************************************************************************************************************************************************
@@ -52,87 +109,14 @@ VertexBuffer::Init(const DynamicArray<Vertex>& vertices)
 }
 
 void
-VertexBuffer::Bind() const { GLCall(glBindBuffer(GL_ARRAY_BUFFER, _ID)); }
-
-void
-VertexBuffer::Unbind() const { GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0)); }
-
-void
 VertexBuffer::Load(const DynamicArray<Vertex>& vertices) const
 {
    GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
 }
 
 /***************************************************************************************************************************************************************
-* Index Buffer Class
-***************************************************************************************************************************************************************/
-void
-IndexBuffer::Init(const DynamicArray<GLuint>& indices)
-{
-   Buffer::Init();
-   IndexCount = indices.size();
-   Bind();
-   Load(indices);
-   Unbind();
-}
-
-void
-IndexBuffer::Bind() const { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ID)); }
-
-void
-IndexBuffer::Unbind() const { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)); }
-
-void
-IndexBuffer::Delete()
-{
-   Buffer::Delete();
-   IndexCount = 0;
-}
-
-void
-IndexBuffer::Load(const DynamicArray<GLuint>& indices) const
-{
-   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW));
-}
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-void
-ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
-{
-   Buffer::Init();
-   Bind();
-   Load(data);
-}
-
-void
-ShaderStorageBuffer::Bind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, _ID)); }
-
-void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
-
-void
-ShaderStorageBuffer::Unbind() const { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0)); }
-
-void
-ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
-{
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
-}
-
-/***************************************************************************************************************************************************************
 * Vertex Array Class
 ***************************************************************************************************************************************************************/
-VertexArray::~VertexArray() { Delete(); }
-
-void
-VertexArray::Init()
-{
-   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenVertexArrays(1, &ID));
-}
-
 void
 VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeLayout& vertex_layout)
 {
@@ -151,46 +135,49 @@ VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeL
    vertex_buffer.Unbind();
 }
 
+/***************************************************************************************************************************************************************
+* Index Buffer Class
+***************************************************************************************************************************************************************/
 void
-VertexArray::Bind() const { GLCall(glBindVertexArray(ID)); }
-
-void
-VertexArray::Unbind() const { GLCall(glBindVertexArray(0)); }
-
-void
-VertexArray::Delete()
+IndexBuffer::Init(const DynamicArray<GLuint>& indices)
 {
-   if(ID != 0)
-   {
-      GLCall(glDeleteVertexArrays(1, &ID));
-      ID = 0;
-   }
+   Buffer::Init();
+   Bind();
+   Load(indices);
+   Unbind();
+}
+
+void
+IndexBuffer::Load(const DynamicArray<GLuint>& indices)
+{
+   _IndexCount = indices.size();
+   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW));
+}
+
+/***************************************************************************************************************************************************************
+* Shader Storage Buffer Class
+***************************************************************************************************************************************************************/
+void
+ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
+{
+   Buffer::Init();
+   Bind();
+   Load(data);
+   Unbind();
+}
+
+void
+ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
+
+void
+ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
+{
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
 }
 
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-FrameBuffer::FrameBuffer(FrameBuffer&& fbo) noexcept
-{
-   ID = fbo.ID;
-   fbo.ID = 0;
-}
-
-FrameBuffer::~FrameBuffer() { Delete(); }
-
-void
-FrameBuffer::Init()
-{
-   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenFramebuffers(1, &ID));
-}
-
-void
-FrameBuffer::Bind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, ID)); }
-
-void
-FrameBuffer::Unbind() const { GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0)); }
-
 void
 FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) const
 {
@@ -225,74 +212,15 @@ FrameBuffer::Draw(GLenum mode) const { GLCall(glDrawBuffer(mode)); }
 void
 FrameBuffer::Read(GLenum mode) const { GLCall(glReadBuffer(mode)); }
 
-void
-FrameBuffer::Delete()
-{
-   if(ID != 0)
-   {
-      GLCall(glDeleteFramebuffers(1, &ID));
-      ID = 0;
-   }
-}
-
-FrameBuffer&
-FrameBuffer::operator=(FrameBuffer&& fbo) noexcept
-{
-   Delete();
-   ID = fbo.ID;
-   fbo.ID = 0;
-   return *this;
-}
-
 /***************************************************************************************************************************************************************
 * Render Buffer Class
 ***************************************************************************************************************************************************************/
-RenderBuffer::RenderBuffer(RenderBuffer&& rbo) noexcept
-{
-   _ID = rbo._ID;
-   rbo._ID = 0;
-}
-
-RenderBuffer::~RenderBuffer() { Delete(); }
-
-void
-RenderBuffer::Init()
-{
-   ASSERT(glfwGetCurrentContext(), "An OpenGL context has not yet been created.")
-   GLCall(glGenRenderbuffers(1, &_ID));
-}
-
 void
 RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei height)
 {
    Bind();
    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
    Unbind();
-}
-
-void
-RenderBuffer::Bind() const { GLCall(glBindRenderbuffer(GL_RENDERBUFFER, _ID)); }
-
-void
-RenderBuffer::Unbind() const { GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0)); }
-
-void
-RenderBuffer::Delete()
-{
-   if(_ID != 0)
-   {
-      GLCall(glDeleteRenderbuffers(1, &_ID));
-      _ID = 0;
-   }
-}
-
-RenderBuffer&
-RenderBuffer::operator=(RenderBuffer&& rbo) noexcept
-{
-   Delete();
-   _ID = rbo._ID;
-   rbo._ID = 0;
-   return *this;
 }
 
 }
