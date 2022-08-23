@@ -28,15 +28,11 @@ void Shadow::Init(const GLsizei width, const GLsizei height)
 
    _FBO.Init();
    _FBO.Bind();
-
    _isPointLightShadow ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
-   _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
-
+                         _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
    _FBO.Draw(GL_NONE);
    _FBO.Read(GL_NONE);
-
-   ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
-
+   _FBO.Check();
    _FBO.Unbind();
 }
 
