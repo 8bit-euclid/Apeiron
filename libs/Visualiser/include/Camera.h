@@ -29,18 +29,18 @@ namespace aprn::vis {
 
 class Camera
 {
-  constexpr static GLint mKeys = 1024;
+  constexpr static GLint KeyCount = 1024;
 
  public:
    Camera();
 
-   Camera(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw);
+   Camera(const glm::vec3& position, GLfloat pitch, GLfloat yaw);
 
-   void SetOrientation(const glm::vec3& position, GLfloat _pitch, GLfloat _yaw);
+   void SetOrientation(const glm::vec3& position, GLfloat pitch, GLfloat yaw);
 
-   void SetViewFrustum(const GLfloat& _aspect_ratio, const GLfloat& field_of_view = -1.0, const GLfloat& near_plane = 0.0, const GLfloat& far_plane = 0.0);
+   void SetViewFrustum(const GLfloat& aspect_ratio, const GLfloat& field_of_view = -1.0, const GLfloat& near_plane = 0.0, const GLfloat& far_plane = 0.0);
 
-   void KeyControl(const StaticArray<Bool, mKeys>& _keys, const GLfloat& _delta_time);
+   void KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& delta_time);
 
    void MousePositionControl(const SVectorF2& cursor_displacement);
 
@@ -50,37 +50,33 @@ class Camera
 
    void UpdateProjectionMatrix();
 
-   inline const glm::vec3&
-   GetPosition() const { return Position; }
+   inline const glm::vec3& Position() const { return _Position; }
 
-   inline const glm::mat4&
-   GetViewMatrix() const { return ViewMatrix; }
+   inline const glm::mat4& ViewMatrix() const { return _ViewMatrix; }
 
-   inline const glm::mat4&
-   GetProjectionMatrix() const { return ProjectionMatrix; }
+   inline const glm::mat4& ProjectionMatrix() const { return _ProjectionMatrix; }
 
  private:
-   void ClipPitch() { Clip(Pitch, -89.0f, 89.0f); }
+   void ClipPitch() { Clip(_Pitch, -89.0f, 89.0f); }
 
-   glm::vec3 Position;
-   glm::vec3 Front;
-   glm::vec3 Up;
-   glm::vec3 Right;
-   constexpr static glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+   glm::mat4 _ViewMatrix{1.0};
+   glm::mat4 _ProjectionMatrix{1.0};
+   glm::vec3 _Position;
+   glm::vec3 _Front;
+   glm::vec3 _Up;
+   glm::vec3 _Right;
+   GLfloat   _Pitch;
+   GLfloat   _Yaw;
+   GLfloat   _AspectRatio;
+   GLfloat   _FieldOfView;
+   GLfloat   _NearPlane;
+   GLfloat   _FarPlane;
 
-   constexpr static GLfloat MoveSpeed{10.0f};
-   constexpr static GLfloat MousePositionSensitivity{0.4f};
-   constexpr static GLfloat MouseWheelSensitivity{1.0f};
-
-   GLfloat Pitch;
-   GLfloat Yaw;
-   GLfloat AspectRatio;
-   GLfloat FieldOfView;
-   GLfloat NearPlane;
-   GLfloat FarPlane;
-
-   glm::mat4 ViewMatrix{1.0};
-   glm::mat4 ProjectionMatrix{1.0};
+   constexpr static glm::vec3 _WorldUp    {0.0f, 1.0f, 0.0f};
+   constexpr static GLfloat   _MotionSensitivity      {6.0f};
+   constexpr static GLfloat   _RotationSensitivity    {7.0f};
+   constexpr static GLfloat   _MouseCursorSensitivity {0.4f};
+   constexpr static GLfloat   _MouseWheelSensitivity  {1.0f};
 };
 
 }

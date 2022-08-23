@@ -56,10 +56,10 @@ void Shader::UseCamera(Camera& camera)
    camera.UpdateViewMatrix();
    camera.UpdateProjectionMatrix();
 
-   SetUniformMatrix4f("u_view_matrix"      , camera.GetViewMatrix());
-   SetUniformMatrix4f("u_projection_matrix", camera.GetProjectionMatrix());
+   SetUniformMatrix4f("u_view_matrix"      , camera.ViewMatrix());
+   SetUniformMatrix4f("u_projection_matrix", camera.ProjectionMatrix());
 
-   const glm::vec3& camera_position = camera.GetPosition();
+   const glm::vec3& camera_position = camera.Position();
    SetUniform3f("u_camera_position", camera_position.x, camera_position.y, camera_position.z);
 }
 
