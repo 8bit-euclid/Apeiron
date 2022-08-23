@@ -97,7 +97,7 @@ class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 {
  public:
    template<class D>
-   SegmentChain(const Array<SVectorF<ambient_dim>, D>& _vertices, const bool _is_closed = false);
+   SegmentChain(const Array<SVectorF<ambient_dim>, D>& vertices, const bool _is_closed = false);
 
    constexpr void
    SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }

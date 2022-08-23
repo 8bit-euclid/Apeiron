@@ -218,11 +218,11 @@ uniform sampler2D u_displacement_map;
 
 bool UseNormalMap() { return u_use_diffuse_map && u_use_normal_map; }
 bool UseHeightMap() { return UseNormalMap() && u_use_displacement_map; }
-vec3 CalculateFragmentNormal(const vec2 _texture_coordinate) { return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, _texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
+vec3 CalculateFragmentNormal(const vec2 texture_coordinate) { return UseNormalMap() ? normalize(2.0f * texture(u_normal_map, texture_coordinate).rgb - 1.0f) : v_data_in.Normal; }
 
-float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
+float CalculateDirectionalLightShadow(const vec2 texture_coordinate)
 {
-   const vec3 normal = CalculateFragmentNormal(_texture_coordinate);
+   const vec3 normal = CalculateFragmentNormal(texture_coordinate);
 
    vec3 projected_coordinates = v_data_in.FragmentPositionDlight.xyz / v_data_in.FragmentPositionDlight.w;
    projected_coordinates = (projected_coordinates + 1.0f) / 2.0f;
@@ -246,9 +246,9 @@ float CalculateDirectionalLightShadow(const vec2 _texture_coordinate)
    return shadow;
 }
 
-float CalculatePointLightShadow(const PointLight _point_light, const vec3 _light_position)
+float CalculatePointLightShadow(const PointLight point_light, const vec3 light_position)
 {
-   const vec3  light_to_fragment = v_data_in.TBNMatrix * (v_data_in.FragmentPosition - _light_position);
+   const vec3  light_to_fragment = v_data_in.TBNMatrix * (v_data_in.FragmentPosition - light_position);
    const float current_depth     = length(light_to_fragment);
 
    const float bias          = 0.15;
@@ -259,7 +259,7 @@ float CalculatePointLightShadow(const PointLight _point_light, const vec3 _light
    for(int i = 0; i < n_samples; ++i)
    {
       const float closest_depth =
-         bias + u_point_light_far_plane * texture(_point_light.Shadow, light_to_fragment + disk_radius * Sample_Offset_Directions[i]).r;
+         bias + u_point_light_far_plane * texture(point_light.Shadow, light_to_fragment + disk_radius * Sample_Offset_Directions[i]).r;
       if(current_depth > closest_depth) shadow += 1.0f;
    }
    shadow /= float(n_samples);
@@ -267,9 +267,9 @@ float CalculatePointLightShadow(const PointLight _point_light, const vec3 _light
    return shadow;
 }
 
-vec4 CalculateLightByDirection(Light light, vec3 direction, float _shadow_factor, const vec2 _texture_coordinate)
+vec4 CalculateLightByDirection(Light light, vec3 direction, float shadow_factor, const vec2 texture_coordinate)
 {
-   const vec3 normal         = CalculateFragmentNormal(_texture_coordinate);
+   const vec3 normal         = CalculateFragmentNormal(texture_coordinate);
    const vec4 ambient_colour = light.AmbientIntensity * light.Colour;
 
    // Diffuse lighting
@@ -283,51 +283,51 @@ vec4 CalculateLightByDirection(Light light, vec3 direction, float _shadow_factor
    const float specular_factor    = pow(max(dot(halfway_direction, normal), 0.0f), u_material.Smoothness);
    const vec4  specular_colour    = specular_factor * u_material.SpecularIntensity * light.Colour;
 
-   return ambient_colour + (1.0f - _shadow_factor) * (diffuse_colour + specular_colour);
+   return ambient_colour + (1.0f - shadow_factor) * (diffuse_colour + specular_colour);
 }
 
-vec4 CalculatePointLight(const PointLight _point_light, const vec3 _light_position, const vec2 _texture_coordinate)
+vec4 CalculatePointLight(const PointLight point_light, const vec3 light_position, const vec2 texture_coordinate)
 {
-   vec3 light_to_fragment = v_data_in.FragmentPosition - _light_position;
+   vec3 light_to_fragment = v_data_in.FragmentPosition - light_position;
    float distance         = length(light_to_fragment);
    light_to_fragment      = normalize(light_to_fragment);
 
-   const float attenuation = _point_light.AttenuationCoefficients[0] +
-                             _point_light.AttenuationCoefficients[1] * distance +
-                             _point_light.AttenuationCoefficients[2] * distance * distance;
+   const float attenuation = point_light.AttenuationCoefficients[0] +
+                             point_light.AttenuationCoefficients[1] * distance +
+                             point_light.AttenuationCoefficients[2] * distance * distance;
 
-   return CalculateLightByDirection(_point_light.Base, light_to_fragment, CalculatePointLightShadow(_point_light, _light_position),
-                                    _texture_coordinate) / attenuation;
+   return CalculateLightByDirection(point_light.Base, light_to_fragment, CalculatePointLightShadow(point_light, light_position),
+                                    texture_coordinate) / attenuation;
 }
 
-vec4 CalculateSpotLight(const SpotLight _spot_light, const vec3 _light_position, const vec2 _texture_coordinate)
+vec4 CalculateSpotLight(const SpotLight spot_light, const vec3 light_position, const vec2 texture_coordinate)
 {
-   vec3 ray_direction = normalize(v_data_in.FragmentPosition - _light_position);
-   float spot_light_factor = dot(ray_direction, _spot_light.Direction);
+   vec3 ray_direction = normalize(v_data_in.FragmentPosition - light_position);
+   float spot_light_factor = dot(ray_direction, spot_light.Direction);
 
-   if(spot_light_factor > _spot_light.CosConeAngle)
-      return (1.0f - (1.0f - spot_light_factor) / (1.0f - _spot_light.CosConeAngle)) * CalculatePointLight(_spot_light.Point, _light_position,
-              _texture_coordinate);
+   if(spot_light_factor > spot_light.CosConeAngle)
+      return (1.0f - (1.0f - spot_light_factor) / (1.0f - spot_light.CosConeAngle)) * CalculatePointLight(spot_light.Point, light_position,
+              texture_coordinate);
    else return vec4(0.0);
 }
 
-vec4 CalculateDirectionalLight(const vec2 _texture_coordinate)
+vec4 CalculateDirectionalLight(const vec2 texture_coordinate)
 {
-   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(_texture_coordinate),
-                                    _texture_coordinate);
+   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(texture_coordinate),
+                                    texture_coordinate);
 }
 
-vec4 CalculatePointLights(const vec2 _texture_coordinate)
+vec4 CalculatePointLights(const vec2 texture_coordinate)
 {
    vec4 total_colour = vec4(0.0, 0.0, 0.0, 0.0);
-   for(int i = 0; i < u_point_light_count; ++i) total_colour += CalculatePointLight(u_point_lights[i], v_data_in.PointLightPositions[i], _texture_coordinate);
+   for(int i = 0; i < u_point_light_count; ++i) total_colour += CalculatePointLight(u_point_lights[i], v_data_in.PointLightPositions[i], texture_coordinate);
    return total_colour;
 }
 
-vec4 CalculateSpotLights(const vec2 _texture_coordinate)
+vec4 CalculateSpotLights(const vec2 texture_coordinate)
 {
    vec4 total_colour = vec4(0.0, 0.0, 0.0, 0.0);
-   for(int i = 0; i < u_spot_light_count; i++) total_colour += CalculateSpotLight(u_spot_lights[i], v_data_in.SpotLightPositions[i], _texture_coordinate);
+   for(int i = 0; i < u_spot_light_count; i++) total_colour += CalculateSpotLight(u_spot_lights[i], v_data_in.SpotLightPositions[i], texture_coordinate);
    return total_colour;
 }
 
@@ -368,9 +368,9 @@ vec2 CalculateParallax()
    return final_texture_coordinate;
 }
 
-vec4 GammaCorrect(vec4 _colour)
+vec4 GammaCorrect(vec4 colour)
 {
-   return vec4(pow(_colour.rgb, vec3(1.0f / Gamma)), _colour.a);
+   return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a);
 }
 
 void main()

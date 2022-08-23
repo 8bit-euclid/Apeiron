@@ -29,7 +29,7 @@ constexpr Polygon<cat, dim>::Polygon(const Float _side_length)
 
 template<PolytopeCategory cat, size_t dim>
 template<class... static_vector>
-constexpr Polygon<cat, dim>::Polygon(const static_vector&... _vertices)
+constexpr Polygon<cat, dim>::Polygon(const static_vector&... vertices)
 {
 
 }
@@ -42,7 +42,7 @@ Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(size_t _n_vertices, const F
 
 template<size_t dim>
 template<class... static_vector>
-Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(const static_vector&... _vertices)
+Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(const static_vector&... vertices)
 {
 
 }

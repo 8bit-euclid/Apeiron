@@ -52,7 +52,7 @@ Model::Render()
    _VAO.Bind();
    _EBO.Bind();
 
-   GLCall(glDrawElements(GL_TRIANGLES, _EBO.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+   GLCall(glDrawElements(GL_TRIANGLES, _EBO.IndexCount(), GL_UNSIGNED_INT, nullptr));
 
    _EBO.Unbind();
    _VAO.Unbind();
@@ -105,9 +105,9 @@ Model::Add(Model&& sub_model, const std::string& name)
 /** Set Model Actions
 ***************************************************************************************************************************************************************/
 Model&
-Model::OffsetPosition(const SVectorF3& _displacement)
+Model::OffsetPosition(const SVectorF3& displacement)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(_displacement));
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(displacement));
    _Actions.insert({ActionType::OffsetPosition, ptr});
    return *this;
 }
@@ -121,24 +121,24 @@ Model::OffsetOrientation(Float angle, const SVectorF3& axis)
 }
 
 Model&
-Model::Scale(Float _factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
+Model::Scale(Float factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   Scale(SVectorF3(_factor), start_time, end_time, reparam);
+   Scale(SVectorF3(factor), start_time, end_time, reparam);
    return *this;
 }
 
 Model&
-Model::Scale(const SVectorF3& _factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
+Model::Scale(const SVectorF3& factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(_factors), start_time, end_time);
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(factors), start_time, end_time);
    _Actions.insert({ActionType::Scale, ptr});
    return *this;
 }
 
 Model&
-Model::MoveBy(const SVectorF3& _displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
+Model::MoveBy(const SVectorF3& displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam)
 {
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(_displacement), start_time, end_time);
+   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(displacement), start_time, end_time);
    _Actions.insert({ActionType::MoveBy, ptr});
    return *this;
 }

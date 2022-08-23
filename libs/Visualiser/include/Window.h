@@ -25,8 +25,6 @@
 
 namespace aprn::vis {
 
-constexpr static GLint mKeys{1024};
-
 class Window
 {
  public:
@@ -40,9 +38,11 @@ class Window
 
    void Close();
 
-   bool isViewPortModified();
+   bool isViewportModified();
 
-   void ResetViewPort() const;
+   void ResetViewport() const;
+
+   void SetTitle(const std::string& title, const bool append = false);
 
    void SwapBuffers();
 
@@ -50,50 +50,53 @@ class Window
 
    void ComputeDeltaTime();
 
-   Float GetDeltaTime() const;
+   void ComputeFrameRate();
 
-   Float GetCurrentTime() const;
+   Float DeltaTime() const;
 
-   GLfloat
-   ComputeViewportAspectRatio() const;
+   Float CurrentTime() const;
 
-   SVectorF2
-   GetMouseDisplacement();
+   GLfloat ViewportAspectRatio() const;
 
-   SVectorF2
-   GetMouseWheelDisplacement();
+   SVectorF2 MouseDisplacement();
+
+   SVectorF2 MouseWheelDisplacement();
 
  private:
    friend class Visualiser;
 
    std::pair<GLint, GLint>
-   GetFrameBufferSize() const;
+   ViewportDimensions() const;
 
    void CreateCallBacks() const;
 
    static void
-   HandleKeys(GLFWwindow* _p_window, const GLint _key, const GLint _code, const GLint _action, const GLint _mode);
+   HandleKeys(GLFWwindow* p_window, const GLint key, const GLint code, const GLint action, const GLint mode);
 
    static void
-   HandleMousePosition(GLFWwindow* _p_window, const GLdouble _x_coord, const GLdouble _y_coord);
+   HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const GLdouble y_coord);
 
    static void
-   HandleMouseWheel(GLFWwindow* _p_window, const GLdouble _x_offset, const GLdouble _y_offset);
+   HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
    static void APIENTRY
-   glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+   glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
-   Float           CurrentTime{};
-   Float           PreviousTime{};
-   Float           DeltaTime{};
-   SVectorF2       PreviousMousePosition;
-   SVectorF2       MouseDisplacement;
-   SVectorF2       MouseWheelDisplacement;
-   SVector2<GLint> WindowDimensions;
-   SVector2<GLint> ViewportDimensions;
-   SArrayB<mKeys>  Keys;
-   GLFWwindow*     GlfwWindow;
-   bool            isFirstMouseMovement;
+   std::string            _Title;
+   Float                  _CurrentTime{};
+   Float                  _PreviousTime{};
+   Float                  _DeltaTime{};
+   SVectorF2              _PreviousMousePosition;
+   SVectorF2              _MouseDisplacement;
+   SVectorF2              _MouseWheelDisplacement;
+   SVector2<GLint>        _WindowDimensions;
+   SVector2<GLint>        _ViewportDimensions;
+   constexpr static GLint _KeyCount{1024};
+   SArrayB<_KeyCount>     _Keys;
+   GLFWwindow*            _GlfwWindow;
+   Float                  _PreviousFrameTime{};
+   size_t                 _FrameCounter;
+   bool                   _isFirstMouseMovement;
 };
 
 }

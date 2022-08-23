@@ -138,10 +138,10 @@ class PointLightBase : public Light
  protected:
    constexpr static UInt     MaxPointLights{4};
    constexpr static GLfloat  FarPlane{25.0f};
-   static UInt               nPointLights;
+   inline static UInt        nPointLights = 0;
    UInt                      iPointLight;
    glm::vec3                 Position;
-   StaticVector<GLfloat, 3>  AttenuationCoefficients; // 0: constant term, 1: linear term, 2: quadratic term
+   StaticVector<GLfloat, 3>  AttenuationCoefficients; // [0]: constant term, [1]: linear term, [2]: quadratic term
    StaticArray<glm::mat4, 6> LightSpaceMatrices;
 };
 

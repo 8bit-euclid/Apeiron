@@ -48,6 +48,24 @@ Visualiser::Render()
 {
    Init();
 
+
+
+   FrameBuffer fbo;
+   RenderBuffer rbo;
+   Texture cbo(TextureType::Diffuse, true);
+
+   cbo.Init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_BORDER);
+   rbo.Init();
+   rbo.Allocate(GL_DEPTH24_STENCIL8, 1920, 1080);
+
+   fbo.Init();
+   fbo.Bind();
+   fbo.AttachTexture2D(GL_COLOR_ATTACHMENT0, cbo.ID());
+   fbo.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, rbo.ID());
+   fbo.Unbind();
+
+
+
    while(_OpenGLWindow.isOpen())
    {
       StartFrame();
@@ -68,7 +86,7 @@ Visualiser::Init()
    // Set default settings of the main camera
    ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
    _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
-   _ActiveCamera->SetViewFrustum(_OpenGLWindow.ComputeViewportAspectRatio(), 45.0, 1.0, -100.0);
+   _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 
    // Load all shaders
    _Shaders.emplace("General", "libs/Visualiser/resources/shaders/General.glsl");
@@ -81,7 +99,8 @@ Visualiser::Init()
    InitTeXBoxes();
    InitTextures();
 
-   // Set clock time to zero
+   // Set window title and set clock time to zero
+   _OpenGLWindow.SetTitle("Apeiron");
    _OpenGLWindow.ResetTime();
 }
 
@@ -200,9 +219,10 @@ Visualiser::StartFrame()
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-   // Update the current and previous times, compute delta time, and check if the viewport was modified.
+   // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
    _OpenGLWindow.ComputeDeltaTime();
-   _isViewPortModified = _OpenGLWindow.isViewPortModified();
+   _OpenGLWindow.ComputeFrameRate();
+   _isViewPortModified = _OpenGLWindow.isViewportModified();
 }
 
 void
@@ -218,7 +238,7 @@ Visualiser::UpdateScene()
    DEBUG_ASSERT(_CurrentScene, "The current scene pointer has not yet been set.")
 
    // Determine if the current scene needs to be updated
-   const auto current_time = _OpenGLWindow.GetCurrentTime();
+   const auto current_time = _OpenGLWindow.CurrentTime();
    if(!_CurrentScene->isCurrent(current_time)) _CurrentScene = _CurrentScene->_NextScene;
 
    // Update models in current scene
@@ -228,9 +248,9 @@ Visualiser::UpdateScene()
 void
 Visualiser::ManageUserInputs()
 {
-   _ActiveCamera->KeyControl(_OpenGLWindow.Keys, _OpenGLWindow.GetDeltaTime());
-   _ActiveCamera->MousePositionControl(_OpenGLWindow.GetMouseDisplacement());
-   _ActiveCamera->MouseWheelControl(_OpenGLWindow.GetMouseWheelDisplacement());
+   _ActiveCamera->KeyControl(_OpenGLWindow._Keys, _OpenGLWindow.DeltaTime());
+   _ActiveCamera->MousePositionControl(_OpenGLWindow.MouseDisplacement());
+   _ActiveCamera->MouseWheelControl(_OpenGLWindow.MouseWheelDisplacement());
 }
 
 void
@@ -239,8 +259,8 @@ Visualiser::UpdateViewFrustum()
    // If the viewport was modified, update the view frustum and adjust line shader resolution
    if(_isViewPortModified)
    {
-      _ActiveCamera->SetViewFrustum(_OpenGLWindow.ComputeViewportAspectRatio());
-      _Shaders["Line"].SetUniform2f("u_resolution", _OpenGLWindow.ViewportDimensions[0], _OpenGLWindow.ViewportDimensions[1]);
+      _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio());
+      _Shaders["Line"].SetUniform2f("u_resolution", _OpenGLWindow._ViewportDimensions[0], _OpenGLWindow._ViewportDimensions[1]);
    }
 }
 
@@ -249,7 +269,7 @@ Visualiser::RenderScene()
 {
    _CurrentScene->RenderDirectionalShadows(_Shaders["DirectionalShadow"]);
    _CurrentScene->RenderPointShadows(_Shaders["PointShadow"]);
-   _OpenGLWindow.ResetViewPort();
+   _OpenGLWindow.ResetViewport();
    _CurrentScene->RenderScene(_Shaders["General"], *_ActiveCamera);
 }
 

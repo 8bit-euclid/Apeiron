@@ -97,7 +97,6 @@ PointLightBase<derived>::~PointLightBase() { nPointLights--; }
 
 template class detail::PointLightBase<PointLight>;
 template class detail::PointLightBase<SpotLight>;
-template<class derived> UInt detail::PointLightBase<derived>::nPointLights = 0;
 
 /***************************************************************************************************************************************************************
 * Point Light Class

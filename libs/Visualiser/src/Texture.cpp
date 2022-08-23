@@ -50,9 +50,9 @@ Texture::~Texture() { Delete(); }
 
 void
 Texture::Init(const GLuint width, const GLuint height, const GLint internal_format, const GLenum format, const GLenum data_type,
-                   const GLint wrap_type, const SVector4<GLfloat>& border_colour)
+              const GLint wrap_type, const SVector4<GLfloat>& border_colour)
 {
-   _Width = width;
+   _Width  = width;
    _Height = height;
   const auto opengl_type = OpenGLType(_Type);
 

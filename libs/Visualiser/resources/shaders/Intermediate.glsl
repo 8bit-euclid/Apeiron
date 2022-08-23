@@ -95,7 +95,7 @@ float CalculateDirectionalShadow()
    return shadow;
 }
 
-vec4 CalculateLightByDirection(Light light, vec3 direction, float _shadow_factor)
+vec4 CalculateLightByDirection(Light light, vec3 direction, float shadow_factor)
 {
    const vec4 ambient_colour = light.AmbientIntensity * light.Colour;
 
@@ -107,7 +107,7 @@ vec4 CalculateLightByDirection(Light light, vec3 direction, float _shadow_factor
    const float specular_factor = pow(max(dot(fragment_to_camera, reflected_ray), 0.0f), u_material.Smoothness);
    const vec4 specular_colour = specular_factor * u_material.SpecularIntensity * light.Colour;
 
-   return ambient_colour + (1.0f - _shadow_factor) * (diffuse_colour + specular_colour);
+   return ambient_colour + (1.0f - shadow_factor) * (diffuse_colour + specular_colour);
 }
 
 vec4 CalculateDirectionalLight()
@@ -115,17 +115,17 @@ vec4 CalculateDirectionalLight()
    return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalShadow());
 }
 
-vec4 CalculatePointLight(PointLight _point_light)
+vec4 CalculatePointLight(PointLight point_light)
 {
-   vec3 light_to_fragment = v_data_in.FragmentPosition - _point_light.Position;
+   vec3 light_to_fragment = v_data_in.FragmentPosition - point_light.Position;
    float distance = length(light_to_fragment);
    light_to_fragment = normalize(light_to_fragment);
 
-   const float attenuation = _point_light.AttenuationCoefficients[0] +
-   _point_light.AttenuationCoefficients[1] * distance +
-   _point_light.AttenuationCoefficients[2] * distance * distance;
+   const float attenuation = point_light.AttenuationCoefficients[0] +
+   point_light.AttenuationCoefficients[1] * distance +
+   point_light.AttenuationCoefficients[2] * distance * distance;
 
-   return CalculateLightByDirection(_point_light.Base, light_to_fragment, 0.0f) / attenuation;
+   return CalculateLightByDirection(point_light.Base, light_to_fragment, 0.0f) / attenuation;
 }
 
 vec4 CalculatePointLights()
@@ -135,13 +135,13 @@ vec4 CalculatePointLights()
    return total_colour;
 }
 
-vec4 CalculateSpotLight(SpotLight _spot_light)
+vec4 CalculateSpotLight(SpotLight spot_light)
 {
-   vec3 ray_direction = normalize(v_data_in.FragmentPosition - _spot_light.Point.Position);
-   float spot_light_factor = dot(ray_direction, _spot_light.Direction);
+   vec3 ray_direction = normalize(v_data_in.FragmentPosition - spot_light.Point.Position);
+   float spot_light_factor = dot(ray_direction, spot_light.Direction);
 
-   if(spot_light_factor > _spot_light.CosConeAngle)
-   return (1.0f - (1.0f - spot_light_factor ) / (1.0f - _spot_light.CosConeAngle)) * CalculatePointLight(_spot_light.Point);
+   if(spot_light_factor > spot_light.CosConeAngle)
+   return (1.0f - (1.0f - spot_light_factor ) / (1.0f - spot_light.CosConeAngle)) * CalculatePointLight(spot_light.Point);
    else return vec4(0.0, 0.0, 0.0, 0.0);
 }
 

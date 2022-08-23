@@ -87,7 +87,7 @@ GetInteger(std::integer_sequence<T, sequence...>, size_t index)
 /** Sum the terms of a sequence together. */
 template<typename... T>
 constexpr auto
-Sum(const T... _values) { return (_values + ... + 0); }
+Sum(const T... values) { return (values + ... + 0); }
 
 /** Sum the terms of a sequence between two iterators. */
 template<class iter>
@@ -101,7 +101,7 @@ Sum(const iter first, const iter last)
 /** Product the terms of a sequence with each other. */
 template<typename... T>
 constexpr auto
-Product(const T... _values) { return (_values * ... * 1); }
+Product(const T... values) { return (values * ... * 1); }
 
 /** Product the terms of a sequence between two iterators. */
 template<class iter>
