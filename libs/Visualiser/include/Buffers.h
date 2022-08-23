@@ -28,7 +28,7 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Buffer Abstract Base Class
 ***************************************************************************************************************************************************************/
-struct Buffer
+class Buffer
 {
  protected:
    Buffer() = default;
@@ -53,22 +53,24 @@ struct Buffer
 /***************************************************************************************************************************************************************
 * Vertex Buffer Class
 ***************************************************************************************************************************************************************/
-struct VertexBuffer : public Buffer
+class VertexBuffer : public Buffer
 {
-   void Init(const DynamicArray<Vertex>& _vertices);
+ public:
+   void Init(const DynamicArray<Vertex>& vertices);
 
    void Bind() const override;
 
    void Unbind() const override;
 
-   void Load(const DynamicArray<Vertex>& _vertices) const;
+   void Load(const DynamicArray<Vertex>& vertices) const;
 };
 
 /***************************************************************************************************************************************************************
 * Index Buffer Class
 ***************************************************************************************************************************************************************/
-struct IndexBuffer : public Buffer
+class IndexBuffer : public Buffer
 {
+ public:
    void Init(const DynamicArray<GLuint>& indices);
 
    void Bind() const override;
@@ -88,8 +90,9 @@ struct IndexBuffer : public Buffer
 /***************************************************************************************************************************************************************
 * Shader Storage Buffer Class
 ***************************************************************************************************************************************************************/
-struct ShaderStorageBuffer : public Buffer
+class ShaderStorageBuffer : public Buffer
 {
+ public:
    void Init(DynamicArray<glm::vec4>& data);
 
    void Bind() const override;
@@ -126,8 +129,9 @@ class VertexArray
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
-struct FrameBuffer
+class FrameBuffer
 {
+ public:
    FrameBuffer() = default;
 
    FrameBuffer(const FrameBuffer& fbo) = delete;
@@ -146,6 +150,8 @@ struct FrameBuffer
 
    void AttachTexture2D(GLenum attachement, GLuint texture_id) const;
 
+   void AttachRenderBuffer(GLenum attachement, GLuint rbo_id) const;
+
    void Check() const;
 
    void Draw(GLenum mode) const;
@@ -160,6 +166,40 @@ struct FrameBuffer
 
  private:
    GLuint ID{};
+};
+
+/***************************************************************************************************************************************************************
+* Render Buffer Class
+***************************************************************************************************************************************************************/
+class RenderBuffer
+{
+ public:
+   RenderBuffer() = default;
+
+   RenderBuffer(const RenderBuffer& rbo) = delete;
+
+   RenderBuffer(RenderBuffer&& rbo) noexcept;
+
+   ~RenderBuffer();
+
+   void Init();
+
+   void Allocate(const GLenum format, const GLsizei width, const GLsizei height);
+
+   void Bind() const;
+
+   void Unbind() const;
+
+   void Delete();
+
+   RenderBuffer& operator=(const RenderBuffer& rbo) = delete;
+
+   RenderBuffer& operator=(RenderBuffer&& rbo) noexcept;
+
+   inline GLuint ID() const { return _ID; }
+
+ private:
+   GLuint _ID{};
 };
 
 }

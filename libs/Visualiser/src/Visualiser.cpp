@@ -48,6 +48,24 @@ Visualiser::Render()
 {
    Init();
 
+
+
+   FrameBuffer fbo;
+   RenderBuffer rbo;
+   Texture cbo(TextureType::Diffuse, true);
+
+   cbo.Init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_BORDER);
+   rbo.Init();
+   rbo.Allocate(GL_DEPTH24_STENCIL8, 1920, 1080);
+
+   fbo.Init();
+   fbo.Bind();
+   fbo.AttachTexture2D(GL_COLOR_ATTACHMENT0, cbo.ID());
+   fbo.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, rbo.ID());
+   fbo.Unbind();
+
+
+
    while(_OpenGLWindow.isOpen())
    {
       StartFrame();
