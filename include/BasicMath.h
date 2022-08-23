@@ -23,13 +23,13 @@ namespace aprn{
 * Counting Functions
 ***************************************************************************************************************************************************************/
 /** Count the number of digits in a natural number. */
-constexpr size_t nDigits(std::convertible_to<size_t> auto _number)
+constexpr size_t nDigits(std::convertible_to<size_t> auto number)
 {
    // Zero will have 1 digit.
-   if(!_number) return 1;
+   if(!number) return 1;
 
    size_t n_digits(0);
-   while(_number) { _number /= static_cast<size_t>(10); ++n_digits; }
+   while(number) { number /= static_cast<size_t>(10); ++n_digits; }
    return n_digits;
 }
 
