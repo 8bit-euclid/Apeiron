@@ -155,27 +155,6 @@ IndexBuffer::Load(const DynamicArray<GLuint>& indices)
 }
 
 /***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-void
-ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
-{
-   Buffer::Init();
-   Bind();
-   Load(data);
-   Unbind();
-}
-
-void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
-
-void
-ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
-{
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
-}
-
-/***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
 void
@@ -221,6 +200,27 @@ RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei h
    Bind();
    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
    Unbind();
+}
+
+/***************************************************************************************************************************************************************
+* Shader Storage Buffer Class
+***************************************************************************************************************************************************************/
+void
+ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
+{
+   Buffer::Init();
+   Bind();
+   Load(data);
+   Unbind();
+}
+
+void
+ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
+
+void
+ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
+{
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
 }
 
 }
