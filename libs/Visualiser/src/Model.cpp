@@ -52,7 +52,7 @@ Model::Render()
    _VAO.Bind();
    _EBO.Bind();
 
-   GLCall(glDrawElements(GL_TRIANGLES, _EBO.GetIndexCount(), GL_UNSIGNED_INT, nullptr));
+   GLCall(glDrawElements(GL_TRIANGLES, _EBO.IndexCount(), GL_UNSIGNED_INT, nullptr));
 
    _EBO.Unbind();
    _VAO.Unbind();
