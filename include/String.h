@@ -16,6 +16,7 @@
 
 #include "Concepts.h"
 
+#include <iomanip>
 #include <regex>
 #include <string>
 #include <vector>
@@ -25,12 +26,15 @@ namespace aprn {
 /** Convert to a string. */
 template<typename T>
 inline std::string
-ToStr(const T& _number)
+ToStr(const T& number, unsigned char decimals = 0)
 {
    std::stringstream str_buffer;
-   str_buffer << _number << std::endl;
+   if(decimals) str_buffer << std::fixed << std::setprecision(decimals);
+   str_buffer << number << std::endl;
+
    std::string str;
    str_buffer >> str;
+
    return str;
 }
 
