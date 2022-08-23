@@ -28,13 +28,13 @@ namespace aprn::vis {
 class Shadow
 {
  public:
-   Shadow(const bool _is_point_light);
+   Shadow(const bool is_point_light);
 
-   Shadow(const Shadow& _shadow) = delete;
+   Shadow(const Shadow& shadow) = delete;
 
-   Shadow(Shadow&& _shadow) noexcept;
+   Shadow(Shadow&& shadow) noexcept;
 
-   virtual void Init(GLsizei width, GLsizei height);
+   virtual void Init(const GLsizei width, const GLsizei height);
 
    virtual void WriteTo() const;
 
@@ -42,18 +42,18 @@ class Shadow
 
    virtual void ReadFrom(UInt texture_slot) const;
 
-   inline const Texture& GetDepthMap() const { return DepthMap; }
+   inline const Texture& DepthMap() const { return _DepthMap; }
 
-   Shadow& operator=(const Shadow& _shadow) = delete;
+   Shadow& operator=(const Shadow& shadow) = delete;
 
-   Shadow& operator=(Shadow&& _shadow) noexcept;
+   Shadow& operator=(Shadow&& shadow) noexcept;
 
  protected:
    friend class Light;
 
-   Texture DepthMap;
-   FrameBuffer FBO;
-   bool isPointLightShadow;
+   Texture     _DepthMap;
+   FrameBuffer _FBO;
+   bool        _isPointLightShadow;
 };
 
 }

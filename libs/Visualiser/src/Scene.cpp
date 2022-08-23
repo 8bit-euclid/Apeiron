@@ -179,7 +179,7 @@ Scene::RenderDirectionalShadows(Shader& shader)
    shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].GetLightSpaceMatrix());
 
    auto& shadow_map = _DLights["Sun"].GetShadowMap();
-   GLCall(glViewport(0, 0, shadow_map.GetDepthMap().Width(), shadow_map.GetDepthMap().Height()));
+   GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
 
 //  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
 
@@ -206,7 +206,7 @@ Scene::RenderPointShadows(Shader& shader)
       shader.SetPointFarPlane(PointLight::GetFarPlane());
 
       auto& shadow_map = point_light.GetShadowMap();
-      GLCall(glViewport(0, 0, shadow_map.GetDepthMap().Width(), shadow_map.GetDepthMap().Height()));
+      GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
 
       shadow_map.WriteTo();
       RenderModels(shader);

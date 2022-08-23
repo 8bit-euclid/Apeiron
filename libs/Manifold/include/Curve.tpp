@@ -25,7 +25,7 @@ namespace aprn::mnfld {
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
 constexpr Line<ambient_dim>::Line(const SVectorF<ambient_dim>& direction, const SVectorF<ambient_dim>& coordinate)
-  : Direction(direction), Coordinate0(coordinate), DirectionMagnitude(Magnitude(Direction)), Normaliser(One/DirectionMagnitude) {}
+   : Direction(direction), Coordinate0(coordinate), DirectionMagnitude(Magnitude(Direction)), Normaliser(One/DirectionMagnitude) {}
 
 template<size_t ambient_dim>
 constexpr SVectorF<ambient_dim>
@@ -83,10 +83,10 @@ Segment<ambient_dim>::ComputePoint(const SVectorF1& t)
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
 template<class D>
-SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorF<ambient_dim>, D>& _vertices, const bool _is_closed)
+SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorF<ambient_dim>, D>& vertex_list, const bool _is_closed)
   : isClosed(_is_closed)
 {
-  const auto& vertices = _vertices.Derived();
+  const auto& vertices = vertex_list.Derived();
   Segments.reserve(vertices.size());
   CumulativeLengths.reserve(vertices.size());
   ChainLength = Zero;

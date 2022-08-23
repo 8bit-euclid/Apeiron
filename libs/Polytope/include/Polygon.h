@@ -33,7 +33,7 @@ struct Polygon : public StaticPolytope<cat, dim>
   constexpr Polygon(const Float _side_length);
 
   template<class... static_vector>
-  constexpr Polygon(const static_vector&... _vertices);
+  constexpr Polygon(const static_vector&... vertices);
 };
 
 template<size_t dim>
@@ -42,7 +42,7 @@ struct Polygon<PolytopeCategory::Arbitrary2D, dim> : public DynamicPolytope<Poly
   Polygon(size_t _n_vertices, const Float _radius);
 
   template<class... static_vector>
-  Polygon(const static_vector&... _vertices);
+  Polygon(const static_vector&... vertices);
 };
 
 /***************************************************************************************************************************************************************

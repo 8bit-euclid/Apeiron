@@ -32,7 +32,7 @@ struct Polyhedron : public StaticPolytope<cat, 3>
   Polyhedron(const Float _side_length);
 
   template<class... t_static_vector>
-  Polyhedron(const t_static_vector&... _vertices);
+  Polyhedron(const t_static_vector&... vertices);
 };
 
 template<>
