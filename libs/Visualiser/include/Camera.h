@@ -42,9 +42,9 @@ class Camera
 
    void KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& delta_time);
 
-   void MousePositionControl(const SVectorF2& cursor_displacement);
+   void CursorControl(const SVectorF2& cursor_displacement);
 
-   void MouseWheelControl(const SVectorF2& wheel_displacement);
+   void WheelControl(const SVectorF2& wheel_displacement);
 
    void UpdateViewMatrix();
 
@@ -54,13 +54,13 @@ class Camera
 
    inline const glm::mat4& ViewMatrix() const { return _ViewMatrix; }
 
-   inline const glm::mat4& ProjectionMatrix() const { return _ProjectionMatrix; }
+   inline const glm::mat4& ProjectionMatrix() const { return _ProjMatrix; }
 
  private:
    void ClipPitch() { Clip(_Pitch, -89.0f, 89.0f); }
 
    glm::mat4 _ViewMatrix{1.0};
-   glm::mat4 _ProjectionMatrix{1.0};
+   glm::mat4 _ProjMatrix{1.0};
    glm::vec3 _Position;
    glm::vec3 _Front;
    glm::vec3 _Up;

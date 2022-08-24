@@ -17,19 +17,19 @@
 namespace aprn::vis {
 
 Shadow::Shadow(const bool is_point_light)
-   : _DepthMap(is_point_light ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _FBO(), _isPointLightShadow(is_point_light) {}
+   : _DepthMap(is_point_light ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _FBO(), _isPointSource(is_point_light) {}
 
 Shadow::Shadow(Shadow&& shadow) noexcept
-   : _DepthMap(std::move(shadow._DepthMap)), _FBO(std::move(shadow._FBO)), _isPointLightShadow(std::move(shadow._isPointLightShadow)) {}
+   : _DepthMap(std::move(shadow._DepthMap)), _FBO(std::move(shadow._FBO)), _isPointSource(std::move(shadow._isPointSource)) {}
 
 void Shadow::Init(const GLsizei width, const GLsizei height)
 {
-   _DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, _isPointLightShadow ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+   _DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, _isPointSource ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
    _FBO.Init();
    _FBO.Bind();
-   _isPointLightShadow ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
-                         _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
+   _isPointSource ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
+                    _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
    _FBO.Draw(GL_NONE);
    _FBO.Read(GL_NONE);
    _FBO.Check();
@@ -58,7 +58,7 @@ Shadow::operator=(Shadow&& shadow) noexcept
 {
    _DepthMap           = std::move(shadow._DepthMap);
    _FBO                = std::move(shadow._FBO);
-   _isPointLightShadow = std::move(shadow._isPointLightShadow);
+   _isPointSource = std::move(shadow._isPointSource);
    return *this;
 }
 

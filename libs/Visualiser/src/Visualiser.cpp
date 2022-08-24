@@ -249,8 +249,8 @@ void
 Visualiser::ManageUserInputs()
 {
    _ActiveCamera->KeyControl(_OpenGLWindow._Keys, _OpenGLWindow.DeltaTime());
-   _ActiveCamera->MousePositionControl(_OpenGLWindow.MouseDisplacement());
-   _ActiveCamera->MouseWheelControl(_OpenGLWindow.MouseWheelDisplacement());
+   _ActiveCamera->CursorControl(_OpenGLWindow.CursorDisplacement());
+   _ActiveCamera->WheelControl(_OpenGLWindow.WheelDisplacement());
 }
 
 void
