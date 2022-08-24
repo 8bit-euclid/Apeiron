@@ -73,7 +73,7 @@ class Scene
 
    void RenderScene(Shader& shader, Camera& camera);
 
-   void RenderDirectionalShadows(Shader& shader);
+   void RenderDirecShadows(Shader& shader);
 
    void RenderPointShadows(Shader& shader);
 

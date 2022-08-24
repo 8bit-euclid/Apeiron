@@ -64,8 +64,6 @@ class Visualiser
 
    void StartFrame();
 
-   void EndFrame();
-
    void UpdateScene();
 
    void ManageUserInputs();
@@ -73,6 +71,10 @@ class Visualiser
    void UpdateViewFrustum();
 
    void RenderScene();
+
+   void RenderScreenQuad(Model& model, Texture& texture);
+
+   void EndFrame();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
    Window              _OpenGLWindow;

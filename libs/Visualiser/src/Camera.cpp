@@ -105,7 +105,7 @@ void Camera::UpdateViewMatrix()
    _ViewMatrix = glm::lookAt(_Position, _Position + _Front, _WorldUp);
 }
 
-void Camera::UpdateProjectionMatrix()
+void Camera::UpdateProjMatrix()
 {
    _ProjMatrix = glm::perspective(glm::radians(_FieldOfView), _AspectRatio, _NearPlane, _FarPlane);
 //  ProjectionMatrix = glm::ortho(-AspectRatio, AspectRatio, -1.0f, 1.0f, -10.0f, 10.0f);

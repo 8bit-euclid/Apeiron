@@ -39,13 +39,13 @@ class ModelFactory
    ************************************************************************************************************************************************************/
    static Model Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
 
-   static Model Arrow(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
-
-   /** 2D models
-   ************************************************************************************************************************************************************/
    template<class... svectors>
    static Model SegmentChain(const svectors&... vs);
 
+   static Model Arrow(const SVector3<GLfloat>& start, const SVector3<GLfloat>& end);
+
+   /** 2D models
+   ************************************************************************************************************************************************************/
    static Model Triangle(GLfloat length);
 
    static Model Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio);
@@ -55,6 +55,8 @@ class ModelFactory
    static Model Square(GLfloat length);
 
    static Model Rectangle(GLfloat length, GLfloat height);
+
+   static Model ScreenQuad();
 
    static Model Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
 
