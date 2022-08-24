@@ -46,7 +46,7 @@ struct Polyhedron<PolytopeCategory::Arbitrary3D> : public DynamicPolytope<Polyto
 ***************************************************************************************************************************************************************/
 struct Tetrahedron : public Polyhedron<PolytopeCategory::Tetrahedron>
 {
-  Tetrahedron(const SVectorF3& _v0, const SVectorF3& _v1, const SVectorF3& _v2, const SVectorF3& _v3);
+  Tetrahedron(const SVectorF3& v0, const SVectorF3& v1, const SVectorF3& v2, const SVectorF3& v3);
 };
 
 struct RegularTetrahedron : public Tetrahedron
@@ -56,7 +56,7 @@ struct RegularTetrahedron : public Tetrahedron
 
 struct TrirectangularTetrahedron : public Tetrahedron
 {
-  TrirectangularTetrahedron(const Float _length, const Float height, const Float width, const bool _flip_horizontally = false);
+  TrirectangularTetrahedron(const Float length, const Float height, const Float width, const bool _flip_horizontally = false);
 };
 
 /***************************************************************************************************************************************************************
@@ -72,9 +72,9 @@ struct TrirectangularTetrahedron : public Tetrahedron
 //
 //void CreateIcosahedron(Model &model, GLfloat _side_length);
 //
-//void CreateSphere(Model &model, GLfloat _radius);
+//void CreateSphere(Model &model, GLfloat radius);
 //
-//void CreateEllipsoid(Model &model, GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z);
+//void CreateEllipsoid(Model &model, GLfloat radius_x, GLfloat radius_y, GLfloat radius_z);
 //
 //void CreateCylinder(Model &model);
 //

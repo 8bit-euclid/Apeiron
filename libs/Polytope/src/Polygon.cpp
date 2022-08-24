@@ -35,7 +35,7 @@ constexpr Polygon<cat, dim>::Polygon(const static_vector&... vertices)
 }
 
 template<size_t dim>
-Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(size_t _n_vertices, const Float _radius)
+Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(size_t _n_vertices, const Float radius)
 {
 
 }
@@ -51,13 +51,13 @@ Polygon<PolytopeCategory::Arbitrary2D, dim>::Polygon(const static_vector&... ver
 * Triangles
 ***************************************************************************************************************************************************************/
 template<size_t dim>
-constexpr Triangle<dim>::Triangle(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2)
+constexpr Triangle<dim>::Triangle(const SVectorF<dim>& v0, const SVectorF<dim>& v1, const SVectorF<dim>& v2)
 {
 
 }
 
 template<size_t dim>
-constexpr Triangle<dim>::Triangle(const Float _length, const Float height, const Float _apex_ratio)
+constexpr Triangle<dim>::Triangle(const Float length, const Float height, const Float _apex_ratio)
 {
 
 }
@@ -66,13 +66,13 @@ constexpr Triangle<dim>::Triangle(const Float _length, const Float height, const
 * Quadrilaterals
 ***************************************************************************************************************************************************************/
 template<size_t dim>
-constexpr Quadrilateral<dim>::Quadrilateral(const SVectorF<dim>& _v0, const SVectorF<dim>& _v1, const SVectorF<dim>& _v2, const SVectorF<dim>& _v3)
+constexpr Quadrilateral<dim>::Quadrilateral(const SVectorF<dim>& v0, const SVectorF<dim>& v1, const SVectorF<dim>& v2, const SVectorF<dim>& v3)
 {
 
 }
 
 template<size_t dim>
-constexpr Quadrilateral<dim>::Quadrilateral(const Float _length, const Float height, const Float angle)
+constexpr Quadrilateral<dim>::Quadrilateral(const Float length, const Float height, const Float angle)
 {
 
 }

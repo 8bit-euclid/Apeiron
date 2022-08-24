@@ -58,9 +58,9 @@ class Window
 
    GLfloat ViewportAspectRatio() const;
 
-   SVectorF2 MouseDisplacement();
+   SVectorF2 CursorDisplacement();
 
-   SVectorF2 MouseWheelDisplacement();
+   SVectorF2 WheelDisplacement();
 
  private:
    friend class Visualiser;
@@ -87,8 +87,8 @@ class Window
    Float                  _PreviousTime{};
    Float                  _DeltaTime{};
    SVectorF2              _PreviousMousePosition;
-   SVectorF2              _MouseDisplacement;
-   SVectorF2              _MouseWheelDisplacement;
+   SVectorF2              _CursorDisplacement;
+   SVectorF2              _WheelDisplacement;
    SVector2<GLint>        _WindowDimensions;
    SVector2<GLint>        _ViewportDimensions;
    constexpr static GLint _KeyCount{1024};

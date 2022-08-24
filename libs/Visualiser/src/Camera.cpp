@@ -82,8 +82,7 @@ void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& 
    if(keys[GLFW_KEY_RIGHT]) _Yaw += _RotationSensitivity * displacement;
 }
 
-// TODO - need to replace argument type with StaticVector, once it is implemented
-void Camera::MousePositionControl(const SVectorF2& cursor_displacement)
+void Camera::CursorControl(const SVectorF2& cursor_displacement)
 {
    // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
    _Yaw   += _MouseCursorSensitivity * cursor_displacement[0];
@@ -94,7 +93,7 @@ void Camera::MousePositionControl(const SVectorF2& cursor_displacement)
    SetOrientation(_Position, _Pitch, _Yaw);
 }
 
-void Camera::MouseWheelControl(const SVectorF2& wheel_displacement)
+void Camera::WheelControl(const SVectorF2& wheel_displacement)
 {
    GLfloat displacement = _MouseWheelSensitivity * wheel_displacement[1];
    _Position += displacement * _Front;
@@ -108,7 +107,7 @@ void Camera::UpdateViewMatrix()
 
 void Camera::UpdateProjectionMatrix()
 {
-   _ProjectionMatrix = glm::perspective(glm::radians(_FieldOfView), _AspectRatio, _NearPlane, _FarPlane);
+   _ProjMatrix = glm::perspective(glm::radians(_FieldOfView), _AspectRatio, _NearPlane, _FarPlane);
 //  ProjectionMatrix = glm::ortho(-AspectRatio, AspectRatio, -1.0f, 1.0f, -10.0f, 10.0f);
 }
 

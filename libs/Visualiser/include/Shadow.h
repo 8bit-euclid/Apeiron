@@ -53,7 +53,7 @@ class Shadow
 
    Texture     _DepthMap;
    FrameBuffer _FBO;
-   bool        _isPointLightShadow;
+   bool        _isPointSource;
 };
 
 }
