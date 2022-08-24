@@ -46,7 +46,7 @@ class Window
 
    void SwapBuffers();
 
-   void ResetTime() const;
+   void InitTime() const;
 
    void ComputeDeltaTime();
 

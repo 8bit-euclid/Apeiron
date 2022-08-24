@@ -16,6 +16,8 @@
 
 namespace aprn::vis {
 
+/** 1D models
+***************************************************************************************************************************************************************/
 Model
 ModelFactory::Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1)
 {
@@ -24,11 +26,13 @@ ModelFactory::Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1)
 
 template<class... svectors>
 Model
-ModelFactory::SegmentChain(const svectors& ...vs)
+ModelFactory::SegmentChain(const svectors&... vs)
 {
    return Model();
 }
 
+/** 2D models
+***************************************************************************************************************************************************************/
 Model
 ModelFactory::Triangle(GLfloat length) { return Triangle(length, length * Sin(ThirdPi), Half); }
 
@@ -59,6 +63,9 @@ ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
                         SVector3<GLfloat>{ x,  y, Zero},
                         SVector3<GLfloat>{-x,  y, Zero});
 }
+
+Model
+ModelFactory::ScreenQuad() { return Rectangle(Two, Two); }
 
 Model
 ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)

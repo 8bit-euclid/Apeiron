@@ -48,13 +48,13 @@ class Camera
 
    void UpdateViewMatrix();
 
-   void UpdateProjectionMatrix();
+   void UpdateProjMatrix();
 
    inline const glm::vec3& Position() const { return _Position; }
 
    inline const glm::mat4& ViewMatrix() const { return _ViewMatrix; }
 
-   inline const glm::mat4& ProjectionMatrix() const { return _ProjMatrix; }
+   inline const glm::mat4& ProjMatrix() const { return _ProjMatrix; }
 
  private:
    void ClipPitch() { Clip(_Pitch, -89.0f, 89.0f); }

@@ -23,24 +23,24 @@ Light::Light()
   : Light(LightType::None, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f, 0.0f) {}
 
 Light::Light(Light&& light) noexcept
-  : Colour(std::move(light.Colour)), AmbientIntensity(std::move(light.AmbientIntensity)), DiffuseIntensity(std::move(light.DiffuseIntensity)),
-    ShadowMap(std::move(light.ShadowMap)), Type(std::move(light.Type)) {}
+  : _Colour(std::move(light._Colour)), _AmbientIntensity(std::move(light._AmbientIntensity)), _DiffuseIntensity(std::move(light._DiffuseIntensity)),
+    _ShadowMap(std::move(light._ShadowMap)), _Type(std::move(light._Type)) {}
 
-Light::Light(LightType _light_type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
-  : Colour(rgba_colour), AmbientIntensity(ambient_intensity), DiffuseIntensity(diffuse_intensity),
-    ShadowMap(_light_type == LightType::Point || _light_type == LightType::Spot), Type(_light_type)
+Light::Light(LightType type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
+  : _Colour(rgba_colour), _AmbientIntensity(ambient_intensity), _DiffuseIntensity(diffuse_intensity),
+    _ShadowMap(type == LightType::Point || type == LightType::Spot), _Type(type)
 {
-   ShadowMap.Init(2048, 2048);
+   _ShadowMap.Init(2048, 2048);
 }
 
 Light&
 Light::operator=(Light&& light) noexcept
 {
-  Colour           = std::move(light.Colour);
-  AmbientIntensity = std::move(light.AmbientIntensity);
-  DiffuseIntensity = std::move(light.DiffuseIntensity);
-  ShadowMap        = std::move(light.ShadowMap);
-  Type             = std::move(light.Type);
+   _Colour           = std::move(light._Colour);
+   _AmbientIntensity = std::move(light._AmbientIntensity);
+   _DiffuseIntensity = std::move(light._DiffuseIntensity);
+   _ShadowMap        = std::move(light._ShadowMap);
+   _Type             = std::move(light._Type);
 
   return *this;
 }
@@ -49,14 +49,14 @@ Light::operator=(Light&& light) noexcept
 * Directional Light Class
 ***************************************************************************************************************************************************************/
 DirectionalLight::DirectionalLight()
-  : Light(), Direction(glm::vec3(0.0, -1.0, 0.0)) {}
+  : Light(), _Direction(glm::vec3(0.0, -1.0, 0.0)) {}
 
 DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
-  : Light(LightType::Directional, rgba_colour, ambient_intensity, diffuse_intensity), Direction(direction)
+  : Light(LightType::Directional, rgba_colour, ambient_intensity, diffuse_intensity), _Direction(direction)
 {
   const glm::mat4&& proj_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, 20.0f);
-  const glm::mat4&& view_matrix = glm::lookAt(-10.0f * Direction, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
-  LightSpaceMatrix = proj_matrix * view_matrix;
+  const glm::mat4&& view_matrix = glm::lookAt(-10.0f * _Direction, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
+   _LightSpaceMatrix = proj_matrix * view_matrix;
 }
 
 /***************************************************************************************************************************************************************
@@ -65,33 +65,33 @@ DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, G
 namespace detail {
 
 template<class derived>
-PointLightBase<derived>::PointLightBase(LightType _light_type, const glm::vec3& position, const glm::vec4& rgba_colour,
+PointLightBase<derived>::PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour,
                                         GLfloat ambient_intensity, GLfloat diffuse_intensity,
                                         const SVector3<GLfloat>& attenuation_coefficients)
-  : Light(_light_type, rgba_colour, ambient_intensity, diffuse_intensity), Position(position), AttenuationCoefficients(attenuation_coefficients)
+  : Light(type, rgba_colour, ambient_intensity, diffuse_intensity), _Position(position), _AttenuationCoefficients(attenuation_coefficients)
 {
-  const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, FarPlane); // Note the aspect ratio of 1.0f
+  const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, _FarPlane); // Note the aspect ratio of 1.0f
 
-  LightSpaceMatrices[0] = proj_matrix * glm::lookAt(Position, Position + glm::vec3( 1.0,  0.0,  0.0), {0.0, -1.0,  0.0}); // Right face of cube map
-  LightSpaceMatrices[1] = proj_matrix * glm::lookAt(Position, Position + glm::vec3(-1.0,  0.0,  0.0), {0.0, -1.0,  0.0}); // Left face of cube map
-  LightSpaceMatrices[2] = proj_matrix * glm::lookAt(Position, Position + glm::vec3( 0.0,  1.0,  0.0), {0.0,  0.0,  1.0}); // Top face of cube map
-  LightSpaceMatrices[3] = proj_matrix * glm::lookAt(Position, Position + glm::vec3( 0.0, -1.0,  0.0), {0.0,  0.0, -1.0}); // Bottom face of cube map
-  LightSpaceMatrices[4] = proj_matrix * glm::lookAt(Position, Position + glm::vec3( 0.0,  0.0,  1.0), {0.0, -1.0,  0.0}); // Near face of cube map
-  LightSpaceMatrices[5] = proj_matrix * glm::lookAt(Position, Position + glm::vec3( 0.0,  0.0, -1.0), {0.0, -1.0,  0.0}); // Far face of cube map
+  _LightSpaceMatrices[0] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Right face of cube map
+  _LightSpaceMatrices[1] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(-1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Left face of cube map
+  _LightSpaceMatrices[2] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 1.0, 0.0), {0.0, 0.0, 1.0}); // Top face of cube map
+  _LightSpaceMatrices[3] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, -1.0, 0.0), {0.0, 0.0, -1.0}); // Bottom face of cube map
+  _LightSpaceMatrices[4] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, 1.0), {0.0, -1.0, 0.0}); // Near face of cube map
+  _LightSpaceMatrices[5] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, -1.0), {0.0, -1.0, 0.0}); // Far face of cube map
 
-  iPointLight = nPointLights++;
+  _iPointLight = _PointLightCount++;
 }
 
 template<class derived>
 PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcept
-   : Light(std::move(light)), iPointLight(std::move(light.iPointLight)), Position(std::move(light.Position)),
-     AttenuationCoefficients(std::move(light.AttenuationCoefficients)), LightSpaceMatrices(std::move(light.LightSpaceMatrices))
+   : Light(std::move(light)), _iPointLight(std::move(light._iPointLight)), _Position(std::move(light._Position)),
+     _AttenuationCoefficients(std::move(light._AttenuationCoefficients)), _LightSpaceMatrices(std::move(light._LightSpaceMatrices))
 {
-   nPointLights++; // Note: only incremented because the destructor of the 'moved' object will decrement.
+   _PointLightCount++; // Note: only incremented because the destructor of the 'moved' object will decrement.
 }
 
 template<class derived>
-PointLightBase<derived>::~PointLightBase() { nPointLights--; }
+PointLightBase<derived>::~PointLightBase() { _PointLightCount--; }
 
 }
 
@@ -108,9 +108,9 @@ PointLight::PointLight(const glm::vec3& position, const glm::vec4& rgba_colour, 
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
-SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat _coneangle, GLfloat ambient_intensity,
+SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat cone_angle, GLfloat ambient_intensity,
                      GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients)
   : PointLightBase(LightType::Spot, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients),
-                   Direction(glm::normalize(direction)), ConeAngle(_coneangle), CosConeAngle(std::cos(DegToRad(_coneangle))) {}
+    _Direction(glm::normalize(direction)), _ConeAngle(cone_angle), _CosConeAngle(std::cos(DegToRad(cone_angle))) {}
 
 }

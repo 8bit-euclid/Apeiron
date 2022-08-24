@@ -24,9 +24,9 @@ in vec2 v_texture_coordinate;
 
 out vec4 fragment_colour;
 
-uniform sampler2D screen_texture;
+uniform sampler2D u_screen_texture;
 
 void main()
 {
-    fragment_colour = texture(screen_texture, v_texture_coordinate);
+    fragment_colour = texture(u_screen_texture, v_texture_coordinate);
 }

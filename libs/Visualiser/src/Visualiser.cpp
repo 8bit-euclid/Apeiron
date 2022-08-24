@@ -53,27 +53,45 @@ Visualiser::Render()
    FrameBuffer fbo;
    RenderBuffer rbo;
    Texture cbo(TextureType::Diffuse, true);
-
-   cbo.Init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_BORDER);
-   rbo.Init();
-   rbo.Allocate(GL_DEPTH24_STENCIL8, 1920, 1080);
+   Model model = ModelFactory::ScreenQuad();
+   model.Init();
 
    fbo.Init();
    fbo.Bind();
+
+   cbo.Init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE);
+   rbo.Init();
+   rbo.Allocate(GL_DEPTH24_STENCIL8, 1920, 1080);
+
    fbo.AttachTexture2D(GL_COLOR_ATTACHMENT0, cbo.ID());
    fbo.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, rbo.ID());
+
    fbo.Unbind();
 
 
 
    while(_OpenGLWindow.isOpen())
    {
+      // First pass
+      fbo.Bind();
       StartFrame();
+      glEnable(GL_DEPTH_TEST);
       UpdateScene();
       ManageUserInputs();
       UpdateViewFrustum();
       RenderScene();
+      fbo.Unbind();
+
+      // Second pass
+      RenderScreenQuad(model, cbo);
       EndFrame();
+
+//      StartFrame();
+//      UpdateScene();
+//      ManageUserInputs();
+//      UpdateViewFrustum();
+//      RenderScene();
+//      EndFrame();
    }
 }
 
@@ -89,10 +107,8 @@ Visualiser::Init()
    _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 
    // Load all shaders
-   _Shaders.emplace("General", "libs/Visualiser/resources/shaders/General.glsl");
-   _Shaders.emplace("Line", "libs/Visualiser/resources/shaders/Line.glsl");
-   _Shaders.emplace("DirectionalShadow", "libs/Visualiser/resources/shaders/DirectionalShadow.glsl");
-   _Shaders.emplace("PointShadow", "libs/Visualiser/resources/shaders/PointShadow.glsl");
+   for(std::string shader : {"General", "DirecShadow", "PointShadow", "FrameBuffer", "Line"})
+      _Shaders.emplace(shader, "libs/Visualiser/resources/shaders/" + shader + ".glsl");
 
    // Initialise scenes, tex-boxes, and textures.
    InitScenes();
@@ -101,7 +117,7 @@ Visualiser::Init()
 
    // Set window title and set clock time to zero
    _OpenGLWindow.SetTitle("Apeiron");
-   _OpenGLWindow.ResetTime();
+   _OpenGLWindow.InitTime();
 }
 
 void
@@ -226,13 +242,6 @@ Visualiser::StartFrame()
 }
 
 void
-Visualiser::EndFrame()
-{
-   _OpenGLWindow.SwapBuffers();
-   glfwPollEvents();
-}
-
-void
 Visualiser::UpdateScene()
 {
    DEBUG_ASSERT(_CurrentScene, "The current scene pointer has not yet been set.")
@@ -267,10 +276,42 @@ Visualiser::UpdateViewFrustum()
 void
 Visualiser::RenderScene()
 {
-   _CurrentScene->RenderDirectionalShadows(_Shaders["DirectionalShadow"]);
+   // Render shadows from all directional and point light sources.
+   _CurrentScene->RenderDirecShadows(_Shaders["DirecShadow"]);
    _CurrentScene->RenderPointShadows(_Shaders["PointShadow"]);
+
+   // Point shadow rendering modifies the viewport, so need to reset it.
    _OpenGLWindow.ResetViewport();
+
+   // Render all elements of the current scene.
    _CurrentScene->RenderScene(_Shaders["General"], *_ActiveCamera);
+}
+
+void
+Visualiser::RenderScreenQuad(Model& model, Texture& texture)
+{
+   // Clear window
+   GLCall(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
+   GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
+   auto& shader = _Shaders["FrameBuffer"];
+   shader.Bind();
+
+   glDisable(GL_DEPTH_TEST);
+
+   shader.UseTexture(texture, "u_screen_texture", 0);
+
+   model.Render();
+
+   texture.Unbind();
+   shader.Unbind();
+}
+
+void
+Visualiser::EndFrame()
+{
+   _OpenGLWindow.SwapBuffers();
+   glfwPollEvents();
 }
 
 }

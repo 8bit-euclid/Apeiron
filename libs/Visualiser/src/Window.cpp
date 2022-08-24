@@ -57,7 +57,7 @@ Window::Open(GLint width, GLint height)
    GLCall(glEnable(GL_MULTISAMPLE));
 
    // Create a window and its OpenGL context.
-   _WindowDimensions = {width, height};
+   _WindowDimensions = { width, height };
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {
@@ -108,6 +108,7 @@ Window::Open(GLint width, GLint height)
 //   GLCall(glFrontFace(GL_CCW));
 //   GLCall(glEnable(GL_BLEND));
 //   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
    glfwSetWindowUserPointer(_GlfwWindow, this);
@@ -154,7 +155,7 @@ void
 Window::SwapBuffers() { glfwSwapBuffers(_GlfwWindow); }
 
 void
-Window::ResetTime() const { glfwSetTime(Zero); }
+Window::InitTime() const { glfwSetTime(Zero); }
 
 void
 Window::ComputeDeltaTime()
@@ -177,6 +178,7 @@ Window::ComputeFrameRate()
       const auto frame_duration = 1.0e3 / fps; // in milliseconds
       const std::string title_suffix = "  |  " + ToStr(fps, 2) + " fps  |  " + ToStr(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
+
       _PreviousFrameTime = _CurrentTime;
       _FrameCounter = 0;
    }

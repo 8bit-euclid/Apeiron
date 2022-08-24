@@ -136,19 +136,14 @@ Scene::RenderScene(Shader& shader, Camera& camera)
 {
    ASSERT(_DLights.size() <= 1, "Can currently only handle at most one directional light.")
 
-   // Clear window
-   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-
    shader.Bind();
-
    shader.UseCamera(camera);
 
    if(!_DLights.empty())
    {
       shader.UseLight(_DLights["Sun"]);
-      shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].GetLightSpaceMatrix());
-      _DLights["Sun"].GetShadowMap().ReadFrom(1);
+      shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
+      _DLights["Sun"].ShadowMap().ReadFrom(1);
       shader.SetDirectionalShadowMap(1);
    }
 
@@ -156,29 +151,29 @@ Scene::RenderScene(Shader& shader, Camera& camera)
    FOR_EACH(_, point_light, _PLights)
    {
       shader.UseLight(point_light);
-      point_light.GetShadowMap().ReadFrom(i + 2);
+      point_light.ShadowMap().ReadFrom(i + 2);
       shader.SetPointShadowMap(i, i + 2);
       i++;
    }
-   shader.SetPointFarPlane(PointLight::GetFarPlane());
+   shader.SetPointFarPlane(PointLight::FarPlane());
 
    RenderModels(shader);
 
-   if(!_DLights.empty()) _DLights["Sun"].GetShadowMap().Finalise();
+   if(!_DLights.empty()) _DLights["Sun"].ShadowMap().Finalise();
 
    shader.Unbind();
 }
 
 void
-Scene::RenderDirectionalShadows(Shader& shader)
+Scene::RenderDirecShadows(Shader& shader)
 {
    if(_DLights.empty()) return;
    else ASSERT(_DLights.size() == 1, "Can currently only handle one directional light.")
 
    shader.Bind();
-   shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].GetLightSpaceMatrix());
+   shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
 
-   auto& shadow_map = _DLights["Sun"].GetShadowMap();
+   auto& shadow_map = _DLights["Sun"].ShadowMap();
    GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
 
 //  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
@@ -201,11 +196,11 @@ Scene::RenderPointShadows(Shader& shader)
 
    FOR_EACH(_, point_light, _PLights)
    {
-      shader.SetPointLightSpaceMatrices(point_light.GetLightSpaceMatrices());
-      shader.SetPointPosition(point_light.GetPosition());
-      shader.SetPointFarPlane(PointLight::GetFarPlane());
+      shader.SetPointLightSpaceMatrices(point_light.LightSpaceMatrices());
+      shader.SetPointPosition(point_light.Position());
+      shader.SetPointFarPlane(PointLight::FarPlane());
 
-      auto& shadow_map = point_light.GetShadowMap();
+      auto& shadow_map = point_light.ShadowMap();
       GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
 
       shadow_map.WriteTo();
