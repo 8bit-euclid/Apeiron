@@ -172,7 +172,7 @@ FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) 
 }
 
 void
-FrameBuffer::AttachRenderBuffer(GLenum attachement, GLuint rbo_id) const
+FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) const
 {
    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id));
    Check();
@@ -186,10 +186,10 @@ FrameBuffer::Check() const
 }
 
 void
-FrameBuffer::Draw(GLenum mode) const { GLCall(glDrawBuffer(mode)); }
+FrameBuffer::Draw(const GLenum mode) const { GLCall(glNamedFramebufferDrawBuffer(_ID, mode)); }
 
 void
-FrameBuffer::Read(GLenum mode) const { GLCall(glReadBuffer(mode)); }
+FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer(_ID, mode)); }
 
 /***************************************************************************************************************************************************************
 * Render Buffer Class

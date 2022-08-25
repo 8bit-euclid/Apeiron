@@ -109,6 +109,7 @@ class Model
  protected:
    friend class Visualiser;
    friend class Scene;
+   friend class FrameTexture;
    friend class ModelFactory;
    friend class ActionBase;
    template<ActionType type> friend class Action;

@@ -48,50 +48,15 @@ Visualiser::Render()
 {
    Init();
 
-
-
-   FrameBuffer fbo;
-   RenderBuffer rbo;
-   Texture cbo(TextureType::Diffuse, true);
-   Model model = ModelFactory::ScreenQuad();
-   model.Init();
-
-   fbo.Init();
-   fbo.Bind();
-
-   cbo.Init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE);
-   rbo.Init();
-   rbo.Allocate(GL_DEPTH24_STENCIL8, 1920, 1080);
-
-   fbo.AttachTexture2D(GL_COLOR_ATTACHMENT0, cbo.ID());
-   fbo.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, rbo.ID());
-
-   fbo.Unbind();
-
-
-
    while(_OpenGLWindow.isOpen())
    {
-      // First pass
-      fbo.Bind();
-      StartFrame();
-      glEnable(GL_DEPTH_TEST);
+      BeginFrame();
       UpdateScene();
-      ManageUserInputs();
+      HandleUserInputs();
       UpdateViewFrustum();
       RenderScene();
-      fbo.Unbind();
-
-      // Second pass
-      RenderScreenQuad(model, cbo);
+      RenderFrameTexture();
       EndFrame();
-
-//      StartFrame();
-//      UpdateScene();
-//      ManageUserInputs();
-//      UpdateViewFrustum();
-//      RenderScene();
-//      EndFrame();
    }
 }
 
@@ -110,10 +75,11 @@ Visualiser::Init()
    for(std::string shader : {"General", "DirecShadow", "PointShadow", "FrameBuffer", "Line"})
       _Shaders.emplace(shader, "libs/Visualiser/resources/shaders/" + shader + ".glsl");
 
-   // Initialise scenes, tex-boxes, and textures.
+   // Initialise scenes, tex-boxes, textures, and screen texture.
    InitScenes();
    InitTeXBoxes();
    InitTextures();
+   InitScreenTexture();
 
    // Set window title and set clock time to zero
    _OpenGLWindow.SetTitle("Apeiron");
@@ -229,16 +195,24 @@ Visualiser::InitTextures()
 }
 
 void
-Visualiser::StartFrame()
+Visualiser::InitScreenTexture()
 {
-   // Clear window
-   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+   if(!_PostProcess) return;
+
+   const auto [width, height] = _OpenGLWindow.Dimensions();
+   _FrameTexture.Init(width, height);
+}
+
+void
+Visualiser::BeginFrame()
+{
+   // Clear currently bound frame buffer.
+   ClearFrameBuffer();
 
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
    _OpenGLWindow.ComputeDeltaTime();
    _OpenGLWindow.ComputeFrameRate();
-   _isViewPortModified = _OpenGLWindow.isViewportModified();
+   _ViewPortModified = _OpenGLWindow.isViewportModified();
 }
 
 void
@@ -248,14 +222,18 @@ Visualiser::UpdateScene()
 
    // Determine if the current scene needs to be updated
    const auto current_time = _OpenGLWindow.CurrentTime();
-   if(!_CurrentScene->isCurrent(current_time)) _CurrentScene = _CurrentScene->_NextScene;
+   if(!_CurrentScene->isCurrent(current_time))
+   {
+      ASSERT(_CurrentScene->_NextScene, "TODO - need to properly handle final scene.")
+      _CurrentScene = _CurrentScene->_NextScene;
+   }
 
    // Update models in current scene
    _CurrentScene->UpdateModels(current_time);
 }
 
 void
-Visualiser::ManageUserInputs()
+Visualiser::HandleUserInputs()
 {
    _ActiveCamera->KeyControl(_OpenGLWindow._Keys, _OpenGLWindow.DeltaTime());
    _ActiveCamera->CursorControl(_OpenGLWindow.CursorDisplacement());
@@ -266,7 +244,7 @@ void
 Visualiser::UpdateViewFrustum()
 {
    // If the viewport was modified, update the view frustum and adjust line shader resolution
-   if(_isViewPortModified)
+   if(_ViewPortModified)
    {
       _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio());
       _Shaders["Line"].SetUniform2f("u_resolution", _OpenGLWindow._ViewportDimensions[0], _OpenGLWindow._ViewportDimensions[1]);
@@ -283,29 +261,18 @@ Visualiser::RenderScene()
    // Point shadow rendering modifies the viewport, so need to reset it.
    _OpenGLWindow.ResetViewport();
 
+   // Write to off-screen frame buffer, if required.
+   if(_PostProcess) _FrameTexture.StartWrite();
+
    // Render all elements of the current scene.
    _CurrentScene->RenderScene(_Shaders["General"], *_ActiveCamera);
+
+   // Finalise off-screen render.
+   if(_PostProcess) _FrameTexture.StopWrite();
 }
 
 void
-Visualiser::RenderScreenQuad(Model& model, Texture& texture)
-{
-   // Clear window
-   GLCall(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
-   GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
-   auto& shader = _Shaders["FrameBuffer"];
-   shader.Bind();
-
-   glDisable(GL_DEPTH_TEST);
-
-   shader.UseTexture(texture, "u_screen_texture", 0);
-
-   model.Render();
-
-   texture.Unbind();
-   shader.Unbind();
-}
+Visualiser::RenderFrameTexture() { if(_PostProcess) _FrameTexture.Render(_Shaders["FrameBuffer"]); }
 
 void
 Visualiser::EndFrame()

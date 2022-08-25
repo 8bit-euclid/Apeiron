@@ -143,7 +143,7 @@ Scene::RenderScene(Shader& shader, Camera& camera)
    {
       shader.UseLight(_DLights["Sun"]);
       shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
-      _DLights["Sun"].ShadowMap().ReadFrom(1);
+      _DLights["Sun"].ShadowMap().StartRead(1);
       shader.SetDirectionalShadowMap(1);
    }
 
@@ -151,15 +151,13 @@ Scene::RenderScene(Shader& shader, Camera& camera)
    FOR_EACH(_, point_light, _PLights)
    {
       shader.UseLight(point_light);
-      point_light.ShadowMap().ReadFrom(i + 2);
+      point_light.ShadowMap().StartRead(i + 2);
       shader.SetPointShadowMap(i, i + 2);
       i++;
    }
    shader.SetPointFarPlane(PointLight::FarPlane());
 
    RenderModels(shader);
-
-   if(!_DLights.empty()) _DLights["Sun"].ShadowMap().Finalise();
 
    shader.Unbind();
 }
@@ -178,9 +176,9 @@ Scene::RenderDirecShadows(Shader& shader)
 
 //  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
 
-   shadow_map.WriteTo();
+   shadow_map.StartWrite();
    RenderModels(shader);
-   shadow_map.Finalise();
+   shadow_map.StopWrite();
 
 //   GLCall(glCullFace(GL_BACK));
 
@@ -203,9 +201,9 @@ Scene::RenderPointShadows(Shader& shader)
       auto& shadow_map = point_light.ShadowMap();
       GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
 
-      shadow_map.WriteTo();
+      shadow_map.StartWrite();
       RenderModels(shader);
-      shadow_map.Finalise();
+      shadow_map.StopWrite();
    }
 
    shader.Unbind();

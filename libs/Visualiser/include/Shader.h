@@ -51,7 +51,6 @@ class Shader
    /** Public interface
    ************************************************************************************************************************************************************/
  public:
-   /** Module Interface */
    Shader();
 
    Shader(const std::string& file_path);
@@ -60,11 +59,11 @@ class Shader
 
    void Read(const std::string& file_path);
 
-   inline void Bind() const { GLCall(glUseProgram(ID)); }
+   inline void Bind() const { GLCall(glUseProgram(_ID)); }
 
    inline void Unbind() const { GLCall(glUseProgram(0)); }
 
-   inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
+   inline void SetWarnings(const bool _is_on) { _WarningsOn = _is_on; }
 
    void UseModel(const Model& model);
 
@@ -88,7 +87,6 @@ class Shader
 
    void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& light_space_matrices);
 
-   /** Setting Shader Uniforms */
    void SetUniform1i(const std::string& name, GLint value);
 
    void SetUniform1f(const std::string& name, GLfloat value);
@@ -101,29 +99,26 @@ class Shader
 
    void SetUniformMatrix4f(const std::string& name, const glm::mat4& proj_matrix);
 
-private:
-   /** Private interface
-   ************************************************************************************************************************************************************/
+   inline GLuint ID() const { return _ID; }
 
-   /** Shader Parsing, Compilation, Installation, and Deletion functions. */
+private:
    ShaderSourceCode Parse(const std::string& file_path);
 
    void Create(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader);
 
    GLuint Compile(GLuint type, const std::string& source);
 
-   void Attach(GLuint program, GLuint shader);
+   void Attach(GLuint shader);
+
+   void Delete(GLuint shader);
 
    void Delete();
 
-   /** Uniform Support Functions */
-   int GetUniformLocation(const std::string& name);
+   int UniformLocation(const std::string& name);
 
-   /** Private members
-   ************************************************************************************************************************************************************/
-   GLuint                               ID;
-   std::unordered_map<std::string, int> UniformLocationCache;
-   bool                                 areWarningsOn{false};
+   GLuint                               _ID;
+   std::unordered_map<std::string, int> _UniformLocationCache;
+   bool                                 _WarningsOn{false};
 };
 
 }

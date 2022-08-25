@@ -25,6 +25,7 @@
 #include "Model.h"
 #include "Material.h"
 #include "Scene.h"
+#include "FrameTexture.h"
 #include "Shader.h"
 #include "Window.h"
 
@@ -37,9 +38,6 @@
 
 namespace aprn::vis {
 
-/***************************************************************************************************************************************************************
-* Visualiser Class
-***************************************************************************************************************************************************************/
 class Visualiser
 {
  public:
@@ -62,17 +60,19 @@ class Visualiser
 
    void InitTextures();
 
-   void StartFrame();
+   void InitScreenTexture();
+
+   void BeginFrame();
 
    void UpdateScene();
 
-   void ManageUserInputs();
+   void HandleUserInputs();
 
    void UpdateViewFrustum();
 
    void RenderScene();
 
-   void RenderScreenQuad(Model& model, Texture& texture);
+   void RenderFrameTexture();
 
    void EndFrame();
 
@@ -82,9 +82,12 @@ class Visualiser
    UMap<Camera>        _Cameras;
    UMap<Shader>        _Shaders;
    UMap<UMap<Texture>> _Textures;
+   FrameTexture        _FrameTexture;
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
-   bool                _isViewPortModified{};
+   bool                _ViewPortModified{};
+   bool                _PostProcess{true};
+   bool                _HDR{};
 };
 
 }
