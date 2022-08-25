@@ -368,10 +368,7 @@ vec2 CalculateParallax()
    return final_texture_coordinate;
 }
 
-vec4 GammaCorrect(vec4 colour)
-{
-   return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a);
-}
+vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
 
 void main()
 {
@@ -385,5 +382,6 @@ void main()
 
    const vec3 material_colour = u_use_diffuse_map ? texture(u_diffuse_map, texture_coordinate).rgb : v_data_in.Colour;
 
-   fragment_colour = GammaCorrect(vec4(lighting.rgb * material_colour, 1.0f));
+//   fragment_colour = GammaCorrect(vec4(lighting.rgb * material_colour, 1.0f));
+   fragment_colour = vec4(lighting.rgb * material_colour, 1.0f);
 }

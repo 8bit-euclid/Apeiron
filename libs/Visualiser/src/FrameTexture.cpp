@@ -22,27 +22,30 @@ FrameTexture::FrameTexture()
    : _Texture(TextureType::Diffuse, true) {}
 
 void
-FrameTexture::Init(const UInt width, const UInt height)
+FrameTexture::Init(const UInt width, const UInt height, bool is_hdr)
 {
+   _isHDR  = is_hdr;
    _Width  = width;
    _Height = height;
 
    _FBO.Init();
    _FBO.Bind();
 
-   _Texture.Init(_Width, _Height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE);
+   // Attach a texture as the frame buffer's colour buffer.
+   const bool high_prec = false;
+   const GLint internal_format = _isHDR ? (high_prec ? GL_RGBA32F : GL_RGBA16F) : GL_RGBA;
+   _Texture.Init(_Width, _Height, internal_format, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
    _FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, _Texture.ID());
+   _FBO.Draw(GL_COLOR_ATTACHMENT0);
 
+   // Attach a render buffer as the frame buffer's depth/stencil buffer.
    _RBO.Init();
    _RBO.Allocate(GL_DEPTH24_STENCIL8, _Width, _Height);
    _FBO.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, _RBO.ID());
 
-   _FBO.Draw(GL_COLOR_ATTACHMENT0);
-//   _FBO.Read(GL_COLOR_ATTACHMENT0);
-//   _FBO.Read(GL_NONE);
-
    _FBO.Unbind();
 
+   // Create rectangular screen-filling quad to render texture to.
    _TextureQuad = ModelFactory::ScreenQuad();
    _TextureQuad.Init();
 }
@@ -55,9 +58,14 @@ FrameTexture::Render(Shader& shader)
    GLCall(glDisable(GL_DEPTH_TEST));
 
    shader.Bind();
+
    shader.UseTexture(_Texture, "u_screen_texture", 0);
+   shader.SetUniform1i("u_is_hdr"  , _isHDR);
+   shader.SetUniform1f("u_exposure", 1.0);
+
    _TextureQuad.Render();
    _Texture.Unbind();
+
    shader.Unbind();
 }
 

@@ -1,5 +1,5 @@
 **General**
-- [x] Continuous integration
+- [x] GitHub actions / Continuous integration
 - [ ] Pre-compiled headers
 - [ ] C++ Modules integration
 - [ ] Stack frame write-out
@@ -13,6 +13,10 @@
 - [x] Off-screen rendering
 - [ ] HDR
 - [ ] Bloom
+- [ ] Fix border shrinking during off-screen rendering
+- [ ] Fix parallax occlusion bug
+- [ ] Screen-space ambient occlusion (SSAO)
+- [ ] PBR
 - [ ] Model loading using Assimp
 - [ ] Motion blur
 - [ ] Depth of field

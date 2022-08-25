@@ -20,13 +20,28 @@ void main()
 #shader fragment
 #version 460 core
 
+const float Gamma = 2.2;
+
 in vec2 v_texture_coordinate;
 
 out vec4 fragment_colour;
 
+uniform bool      u_is_hdr;
+uniform float     u_exposure;
 uniform sampler2D u_screen_texture;
+
+vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
 
 void main()
 {
     fragment_colour = texture(u_screen_texture, v_texture_coordinate);
+
+    if(u_is_hdr)
+    {
+        vec3 mapped_colour = vec3(1.0) - exp(-u_exposure * fragment_colour.rgb);
+        mapped_colour = mapped_colour / (mapped_colour + vec3(1.0));
+        fragment_colour.rgb = mapped_colour;
+    }
+
+    fragment_colour = GammaCorrect(fragment_colour);
 }
