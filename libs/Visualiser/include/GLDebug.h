@@ -21,16 +21,13 @@ namespace aprn::vis {
 
 /** OpenGL function wrapper for error checking in debug mode. */
 #ifdef DEBUG_MODE
-#define GLCall(function) GLClearErrors(); function; GLLogCall(#function, __FILE__, __LINE__)
+   #define GLCall(function) GLClearErrors(); function; GLLogCall(#function, __FILE__, __LINE__)
 #else
-#define GLCall(function) function
+   #define GLCall(function) function
 #endif
 
-/** Clear all errors OpenGL errors. */
-inline void GLClearErrors()
-{
-  while(glGetError() != GL_NO_ERROR) {}
-}
+/** Clear all OpenGL errors. */
+inline void GLClearErrors() { while(glGetError() != GL_NO_ERROR) {} }
 
 /** Throw current OpenGL error and exit program. */
 inline void GLLogCall(const char* function, const char* file, const int line)

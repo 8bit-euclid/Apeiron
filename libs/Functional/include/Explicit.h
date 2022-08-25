@@ -47,7 +47,7 @@ Ellipsoid(const SVectorF3& _radii, const Float _theta, const Float _phi)
 }
 
 constexpr SVectorF3
-Sphere(const Float _radius, const Float _theta, const Float _phi) { return Ellipsoid({_radius, _radius, _radius}, _theta, _phi); }
+Sphere(const Float radius, const Float _theta, const Float _phi) { return Ellipsoid({radius, radius, radius}, _theta, _phi); }
 
 //template<int p, int dimension = 1, typename T>
 //constexpr T Polynomial(const StaticArray<T, dimension>& point, )

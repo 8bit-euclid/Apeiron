@@ -132,7 +132,7 @@ template<size_t ambient_dim = 2>
 class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 {
  public:
-   Circle(const Float _radius, const SVectorF<ambient_dim>& _centre = SVectorF<ambient_dim>{});
+   Circle(const Float radius, const SVectorF<ambient_dim>& _centre = SVectorF<ambient_dim>{});
 
    constexpr void
    SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }

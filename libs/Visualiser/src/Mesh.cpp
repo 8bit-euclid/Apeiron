@@ -79,6 +79,7 @@ void Mesh::ComputeVertexNormals()
     const GLuint iv1 = Indices[it + 1];
     const GLuint iv2 = Indices[it + 2];
     glm::vec3 face_normal = glm::cross(Vertices[iv1].Position - Vertices[iv0].Position, Vertices[iv2].Position - Vertices[iv0].Position);
+
     if(Shading == ShadingType::Flat)
     {
       face_normal = glm::normalize(face_normal);

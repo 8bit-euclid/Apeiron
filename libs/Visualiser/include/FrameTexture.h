@@ -14,27 +14,37 @@
 
 #pragma once
 
-#include "../../../include/Global.h"
-
-#include <GL/glew.h>
+#include "Buffers.h"
+#include "Model.h"
+#include "Shader.h"
+#include "Texture.h"
 
 namespace aprn::vis {
 
-class Material
+class FrameTexture
 {
  public:
-   Material()
-      : Material("none", 0.0, 0.0) {}
+   FrameTexture();
 
-   Material(const std::string_view& name, const GLfloat specular_intensity, const GLfloat smoothness)
-      : Name(name), SpecularIntensity(specular_intensity), Smoothness(smoothness) {}
+   void Init(UInt width, UInt height);
+
+   void Render(Shader& shader);
+
+   void StartWrite() const;
+
+   inline void StopWrite() const { _FBO.Unbind(); }
+
+   inline void StartRead(const UInt slot) const { _Texture.Bind(slot); }
+
+   inline void StopRead() const { _Texture.Unbind(); }
 
  private:
-   friend class Shader;
-
-   std::string_view Name;
-   GLfloat SpecularIntensity;
-   GLfloat Smoothness;
+   Model        _TextureQuad;
+   FrameBuffer  _FBO;
+   RenderBuffer _RBO;
+   Texture      _Texture;
+   UInt         _Width;
+   UInt         _Height;
 };
 
 }

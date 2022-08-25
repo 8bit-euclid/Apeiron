@@ -49,27 +49,27 @@ class Light
 
    Light(Light&& light) noexcept;
 
-   Light(LightType _light_type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
+   Light(LightType type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
  public:
    ~Light() = default;
 
-   virtual UInt GetIndex() const = 0;
+   virtual UInt Index() const = 0;
 
-   virtual UInt GetLightCount() const = 0;
+   virtual UInt LightCount() const = 0;
 
-   Shadow& GetShadowMap() { return ShadowMap; }
+   inline Shadow& ShadowMap() { return _ShadowMap; }
 
    Light& operator=(const Light& light) = delete;
 
    Light& operator=(Light&& light) noexcept;
 
  protected:
-   glm::vec4 Colour;
-   GLfloat AmbientIntensity;
-   GLfloat DiffuseIntensity;
-   Shadow ShadowMap;
-   LightType Type;
+   glm::vec4 _Colour;
+   GLfloat   _AmbientIntensity;
+   GLfloat   _DiffuseIntensity;
+   Shadow    _ShadowMap;
+   LightType _Type;
 };
 
 /***************************************************************************************************************************************************************
@@ -82,17 +82,17 @@ class DirectionalLight : public Light
 
    DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
-   UInt GetIndex() const override { return 0; }
+   UInt Index() const override { return 0; }
 
-   UInt GetLightCount() const override { return 1; }
+   UInt LightCount() const override { return 1; }
 
-   const glm::mat4& GetLightSpaceMatrix() const { return LightSpaceMatrix; }
+   inline const glm::mat4& LightSpaceMatrix() const { return _LightSpaceMatrix; }
 
  private:
    friend class Shader;
 
-   glm::vec3 Direction;
-   glm::mat4 LightSpaceMatrix;
+   glm::vec3 _Direction;
+   glm::mat4 _LightSpaceMatrix;
 };
 
 /***************************************************************************************************************************************************************
@@ -106,7 +106,7 @@ class PointLightBase : public Light
  protected:
    PointLightBase() = delete;
 
-   PointLightBase(LightType _light_type, const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
+   PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
                   const SVector3<GLfloat>& attenuation_coefficients);
 
    PointLightBase(const PointLightBase<derived>& light) = delete;
@@ -116,33 +116,28 @@ class PointLightBase : public Light
  public:
    ~PointLightBase();
 
-   UInt GetIndex() const override { return iPointLight; }
+   UInt Index() const override { return _iPointLight; }
 
-   UInt GetLightCount() const override { return nPointLights; }
+   UInt LightCount() const override { return _PointLightCount; }
 
-   constexpr static GLfloat
-   GetFarPlane() { return FarPlane; }
+   constexpr static GLfloat FarPlane() { return _FarPlane; }
 
-   const glm::vec3&
-   GetPosition() const { return Position; }
+   inline const glm::vec3& Position() const { return _Position; }
 
-   const StaticArray<glm::mat4, 6>&
-   GetLightSpaceMatrices() const { return LightSpaceMatrices; }
+   inline const StaticArray<glm::mat4, 6>& LightSpaceMatrices() const { return _LightSpaceMatrices; }
 
-   PointLightBase<derived>&
-   operator=(const PointLightBase<derived>& _other) = delete;
+   PointLightBase<derived>& operator=(const PointLightBase<derived>& _other) = delete;
 
-   PointLightBase<derived>&
-   operator=(PointLightBase<derived>&& _other) = default;
+   PointLightBase<derived>& operator=(PointLightBase<derived>&& _other) = default;
 
  protected:
-   constexpr static UInt     MaxPointLights{4};
-   constexpr static GLfloat  FarPlane{25.0f};
-   inline static UInt        nPointLights = 0;
-   UInt                      iPointLight;
-   glm::vec3                 Position;
-   StaticVector<GLfloat, 3>  AttenuationCoefficients; // [0]: constant term, [1]: linear term, [2]: quadratic term
-   StaticArray<glm::mat4, 6> LightSpaceMatrices;
+   constexpr static UInt     _MaxPointLights{4};
+   constexpr static GLfloat  _FarPlane{25.0f};
+   inline static UInt        _PointLightCount = 0;
+   UInt                      _iPointLight;
+   glm::vec3                 _Position;
+   StaticVector<GLfloat, 3>  _AttenuationCoefficients; // [0]: constant term, [1]: linear term, [2]: quadratic term
+   StaticArray<glm::mat4, 6> _LightSpaceMatrices;
 };
 
 }
@@ -165,15 +160,15 @@ class PointLight : public detail::PointLightBase<PointLight>
 class SpotLight : public detail::PointLightBase<SpotLight>
 {
  public:
-   SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat _coneangle, GLfloat ambient_intensity,
+   SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat cone_angle, GLfloat ambient_intensity,
              GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients);
 
  private:
    friend class Shader;
 
-   glm::vec3 Direction;
-   GLfloat ConeAngle;
-   GLfloat CosConeAngle;
+   glm::vec3 _Direction;
+   GLfloat   _ConeAngle;
+   GLfloat   _CosConeAngle;
 };
 
 }
