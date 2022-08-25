@@ -26,7 +26,7 @@ class FrameTexture
  public:
    FrameTexture();
 
-   void Init(UInt width, UInt height);
+   void Init(UInt width, UInt height, bool is_hdr);
 
    void Render(Shader& shader);
 
@@ -45,6 +45,7 @@ class FrameTexture
    Texture      _Texture;
    UInt         _Width;
    UInt         _Height;
+   bool         _isHDR;
 };
 
 }

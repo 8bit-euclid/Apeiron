@@ -200,7 +200,8 @@ Visualiser::InitScreenTexture()
    if(!_PostProcess) return;
 
    const auto [width, height] = _OpenGLWindow.Dimensions();
-   _FrameTexture.Init(width, height);
+//   _FrameTexture.Init(width, height, false);
+   _FrameTexture.Init(width, height, true);
 }
 
 void
