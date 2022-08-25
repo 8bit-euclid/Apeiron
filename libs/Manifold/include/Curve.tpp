@@ -144,8 +144,8 @@ SegmentChain<ambient_dim>::ComputeNormal(const SVectorF1& t)
 /** Circle
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-Circle<ambient_dim>::Circle(const Float _radius, const SVectorF<ambient_dim>& _centre)
-  : Centre(_centre), Radius(_radius), Normaliser(One/Radius) { ASSERT(isPositive(_radius), "A circle's radius cannot be negative.") }
+Circle<ambient_dim>::Circle(const Float radius, const SVectorF<ambient_dim>& _centre)
+  : Centre(_centre), Radius(radius), Normaliser(One/Radius) { ASSERT(isPositive(radius), "A circle's radius cannot be negative.") }
 
 template<size_t ambient_dim>
 constexpr SVectorF<ambient_dim>

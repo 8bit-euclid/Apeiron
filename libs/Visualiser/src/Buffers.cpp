@@ -155,27 +155,6 @@ IndexBuffer::Load(const DynamicArray<GLuint>& indices)
 }
 
 /***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-void
-ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
-{
-   Buffer::Init();
-   Bind();
-   Load(data);
-   Unbind();
-}
-
-void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
-
-void
-ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
-{
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW););
-}
-
-/***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
 void
@@ -193,7 +172,7 @@ FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) 
 }
 
 void
-FrameBuffer::AttachRenderBuffer(GLenum attachement, GLuint rbo_id) const
+FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) const
 {
    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id));
    Check();
@@ -207,10 +186,10 @@ FrameBuffer::Check() const
 }
 
 void
-FrameBuffer::Draw(GLenum mode) const { GLCall(glDrawBuffer(mode)); }
+FrameBuffer::Draw(const GLenum mode) const { GLCall(glNamedFramebufferDrawBuffer(_ID, mode)); }
 
 void
-FrameBuffer::Read(GLenum mode) const { GLCall(glReadBuffer(mode)); }
+FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer(_ID, mode)); }
 
 /***************************************************************************************************************************************************************
 * Render Buffer Class
@@ -221,6 +200,27 @@ RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei h
    Bind();
    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
    Unbind();
+}
+
+/***************************************************************************************************************************************************************
+* Shader Storage Buffer Class
+***************************************************************************************************************************************************************/
+void
+ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
+{
+   Buffer::Init();
+   Bind();
+   Load(data);
+   Unbind();
+}
+
+void
+ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
+
+void
+ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
+{
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW));
 }
 
 }

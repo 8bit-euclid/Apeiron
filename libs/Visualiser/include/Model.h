@@ -55,7 +55,7 @@ class Model
    ************************************************************************************************************************************************************/
    Model& SetColour(const SVectorF3& rgb_colour);
 
-   Model& SetMaterial(const std::string& name, Float _specular_intensity, Float _smoothness);
+   Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
 
    Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution);
 
@@ -104,12 +104,12 @@ class Model
 
    /** Members Accessors
    ************************************************************************************************************************************************************/
-   inline const glm::mat4&
-   GetModelMatrix() const { return _ModelMatrix; }
+   inline const glm::mat4& ModelMatrix() const { return _ModelMatrix; }
 
  protected:
    friend class Visualiser;
    friend class Scene;
+   friend class FrameTexture;
    friend class ModelFactory;
    friend class ActionBase;
    template<ActionType type> friend class Action;

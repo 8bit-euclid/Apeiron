@@ -51,7 +51,6 @@ class Shader
    /** Public interface
    ************************************************************************************************************************************************************/
  public:
-   /** Module Interface */
    Shader();
 
    Shader(const std::string& file_path);
@@ -60,17 +59,17 @@ class Shader
 
    void Read(const std::string& file_path);
 
-   inline void Bind() const { GLCall(glUseProgram(ID)); }
+   inline void Bind() const { GLCall(glUseProgram(_ID)); }
 
    inline void Unbind() const { GLCall(glUseProgram(0)); }
 
-   inline void SetWarnings(const bool _is_on) { areWarningsOn = _is_on; }
+   inline void SetWarnings(const bool _is_on) { _WarningsOn = _is_on; }
 
    void UseModel(const Model& model);
 
    void UseMaterial(const Material& material);
 
-   void UseTexture(const Texture& texture, const std::string& _uniform_name, const UInt slot);
+   void UseTexture(const Texture& texture, const std::string& uniform_name, const UInt slot);
 
    void UseCamera(Camera& camera);
 
@@ -78,52 +77,48 @@ class Shader
 
    void SetDirectionalShadowMap(const UInt slot);
 
-   void SetPointShadowMap(const size_t _i_point_light, const UInt slot);
+   void SetPointShadowMap(const size_t i_point_light, const UInt slot);
 
    void SetPointPosition(const glm::vec3& position);
 
-   void SetPointFarPlane(GLfloat _far_plane);
+   void SetPointFarPlane(GLfloat far_plane);
 
-   void SetDirectionalLightSpaceMatrix(const glm::mat4& _light_space_matrix);
+   void SetDirectionalLightSpaceMatrix(const glm::mat4& light_space_matrix);
 
-   void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& _light_space_matrices);
+   void SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& light_space_matrices);
 
-   /** Setting Shader Uniforms */
    void SetUniform1i(const std::string& name, GLint value);
 
    void SetUniform1f(const std::string& name, GLfloat value);
 
-   void SetUniform2f(const std::string& name, GLfloat _value0, GLfloat _value1);
+   void SetUniform2f(const std::string& name, GLfloat value0, GLfloat value1);
 
-   void SetUniform3f(const std::string& name, GLfloat _value0, GLfloat _value1, GLfloat _value2);
+   void SetUniform3f(const std::string& name, GLfloat value0, GLfloat value1, GLfloat value2);
 
-   void SetUniform4f(const std::string& name, GLfloat _value0, GLfloat _value1, GLfloat _value2, GLfloat _value3);
+   void SetUniform4f(const std::string& name, GLfloat value0, GLfloat value1, GLfloat value2, GLfloat value3);
 
-   void SetUniformMatrix4f(const std::string& name, const glm::mat4& _proj_matrix);
+   void SetUniformMatrix4f(const std::string& name, const glm::mat4& proj_matrix);
+
+   inline GLuint ID() const { return _ID; }
 
 private:
-   /** Private interface
-   ************************************************************************************************************************************************************/
-
-   /** Shader Parsing, Compilation, Installation, and Deletion functions. */
    ShaderSourceCode Parse(const std::string& file_path);
 
-   void Create(const std::string& _vertex_shader, const std::string& _geometry_shader, const std::string& _fragment_shader);
+   void Create(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader);
 
-   GLuint Compile(GLuint type, const std::string& _source);
+   GLuint Compile(GLuint type, const std::string& source);
 
-   void Attach(GLuint _program, GLuint _shader);
+   void Attach(GLuint shader);
+
+   void Delete(GLuint shader);
 
    void Delete();
 
-   /** Uniform Support Functions */
-   int GetUniformLocation(const std::string& name);
+   int UniformLocation(const std::string& name);
 
-   /** Private members
-   ************************************************************************************************************************************************************/
-   GLuint                               ID;
-   std::unordered_map<std::string, int> UniformLocationCache;
-   bool                                 areWarningsOn{false};
+   GLuint                               _ID;
+   std::unordered_map<std::string, int> _UniformLocationCache;
+   bool                                 _WarningsOn{false};
 };
 
 }

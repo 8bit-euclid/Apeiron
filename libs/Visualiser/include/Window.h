@@ -46,7 +46,7 @@ class Window
 
    void SwapBuffers();
 
-   void ResetTime() const;
+   void InitTime() const;
 
    void ComputeDeltaTime();
 
@@ -58,9 +58,11 @@ class Window
 
    GLfloat ViewportAspectRatio() const;
 
-   SVectorF2 MouseDisplacement();
+   SVectorF2 CursorDisplacement();
 
-   SVectorF2 MouseWheelDisplacement();
+   SVectorF2 WheelDisplacement();
+
+   inline Pair<GLint> Dimensions() const { return {_Dimensions.x(), _Dimensions.y() }; }
 
  private:
    friend class Visualiser;
@@ -87,9 +89,9 @@ class Window
    Float                  _PreviousTime{};
    Float                  _DeltaTime{};
    SVectorF2              _PreviousMousePosition;
-   SVectorF2              _MouseDisplacement;
-   SVectorF2              _MouseWheelDisplacement;
-   SVector2<GLint>        _WindowDimensions;
+   SVectorF2              _CursorDisplacement;
+   SVectorF2              _WheelDisplacement;
+   SVector2<GLint>        _Dimensions;
    SVector2<GLint>        _ViewportDimensions;
    constexpr static GLint _KeyCount{1024};
    SArrayB<_KeyCount>     _Keys;
@@ -98,5 +100,12 @@ class Window
    size_t                 _FrameCounter;
    bool                   _isFirstMouseMovement;
 };
+
+inline void ClearFrameBuffer()
+{
+   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+   GLCall(glEnable(GL_DEPTH_TEST));
+}
 
 }

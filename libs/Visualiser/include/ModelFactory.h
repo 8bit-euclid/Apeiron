@@ -37,61 +37,63 @@ class ModelFactory
  public:
    /** 1D models
    ************************************************************************************************************************************************************/
-   static Model Segment(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1);
+   static Model Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
 
-   static Model Arrow(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1);
+   template<class... svectors>
+   static Model SegmentChain(const svectors&... vs);
+
+   static Model Arrow(const SVector3<GLfloat>& start, const SVector3<GLfloat>& end);
 
    /** 2D models
    ************************************************************************************************************************************************************/
+   static Model Triangle(GLfloat length);
+
+   static Model Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio);
+
+   static Model Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2);
+
+   static Model Square(GLfloat length);
+
+   static Model Rectangle(GLfloat length, GLfloat height);
+
+   static Model ScreenQuad();
+
+   static Model Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
+
    template<class... svectors>
-   static Model SegmentChain(const svectors&... _v);
+   static Model Polygon(const svectors&... vs);
 
-   static Model Triangle(GLfloat _length);
+   static Model Arc(GLfloat radius, GLfloat angle);
 
-   static Model Triangle(GLfloat _length, GLfloat height, GLfloat _apex_ratio);
+   static Model Sector(GLfloat radius, GLfloat angle);
 
-   static Model Triangle(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2);
+   static Model Circle(GLfloat radius);
 
-   static Model Square(GLfloat _length);
-
-   static Model Rectangle(GLfloat _length, GLfloat height);
-
-   static Model Quadrilateral(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2, const SVector3<GLfloat>& _v3);
-
-   template<class... svectors>
-   static Model Polygon(const svectors& ..._v);
-
-   static Model Arc(GLfloat _radius, GLfloat angle);
-
-   static Model Sector(GLfloat _radius, GLfloat angle);
-
-   static Model Circle(GLfloat _radius);
-
-   static Model Ellipse(GLfloat _radius_x, GLfloat _radius_y);
+   static Model Ellipse(GLfloat radius_x, GLfloat radius_y);
 
    /** 3D models
    ************************************************************************************************************************************************************/
-   static Model Tetrahedron(GLfloat _length);
+   static Model Tetrahedron(GLfloat length);
 
-   static Model Tetrahedron(const SVector3<GLfloat>& _v0, const SVector3<GLfloat>& _v1, const SVector3<GLfloat>& _v2, const SVector3<GLfloat>& _v3);
+   static Model Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
 
-   static Model Cube(GLfloat _length);
+   static Model Cube(GLfloat length);
 
-   static Model Cuboid(GLfloat _length, GLfloat width, GLfloat height);
+   static Model Cuboid(GLfloat length, GLfloat width, GLfloat height);
 
-   static Model Octahedron(GLfloat _length);
+   static Model Octahedron(GLfloat length);
 
-   static Model Dodecahedron(GLfloat _length);
+   static Model Dodecahedron(GLfloat length);
 
-   static Model Icosahedron(GLfloat _length);
+   static Model Icosahedron(GLfloat length);
 
-   static Model Sphere(GLfloat _radius);
+   static Model Sphere(GLfloat radius);
 
-   static Model Ellipsoid(GLfloat _radius_x, GLfloat _radius_y, GLfloat _radius_z);
+   static Model Ellipsoid(GLfloat radius_x, GLfloat radius_y, GLfloat radius_z);
 
-   static Model Cylinder(GLfloat _radius, GLfloat height);
+   static Model Cylinder(GLfloat radius, GLfloat height);
 
-   static Model Cone(GLfloat _radius, GLfloat height);
+   static Model Cone(GLfloat radius, GLfloat height);
 };
 
 }

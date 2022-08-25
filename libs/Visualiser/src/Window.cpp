@@ -24,12 +24,12 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _WindowDimensions{width, height} { Open(width, height); }
+   : _Dimensions{width, height} { Open(width, height); }
 
 Window::~Window() { glfwTerminate(); }
 
 void
-Window::Open(GLint width, GLint height)
+Window::Open(const GLint width, const GLint height)
 {
    if(!glfwInit())
    {
@@ -57,7 +57,7 @@ Window::Open(GLint width, GLint height)
    GLCall(glEnable(GL_MULTISAMPLE));
 
    // Create a window and its OpenGL context.
-   _WindowDimensions = {width, height};
+   _Dimensions = {width, height };
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {
@@ -108,6 +108,7 @@ Window::Open(GLint width, GLint height)
 //   GLCall(glFrontFace(GL_CCW));
 //   GLCall(glEnable(GL_BLEND));
 //   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
    glfwSetWindowUserPointer(_GlfwWindow, this);
@@ -154,7 +155,7 @@ void
 Window::SwapBuffers() { glfwSwapBuffers(_GlfwWindow); }
 
 void
-Window::ResetTime() const { glfwSetTime(Zero); }
+Window::InitTime() const { glfwSetTime(Zero); }
 
 void
 Window::ComputeDeltaTime()
@@ -177,6 +178,7 @@ Window::ComputeFrameRate()
       const auto frame_duration = 1.0e3 / fps; // in milliseconds
       const std::string title_suffix = "  |  " + ToStr(fps, 2) + " fps  |  " + ToStr(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
+
       _PreviousFrameTime = _CurrentTime;
       _FrameCounter = 0;
    }
@@ -192,22 +194,22 @@ GLfloat
 Window::ViewportAspectRatio() const { return static_cast<GLfloat>(_ViewportDimensions[0]) / static_cast<GLfloat>(_ViewportDimensions[1]); }
 
 SVectorF2
-Window::MouseDisplacement()
+Window::CursorDisplacement()
 {
-   const auto x_disp = _MouseDisplacement[0];
-   const auto y_disp = _MouseDisplacement[1];
-   _MouseDisplacement[0] = Zero;
-   _MouseDisplacement[1] = Zero;
+   const auto x_disp = _CursorDisplacement[0];
+   const auto y_disp = _CursorDisplacement[1];
+   _CursorDisplacement[0] = Zero;
+   _CursorDisplacement[1] = Zero;
    return { x_disp, y_disp };
 }
 
 SVectorF2
-Window::MouseWheelDisplacement()
+Window::WheelDisplacement()
 {
-   const auto x_disp = _MouseWheelDisplacement[0];
-   const auto y_disp = _MouseWheelDisplacement[1];
-   _MouseWheelDisplacement[0] = Zero;
-   _MouseWheelDisplacement[1] = Zero;
+   const auto x_disp = _WheelDisplacement[0];
+   const auto y_disp = _WheelDisplacement[1];
+   _WheelDisplacement[0] = Zero;
+   _WheelDisplacement[1] = Zero;
    return { x_disp, y_disp };
 }
 
@@ -254,19 +256,19 @@ Window::HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const 
 
    if(window->_isFirstMouseMovement)
    {
-      window->_PreviousMousePosition = {x_coord, y_coord };
+      window->_PreviousMousePosition = { x_coord, y_coord };
       window->_isFirstMouseMovement = false;
    }
 
-   window->_MouseDisplacement     = {x_coord - window->_PreviousMousePosition[0], y_coord - window->_PreviousMousePosition[1] };
-   window->_PreviousMousePosition = {x_coord, y_coord };
+   window->_CursorDisplacement    = { x_coord - window->_PreviousMousePosition[0], y_coord - window->_PreviousMousePosition[1] };
+   window->_PreviousMousePosition = { x_coord, y_coord };
 }
 
 void
 Window::HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset)
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
-   window->_MouseWheelDisplacement = {0.0, y_offset };
+   window->_WheelDisplacement = {0.0, y_offset };
 }
 
 void

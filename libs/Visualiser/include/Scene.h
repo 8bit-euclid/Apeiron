@@ -73,7 +73,7 @@ class Scene
 
    void RenderScene(Shader& shader, Camera& camera);
 
-   void RenderDirectionalShadows(Shader& shader);
+   void RenderDirecShadows(Shader& shader);
 
    void RenderPointShadows(Shader& shader);
 
@@ -94,7 +94,7 @@ class Scene
    Float                  _StartTime;
    Float                  _EndTime;
    bool                   _AdjustDuration{false};
-   inline static bool     _isSingleScene{true};
+   inline static bool     _isSingleScene {true};
 };
 
 }
