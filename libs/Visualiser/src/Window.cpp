@@ -24,12 +24,12 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _WindowDimensions{width, height} { Open(width, height); }
+   : _Dimensions{width, height} { Open(width, height); }
 
 Window::~Window() { glfwTerminate(); }
 
 void
-Window::Open(GLint width, GLint height)
+Window::Open(const GLint width, const GLint height)
 {
    if(!glfwInit())
    {
@@ -57,7 +57,7 @@ Window::Open(GLint width, GLint height)
    GLCall(glEnable(GL_MULTISAMPLE));
 
    // Create a window and its OpenGL context.
-   _WindowDimensions = { width, height };
+   _Dimensions = {width, height };
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {

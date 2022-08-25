@@ -121,7 +121,7 @@ function shipout()
   io.open("positions.txt",  "w"):close()
   io.open("attributes.txt", "w"):close()
 
-  -- Write shipout box dimensions
+  -- StartWrite shipout box dimensions
   local shipout_box = tex.getbox("ShipoutBox")
   file = io.open("shipout_box.txt", "w")
   if scale_dims then

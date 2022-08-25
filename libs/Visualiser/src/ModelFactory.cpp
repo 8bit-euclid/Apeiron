@@ -65,7 +65,7 @@ ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
 }
 
 Model
-ModelFactory::ScreenQuad() { return Rectangle(Two, Two); }
+ModelFactory::ScreenQuad() { return Square(Two); }
 
 Model
 ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
@@ -86,7 +86,7 @@ ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>
 
 template<class... svectors>
 Model
-ModelFactory::Polygon(const svectors& ...vs)
+ModelFactory::Polygon(const svectors&... vs)
 {
    Model model;
    model._Mesh.Shading = ShadingType::Flat;

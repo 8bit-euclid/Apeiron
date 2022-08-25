@@ -94,7 +94,7 @@ class Scene
    Float                  _StartTime;
    Float                  _EndTime;
    bool                   _AdjustDuration{false};
-   inline static bool     _isSingleScene{true};
+   inline static bool     _isSingleScene {true};
 };
 
 }

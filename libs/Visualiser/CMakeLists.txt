@@ -19,6 +19,7 @@ set(SOURCE_FILES
         include/Model.h
         include/ModelFactory.h
         include/Scene.h
+        include/FrameTexture.h
         include/Shader.h
         include/Shadow.h
         include/String.h
@@ -41,6 +42,7 @@ set(SOURCE_FILES
         src/Model.cpp
         src/ModelFactory.cpp
         src/Scene.cpp
+        src/FrameTexture.cpp
         src/Shader.cpp
         src/Shadow.cpp
         src/String.cpp

@@ -28,25 +28,25 @@ namespace aprn::vis {
 class Shadow
 {
  public:
-   Shadow(const bool is_point_light);
+   Shadow(const bool is_point_source);
 
    Shadow(const Shadow& shadow) = delete;
 
-   Shadow(Shadow&& shadow) noexcept;
+   Shadow(Shadow&& shadow) noexcept = default;
 
-   virtual void Init(const GLsizei width, const GLsizei height);
+   void Init(const GLsizei width, const GLsizei height);
 
-   virtual void WriteTo() const;
+   void StartWrite() const;
 
-   virtual void Finalise() const;
+   inline void StopWrite() const { _FBO.Unbind(); }
 
-   virtual void ReadFrom(UInt texture_slot) const;
+   inline void StartRead(const UInt slot) const { _DepthMap.Bind(slot); }
 
    inline const Texture& DepthMap() const { return _DepthMap; }
 
    Shadow& operator=(const Shadow& shadow) = delete;
 
-   Shadow& operator=(Shadow&& shadow) noexcept;
+   Shadow& operator=(Shadow&& shadow) noexcept = default;
 
  protected:
    friend class Light;

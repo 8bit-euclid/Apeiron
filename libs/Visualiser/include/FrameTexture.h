@@ -12,32 +12,39 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#include "../include/Shadow.h"
+#pragma once
+
+#include "Buffers.h"
+#include "Model.h"
+#include "Shader.h"
+#include "Texture.h"
 
 namespace aprn::vis {
 
-Shadow::Shadow(const bool is_point_source)
-   : _DepthMap(is_point_source ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _FBO(), _isPointSource(is_point_source) {}
-
-void Shadow::Init(const GLsizei width, const GLsizei height)
+class FrameTexture
 {
-   _DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, _isPointSource ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+ public:
+   FrameTexture();
 
-   _FBO.Init();
-   _FBO.Bind();
-   _isPointSource ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
-                    _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
-   _FBO.Draw(GL_NONE);
-   _FBO.Read(GL_NONE);
-   _FBO.Check();
-   _FBO.Unbind();
+   void Init(UInt width, UInt height);
+
+   void Render(Shader& shader);
+
+   void StartWrite() const;
+
+   inline void StopWrite() const { _FBO.Unbind(); }
+
+   inline void StartRead(const UInt slot) const { _Texture.Bind(slot); }
+
+   inline void StopRead() const { _Texture.Unbind(); }
+
+ private:
+   Model        _TextureQuad;
+   FrameBuffer  _FBO;
+   RenderBuffer _RBO;
+   Texture      _Texture;
+   UInt         _Width;
+   UInt         _Height;
+};
+
 }
-
-void Shadow::StartWrite() const
-{
-   _FBO.Bind();
-   GLCall(glClear(GL_DEPTH_BUFFER_BIT));
-}
-
-}
-
