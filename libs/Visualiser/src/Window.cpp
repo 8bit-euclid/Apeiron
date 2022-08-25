@@ -74,8 +74,8 @@ Window::Open(const GLint width, const GLint height)
 
    // Handle key mouse inputs
    CreateCallBacks();
-//   glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+//   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
    // Allow modern extension features
    glewExperimental = GL_TRUE;
