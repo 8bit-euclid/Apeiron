@@ -129,6 +129,8 @@ struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 
    void Draw(GLenum mode) const;
 
+   void Draw(const DArray<GLenum>& modes) const;
+
    void Read(GLenum mode) const;
 };
 

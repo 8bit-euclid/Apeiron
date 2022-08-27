@@ -78,7 +78,7 @@ void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& 
    }
 
    // Yaw control
-   if(keys[GLFW_KEY_LEFT]) _Yaw -= _RotationSensitivity * displacement;
+   if(keys[GLFW_KEY_LEFT])  _Yaw -= _RotationSensitivity * displacement;
    if(keys[GLFW_KEY_RIGHT]) _Yaw += _RotationSensitivity * displacement;
 }
 

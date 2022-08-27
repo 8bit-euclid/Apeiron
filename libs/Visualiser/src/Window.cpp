@@ -24,7 +24,7 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _Dimensions{width, height} { Open(width, height); }
+   : _WindowDimensions{width, height} { Open(width, height); }
 
 Window::~Window() { glfwTerminate(); }
 
@@ -57,7 +57,7 @@ Window::Open(const GLint width, const GLint height)
    GLCall(glEnable(GL_MULTISAMPLE));
 
    // Create a window and its OpenGL context.
-   _Dimensions = {width, height };
+   _WindowDimensions = { width, height };
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {
@@ -74,8 +74,8 @@ Window::Open(const GLint width, const GLint height)
 
    // Handle key mouse inputs
    CreateCallBacks();
-   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-//   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+//   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
    // Allow modern extension features
    glewExperimental = GL_TRUE;
@@ -216,7 +216,7 @@ Window::WheelDisplacement()
 /***************************************************************************************************************************************************************
 * Private Interface
 ***************************************************************************************************************************************************************/
-std::pair<GLint, GLint>
+Pair<GLint>
 Window::ViewportDimensions() const
 {
    GLint width, height;

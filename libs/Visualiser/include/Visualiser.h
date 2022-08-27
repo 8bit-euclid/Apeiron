@@ -25,7 +25,7 @@
 #include "Model.h"
 #include "Material.h"
 #include "Scene.h"
-#include "FrameTexture.h"
+#include "PostProcessor.h"
 #include "Shader.h"
 #include "Window.h"
 
@@ -60,7 +60,7 @@ class Visualiser
 
    void InitTextures();
 
-   void InitScreenTexture();
+   void InitPostProcessor();
 
    void BeginFrame();
 
@@ -68,25 +68,23 @@ class Visualiser
 
    void HandleUserInputs();
 
-   void UpdateViewFrustum();
-
    void RenderScene();
 
-   void RenderFrameTexture();
+   void PostProcess();
 
    void EndFrame();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   Window              _OpenGLWindow;
+
+   Window              _Window;
    UMap<Scene>         _Scenes;
    UMap<Camera>        _Cameras;
    UMap<Shader>        _Shaders;
    UMap<UMap<Texture>> _Textures;
-   FrameTexture        _FrameTexture;
+   PostProcessor       _PostProcessor;
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
    bool                _ViewPortModified{};
-//   bool                _PostProcess{false};
    bool                _PostProcess{true};
    bool                _HDR{};
 };

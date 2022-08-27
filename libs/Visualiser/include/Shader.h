@@ -48,8 +48,6 @@ struct ShaderSourceCode
 
 class Shader
 {
-   /** Public interface
-   ************************************************************************************************************************************************************/
  public:
    Shader();
 
@@ -100,6 +98,8 @@ class Shader
    void SetUniformMatrix4f(const std::string& name, const glm::mat4& proj_matrix);
 
    inline GLuint ID() const { return _ID; }
+
+   inline static std::string _ShaderDirectory = "./libs/Visualiser/resources/shaders/";
 
 private:
    ShaderSourceCode Parse(const std::string& file_path);
