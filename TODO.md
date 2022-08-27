@@ -1,5 +1,5 @@
 **General**
-- [x] GitHub actions / Continuous integration
+- [x] GitHub actions / CI
 - [ ] Pre-compiled headers
 - [ ] C++ Modules integration
 - [ ] Stack frame write-out
@@ -11,9 +11,15 @@
 **Visualiser**
 - [ ] LaTeX text/math rendering
 - [x] Off-screen rendering
-- [ ] HDR
+- [x] HDR
 - [ ] Bloom
-- [ ] Fix border shrinking during off-screen rendering
+- [ ] Multi-sampled frame buffer attachments
+- [ ] ImGui re-integration
+- [ ] Toggles/sliders for all visualiser settings
+- [ ] GDB debugger
+- [ ] RenderDoc debugger
+- [ ] Perlin noise generator
+- [x] Fix border shrinking bug during off-screen rendering
 - [ ] Fix parallax occlusion bug
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR

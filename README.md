@@ -1,10 +1,12 @@
 # Apeiron
 
-[![CI Build](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
-[![License: GPL 3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CI Build](https://img.shields.io/github/workflow/status/8bit-euclid/Apeiron/CI%20Build/main?label=Build&style=plastic)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
+[![License: GPL 3.0](https://img.shields.io/github/license/8bit-euclid/Apeiron?color=blue&label=License&style=plastic)](https://www.gnu.org/licenses/gpl-3.0)
 
-A collection of high-performance C++ tools for numerical analysis, computational geometric algorithms/data structures, root-finding algorithms, sparse/dense matrix solvers, complex analysis, graph algorithms, visualisation, and other mathematical tools. The library is primarily used for creating educational mathematics content for the YouTube channel Byte-Sized Euclid.
+
+
+This library is intended to be a repository for high-performance C++ tools for numerical analysis, computational geometric algorithms/data structures, root-finding algorithms, sparse/dense matrix solvers, complex analysis, graph algorithms, visualisation, and other mathematical tools. It is currently primarily used for creating educational mathematics content for the YouTube channel Byte-Sized Euclid.
 
 ## License
 
-See the [LICENSE](LICENSE.md) file for license rights and limitations (GPL-3.0).
+Apeiron is released under the GPL-3.0 license, see the [license](LICENSE.md) file for rights and limitations.

@@ -28,13 +28,13 @@ out vec4 fragment_colour;
 
 uniform bool      u_is_hdr;
 uniform float     u_exposure;
-uniform sampler2D u_screen_texture;
+uniform sampler2D u_texture;
 
 vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
 
 void main()
 {
-    fragment_colour = texture(u_screen_texture, v_texture_coordinate);
+    fragment_colour = texture(u_texture, v_texture_coordinate);
 
     if(u_is_hdr)
     {

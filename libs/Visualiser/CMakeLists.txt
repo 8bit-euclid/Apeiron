@@ -10,7 +10,6 @@ set(SOURCE_FILES
         include/GLTypes.h
         include/Glyph.h
         include/GlyphSheet.h
-        include/HDR.h
         include/Light.h
         include/ParseTeX.h
         include/ParseTeX.tpp
@@ -19,7 +18,7 @@ set(SOURCE_FILES
         include/Model.h
         include/ModelFactory.h
         include/Scene.h
-        include/FrameTexture.h
+        include/PostProcessor.h
         include/Shader.h
         include/Shadow.h
         include/String.h
@@ -35,14 +34,13 @@ set(SOURCE_FILES
         src/Buffers.cpp
         src/Camera.cpp
         src/Glyph.cpp
-        src/HDR.cpp
         src/Light.cpp
         src/ParseTeX.cpp
         src/Mesh.cpp
         src/Model.cpp
         src/ModelFactory.cpp
         src/Scene.cpp
-        src/FrameTexture.cpp
+        src/PostProcessor.cpp
         src/Shader.cpp
         src/Shadow.cpp
         src/String.cpp
