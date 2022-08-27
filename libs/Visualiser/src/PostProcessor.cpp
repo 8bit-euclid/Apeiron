@@ -76,7 +76,7 @@ PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
    _ScreenQuad.Init();
 
    // Load post-processing shaders.
-   for(std::string shader : {"HDR", "Blur"})
+   for(std::string shader : {"HDR", "Blur", "Blend"})
       _Shaders.emplace(shader, Shader::_ShaderDirectory + shader + ".glsl");
 }
 
@@ -115,21 +115,24 @@ PostProcessor::Render()
    }
    blur_shader.Unbind();
 
-//   auto& texture = _Textures.at("HDR");
 //   auto& texture = _Output.Textures.at("Bright");
-   auto& texture = buffers[!horizontal]->Textures.at("Image");
+   auto& hdr_texture = _Output.Textures.at("HDR");
+   auto& blur_texture = buffers[!horizontal]->Textures.at("Image");
 
-   auto& hdr_shader = _Shaders.at("HDR");
-   hdr_shader.Bind();
+//   auto& shader = _Shaders.at("HDR");
+   auto& shader = _Shaders.at("Blend");
+   shader.Bind();
 
-   hdr_shader.UseTexture(texture, "u_texture", 0);
-   hdr_shader.SetUniform1i("u_is_hdr"  , _isHDR);
-   hdr_shader.SetUniform1f("u_exposure", 1.0);
+//   shader.UseTexture(texture, "u_texture", 0);
+   shader.UseTexture(hdr_texture , "u_hdr_texture", 0);
+   shader.UseTexture(blur_texture, "u_blur_texture", 1);
+   shader.SetUniform1f("u_exposure", 1.0);
 
    _ScreenQuad.Render();
-   texture.Unbind();
 
-   hdr_shader.Unbind();
+   hdr_texture.Unbind();
+   blur_texture.Unbind();
+   shader.Unbind();
 }
 
 void
