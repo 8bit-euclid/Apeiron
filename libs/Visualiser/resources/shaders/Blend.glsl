@@ -27,7 +27,8 @@ in vec2 v_texture_coordinate;
 out vec4 fragment_colour;
 
 uniform float     u_exposure;
-uniform sampler2D u_texture;
+uniform sampler2D u_hdr_texture;
+uniform sampler2D u_blur_texture;
 
 vec4 ToneMap(const vec4 colour) { return vec4(vec3(1.0) - exp(-u_exposure * colour.rgb), colour.a); }
 
@@ -35,7 +36,10 @@ vec4 GammaCorrect(const vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / G
 
 void main()
 {
-    fragment_colour = texture(u_texture, v_texture_coordinate);
-    fragment_colour = ToneMap(fragment_colour);
-    fragment_colour = GammaCorrect(fragment_colour);
+    vec4 hdr_colour  = texture(u_hdr_texture , v_texture_coordinate);
+    vec4 blur_colour = texture(u_blur_texture, v_texture_coordinate);
+    hdr_colour += blur_colour; // Additive blending
+
+    hdr_colour      = ToneMap(hdr_colour);
+    fragment_colour = GammaCorrect(hdr_colour);
 }
