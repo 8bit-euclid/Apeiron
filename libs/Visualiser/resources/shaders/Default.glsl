@@ -61,15 +61,13 @@ void main()
       const vec3 B = normalize(cross(N, T));
 
       v_data_out.TBNMatrix = mat3(T, B, N);
-      inverse_TBN_matrix = transpose(v_data_out.TBNMatrix);
+      inverse_TBN_matrix   = transpose(v_data_out.TBNMatrix);
    }
 
-   for(int i = 0; i < u_point_light_count; ++i)
-      v_data_out.PointLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_point_light_positions[i] : u_point_light_positions[i];
-   for(int i = 0; i < u_spot_light_count; ++i)
-      v_data_out.SpotLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_spot_light_positions[i] : u_spot_light_positions[i];
-   v_data_out.CameraPosition = transform_to_tangent_space ? inverse_TBN_matrix * u_camera_position : u_camera_position;
-   v_data_out.FragmentPosition = transform_to_tangent_space ? inverse_TBN_matrix * gl_Position.xyz : gl_Position.xyz;
+   for(int i = 0; i < u_point_light_count; ++i) v_data_out.PointLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_point_light_positions[i] : u_point_light_positions[i];
+   for(int i = 0; i < u_spot_light_count; ++i)  v_data_out.SpotLightPositions[i]  = transform_to_tangent_space ? inverse_TBN_matrix * u_spot_light_positions[i]  : u_spot_light_positions[i];
+   v_data_out.CameraPosition         = transform_to_tangent_space ? inverse_TBN_matrix * u_camera_position : u_camera_position;
+   v_data_out.FragmentPosition       = transform_to_tangent_space ? inverse_TBN_matrix * gl_Position.xyz : gl_Position.xyz;
    v_data_out.FragmentPositionDlight = u_dlight_space_matrix * vec4(gl_Position.xyz, 1.0);
 
    v_data_out.ViewProjMatrix = u_projection_matrix * u_view_matrix;
@@ -142,9 +140,9 @@ void main()
       v_data_out.TextureCoordinate = v_data_in[i].TextureCoordinate;
 
       for(int j = 0; j < u_point_light_count; ++j) v_data_out.PointLightPositions[j] = v_data_in[i].PointLightPositions[j];
-      for(int j = 0; j < u_spot_light_count; ++j)  v_data_out.SpotLightPositions[j] = v_data_in[i].SpotLightPositions[j];
-      v_data_out.CameraPosition = v_data_in[i].CameraPosition;
-      v_data_out.FragmentPosition = v_data_in[i].FragmentPosition;
+      for(int j = 0; j < u_spot_light_count; ++j)  v_data_out.SpotLightPositions[j]  = v_data_in[i].SpotLightPositions[j];
+      v_data_out.CameraPosition         = v_data_in[i].CameraPosition;
+      v_data_out.FragmentPosition       = v_data_in[i].FragmentPosition;
       v_data_out.FragmentPositionDlight = v_data_in[i].FragmentPositionDlight;
 
       v_data_out.TBNMatrix = v_data_in[i].TBNMatrix;
