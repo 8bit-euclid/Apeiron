@@ -72,7 +72,7 @@ Visualiser::Init()
 
    // Load all shaders
    for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
-      _Shaders.emplace(shader, Shader::_ShaderDirectory + shader + ".glsl");
+      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 
    // Initialise scenes, tex-boxes, textures, and screen texture.
    InitScenes();

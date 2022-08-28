@@ -99,7 +99,7 @@ class Shader
 
    inline GLuint ID() const { return _ID; }
 
-   inline static std::string _ShaderDirectory = "./libs/Visualiser/resources/shaders/";
+   inline static std::string Directory = "./libs/Visualiser/resources/shaders/";
 
 private:
    ShaderSourceCode Parse(const std::string& file_path);

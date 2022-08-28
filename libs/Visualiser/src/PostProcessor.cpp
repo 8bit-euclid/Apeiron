@@ -21,12 +21,47 @@ namespace aprn::vis {
 void
 PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
 {
+   // Set member variables.
    _isHDR  = is_hdr;
    _Width  = width;
    _Height = height;
-   const bool  high_prec       = false;
-   const GLint internal_format = _isHDR ? (high_prec ? GL_RGBA32F : GL_RGBA16F) : GL_RGBA;
 
+   // Load required post-processing shaders.
+   for(std::string shader : {"HDR", "Blur", "Blend"}) _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
+
+   // Initialise required post-processing buffers.
+   InitBlurBuffers();
+   InitOutputBuffers();
+
+   // Create rectangular screen-filling quad (a square in normalised device coordinates) to draw each texture to.
+   _ScreenQuad = ModelFactory::ScreenQuad();
+   _ScreenQuad.Init();
+}
+
+void
+PostProcessor::InitBlurBuffers()
+{
+   // Configure ping-pong buffers
+   for(auto name : {"Ping", "Pong"})
+   {
+      auto& buffer = _FrameImages[name]; // Note: emplacement is intended here.
+
+      buffer.FBO.Init();
+      buffer.FBO.Bind();
+
+      // Add a single colour buffer.
+      buffer.Textures.emplace("Image", Texture(TextureType::Diffuse, true));
+      buffer.Textures.at("Image").Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
+      buffer.FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, buffer.Textures.at("Image").ID());
+      buffer.FBO.Draw(GL_COLOR_ATTACHMENT0);
+
+      buffer.FBO.Unbind();
+   }
+}
+
+void
+PostProcessor::InitOutputBuffers()
+{
    _Output.FBO.Init();
    _Output.FBO.Bind();
 
@@ -42,7 +77,7 @@ PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
       auto& texture = _Output.Textures.at(texture_name);
       attachments.push_back(GL_COLOR_ATTACHMENT0 + i++);
 
-      texture.Init(_Width, _Height, internal_format, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
+      texture.Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
       _Output.FBO.AttachTexture2D(attachments.back(), texture.ID());
    }
    _Output.FBO.Draw(attachments);
@@ -53,31 +88,6 @@ PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
    _Output.FBO.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, _Output.RBO.ID());
 
    _Output.FBO.Unbind();
-
-   // Configure ping-pong buffers
-   for(const auto name : {"Ping", "Pong"})
-   {
-      auto& buffer = _FrameImages[name]; // Note: emplacement is intended here.
-
-      buffer.FBO.Init();
-      buffer.FBO.Bind();
-
-      // Add a single colour buffer.
-      buffer.Textures.emplace("Image", Texture(TextureType::Diffuse, true));
-      buffer.Textures.at("Image").Init(_Width, _Height, internal_format, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
-      buffer.FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, buffer.Textures.at("Image").ID());
-      buffer.FBO.Draw(GL_COLOR_ATTACHMENT0);
-
-      buffer.FBO.Unbind();
-   }
-
-   // Create rectangular screen-filling quad to render texture to.
-   _ScreenQuad = ModelFactory::ScreenQuad();
-   _ScreenQuad.Init();
-
-   // Load post-processing shaders.
-   for(std::string shader : {"HDR", "Blur", "Blend"})
-      _Shaders.emplace(shader, Shader::_ShaderDirectory + shader + ".glsl");
 }
 
 void
@@ -115,8 +125,7 @@ PostProcessor::Render()
    }
    blur_shader.Unbind();
 
-//   auto& texture = _Output.Textures.at("Bright");
-   auto& hdr_texture = _Output.Textures.at("HDR");
+   auto& hdr_texture  = _Output.Textures.at("HDR");
    auto& blur_texture = buffers[!horizontal]->Textures.at("Image");
 
 //   auto& shader = _Shaders.at("HDR");

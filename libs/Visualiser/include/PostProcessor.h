@@ -43,6 +43,10 @@ class PostProcessor
  public:
    void Init(UInt width, UInt height, bool is_hdr);
 
+   void InitBlurBuffers();
+
+   void InitOutputBuffers();
+
    void Render();
 
    void StartWrite() const;
@@ -52,9 +56,9 @@ class PostProcessor
  private:
    template<class type> using UMap = std::unordered_map<std::string, type>;
    Model            _ScreenQuad;
-   FrameImage       _Output;
-   UMap<FrameImage> _FrameImages;
    UMap<Shader>     _Shaders;
+   UMap<FrameImage> _FrameImages;
+   FrameImage       _Output;
    UInt             _Width;
    UInt             _Height;
    bool             _isHDR;
