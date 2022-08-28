@@ -12,46 +12,56 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#include "../include/HDR.h"
+#pragma once
+
+#include "Buffers.h"
+#include "Model.h"
+#include "Shader.h"
+#include "Texture.h"
 
 namespace aprn::vis {
 
-HDR::HDR()
-  : _ColourBuffer(TextureType::Diffuse, true), _FBO() {}
-
-void
-HDR::Init(const GLsizei width, const GLsizei height)
+enum class PostProcessType
 {
-  _ColourBuffer.Init(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_BORDER);
+   HDR,
+   Blur,
+   MotionBlur,
+   Fade,
+   Vignette
+};
 
-  _FBO.Init();
-  _FBO.Bind();
-
-  _FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, _ColourBuffer.ID());
-  _FBO.Draw(GL_NONE);
-  _FBO.Read(GL_NONE);
-
-  ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Could not initialise frame buffer object.")
-
-  _FBO.Unbind();
-}
-
-void
-HDR::WriteTo() const
+struct FrameImage
 {
+   template<class type> using UMap = std::unordered_map<std::string, type>;
+   FrameBuffer   FBO;
+   RenderBuffer  RBO;
+   UMap<Texture> Textures;
+};
 
-}
-
-void
-HDR::Finalise() const
+class PostProcessor
 {
+ public:
+   void Init(UInt width, UInt height, bool is_hdr);
 
-}
+   void InitBlurBuffers();
 
-void
-HDR::ReadFrom(const UInt texture_slot) const
-{
+   void InitOutputBuffers();
 
-}
+   void Render();
+
+   void StartWrite() const;
+
+   inline void StopWrite() const { _Output.FBO.Unbind(); }
+
+ private:
+   template<class type> using UMap = std::unordered_map<std::string, type>;
+   Model            _ScreenQuad;
+   UMap<Shader>     _Shaders;
+   UMap<FrameImage> _FrameImages;
+   FrameImage       _Output;
+   UInt             _Width;
+   UInt             _Height;
+   bool             _isHDR;
+};
 
 }

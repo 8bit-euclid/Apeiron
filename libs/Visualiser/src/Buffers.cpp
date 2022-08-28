@@ -189,6 +189,9 @@ void
 FrameBuffer::Draw(const GLenum mode) const { GLCall(glNamedFramebufferDrawBuffer(_ID, mode)); }
 
 void
+FrameBuffer::Draw(const DArray<GLenum>& modes) const { GLCall(glNamedFramebufferDrawBuffers(_ID, modes.size(), modes.data())); }
+
+void
 FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer(_ID, mode)); }
 
 /***************************************************************************************************************************************************************

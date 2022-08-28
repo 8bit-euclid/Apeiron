@@ -27,7 +27,7 @@ Visualiser::Visualiser()
    : Visualiser(1920, 1080) {}
 
 Visualiser::Visualiser(GLint window_width, GLint window_height)
-   : _OpenGLWindow(window_width, window_height), _Cameras{{"Main", Camera()}}, _ActiveCamera(&_Cameras["Main"]) {}
+   : _Window(window_width, window_height), _Cameras{{"Main", Camera()}}, _ActiveCamera(&_Cameras["Main"]) {}
 
 void
 Visualiser::Add(Scene& scene, const std::string& name)
@@ -48,14 +48,13 @@ Visualiser::Render()
 {
    Init();
 
-   while(_OpenGLWindow.isOpen())
+   while(_Window.isOpen())
    {
       BeginFrame();
       UpdateScene();
       HandleUserInputs();
-      UpdateViewFrustum();
       RenderScene();
-      RenderFrameTexture();
+      PostProcess();
       EndFrame();
    }
 }
@@ -69,21 +68,21 @@ Visualiser::Init()
    // Set default settings of the main camera
    ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
    _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
-   _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 
    // Load all shaders
-   for(std::string shader : {"General", "DirecShadow", "PointShadow", "FrameBuffer", "Line"})
-      _Shaders.emplace(shader, "libs/Visualiser/resources/shaders/" + shader + ".glsl");
+   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
+      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 
    // Initialise scenes, tex-boxes, textures, and screen texture.
    InitScenes();
    InitTeXBoxes();
    InitTextures();
-   InitScreenTexture();
+   InitPostProcessor();
 
    // Set window title and set clock time to zero
-   _OpenGLWindow.SetTitle("Apeiron");
-   _OpenGLWindow.InitTime();
+   _Window.SetTitle("Apeiron");
+   _Window.InitTime();
 }
 
 void
@@ -195,13 +194,12 @@ Visualiser::InitTextures()
 }
 
 void
-Visualiser::InitScreenTexture()
+Visualiser::InitPostProcessor()
 {
    if(!_PostProcess) return;
 
-   const auto [width, height] = _OpenGLWindow.Dimensions();
-//   _FrameTexture.Init(width, height, false);
-   _FrameTexture.Init(width, height, true);
+   const auto [width, height] = _Window.ViewportDimensions(); // Note: must not use the window dimensions here.
+   _PostProcessor.Init(width, height, true);
 }
 
 void
@@ -211,9 +209,9 @@ Visualiser::BeginFrame()
    ClearFrameBuffer();
 
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
-   _OpenGLWindow.ComputeDeltaTime();
-   _OpenGLWindow.ComputeFrameRate();
-   _ViewPortModified = _OpenGLWindow.isViewportModified();
+   _Window.ComputeDeltaTime();
+   _Window.ComputeFrameRate();
+   _ViewPortModified = _Window.isViewportModified();
 }
 
 void
@@ -222,7 +220,7 @@ Visualiser::UpdateScene()
    DEBUG_ASSERT(_CurrentScene, "The current scene pointer has not yet been set.")
 
    // Determine if the current scene needs to be updated
-   const auto current_time = _OpenGLWindow.CurrentTime();
+   const auto current_time = _Window.CurrentTime();
    if(!_CurrentScene->isCurrent(current_time))
    {
       ASSERT(_CurrentScene->_NextScene, "TODO - need to properly handle final scene.")
@@ -236,19 +234,16 @@ Visualiser::UpdateScene()
 void
 Visualiser::HandleUserInputs()
 {
-   _ActiveCamera->KeyControl(_OpenGLWindow._Keys, _OpenGLWindow.DeltaTime());
-   _ActiveCamera->CursorControl(_OpenGLWindow.CursorDisplacement());
-   _ActiveCamera->WheelControl(_OpenGLWindow.WheelDisplacement());
-}
+   // Handle key, cursor, and mouse wheel inputs.
+   _ActiveCamera->KeyControl(_Window._Keys, _Window.DeltaTime());
+   _ActiveCamera->CursorControl(_Window.CursorDisplacement());
+   _ActiveCamera->WheelControl(_Window.WheelDisplacement());
 
-void
-Visualiser::UpdateViewFrustum()
-{
-   // If the viewport was modified, update the view frustum and adjust line shader resolution
+   // If the viewport was modified, update the view frustum and adjust line shader resolution.
    if(_ViewPortModified)
    {
-      _ActiveCamera->SetViewFrustum(_OpenGLWindow.ViewportAspectRatio());
-      _Shaders["Line"].SetUniform2f("u_resolution", _OpenGLWindow._ViewportDimensions[0], _OpenGLWindow._ViewportDimensions[1]);
+      _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio());
+      _Shaders.at("Line").SetUniform2f("u_resolution", _Window._ViewportDimensions[0], _Window._ViewportDimensions[1]);
    }
 }
 
@@ -256,29 +251,29 @@ void
 Visualiser::RenderScene()
 {
    // Render shadows from all directional and point light sources.
-   _CurrentScene->RenderDirecShadows(_Shaders["DirecShadow"]);
-   _CurrentScene->RenderPointShadows(_Shaders["PointShadow"]);
+   _CurrentScene->RenderDirecShadows(_Shaders.at("DirecShadow"));
+   _CurrentScene->RenderPointShadows(_Shaders.at("PointShadow"));
 
    // Point shadow rendering modifies the viewport, so need to reset it.
-   _OpenGLWindow.ResetViewport();
+   _Window.ResetViewport();
 
    // Write to off-screen frame buffer, if required.
-   if(_PostProcess) _FrameTexture.StartWrite();
+   if(_PostProcess) _PostProcessor.StartWrite();
 
    // Render all elements of the current scene.
-   _CurrentScene->RenderScene(_Shaders["General"], *_ActiveCamera);
+   _CurrentScene->RenderScene(_Shaders.at("Default"), *_ActiveCamera);
 
    // Finalise off-screen render.
-   if(_PostProcess) _FrameTexture.StopWrite();
+   if(_PostProcess) _PostProcessor.StopWrite();
 }
 
 void
-Visualiser::RenderFrameTexture() { if(_PostProcess) _FrameTexture.Render(_Shaders["FrameBuffer"]); }
+Visualiser::PostProcess() { if(_PostProcess) _PostProcessor.Render(); }
 
 void
 Visualiser::EndFrame()
 {
-   _OpenGLWindow.SwapBuffers();
+   _Window.SwapBuffers();
    glfwPollEvents();
 }
 

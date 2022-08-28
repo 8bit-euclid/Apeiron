@@ -61,15 +61,13 @@ void main()
       const vec3 B = normalize(cross(N, T));
 
       v_data_out.TBNMatrix = mat3(T, B, N);
-      inverse_TBN_matrix = transpose(v_data_out.TBNMatrix);
+      inverse_TBN_matrix   = transpose(v_data_out.TBNMatrix);
    }
 
-   for(int i = 0; i < u_point_light_count; ++i)
-      v_data_out.PointLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_point_light_positions[i] : u_point_light_positions[i];
-   for(int i = 0; i < u_spot_light_count; ++i)
-      v_data_out.SpotLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_spot_light_positions[i] : u_spot_light_positions[i];
-   v_data_out.CameraPosition = transform_to_tangent_space ? inverse_TBN_matrix * u_camera_position : u_camera_position;
-   v_data_out.FragmentPosition = transform_to_tangent_space ? inverse_TBN_matrix * gl_Position.xyz : gl_Position.xyz;
+   for(int i = 0; i < u_point_light_count; ++i) v_data_out.PointLightPositions[i] = transform_to_tangent_space ? inverse_TBN_matrix * u_point_light_positions[i] : u_point_light_positions[i];
+   for(int i = 0; i < u_spot_light_count; ++i)  v_data_out.SpotLightPositions[i]  = transform_to_tangent_space ? inverse_TBN_matrix * u_spot_light_positions[i]  : u_spot_light_positions[i];
+   v_data_out.CameraPosition         = transform_to_tangent_space ? inverse_TBN_matrix * u_camera_position : u_camera_position;
+   v_data_out.FragmentPosition       = transform_to_tangent_space ? inverse_TBN_matrix * gl_Position.xyz : gl_Position.xyz;
    v_data_out.FragmentPositionDlight = u_dlight_space_matrix * vec4(gl_Position.xyz, 1.0);
 
    v_data_out.ViewProjMatrix = u_projection_matrix * u_view_matrix;
@@ -142,9 +140,9 @@ void main()
       v_data_out.TextureCoordinate = v_data_in[i].TextureCoordinate;
 
       for(int j = 0; j < u_point_light_count; ++j) v_data_out.PointLightPositions[j] = v_data_in[i].PointLightPositions[j];
-      for(int j = 0; j < u_spot_light_count; ++j)  v_data_out.SpotLightPositions[j] = v_data_in[i].SpotLightPositions[j];
-      v_data_out.CameraPosition = v_data_in[i].CameraPosition;
-      v_data_out.FragmentPosition = v_data_in[i].FragmentPosition;
+      for(int j = 0; j < u_spot_light_count; ++j)  v_data_out.SpotLightPositions[j]  = v_data_in[i].SpotLightPositions[j];
+      v_data_out.CameraPosition         = v_data_in[i].CameraPosition;
+      v_data_out.FragmentPosition       = v_data_in[i].FragmentPosition;
       v_data_out.FragmentPositionDlight = v_data_in[i].FragmentPositionDlight;
 
       v_data_out.TBNMatrix = v_data_in[i].TBNMatrix;
@@ -188,7 +186,8 @@ in Data
 } v_data_in;
 
 // Output varying data
-out vec4 fragment_colour;
+layout(location = 0) out vec4 fragment_colour;
+layout(location = 1) out vec4 bloom_colour;
 
 // Interface Blocks
 struct Light            { vec4 Colour; float AmbientIntensity; float DiffuseIntensity; };
@@ -359,10 +358,10 @@ vec2 CalculateParallax()
    }
 
    // Perform parallax occlusion mapping
-   const vec2 previous_texture_coordinate = current_texture_coordinate + sign * delta_offset;
-   const float after_height = current_height - current_layer_height;
+   const vec2  previous_texture_coordinate = current_texture_coordinate + sign * delta_offset;
+   const float after_height  = current_height - current_layer_height;
    const float before_height = texture(u_displacement_map, previous_texture_coordinate).r - current_layer_height + layer_height;
-   const float weight = after_height / (after_height - before_height);
+   const float weight        = after_height / (after_height - before_height);
    vec2 final_texture_coordinate = previous_texture_coordinate * weight + current_texture_coordinate * (1.0 - weight);
 
    return final_texture_coordinate;
@@ -384,4 +383,8 @@ void main()
 
 //   fragment_colour = GammaCorrect(vec4(lighting.rgb * material_colour, 1.0f));
    fragment_colour = vec4(lighting.rgb * material_colour, 1.0f);
+
+   // If the fragment brightness is higher than the threshold, write to bloom colour buffer.
+   float brightness = dot(fragment_colour.rgb, vec3(0.2126, 0.7152, 0.0722));
+   bloom_colour     = brightness > 1.0 ? vec4(fragment_colour.rgb, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
 }
