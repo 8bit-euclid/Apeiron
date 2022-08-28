@@ -62,12 +62,10 @@ class Window
 
    SVectorF2 WheelDisplacement();
 
-   inline Pair<GLint> Dimensions() const { return {_Dimensions.x(), _Dimensions.y() }; }
-
  private:
    friend class Visualiser;
 
-   std::pair<GLint, GLint>
+   Pair<GLint>
    ViewportDimensions() const;
 
    void CreateCallBacks() const;
@@ -91,7 +89,7 @@ class Window
    SVectorF2              _PreviousMousePosition;
    SVectorF2              _CursorDisplacement;
    SVectorF2              _WheelDisplacement;
-   SVector2<GLint>        _Dimensions;
+   SVector2<GLint>        _WindowDimensions;
    SVector2<GLint>        _ViewportDimensions;
    constexpr static GLint _KeyCount{1024};
    SArrayB<_KeyCount>     _Keys;

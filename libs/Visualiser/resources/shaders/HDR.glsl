@@ -26,22 +26,16 @@ in vec2 v_texture_coordinate;
 
 out vec4 fragment_colour;
 
-uniform bool      u_is_hdr;
 uniform float     u_exposure;
-uniform sampler2D u_screen_texture;
+uniform sampler2D u_texture;
 
-vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
+vec4 ToneMap(const vec4 colour) { return vec4(vec3(1.0) - exp(-u_exposure * colour.rgb), colour.a); }
+
+vec4 GammaCorrect(const vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
 
 void main()
 {
-    fragment_colour = texture(u_screen_texture, v_texture_coordinate);
-
-    if(u_is_hdr)
-    {
-        vec3 mapped_colour = vec3(1.0) - exp(-u_exposure * fragment_colour.rgb);
-        mapped_colour = mapped_colour / (mapped_colour + vec3(1.0));
-        fragment_colour.rgb = mapped_colour;
-    }
-
+    fragment_colour = texture(u_texture, v_texture_coordinate);
+    fragment_colour = ToneMap(fragment_colour);
     fragment_colour = GammaCorrect(fragment_colour);
 }
