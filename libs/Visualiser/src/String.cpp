@@ -125,4 +125,7 @@ String::Parse(const std::string& str)
    return ParseTeXString(current, str.end());
 }
 
+void
+String::LinkGlyphSheet(const GlyphSheet* glyph_sheet) { FOR_EACH(glyph, _Glyphs) glyph->_GlyphSheet = glyph_sheet; }
+
 }

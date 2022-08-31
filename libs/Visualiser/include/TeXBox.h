@@ -76,9 +76,19 @@ class TeXBox final : public Model
 
    void Init(const size_t id);
 
+   void AddStringText();
+
    void CreateTeXBoxImage();
 
    void CreateGlyphSheet();
+
+   void ReadGlyphBoxPositions();
+
+   void ReadGlyphBoxAttributes();
+
+   void SetGlyphSheetDimensions();
+
+   void LinkGlyphSheet();
 
    void ComputeDimensions();
 
@@ -88,21 +98,22 @@ class TeXBox final : public Model
 
    fm::Path ImagePath() const;
 
-   static void InitTeXDirectory();
+   static void InitTeXDirectory() { fm::CreateDirectory(LaTeXDirectory(), true); }
+
+   static fm::Path LaTeXDirectory() { return "./libs/Visualiser/data/latex"; }
+
+   static fm::Path LaTeXTemplate() { return "./libs/Visualiser/resources/latex/texbox.tex"; }
+
+   static fm::Path LuaTeXTemplate() { return "./libs/Visualiser/resources/latex/write_boxes.lua"; }
 
    std::string              _Label;
    std::string              _Text;
    DArray<SPtr<String>>     _Strings;
    SVectorF3                _Anchor; // Bottom-left corner
-   GlyphSheet               _GlyphSheet;
    std::optional<SVectorF2> _Scale;
    std::optional<SVectorF2> _Dimensions;
+   GlyphSheet               _GlyphSheet;
    fm::Path                 _CompileDirectory;
-
-   typedef const fm::Path Path;
-   inline static Path _LaTeXDirectory = "./libs/Visualiser/data/latex";
-   inline static Path _LaTeXTemplate  = "./libs/Visualiser/resources/latex/texbox.tex";
-   inline static Path _LuaTeXTemplate = "./libs/Visualiser/resources/latex/write_boxes.lua";
 };
 
 

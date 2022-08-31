@@ -106,9 +106,9 @@ class Glyph final : public Model
    GlyphAttribute<SVectorF2> _Scale{{One, One}};
    GlyphAttribute<bool>      _isItalic{false};
    GlyphAttribute<bool>      _isBold{false};
+   GlyphBox<Float>           _Box;
    const SVectorF3*          _Anchor{}; // Bottom-left corner of the parent TeX-box
    const GlyphSheet*         _GlyphSheet{};
-   GlyphBox<Float>           _Box;
    DArray<SPtr<Glyph>>       _SubGlyphs;
    bool                      _Render{true};
    bool                      _isInit{false};

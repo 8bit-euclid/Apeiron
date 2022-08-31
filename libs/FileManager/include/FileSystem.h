@@ -78,10 +78,15 @@ inline bool
 DirectoryExists(const Path& dir_path) { return FileExists(dir_path) && isDirectory(dir_path); }
 
 inline void
-CreateDirectory(const Path& dir_path)
+ClearDirectory(const Path& dir_path) { FOR_EACH(entry, fs::directory_iterator(dir_path)) fs::remove_all(entry.path()); }
+
+inline void
+CreateDirectory(const Path& dir_path, const bool clear_if_exists = false)
 {
    ASSERT(DirectoryExists(dir_path.parent_path()), "The parent directory of the given path ", dir_path.filename(), " does not exist.")
+
    fs::create_directory(dir_path);
+   if(clear_if_exists) ClearDirectory(dir_path);
 }
 
 inline void
@@ -93,9 +98,6 @@ DirectoryIsEmpty(const Path& dir_path)
    ASSERT(DirectoryExists(dir_path), "The directory ", dir_path.filename(), " does not exist.")
    return FileIsEmpty(dir_path) && isDirectory(dir_path);
 }
-
-inline void
-ClearDirectory(const Path& dir_path) { FOR_EACH(entry, fs::directory_iterator(dir_path)) fs::remove_all(entry.path()); }
 
 inline bool
 DeleteDirectory(const Path& dir_path)

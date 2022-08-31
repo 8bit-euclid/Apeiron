@@ -17,7 +17,8 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 #include "Glyph.h"
-#include "../include/Model.h"
+#include "GlyphSheet.h"
+#include "Model.h"
 
 namespace aprn::vis {
 
@@ -58,6 +59,8 @@ class String final : public Model
    void SetAnchor(const SVectorF3* anchor);
 
    DArray<Glyph> Parse(const std::string& str);
+
+   void LinkGlyphSheet(const GlyphSheet* glyph_sheet);
 
    std::string         _Label;
    std::string         _Text;

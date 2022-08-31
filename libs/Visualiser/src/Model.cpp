@@ -160,14 +160,6 @@ Model::MoveTo(const SVectorF3& position, const Float start_time, const Float end
 //}
 
 Model&
-Model::Trace(StaticArray<std::function<Float(Float)>, 3> path, const Float start_time, const Float end_time)
-{
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   _Actions.insert({ActionType::Trace, ptr});
-   return *this;
-}
-
-Model&
 Model::Trace(std::function<SVectorF3(Float)> path, const Float start_time, const Float end_time)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
@@ -312,16 +304,10 @@ Model::ComputeLifespan()
 }
 
 void
-Model::Reset() { _ModelMatrix = glm::mat4(1.0); }
+Model::SetTeXBoxTexture()
+{
 
-void
-Model::Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
-
-void
-Model::Translate(const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
-
-void
-Model::Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
+}
 
 }
 

@@ -88,8 +88,7 @@ bool
 BaseFile<wide>::isWritable() const
 {
    DEBUG_ASSERT(isOpen(), "The file is not yet open.")
-   if(!_isWritable.has_value())
-      _isWritable = std::any_of(_Modes.begin(), _Modes.end(), [](auto m){ return m == OneOf(Mode::Write, Mode::Append, Mode::Truncate); });
+   if(!_isWritable.has_value()) _isWritable = std::any_of(_Modes.begin(), _Modes.end(), [](auto m){ return m == OneOf(Mode::Write, Mode::Append, Mode::Truncate); });
    return _isWritable.value();
 }
 
