@@ -63,8 +63,10 @@ Scene::Add(Model&& model, const std::string& name)
 {
    const std::string& id = name.empty() ? "Model_" + ToStr(_Models.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(model));
+
    pmodel->Init();
    _Models[id] = pmodel;
+
    return *this;
 }
 
@@ -73,9 +75,11 @@ Scene::Add(TeXBox&& tex_box, const std::string& name)
 {
    const std::string& id = name.empty() ? "TeXBox_" + ToStr(_TeXBoxes.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-   // Note: must not intialise the tex-box (or its underlying model) here. This is done collectively in InitTeXBoxes().
+
+   // Note: must not intialise the tex-box (or its underlying model) here. This is done for all tex-boxes collectively in InitTeXBoxes().
    _Models[id]   = ptex_box;
    _TeXBoxes[id] = ptex_box;
+
    return *this;
 }
 
@@ -230,9 +234,12 @@ Scene::RenderModels(Shader& shader)
          size_t texture_index = 0;
          FOR_EACH(type_string, texture, _Textures[model->_Texture.value()])
          {
+            // Configure respective texture uniform.
             const auto& uniform_name = TextureUniformString(type_string);
             shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
             shader.SetUniform1i("u_use_" + uniform_name, 1);
+
+            // Set scale if this is a displacement map.
             if(GetTextureType(type_string) == TextureType::Displacement)
             {
                const auto& scale = texture.MapScale();

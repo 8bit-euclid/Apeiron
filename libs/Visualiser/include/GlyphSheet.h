@@ -4,7 +4,7 @@
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
 * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-*
+
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
 * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 *
@@ -18,7 +18,6 @@
 #include "DataContainer/include/Array.h"
 #include "Visualiser/include/Texture.h"
 
-#include <string_view>
 #include <unordered_map>
 
 namespace aprn::vis {
@@ -36,12 +35,12 @@ struct GlyphBox
 struct GlyphSheet
 {
    typedef UInt16 IndexT;
-   template<class type> using Map = std::unordered_map<IndexT, type>;
+   template<class type> using UMap = std::unordered_map<IndexT, type>;
 
-   Map<GlyphBox<Int64>> Boxes;
-   SPtr<Texture>        Image;
-   Int64                Width;
-   Int64                Height;
+   UMap<GlyphBox<Int64>> Boxes;
+   SPtr<Texture>         Image;
+   Int64                 Width;
+   Int64                 Height;
 };
 
 }

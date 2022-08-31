@@ -233,7 +233,7 @@ Window::CreateCallBacks() const
 }
 
 void
-Window::HandleKeys(GLFWwindow* p_window, const GLint key, const GLint code, const GLint action, const GLint mode)
+Window::HandleKeys(GLFWwindow* p_window, const GLint key, [[maybe_unused]] const GLint code, const GLint action, [[maybe_unused]] const GLint mode)
 {
    // Get pointer to the Window object which contains p_window.
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
@@ -265,14 +265,15 @@ Window::HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const 
 }
 
 void
-Window::HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset)
+Window::HandleMouseWheel(GLFWwindow* p_window, [[maybe_unused]] const GLdouble x_offset, const GLdouble y_offset)
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
    window->_WheelDisplacement = {0.0, y_offset };
 }
 
 void
-Window::glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+Window::glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, [[maybe_unused]] GLsizei length,
+                      const char* message, [[maybe_unused]] const void* userParam)
 {
    // Ignore insignificant error/warning codes
    if(id == OneOf(131169u, 131185u, 131218u, 131204u)) return;

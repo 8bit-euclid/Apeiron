@@ -47,6 +47,8 @@ class Visualiser
 
    void Add(Scene& scene, const std::string& name = "");
 
+   void Add(Camera& camera, const std::string& name = "");
+
    void Add(Camera&& camera, const std::string& name = "");
 
    void Render();
@@ -86,7 +88,6 @@ class Visualiser
    Scene*              _CurrentScene;
    bool                _ViewPortModified{};
    bool                _PostProcess{true};
-   bool                _HDR{};
 };
 
 }
