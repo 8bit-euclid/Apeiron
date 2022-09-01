@@ -259,6 +259,9 @@ void
 TeXBox::LinkGlyphSheet() { FOR_EACH(str, _Strings) str->LinkGlyphSheet(&_GlyphSheet); }
 
 void
+TeXBox::LinkTexture(const Texture* texture) { _GlyphSheet.Image = texture; }
+
+void
 TeXBox::ComputeDimensions()
 {
 

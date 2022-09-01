@@ -27,18 +27,6 @@ using namespace aprn::vis;
 
 int main(void)
 {
-//   flmgr::CopyFile("./libs/Visualiser/resources/latex/render_text_template.tex", "./libs/Visualiser/resources");
-//   flmgr::File file;
-//   file.Open("./libs/Visualiser/resources/render_text_template.tex", flmgr::Mode::Append);
-//
-//   file.Write("\nTEST\n\\end{document}");
-//   file.Close();
-//
-//   flmgr::CompileTeXFile("lualatex", "./libs/Visualiser/data/render_text.tex");
-//   flmgr::ConvertPDFtoPNG("./libs/Visualiser/data/render_text.pdf", 1000);
-//
-//   EXIT("TEST")
-
    Visualiser visualiser;
    Scene scene(1000.0);
    Model model;

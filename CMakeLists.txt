@@ -1,7 +1,7 @@
 #***************************************************************************************************************************************************************
 # Configure compile settings
 #***************************************************************************************************************************************************************
-cmake_minimum_required(VERSION 3.21.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
 project(Apeiron)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
@@ -13,8 +13,8 @@ set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set default, debug, and release flags
-set(CMAKE_CXX_FLAGS " -fopenmp -Wall -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Werror -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
+set(CMAKE_CXX_FLAGS " -fopenmp -ltbb -Wall -DNDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -ltbb -Wall -Wextra -Werror -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
 
 #***************************************************************************************************************************************************************
@@ -38,7 +38,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
 # Build instructions for OpenMP.
 #***************************************************************************************************************************************************************
 find_package(OpenMP REQUIRED)
-include_directories(${OPENMP_INCLUDE_DIRS})
+include_directories(${OpenMP_INCLUDE_DIRS})
+link_directories(${OpenMP_LIBRARY_DIRS})
+add_definitions(${OpenMP_DEFINITIONS})
+if(NOT OpenMP_FOUND)
+    message("Error: OpenMP not found")
+endif(NOT OpenMP_FOUND)
 
 #***************************************************************************************************************************************************************
 # Build instructions for OpenGL and its dependencies.
@@ -83,8 +88,14 @@ if(NOT glm_FOUND)
     message("Error: GLM not found")
 endif(NOT glm_FOUND)
 
-#add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/GLFW)
-#add_subdirectory(${PROJECT_SOURCE_DIR}/dependencies/glm)
+# Find and link TBB.
+find_package(TBB REQUIRED)
+include_directories(${TBB_INCLUDE_DIRS})
+link_directories(${TBB_LIBRARY_DIRS})
+add_definitions(${TBB_DEFINITIONS})
+if(NOT TBB_FOUND)
+    message("Error: TBB not found")
+endif(NOT TBB_FOUND)
 
 #***************************************************************************************************************************************************************
 # Setup project sub-directories.
@@ -132,11 +143,12 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
 
 target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}
+        ${OPENMP_LIBRARIES}
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
-        ${OPENMP_LIBRARIES})
+        ${TBB_LIBRARIES})
 
 #***************************************************************************************************************************************************************
 # GoogleTest build instructions.
