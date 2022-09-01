@@ -145,14 +145,15 @@ Visualiser::InitTeXBoxes()
       {
          const auto texture_name = tex_box->_Label + "_texture";
          const auto texture_type = TextureType::Diffuse;
+         const auto type_string  = TextureTypeString(texture_type);
 
          // Load compiled tex-box image as a texture.
          UMap<Texture> texture_files;
-         texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, tex_box->ImagePath()));
+         texture_files.emplace(type_string, Texture(texture_type, tex_box->ImagePath()));
          _Textures.emplace(texture_name, std::move(texture_files));
 
-         // TODO - link texture to the tex-box's glyphsheet image.
-
+         // Link texture to the tex-box's glyphsheet image.
+         tex_box->LinkTexture(&_Textures.at(texture_name).at(type_string));
 
          // Point to the textures from the scene.
          UMap<Texture&> texture_file_map;
@@ -161,6 +162,7 @@ Visualiser::InitTeXBoxes()
 
          // Point to the texture from the tex-box model.
          tex_box->_Texture = texture_name;
+         tex_box->_Mesh = ModelFactory::Rectangle(4.0, 2.0)._Mesh;
       }
 }
 

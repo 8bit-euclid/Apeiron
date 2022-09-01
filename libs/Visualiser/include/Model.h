@@ -122,7 +122,7 @@ class Model
 
    inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
 
-   inline void Translate(const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
+   inline void Translate( const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
 
    inline void Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
 

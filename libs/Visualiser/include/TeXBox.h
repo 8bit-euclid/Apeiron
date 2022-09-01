@@ -21,6 +21,7 @@
 #include "Glyph.h"
 #include "Model.h"
 #include "String.h"
+#include "Texture.h"
 
 namespace aprn::vis {
 
@@ -89,6 +90,8 @@ class TeXBox final : public Model
    void SetGlyphSheetDimensions();
 
    void LinkGlyphSheet();
+
+   void LinkTexture(const Texture* texture);
 
    void ComputeDimensions();
 

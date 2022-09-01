@@ -38,7 +38,7 @@ struct GlyphSheet
    template<class type> using UMap = std::unordered_map<IndexT, type>;
 
    UMap<GlyphBox<Int64>> Boxes;
-   SPtr<Texture>         Image;
+   const Texture*        Image;
    Int64                 Width;
    Int64                 Height;
 };
