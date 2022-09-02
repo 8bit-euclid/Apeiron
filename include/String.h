@@ -26,7 +26,7 @@ namespace aprn {
 /** Convert to a string. */
 template<typename T>
 inline std::string
-ToStr(const T& number, unsigned char decimals = 0)
+ToString(const T& number, unsigned char decimals = 0)
 {
    std::stringstream str_buffer;
    if(decimals) str_buffer << std::fixed << std::setprecision(decimals);

@@ -54,7 +54,6 @@ set(SOURCE_FILES
 set(LINK_LIBRARIES
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
-        ${TBB_LIBRARIES}
         DataContainerLibrary
         FileManagerLibrary
         FunctionalLibrary

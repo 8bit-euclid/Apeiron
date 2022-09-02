@@ -10,6 +10,7 @@
 
 **Visualiser**
 - [ ] LaTeX text/math rendering
+- [ ] Background texture embedding onto text
 - [x] Off-screen rendering
 - [x] HDR
 - [ ] Bloom

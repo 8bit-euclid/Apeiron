@@ -164,7 +164,7 @@ ConvertPDFtoPNG(Path pdf_path, const unsigned pixel_density = 600)
    ASSERT(pdf_path.extension() == ".pdf", "The given file has the extension ", pdf_path.extension(), ". Expected a .pdf file.")
 
    std::string cmd;
-   cmd += "magick -density " + ToStr(pixel_density) + " ";
+   cmd += "magick -density " + ToString(pixel_density) + " ";
    cmd += pdf_path;
    cmd += " -colorspace RGB ";
    cmd += pdf_path.replace_extension(".png");

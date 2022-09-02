@@ -77,12 +77,12 @@ Shader::UseLight(const Light& light)
    const UInt id        = light.Index();
 
    std::string uniform_name   = type == LightType::Directional ? "u_directional_light" :
-                                type == LightType::Point ? "u_point_lights[" + ToStr(id) + "]" :
-                                type == LightType::Spot ? "u_spot_lights[" + ToStr(id) + "]" :
+                                type == LightType::Point ? "u_point_lights[" + ToString(id) + "]" :
+                                type == LightType::Spot ? "u_spot_lights[" + ToString(id) + "]" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
 
-   std::string light_position = type == LightType::Point ? "u_point_light_positions[" + ToStr(id) + "]" :
-                                type == LightType::Spot ? "u_spot_light_positions[" + ToStr(id) + "]" :
+   std::string light_position = type == LightType::Point ? "u_point_light_positions[" + ToString(id) + "]" :
+                                type == LightType::Spot ? "u_spot_light_positions[" + ToString(id) + "]" :
                                 type == LightType::Directional ? "\0" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
 
@@ -125,7 +125,7 @@ Shader::UseLight(const Light& light)
 
 void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_directional_light.Shadow", slot); }
 
-void Shader::SetPointShadowMap(const size_t i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToStr(i_point_light) + "].Shadow", slot); }
+void Shader::SetPointShadowMap(const size_t i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToString(i_point_light) + "].Shadow", slot); }
 
 void Shader::SetPointPosition(const glm::vec3& position) { SetUniform3f("u_plight_position", position.x, position.y, position.z); }
 
@@ -135,7 +135,7 @@ void Shader::SetDirectionalLightSpaceMatrix(const glm::mat4& light_space_matrix)
 
 void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& light_space_matrices)
 {
-   FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices[" + ToStr(i) + "]", light_space_matrices[i]);
+   FOR(i, 6) SetUniformMatrix4f("u_plight_space_matrices[" + ToString(i) + "]", light_space_matrices[i]);
 }
 
 /***************************************************************************************************************************************************************

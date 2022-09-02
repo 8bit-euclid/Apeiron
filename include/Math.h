@@ -221,7 +221,7 @@ Arcsin(const Float _x)
 {
   return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ?
          detail::InverseTrigonometricSeries(_x, _x, 1, _x * _x * _x / 2.0) :
-         Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToStr(_x) + " is out of the arcsin domain bounds.");
+         Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToString(_x) + " is out of the arcsin domain bounds.");
 }
 
 /** Constexpr arccos function. */
@@ -229,7 +229,7 @@ constexpr Float
 Arccos(const Float _x)
 {
   return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ? HalfPi - Arcsin(_x) : isEqual(_x, -1.0) ? Pi : isEqual(_x, 1.0) ? Zero :
-                                                           throw std::domain_error("The value " + ToStr(_x) + " is out of the arccos domain bounds.");
+                                                           throw std::domain_error("The value " + ToString(_x) + " is out of the arccos domain bounds.");
 }
 
 /***************************************************************************************************************************************************************
