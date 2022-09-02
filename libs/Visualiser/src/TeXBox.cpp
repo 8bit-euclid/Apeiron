@@ -35,22 +35,22 @@ TeXBox::TeXBox(const DArray<Glyph>& glyphs, const std::string& label)
    : TeXBox(String(glyphs, label + "_String_0"), label) {}
 
 TeXBox::TeXBox(const String& str, const std::string& label)
-   : _Label(label) { Add(str); }
+   : TeXBox(DArray<String>{str}, label) {}
 
 TeXBox::TeXBox(const DArray<String>& strings, const std::string& label)
    : _Label(label) { Add(strings); }
 
 TeXBox&
-TeXBox::Add(const std::string& str) { return Add(String(str, _Label + "_String_" + ToStr(_Strings.size()))); }
+TeXBox::Add(const std::string& str) { return Add(String(str, _Label + "_String_" + ToString(_Strings.size()))); }
 
 TeXBox&
-TeXBox::Add(const Glyph& glyph) { return Add(String(glyph, _Label + "_String_" + ToStr(_Strings.size()))); }
+TeXBox::Add(const Glyph& glyph) { return Add(String(glyph, _Label + "_String_" + ToString(_Strings.size()))); }
 
 TeXBox&
 TeXBox::Add(const String& str)
 {
    // Allocate new memory for the string, initialise it, and add it as a sub-model of this TeX-box.
-   const std::string& str_id = !str._Label.empty() ? str._Label : "String_" + ToStr(_Strings.size());
+   const std::string& str_id = !str._Label.empty() ? str._Label : "String_" + ToString(_Strings.size());
    _Strings.emplace_back(std::make_shared<String>(str));
    _SubModels.emplace(str_id, _Strings.back());
    return *this;
@@ -59,7 +59,7 @@ TeXBox::Add(const String& str)
 TeXBox&
 TeXBox::Add(const DArray<Glyph>& glyphs)
 {
-   Add(String(glyphs, _Label + "_String_" + ToStr(_Strings.size())));
+   Add(String(glyphs, _Label + "_String_" + ToString(_Strings.size())));
    return *this;
 }
 
@@ -274,7 +274,7 @@ TeXBox::ComputeScale()
 }
 
 void
-TeXBox::SetCompileDirectory(const size_t id) { _CompileDirectory = LaTeXDirectory() / ("texbox" + ToStr(id)); }
+TeXBox::SetCompileDirectory(const size_t id) { _CompileDirectory = LaTeXDirectory() / ("texbox" + ToString(id)); }
 
 fm::Path
 TeXBox::ImagePath() const

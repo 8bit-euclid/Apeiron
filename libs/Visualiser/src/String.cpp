@@ -44,7 +44,7 @@ String&
 String::Add(const Glyph& glyph)
 {
    // Allocate new memory for the glyph, initialise it, and add it as a sub-model of this string.
-   const std::string& glyph_id = !glyph._Label.empty() ? glyph._Label : "Glyph_" + ToStr(_Glyphs.size());
+   const std::string& glyph_id = !glyph._Label.empty() ? glyph._Label : "Glyph_" + ToString(_Glyphs.size());
    _Glyphs.push_back(std::make_shared<Glyph>(glyph));
    _SubModels.emplace(glyph_id, _Glyphs.back());
    return *this;

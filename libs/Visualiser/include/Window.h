@@ -86,7 +86,7 @@ class Window
    Float                  _CurrentTime{};
    Float                  _PreviousTime{};
    Float                  _DeltaTime{};
-   SVectorF2              _PreviousMousePosition;
+   SVectorF2              _PreviousCursorPosition;
    SVectorF2              _CursorDisplacement;
    SVectorF2              _WheelDisplacement;
    SVector2<GLint>        _WindowDimensions;
@@ -96,7 +96,7 @@ class Window
    GLFWwindow*            _GlfwWindow;
    Float                  _PreviousFrameTime{};
    size_t                 _FrameCounter;
-   bool                   _isFirstMouseMovement;
+   bool                   _isFirstCursorMotion;
 };
 
 inline void ClearFrameBuffer()

@@ -95,7 +95,7 @@ Texture::Read(const std::string& file_path, const GLint wrap_type)
    std::pair<GLint, GLenum> format = _BitsPerPixel == 2 ? std::make_pair(GL_SRGB, GL_RG) :
                                      _BitsPerPixel == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
                                      _BitsPerPixel == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
-                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToStr(_BitsPerPixel) + ".";
+                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToString(_BitsPerPixel) + ".";
    Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, wrap_type);
    stbi_image_free(_LocalBuffer.get());
 }
@@ -146,7 +146,7 @@ std::string
 TextureName(const std::string& material, const std::string& item, const size_t index, const size_t resolution)
 {
    ASSERT(resolution == OneOf(1U, 2U, 4U), "Only 1K, 2K, and 4K resolutions are recognised.")
-   return material + "/" + (item.empty() ? "" : item + "/") + ToStr(index) + "/" + ToStr(resolution) + "K";
+   return material + "/" + (item.empty() ? "" : item + "/") + ToString(index) + "/" + ToString(resolution) + "K";
 }
 
 std::string

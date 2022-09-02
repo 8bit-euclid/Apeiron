@@ -32,7 +32,7 @@ Visualiser::Visualiser(GLint window_width, GLint window_height)
 void
 Visualiser::Add(Scene& scene, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Scene_" + ToStr(_Scenes.size()) : name;
+   const std::string& id = name.empty() ? "Scene_" + ToString(_Scenes.size()) : name;
    _Scenes.emplace(id, std::move(scene));
 }
 
@@ -42,7 +42,7 @@ Visualiser::Add(Camera& camera, const std::string& name) { Add(std::move(camera)
 void
 Visualiser::Add(Camera&& camera, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Camera_" + ToStr(_Cameras.size()) : name;
+   const std::string& id = name.empty() ? "Camera_" + ToString(_Cameras.size()) : name;
    _Cameras.emplace(id, std::move(camera));
 }
 
@@ -73,19 +73,25 @@ Visualiser::Init()
    _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
    _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 
-   // Load all shaders
-   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
-      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
-
-   // Initialise scenes, tex-boxes, textures, and screen texture.
+   // Initialise shaders, scenes, tex-boxes, textures, and screen texture.
+   InitShaders();
    InitScenes();
    InitTeXBoxes();
    InitTextures();
    InitPostProcessor();
 
+   FOR_EACH(tex0, map, _Textures) FOR_EACH(tex1, texture, map) Print(tex0, tex1);
+
    // Set window title and set clock time to zero
    _Window.SetTitle("Apeiron");
    _Window.InitTime();
+}
+
+void
+Visualiser::InitShaders()
+{
+   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
+      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 }
 
 void
@@ -137,7 +143,11 @@ Visualiser::InitTeXBoxes()
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    TeXBox::InitTeXDirectory();
-   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
+   FOR(i, tex_boxes.size())
+   {
+      tex_boxes[i].second->_Mesh = ModelFactory::Rectangle(10.0, 4.0)._Mesh;
+      tex_boxes[i].second->Init(i);
+   }
 
    // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
@@ -162,7 +172,7 @@ Visualiser::InitTeXBoxes()
 
          // Point to the texture from the tex-box model.
          tex_box->_Texture = texture_name;
-         tex_box->_Mesh = ModelFactory::Rectangle(4.0, 2.0)._Mesh;
+//         tex_box->_Mesh = ModelFactory::Rectangle(4.0, 2.0)._Mesh;
       }
 }
 

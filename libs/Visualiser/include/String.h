@@ -27,13 +27,13 @@ class String final : public Model
  public:
    String() = default;
 
-   String(const char* str, const std::string& label = "");
+   explicit String(const char* str, const std::string& label = "");
 
-   String(const std::string& str, const std::string& label = "");
+   explicit String(const std::string& str, const std::string& label = "");
 
-   String(const Glyph& glyph, const std::string& label = "");
+   explicit String(const Glyph& glyph, const std::string& label = "");
 
-   String(const DArray<Glyph>& glyphs, const std::string& label = "");
+   explicit String(const DArray<Glyph>& glyphs, const std::string& label = "");
 
    String& Add(const std::string& str);
 

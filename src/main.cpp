@@ -36,8 +36,14 @@ int main(void)
 //   scene.Add(TeXBox(R"(This is yet \textbf{another} test with a \textit{slightly} more complicated mathematical equation: $s = u\tau + \frac{1}{2}a\tau^2$.)", ""));
 
 //   scene.Add(TeXBox(R"($\sum$)", ""));
-   scene.Add(TeXBox(R"(Test $\tau$ and $\sum$,)", ""));
+//   scene.Add(TeXBox(R"(Test $\tau$ and $\sum$,)", ""));
 //   scene.Add(TeXBox(R"(This is \textbf{Bold}, \textit{italic} polynomial: $p_2(x) = a_0 + a_1x + a_2x^2$. Equation with commands and a fraction: $s = u\tau + \frac{1}{2}a\tau^2$.)", ""));
+
+   TeXBox tex_box;
+   tex_box.Add(R"(Test $\tau$ and $\sum$,)");
+//          .OffsetPosition({0.0f, -2.0f, 0.0f})
+//          .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
+   scene.Add(tex_box);
 
    // Cube
    model = ModelFactory::Cube(1.0);
@@ -75,8 +81,8 @@ int main(void)
 //   model.SetMaterial("Paper", 0.1, 16.0)
 //        .SetColour({1, 1, 1});
 ////        .SetTexture("Paper", "", 2, 4)
-////        .OffsetPosition({0.0f, -2.0f, 0.0f})
-////        .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
+//        .OffsetPosition({0.0f, -2.0f, 0.0f})
+//        .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
 //   scene.Add(model);
 
    visualiser.Add(scene);

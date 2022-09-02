@@ -20,15 +20,15 @@
 
 namespace aprn {
 
-TEST_F(ApeironTest, ToStr)
+TEST_F(ApeironTest, ToString)
 {
-   std::string str = ToStr(1);
+   std::string str = ToString(1);
    EXPECT_EQ(str, "1");
 
-   str = ToStr(5) + "s";
+   str = ToString(5) + "s";
    EXPECT_EQ(str, "5s");
 
-   str = ToStr(10.5) + "m";
+   str = ToString(10.5) + "m";
    EXPECT_EQ(str, "10.5m");
 }
 
