@@ -40,8 +40,8 @@ int main(void)
 //   scene.Add(TeXBox(R"(This is \textbf{Bold}, \textit{italic} polynomial: $p_2(x) = a_0 + a_1x + a_2x^2$. Equation with commands and a fraction: $s = u\tau + \frac{1}{2}a\tau^2$.)", ""));
 
    TeXBox tex_box;
-   tex_box.Add(R"(Test $\tau$ and $\sum$,)");
-//          .OffsetPosition({0.0f, -2.0f, 0.0f})
+   tex_box.Add(R"(Test $\tau$ and $\sum$,)")
+          .OffsetPosition({0.0f, 2.0f, 2.0f});
 //          .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
    scene.Add(tex_box);
 

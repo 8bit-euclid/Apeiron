@@ -60,7 +60,7 @@ PeekAt(unsigned position, const Iter first, const Iter last)
    else return { last, false };
 }
 
-/** Init if the first string is a substring of the second. */
+/** Open if the first string is a substring of the second. */
 inline bool
 isSubstring(const std::string_view& substr, const std::string_view& str) { return str.find(substr) != std::string::npos; }
 

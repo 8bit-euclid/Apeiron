@@ -62,11 +62,7 @@ Scene&
 Scene::Add(Model&& model, const std::string& name)
 {
    const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
-   auto pmodel = std::make_shared<Model>(std::move(model));
-
-   pmodel->Init();
-   _Models[id] = pmodel;
-
+   _Models.emplace(id, std::make_shared<Model>(std::move(model)));
    return *this;
 }
 
@@ -75,11 +71,8 @@ Scene::Add(TeXBox&& tex_box, const std::string& name)
 {
    const std::string& id = name.empty() ? "TeXBox_" + ToString(_TeXBoxes.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-
-   // Note: must not intialise the tex-box (or its underlying model) here. This is done for all tex-boxes collectively in InitTeXBoxes().
-   _Models[id]   = ptex_box;
-   _TeXBoxes[id] = ptex_box;
-
+   _Models.emplace(id, ptex_box);
+   _TeXBoxes.emplace(id, ptex_box);
    return *this;
 }
 
@@ -110,8 +103,8 @@ Scene::Add(SpotLight&& light, const std::string& name)
 void
 Scene::Init(const Float start_time)
 {
+   // Compute the start and end times of the scene.
    const auto max_duration(1.0e5);
-
    if(_AdjustDuration)
    {
       Float duration = -One;
@@ -124,9 +117,14 @@ Scene::Init(const Float start_time)
       FOR_EACH_CONST(_, model, _Models)
          if(model->_ExitTime < max_duration) ASSERT(model->_ExitTime < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
    }
-
    _StartTime = start_time;
    _EndTime   = _StartTime + _Duration;
+
+   // Initialise all models and lights.
+   FOR_EACH(_, model, _Models) model->Init();
+   FOR_EACH(_, dlight, _DLights) dlight.Init();
+   FOR_EACH(_, plight, _PLights) plight.Init();
+   FOR_EACH(_, slight, _SLights) slight.Init();
 }
 
 /***************************************************************************************************************************************************************

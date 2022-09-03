@@ -68,30 +68,20 @@ Visualiser::Render()
 void
 Visualiser::Init()
 {
-   // Set default settings of the main camera
-   ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
-   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
-   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+   // Open a window and set its title.
+   _Window.Open();
+   _Window.SetTitle("Apeiron");
 
-   // Initialise shaders, scenes, tex-boxes, textures, and screen texture.
-   InitShaders();
+   // Initialise all scenes (and their models and lights), tex-boxes, textures, cameras, shaders, and the post-processor.
    InitScenes();
    InitTeXBoxes();
    InitTextures();
+   InitCameras();
+   InitShaders();
    InitPostProcessor();
 
-   FOR_EACH(tex0, map, _Textures) FOR_EACH(tex1, texture, map) Print(tex0, tex1);
-
-   // Set window title and set clock time to zero
-   _Window.SetTitle("Apeiron");
+   // Zero the clock time.
    _Window.InitTime();
-}
-
-void
-Visualiser::InitShaders()
-{
-   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
-      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 }
 
 void
@@ -145,15 +135,16 @@ Visualiser::InitTeXBoxes()
    TeXBox::InitTeXDirectory();
    FOR(i, tex_boxes.size())
    {
-      tex_boxes[i].second->_Mesh = ModelFactory::Rectangle(10.0, 4.0)._Mesh;
-      tex_boxes[i].second->Init(i);
+      auto tex_box = tex_boxes[i].second;
+      tex_box->_Mesh = ModelFactory::Rectangle(10.0, 4.0)._Mesh;
+      tex_box->Init(i);
    }
 
    // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
       FOR_EACH_CONST(_, tex_box, scene._TeXBoxes)
       {
-         const auto texture_name = tex_box->_Label + "_texture";
+         const auto texture_name = tex_box->_Label + "_texture"; // TODO - what if the label is empty??!
          const auto texture_type = TextureType::Diffuse;
          const auto type_string  = TextureTypeString(texture_type);
 
@@ -172,7 +163,6 @@ Visualiser::InitTeXBoxes()
 
          // Point to the texture from the tex-box model.
          tex_box->_Texture = texture_name;
-//         tex_box->_Mesh = ModelFactory::Rectangle(4.0, 2.0)._Mesh;
       }
 }
 
@@ -213,6 +203,22 @@ Visualiser::InitTextures()
             FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
             scene._Textures.emplace(texture_name, texture_file_map);
          }
+}
+
+void
+Visualiser::InitCameras()
+{
+   // Set default settings of the main camera.
+   ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
+   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
+   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+}
+
+void
+Visualiser::InitShaders()
+{
+   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
+      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 }
 
 void

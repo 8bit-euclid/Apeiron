@@ -32,6 +32,8 @@ class Window
 
    ~Window();
 
+   void Open();
+
    void Open(GLint width, GLint height);
 
    bool isOpen() const;
