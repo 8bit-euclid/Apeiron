@@ -33,10 +33,11 @@ Mesh::Mesh()
   VertexLayout.AddAttribute<GLfloat>(3); // Colour
   VertexLayout.AddAttribute<GLfloat>(2); // Texture coordinates
 
-  DEBUG_ASSERT(VertexLayout.Stride == sizeof(Vertex), "Init if the vertex attribute layout has changed.")
+  DEBUG_ASSERT(VertexLayout.Stride == sizeof(Vertex), "Open if the vertex attribute layout has changed.")
 }
 
-void Mesh::ComputeVertexNormals()
+void
+Mesh::ComputeVertexNormals()
 {
   if(Shading == ShadingType::Flat)
   {

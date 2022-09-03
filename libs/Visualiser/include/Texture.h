@@ -58,10 +58,10 @@ class Texture
 
    ~Texture();
 
+   void Read(const std::string& file_path, const GLint wrap_type);
+
    void Init(const GLuint width, const GLuint height, const GLint internal_format, const GLenum format, const GLenum data_type, const GLint wrap_type,
              const SVector4<GLfloat>& border_colour = { 1.0f, 1.0f, 1.0f, 1.0f });
-
-   void Read(const std::string& file_path, const GLint wrap_type);
 
    void Bind(UInt slot = 0) const;
 

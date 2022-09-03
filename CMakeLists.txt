@@ -88,6 +88,15 @@ if(NOT glm_FOUND)
     message("Error: GLM not found")
 endif(NOT glm_FOUND)
 
+# Find and link TBB.
+find_package(TBB REQUIRED)
+include_directories(${TBB_INCLUDE_DIRS})
+link_directories(${TBB_LIBRARY_DIRS})
+add_definitions(${TBB_DEFINITIONS})
+if(NOT TBB_FOUND)
+    message("Error: TBB not found")
+endif(NOT TBB_FOUND)
+
 #***************************************************************************************************************************************************************
 # Setup project sub-directories.
 #***************************************************************************************************************************************************************
@@ -138,7 +147,8 @@ target_link_libraries(${PROJECT_NAME}
         ${OPENGL_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
-        ${GLM_LIBRARIES})
+        ${GLM_LIBRARIES}
+        tbb)
 
 #***************************************************************************************************************************************************************
 # GoogleTest build instructions.

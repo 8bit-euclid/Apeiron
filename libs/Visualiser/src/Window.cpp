@@ -22,17 +22,20 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _WindowDimensions{width, height} { Open(width, height); }
+   : _WindowDimensions{width, height} {  }
 
 Window::~Window() { glfwTerminate(); }
+
+void
+Window::Open() { Open(_WindowDimensions.x(), _WindowDimensions.y()); }
 
 void
 Window::Open(const GLint width, const GLint height)
 {
    if(!glfwInit())
    {
-     glfwTerminate();
-     EXIT("Failed to Initialise GLFW.")
+      glfwTerminate();
+      EXIT("Failed to Initialise GLFW.")
    }
 
    // Window properties
@@ -53,8 +56,8 @@ Window::Open(const GLint width, const GLint height)
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {
-     glfwTerminate();
-     EXIT("Could not create an OpenGL window.")
+      glfwTerminate();
+      EXIT("Could not create an OpenGL window.")
    }
 
    // Set context for GLEW to use
@@ -75,9 +78,9 @@ Window::Open(const GLint width, const GLint height)
    // Initialise GLEW
    if(glewInit() != GLEW_OK)
    {
-     glfwDestroyWindow(_GlfwWindow);
-     glfwTerminate();
-     EXIT("Failed to Initialise GLEW.")
+      glfwDestroyWindow(_GlfwWindow);
+      glfwTerminate();
+      EXIT("Failed to Initialise GLEW.")
    }
    else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
 
@@ -87,10 +90,10 @@ Window::Open(const GLint width, const GLint height)
    GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
    if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
    {
-     GLCall(glEnable(GL_DEBUG_OUTPUT));
-     GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-     GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
-     GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
+      GLCall(glEnable(GL_DEBUG_OUTPUT));
+      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+      GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
+      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
    }
 #endif
 

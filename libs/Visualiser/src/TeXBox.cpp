@@ -171,7 +171,7 @@ TeXBox::CreateTeXBoxImage()
 
    // Compile LaTeX source code.
    fm::CompileTeXFile("lualatex", file_path);
-   fm::ConvertPDFtoPNG(file_path.replace_extension(".pdf"), 500); // NOTE: pixel density is currently hard-coded.
+   fm::ConvertPDFtoPNG(file_path.replace_extension(".pdf"), 800); // NOTE: pixel density is currently hard-coded.
 }
 
 void

@@ -56,13 +56,15 @@ class Visualiser
  private:
    void Init();
 
-   void InitShaders();
-
    void InitScenes();
 
    void InitTeXBoxes();
 
    void InitTextures();
+
+   void InitCameras();
+
+   void InitShaders();
 
    void InitPostProcessor();
 

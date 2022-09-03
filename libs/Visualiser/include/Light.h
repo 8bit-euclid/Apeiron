@@ -58,6 +58,8 @@ class Light
 
    virtual UInt LightCount() const = 0;
 
+   inline void Init() { _ShadowMap.Init(2048, 2048); }
+
    inline Shadow& ShadowMap() { return _ShadowMap; }
 
    Light& operator=(const Light& light) = delete;

@@ -97,7 +97,6 @@ Model::Add(Model&& sub_model, const std::string& name)
 {
    const std::string& id = name.empty() ? "SubModel_" + ToString(_SubModels.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(sub_model));
-   pmodel->Init();
    _SubModels[id] = pmodel;
    return *this;
 }
@@ -259,7 +258,7 @@ Model::operator=(Model&& model) noexcept
    // NOT the move assignment operator.
    model = Unmove(Model());
 
-   // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
+   // Very tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
    FOR_EACH(_, action, _Actions) action->Actor = std::ref(*this);
 
    return *this;
@@ -272,9 +271,9 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(_isInitialised) return;
+   if(_isInitialised || !_Mesh.isInitialised()) return;
 
-   // Compute vertex normals
+   // Compute vertex normals.
    _Mesh.ComputeVertexNormals();
 
    // Initialise VAO, VBO, and EBO.
@@ -282,12 +281,15 @@ Model::Init()
    _VBO.Init(_Mesh.Vertices);
    _EBO.Init(_Mesh.Indices);
 
-   // Add vertex buffer to vertex array object
+   // Add vertex buffer to vertex array object.
    _VAO.Bind();
    _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
    _VAO.Unbind();
 
-   // Compute entry/exit times
+   // Initialise each sub-model.
+   FOR_EACH(_, sub_model, _SubModels) sub_model->Init();
+
+   // Compute entry/exit times.
    ComputeLifespan();
 
    _isInitialised = true;
