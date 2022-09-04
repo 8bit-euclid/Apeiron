@@ -32,7 +32,7 @@ void main()
 {
     fragment_colour = texture(u_texture, v_texture_coordinate);
 
-    vec2 texture_offset = 1.0 / textureSize(u_texture, 0); // Size of a single texel
+    vec2 texture_offset = 1.0 / textureSize(u_texture, 0);    // Size of a single texel
     vec3 blurred_colour = fragment_colour.rgb * u_weights[0]; // Current fragment contribution
 
     if(u_horizontal) // Horizontal blur pass

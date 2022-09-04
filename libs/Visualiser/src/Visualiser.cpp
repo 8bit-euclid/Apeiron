@@ -136,7 +136,7 @@ Visualiser::InitTeXBoxes()
    FOR(i, tex_boxes.size())
    {
       auto tex_box = tex_boxes[i].second;
-      tex_box->_Mesh = ModelFactory::Rectangle(10.0, 4.0)._Mesh;
+      tex_box->_Mesh = ModelFactory::Rectangle(13.0, 2.0)._Mesh;
       tex_box->Init(i);
    }
 

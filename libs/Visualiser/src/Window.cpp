@@ -102,7 +102,7 @@ Window::Open(const GLint width, const GLint height)
 //   GLCall(glCullFace(GL_FRONT));
 //   GLCall(glFrontFace(GL_CCW));
 //   GLCall(glEnable(GL_BLEND));
-//   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 //   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
