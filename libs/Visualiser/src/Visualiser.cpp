@@ -32,14 +32,17 @@ Visualiser::Visualiser(GLint window_width, GLint window_height)
 void
 Visualiser::Add(Scene& scene, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Scene_" + ToStr(_Scenes.size()) : name;
+   const std::string& id = name.empty() ? "Scene_" + ToString(_Scenes.size()) : name;
    _Scenes.emplace(id, std::move(scene));
 }
 
 void
+Visualiser::Add(Camera& camera, const std::string& name) { Add(std::move(camera), name); }
+
+void
 Visualiser::Add(Camera&& camera, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Camera_" + ToStr(_Cameras.size()) : name;
+   const std::string& id = name.empty() ? "Camera_" + ToString(_Cameras.size()) : name;
    _Cameras.emplace(id, std::move(camera));
 }
 
@@ -65,23 +68,19 @@ Visualiser::Render()
 void
 Visualiser::Init()
 {
-   // Set default settings of the main camera
-   ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
-   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
-   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+   // Open a window and set its title.
+   _Window.Open();
+   _Window.SetTitle("Apeiron");
 
-   // Load all shaders
-   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
-      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
-
-   // Initialise scenes, tex-boxes, textures, and screen texture.
+   // Initialise all scenes (and their models and lights), tex-boxes, textures, cameras, shaders, and the post-processor.
    InitScenes();
    InitTeXBoxes();
    InitTextures();
+   InitCameras();
+   InitShaders();
    InitPostProcessor();
 
-   // Set window title and set clock time to zero
-   _Window.SetTitle("Apeiron");
+   // Zero the clock time.
    _Window.InitTime();
 }
 
@@ -89,7 +88,7 @@ void
 Visualiser::InitScenes()
 {
    auto first_scene_it = std::find_if(_Scenes.begin(), _Scenes.end(), [](const auto& entry){ return entry.second._PrevScene == nullptr; });
-   ASSERT(first_scene_it != _Scenes.end(), "Could not locate the first scene.")
+   ASSERT(first_scene_it != _Scenes.end(), "Failed to locate the first scene.")
 
    _CurrentScene = &first_scene_it->second;
    Scene* current_scene(_CurrentScene);
@@ -132,25 +131,38 @@ Visualiser::InitTeXBoxes()
    tex_boxes.reserve(10 * _Scenes.size());
    FOR_EACH(_, scene, _Scenes) FOR_EACH(_, tex_box, scene._TeXBoxes) tex_boxes.push_back({ tex_boxes.size(), tex_box.get() });
 
-   // Initialise LaTeX compilation directory, compile all LaTeX source code, and generate glyph sheets.
+   // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    TeXBox::InitTeXDirectory();
-   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
+   FOR(i, tex_boxes.size())
+   {
+      auto tex_box = tex_boxes[i].second;
+      tex_box->_Mesh = ModelFactory::Rectangle(13.0, 2.0)._Mesh;
+      tex_box->Init(i);
+   }
 
-   // Load model textures. Note: only diffuse texture required.
+   // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
       FOR_EACH_CONST(_, tex_box, scene._TeXBoxes)
       {
-         const auto texture_name = tex_box->_Label + "_texture";
+         const auto texture_name = tex_box->_Label + "_texture"; // TODO - what if the label is empty??!
          const auto texture_type = TextureType::Diffuse;
+         const auto type_string  = TextureTypeString(texture_type);
 
+         // Load compiled tex-box image as a texture.
          UMap<Texture> texture_files;
-         texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, tex_box->ImagePath()));
+         texture_files.emplace(type_string, Texture(texture_type, tex_box->ImagePath()));
          _Textures.emplace(texture_name, std::move(texture_files));
 
-         // Point to the textures from the scene
+         // Link texture to the tex-box's glyphsheet image.
+         tex_box->LinkTexture(&_Textures.at(texture_name).at(type_string));
+
+         // Point to the textures from the scene.
          UMap<Texture&> texture_file_map;
          FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
          scene._Textures.emplace(texture_name, texture_file_map);
+
+         // Point to the texture from the tex-box model.
+         tex_box->_Texture = texture_name;
       }
 }
 
@@ -191,6 +203,22 @@ Visualiser::InitTextures()
             FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
             scene._Textures.emplace(texture_name, texture_file_map);
          }
+}
+
+void
+Visualiser::InitCameras()
+{
+   // Set default settings of the main camera.
+   ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
+   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
+   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+}
+
+void
+Visualiser::InitShaders()
+{
+   for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
+      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 }
 
 void

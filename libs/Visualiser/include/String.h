@@ -17,7 +17,8 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 #include "Glyph.h"
-#include "../include/Model.h"
+#include "GlyphSheet.h"
+#include "Model.h"
 
 namespace aprn::vis {
 
@@ -26,13 +27,13 @@ class String final : public Model
  public:
    String() = default;
 
-   String(const char* str, const std::string& label = "");
+   explicit String(const char* str, const std::string& label = "");
 
-   String(const std::string& str, const std::string& label = "");
+   explicit String(const std::string& str, const std::string& label = "");
 
-   String(const Glyph& glyph, const std::string& label = "");
+   explicit String(const Glyph& glyph, const std::string& label = "");
 
-   String(const DArray<Glyph>& glyphs, const std::string& label = "");
+   explicit String(const DArray<Glyph>& glyphs, const std::string& label = "");
 
    String& Add(const std::string& str);
 
@@ -58,6 +59,8 @@ class String final : public Model
    void SetAnchor(const SVectorF3* anchor);
 
    DArray<Glyph> Parse(const std::string& str);
+
+   void LinkGlyphSheet(const GlyphSheet* glyph_sheet);
 
    std::string         _Label;
    std::string         _Text;

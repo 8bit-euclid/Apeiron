@@ -28,10 +28,7 @@ Light::Light(Light&& light) noexcept
 
 Light::Light(LightType type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
   : _Colour(rgba_colour), _AmbientIntensity(ambient_intensity), _DiffuseIntensity(diffuse_intensity),
-    _ShadowMap(type == LightType::Point || type == LightType::Spot), _Type(type)
-{
-   _ShadowMap.Init(2048, 2048);
-}
+    _ShadowMap(type == OneOf(LightType::Point, LightType::Spot)), _Type(type) {}
 
 Light&
 Light::operator=(Light&& light) noexcept

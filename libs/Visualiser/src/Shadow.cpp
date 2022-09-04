@@ -17,7 +17,7 @@
 namespace aprn::vis {
 
 Shadow::Shadow(const bool is_point_source)
-   : _DepthMap(is_point_source ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _FBO(), _isPointSource(is_point_source) {}
+   : _FBO(), _DepthMap(is_point_source ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _isPointSource(is_point_source) {}
 
 void Shadow::Init(const GLsizei width, const GLsizei height)
 {
