@@ -47,7 +47,7 @@ int main(void)
 
    // Cube
    model = ModelFactory::Cube(1.0);
-   model.SetColour({1.0, 1.0, 1.0})
+   model.SetColour({1.0, 1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
         .Trace([](Float t){ return SVectorF3{ Three*std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
    scene.Add(model, "Cube");

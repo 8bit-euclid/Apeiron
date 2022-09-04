@@ -69,7 +69,7 @@ Model::Delete()
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
 Model&
-Model::SetColour(const SVectorF3& rgb_colour)
+Model::SetColour(const SVectorF4& rgb_colour)
 {
    FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
    return *this;
