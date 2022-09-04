@@ -172,6 +172,7 @@ ConvertPDFtoPNG(Path pdf_path, const unsigned pixel_density)
    cmd += pdf_path;
    cmd += " -channel RGBA ";
    cmd += " -colorspace sRGB ";
+   cmd += "PNG32:";
    cmd += pdf_path.replace_extension(".png");
 
    RunCommand(cmd);

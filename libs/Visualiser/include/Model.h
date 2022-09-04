@@ -53,7 +53,7 @@ class Model
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetColour(const SVectorF3& rgb_colour);
+   Model& SetColour(const SVectorF4& rgb_colour);
 
    Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
 

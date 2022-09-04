@@ -166,7 +166,6 @@ TeXBox::CreateTeXBoxImage()
    // Transfer TeX-box text to the .tex file.
    fm::Path file_path = comp_dir / LaTeXTemplate().filename();
    fm::File file(file_path, fm::Mode::Append);
-   file.Write("\n\\textcolor{red}{R}\\textcolor{green}{G}\\textcolor{blue}{B}");
    file.Write("\n", _Text, "\n\\end{document}");
    file.Close();
 

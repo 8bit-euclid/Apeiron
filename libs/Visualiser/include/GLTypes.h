@@ -26,7 +26,7 @@ template<typename T>
 consteval GLenum
 GLTypeEnum(const T& value = T())
 {
-  if constexpr(isTypeSame<T, GLbyte>())        return GL_BYTE;
+  if constexpr     (isTypeSame<T, GLbyte>())   return GL_BYTE;
   else if constexpr(isTypeSame<T, GLubyte>())  return GL_UNSIGNED_BYTE;
   else if constexpr(isTypeSame<T, GLshort>())  return GL_SHORT;
   else if constexpr(isTypeSame<T, GLushort>()) return GL_UNSIGNED_SHORT;
