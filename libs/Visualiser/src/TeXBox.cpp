@@ -166,12 +166,13 @@ TeXBox::CreateTeXBoxImage()
    // Transfer TeX-box text to the .tex file.
    fm::Path file_path = comp_dir / LaTeXTemplate().filename();
    fm::File file(file_path, fm::Mode::Append);
+   file.Write("\n\\textcolor{red}{R}\\textcolor{green}{G}\\textcolor{blue}{B}");
    file.Write("\n", _Text, "\n\\end{document}");
    file.Close();
 
    // Compile LaTeX source code.
    fm::CompileTeXFile("lualatex", file_path);
-   fm::ConvertPDFtoPNG(file_path.replace_extension(".pdf"), 800); // NOTE: pixel density is currently hard-coded.
+   fm::ConvertPDFtoPNG(file_path.replace_extension(".pdf"), 2000); // NOTE: pixel density is currently hard-coded.
 }
 
 void

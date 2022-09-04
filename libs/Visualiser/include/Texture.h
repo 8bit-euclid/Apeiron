@@ -90,7 +90,7 @@ class Texture
    UInt                 _ID;
    int                  _Width;
    int                  _Height;
-   int                  _BitsPerPixel;
+   int                  _ChannelCount;
    UPtr<UChar>          _LocalBuffer;
    std::optional<Float> _MapScale;
    TextureType          _Type;
