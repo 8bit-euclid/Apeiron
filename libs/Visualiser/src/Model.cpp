@@ -69,7 +69,7 @@ Model::Delete()
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
 Model&
-Model::SetColour(const SVectorF3& rgb_colour)
+Model::SetColour(const SVectorF4& rgb_colour)
 {
    FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
    return *this;
@@ -95,9 +95,8 @@ Model::Add(Model& sub_model, const std::string& name) { return Add(std::move(sub
 Model&
 Model::Add(Model&& sub_model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "SubModel_" + ToStr(_SubModels.size()) : name;
+   const std::string& id = name.empty() ? "SubModel_" + ToString(_SubModels.size()) : name;
    auto pmodel = std::make_shared<Model>(std::move(sub_model));
-   pmodel->Init();
    _SubModels[id] = pmodel;
    return *this;
 }
@@ -158,14 +157,6 @@ Model::MoveTo(const SVectorF3& position, const Float start_time, const Float end
 //   Actions.insert({ActionType::MoveAt, ptr});
 //   return *this;
 //}
-
-Model&
-Model::Trace(StaticArray<std::function<Float(Float)>, 3> path, const Float start_time, const Float end_time)
-{
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   _Actions.insert({ActionType::Trace, ptr});
-   return *this;
-}
 
 Model&
 Model::Trace(std::function<SVectorF3(Float)> path, const Float start_time, const Float end_time)
@@ -267,7 +258,7 @@ Model::operator=(Model&& model) noexcept
    // NOT the move assignment operator.
    model = Unmove(Model());
 
-   // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
+   // Very tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
    FOR_EACH(_, action, _Actions) action->Actor = std::ref(*this);
 
    return *this;
@@ -280,9 +271,9 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(_isInitialised) return;
+   if(_isInitialised || !_Mesh.isInitialised()) return;
 
-   // Compute vertex normals
+   // Compute vertex normals.
    _Mesh.ComputeVertexNormals();
 
    // Initialise VAO, VBO, and EBO.
@@ -290,12 +281,15 @@ Model::Init()
    _VBO.Init(_Mesh.Vertices);
    _EBO.Init(_Mesh.Indices);
 
-   // Add vertex buffer to vertex array object
+   // Add vertex buffer to vertex array object.
    _VAO.Bind();
    _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
    _VAO.Unbind();
 
-   // Compute entry/exit times
+   // Initialise each sub-model.
+   FOR_EACH(_, sub_model, _SubModels) sub_model->Init();
+
+   // Compute entry/exit times.
    ComputeLifespan();
 
    _isInitialised = true;
@@ -312,16 +306,10 @@ Model::ComputeLifespan()
 }
 
 void
-Model::Reset() { _ModelMatrix = glm::mat4(1.0); }
+Model::SetTeXBoxTexture()
+{
 
-void
-Model::Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
-
-void
-Model::Translate(const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
-
-void
-Model::Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
+}
 
 }
 

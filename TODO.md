@@ -10,9 +10,11 @@
 
 **Visualiser**
 - [ ] LaTeX text/math rendering
+- [ ] Background texture embedding onto text
 - [x] Off-screen rendering
 - [x] HDR
-- [ ] Bloom
+- [x] Bloom
+- [ ] Check for possible double Gamma correction between HDR and blur shaders
 - [ ] Multi-sampled frame buffer attachments
 - [ ] ImGui re-integration
 - [ ] Toggles/sliders for all visualiser settings
@@ -21,6 +23,7 @@
 - [ ] Perlin noise generator
 - [x] Fix border shrinking bug during off-screen rendering
 - [ ] Fix parallax occlusion bug
+- [ ] Deferred rendering
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR
 - [ ] Model loading using Assimp

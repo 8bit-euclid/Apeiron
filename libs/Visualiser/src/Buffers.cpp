@@ -182,7 +182,21 @@ void
 FrameBuffer::Check() const
 {
    GLCall(auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
-   ASSERT(fb_status == GL_FRAMEBUFFER_COMPLETE, "Could not intialise frame buffer. Error code: ", fb_status)
+   if(fb_status != GL_FRAMEBUFFER_COMPLETE)
+   {
+      std::string prefix = "Could not intialise frame buffer. Cause: ";
+      switch(fb_status) 
+      {
+         case GL_FRAMEBUFFER_UNDEFINED:                     EXIT(prefix, "The specified frame buffer is the default one, which does not yet exist.")
+         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:         EXIT(prefix, "Some of the attachment points are incomplete.")
+         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: EXIT(prefix, "No image attachment found.")
+         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:        EXIT(prefix, "Incomplete draw buffer.")
+         case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:        EXIT(prefix, "Incomplete read buffer.")
+         case GL_FRAMEBUFFER_UNSUPPORTED:                   EXIT(prefix, "Some attached images have incompatible internal formats.")
+         case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:        EXIT(prefix, "Incompatible multi-sampling for some attachments.")
+         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:      EXIT(prefix, "Incomplete layer targets.")
+      }
+   }
 }
 
 void

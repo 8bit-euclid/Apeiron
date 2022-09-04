@@ -16,25 +16,26 @@
 #include "../include/Window.h"
 #include "LinearAlgebra/include/Vector.h"
 
-#define GL_DEBUG_MODE
-
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _WindowDimensions{width, height} { Open(width, height); }
+   : _WindowDimensions{width, height} {  }
 
 Window::~Window() { glfwTerminate(); }
+
+void
+Window::Open() { Open(_WindowDimensions.x(), _WindowDimensions.y()); }
 
 void
 Window::Open(const GLint width, const GLint height)
 {
    if(!glfwInit())
    {
-     glfwTerminate();
-     EXIT("Failed to Initialise GLFW.")
+      glfwTerminate();
+      EXIT("Failed to Initialise GLFW.")
    }
 
    // Window properties
@@ -42,15 +43,9 @@ Window::Open(const GLint width, const GLint height)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Enforces backward incompatibility
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#ifdef GL_DEBUG_MODE
+#ifdef DEBUG_MODE
    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
-
-   // Framebuffer properties
-//   glfwWindowHint(GLFW_RED_BITS, 8);
-//   glfwWindowHint(GLFW_GREEN_BITS, 8);
-//   glfwWindowHint(GLFW_BLUE_BITS, 8);
-//   glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
    // Anti-aliasing properties
    glfwWindowHint(GLFW_SAMPLES, 24);
@@ -61,8 +56,8 @@ Window::Open(const GLint width, const GLint height)
    _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
    if(!_GlfwWindow)
    {
-     glfwTerminate();
-     EXIT("Could not create an OpenGL window.")
+      glfwTerminate();
+      EXIT("Could not create an OpenGL window.")
    }
 
    // Set context for GLEW to use
@@ -73,9 +68,9 @@ Window::Open(const GLint width, const GLint height)
    std::tie(_ViewportDimensions[0], _ViewportDimensions[1]) = ViewportDimensions();
 
    // Handle key mouse inputs
+   bool show_cursor = false;
    CreateCallBacks();
-//   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, show_cursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 
    // Allow modern extension features
    glewExperimental = GL_TRUE;
@@ -83,22 +78,22 @@ Window::Open(const GLint width, const GLint height)
    // Initialise GLEW
    if(glewInit() != GLEW_OK)
    {
-     glfwDestroyWindow(_GlfwWindow);
-     glfwTerminate();
-     EXIT("Failed to Initialise GLEW.")
+      glfwDestroyWindow(_GlfwWindow);
+      glfwTerminate();
+      EXIT("Failed to Initialise GLEW.")
    }
-//   else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
+   else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
 
    // Initialise OpenGL debug output
-#ifdef GL_DEBUG_MODE
+#ifdef DEBUG_MODE
    int flags;
    GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
    if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
    {
-     GLCall(glEnable(GL_DEBUG_OUTPUT));
-     GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-     GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
-     GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
+      GLCall(glEnable(GL_DEBUG_OUTPUT));
+      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+      GLCall(glDebugMessageCallback(glDebugOutput, nullptr));
+      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
    }
 #endif
 
@@ -107,7 +102,7 @@ Window::Open(const GLint width, const GLint height)
 //   GLCall(glCullFace(GL_FRONT));
 //   GLCall(glFrontFace(GL_CCW));
 //   GLCall(glEnable(GL_BLEND));
-//   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 //   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -176,7 +171,7 @@ Window::ComputeFrameRate()
    {
       const auto fps = static_cast<Float>(_FrameCounter) / delta_time;
       const auto frame_duration = 1.0e3 / fps; // in milliseconds
-      const std::string title_suffix = "  |  " + ToStr(fps, 2) + " fps  |  " + ToStr(frame_duration, 2) + " ms";
+      const std::string title_suffix = "  |  " + ToString(fps, 2) + " fps  |  " + ToString(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
 
       _PreviousFrameTime = _CurrentTime;
@@ -233,7 +228,7 @@ Window::CreateCallBacks() const
 }
 
 void
-Window::HandleKeys(GLFWwindow* p_window, const GLint key, const GLint code, const GLint action, const GLint mode)
+Window::HandleKeys(GLFWwindow* p_window, const GLint key, [[maybe_unused]] const GLint code, const GLint action, [[maybe_unused]] const GLint mode)
 {
    // Get pointer to the Window object which contains p_window.
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
@@ -254,25 +249,26 @@ Window::HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const 
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
 
-   if(window->_isFirstMouseMovement)
+   if(window->_isFirstCursorMotion)
    {
-      window->_PreviousMousePosition = { x_coord, y_coord };
-      window->_isFirstMouseMovement = false;
+      window->_PreviousCursorPosition = {x_coord, y_coord };
+      window->_isFirstCursorMotion = false;
    }
 
-   window->_CursorDisplacement    = { x_coord - window->_PreviousMousePosition[0], y_coord - window->_PreviousMousePosition[1] };
-   window->_PreviousMousePosition = { x_coord, y_coord };
+   window->_CursorDisplacement    = { x_coord - window->_PreviousCursorPosition[0], y_coord - window->_PreviousCursorPosition[1] };
+   window->_PreviousCursorPosition = {x_coord, y_coord };
 }
 
 void
-Window::HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset)
+Window::HandleMouseWheel(GLFWwindow* p_window, [[maybe_unused]] const GLdouble x_offset, const GLdouble y_offset)
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
    window->_WheelDisplacement = {0.0, y_offset };
 }
 
 void
-Window::glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam)
+Window::glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, [[maybe_unused]] GLsizei length,
+                      const char* message, [[maybe_unused]] const void* userParam)
 {
    // Ignore insignificant error/warning codes
    if(id == OneOf(131169u, 131185u, 131218u, 131204u)) return;

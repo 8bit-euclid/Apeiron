@@ -23,7 +23,7 @@ namespace aprn{
 ***************************************************************************************************************************************************************/
 
 /** Get a string with file name and line number. */
-#define FILE_LINE(file, line) "\n FILE: " + ToStr(file) + "\n LINE: " + ToStr(line) + "\n"
+#define FILE_LINE(file, line) "\n FILE: " + ToString(file) + "\n LINE: " + ToString(line) + "\n"
 
 /** Print a Ping from the current file and line. */
 #define PING usleep(100); Print("\nPing from file:", __FILE__, "at line number:", __LINE__); Flush();

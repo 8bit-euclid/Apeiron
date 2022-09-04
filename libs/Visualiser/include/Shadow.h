@@ -51,8 +51,8 @@ class Shadow
  protected:
    friend class Light;
 
-   Texture     _DepthMap;
    FrameBuffer _FBO;
+   Texture     _DepthMap;
    bool        _isPointSource;
 };
 

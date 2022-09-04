@@ -53,7 +53,7 @@ class Model
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetColour(const SVectorF3& rgb_colour);
+   Model& SetColour(const SVectorF4& rgb_colour);
 
    Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
 
@@ -78,8 +78,6 @@ class Model
    Model& MoveTo(const SVectorF3& position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
 
    Model& MoveAt(const SVectorF3& velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
-
-   Model& Trace(StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time = InfFloat<>);
 
    Model& Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time = InfFloat<>);
 
@@ -118,13 +116,15 @@ class Model
 
    void ComputeLifespan();
 
-   void Reset();
+   void SetTeXBoxTexture();
 
-   void Scale(const glm::vec3& factors);
+   inline void Reset() { _ModelMatrix = glm::mat4(1.0); }
 
-   void Translate(const glm::vec3& displacement);
+   inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
 
-   void Rotate(const GLfloat angle, const glm::vec3& axis);
+   inline void Translate( const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
+
+   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
 
    /** Model Attributes
    ************************************************************************************************************************************************************/

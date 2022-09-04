@@ -61,28 +61,25 @@ Scene::Add(SpotLight& light, const std::string& name) { return Add(std::move(lig
 Scene&
 Scene::Add(Model&& model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Model_" + ToStr(_Models.size()) : name;
-   auto pmodel = std::make_shared<Model>(std::move(model));
-   pmodel->Init();
-   _Models[id] = pmodel;
+   const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
+   _Models.emplace(id, std::make_shared<Model>(std::move(model)));
    return *this;
 }
 
 Scene&
 Scene::Add(TeXBox&& tex_box, const std::string& name)
 {
-   const std::string& id = name.empty() ? "TeXBox_" + ToStr(_TeXBoxes.size()) : name;
+   const std::string& id = name.empty() ? "TeXBox_" + ToString(_TeXBoxes.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-   // Note: must not intialise the tex-box (or its underlying model) here. This is done collectively in InitTeXBoxes().
-   _Models[id]   = ptex_box;
-   _TeXBoxes[id] = ptex_box;
+   _Models.emplace(id, ptex_box);
+   _TeXBoxes.emplace(id, ptex_box);
    return *this;
 }
 
 Scene&
 Scene::Add(DirectionalLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "D-light_" + ToStr(_DLights.size()) : name;
+   const std::string& id = name.empty() ? "D-light_" + ToString(_DLights.size()) : name;
    _DLights.emplace(id, std::move(light));
    return *this;
 }
@@ -90,7 +87,7 @@ Scene::Add(DirectionalLight&& light, const std::string& name)
 Scene&
 Scene::Add(PointLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "P-light_" + ToStr(_PLights.size()) : name;
+   const std::string& id = name.empty() ? "P-light_" + ToString(_PLights.size()) : name;
    _PLights.emplace(id, std::move(light));
    return *this;
 }
@@ -98,7 +95,7 @@ Scene::Add(PointLight&& light, const std::string& name)
 Scene&
 Scene::Add(SpotLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "S-light_" + ToStr(_SLights.size()) : name;
+   const std::string& id = name.empty() ? "S-light_" + ToString(_SLights.size()) : name;
    _SLights.emplace(id, std::move(light));
    return *this;
 }
@@ -106,8 +103,8 @@ Scene::Add(SpotLight&& light, const std::string& name)
 void
 Scene::Init(const Float start_time)
 {
+   // Compute the start and end times of the scene.
    const auto max_duration(1.0e5);
-
    if(_AdjustDuration)
    {
       Float duration = -One;
@@ -120,9 +117,14 @@ Scene::Init(const Float start_time)
       FOR_EACH_CONST(_, model, _Models)
          if(model->_ExitTime < max_duration) ASSERT(model->_ExitTime < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
    }
-
    _StartTime = start_time;
    _EndTime   = _StartTime + _Duration;
+
+   // Initialise all models and lights.
+   FOR_EACH(_, model, _Models) model->Init();
+   FOR_EACH(_, dlight, _DLights) dlight.Init();
+   FOR_EACH(_, plight, _PLights) plight.Init();
+   FOR_EACH(_, slight, _SLights) slight.Init();
 }
 
 /***************************************************************************************************************************************************************
@@ -230,9 +232,12 @@ Scene::RenderModels(Shader& shader)
          size_t texture_index = 0;
          FOR_EACH(type_string, texture, _Textures[model->_Texture.value()])
          {
+            // Configure respective texture uniform.
             const auto& uniform_name = TextureUniformString(type_string);
             shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
             shader.SetUniform1i("u_use_" + uniform_name, 1);
+
+            // Set scale if this is a displacement map.
             if(GetTextureType(type_string) == TextureType::Displacement)
             {
                const auto& scale = texture.MapScale();

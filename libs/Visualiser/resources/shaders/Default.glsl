@@ -9,14 +9,14 @@ const int Max_Spot_Lights  = 4;
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec3 tangent;
-layout(location = 3) in vec3 colour;
+layout(location = 3) in vec4 colour;
 layout(location = 4) in vec2 texture_coordinate;
 
 // Output varying data
 out Data
 {
    vec3 Normal;
-   vec3 Colour;
+   vec4 Colour;
    vec2 TextureCoordinate;
 
    vec3 PointLightPositions[Max_Point_Lights];
@@ -90,7 +90,7 @@ const int Max_Spot_Lights  = 4;
 in Data
 {
    vec3 Normal;
-   vec3 Colour;
+   vec4 Colour;
    vec2 TextureCoordinate;
 
    vec3 PointLightPositions[Max_Point_Lights];
@@ -107,7 +107,7 @@ in Data
 out Data
 {
    vec3 Normal;
-   vec3 Colour;
+   vec4 Colour;
    vec2 TextureCoordinate;
 
    vec3 PointLightPositions[Max_Point_Lights];
@@ -162,7 +162,6 @@ void main()
 // Global constants
 const int   Max_Point_Lights = 4;
 const int   Max_Spot_Lights  = 4;
-const float Gamma            = 2.2;
 const vec3  Sample_Offset_Directions[20] = { vec3( 1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
                                              vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
                                              vec3( 1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
@@ -173,7 +172,7 @@ const vec3  Sample_Offset_Directions[20] = { vec3( 1, 1,  1), vec3( 1, -1,  1), 
 in Data
 {
    vec3 Normal;
-   vec3 Colour;
+   vec4 Colour;
    vec2 TextureCoordinate;
 
    vec3 PointLightPositions[Max_Point_Lights];
@@ -295,8 +294,7 @@ vec4 CalculatePointLight(const PointLight point_light, const vec3 light_position
                              point_light.AttenuationCoefficients[1] * distance +
                              point_light.AttenuationCoefficients[2] * distance * distance;
 
-   return CalculateLightByDirection(point_light.Base, light_to_fragment, CalculatePointLightShadow(point_light, light_position),
-                                    texture_coordinate) / attenuation;
+   return CalculateLightByDirection(point_light.Base, light_to_fragment, CalculatePointLightShadow(point_light, light_position), texture_coordinate) / attenuation;
 }
 
 vec4 CalculateSpotLight(const SpotLight spot_light, const vec3 light_position, const vec2 texture_coordinate)
@@ -305,15 +303,13 @@ vec4 CalculateSpotLight(const SpotLight spot_light, const vec3 light_position, c
    float spot_light_factor = dot(ray_direction, spot_light.Direction);
 
    if(spot_light_factor > spot_light.CosConeAngle)
-      return (1.0f - (1.0f - spot_light_factor) / (1.0f - spot_light.CosConeAngle)) * CalculatePointLight(spot_light.Point, light_position,
-              texture_coordinate);
+      return (1.0f - (1.0f - spot_light_factor) / (1.0f - spot_light.CosConeAngle)) * CalculatePointLight(spot_light.Point, light_position, texture_coordinate);
    else return vec4(0.0);
 }
 
 vec4 CalculateDirectionalLight(const vec2 texture_coordinate)
 {
-   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(texture_coordinate),
-                                    texture_coordinate);
+   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(texture_coordinate), texture_coordinate);
 }
 
 vec4 CalculatePointLights(const vec2 texture_coordinate)
@@ -335,56 +331,55 @@ vec2 CalculateParallax()
    if(!UseHeightMap()) return v_data_in.TextureCoordinate;
 
    const vec3 fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
-
-   const float min_layers   = 16.0f;
-   const float max_layers   = 64.0f;
-   const float n_layers     = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
-   const float layer_height = 1.0 / n_layers;
-   const vec2  view_dir     = -fragment_to_camera.xy;
-   const vec2  offset       = u_displacement_map_scale * view_dir.xy;
-   const vec2  delta_offset = offset / n_layers;
+   const float min_layers        = 16.0f;
+   const float max_layers        = 64.0f;
+   const float n_layers          = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
+   const float layer_height      = 1.0 / n_layers;
+   const vec2  view_dir          = -fragment_to_camera.xy;
+   const vec2  offset            = u_displacement_map_scale * view_dir.xy;
+   const vec2  delta_offset      = offset / n_layers;
 
    // Perform steep parallax mapping
    vec2 current_texture_coordinate = v_data_in.TextureCoordinate;
    float current_height            = texture(u_displacement_map, current_texture_coordinate).r;
    float current_layer_height      = 0.0;
    const float sign                = 1.0f;
-//   const float sign = -1.0f;
+//   const float sign                = -1.0f;
    while(current_layer_height < current_height)
    {
       current_texture_coordinate -= sign * delta_offset;
-      current_height = texture(u_displacement_map, current_texture_coordinate).r;
-      current_layer_height += layer_height;
+      current_height              = texture(u_displacement_map, current_texture_coordinate).r;
+      current_layer_height       += layer_height;
    }
 
    // Perform parallax occlusion mapping
-   const vec2  previous_texture_coordinate = current_texture_coordinate + sign * delta_offset;
-   const float after_height  = current_height - current_layer_height;
-   const float before_height = texture(u_displacement_map, previous_texture_coordinate).r - current_layer_height + layer_height;
-   const float weight        = after_height / (after_height - before_height);
-   vec2 final_texture_coordinate = previous_texture_coordinate * weight + current_texture_coordinate * (1.0 - weight);
+   const vec2  prev_tex_coord  = current_texture_coordinate + sign * delta_offset;
+   const float after_height    = current_height - current_layer_height;
+   const float before_height   = texture(u_displacement_map, prev_tex_coord).r - current_layer_height + layer_height;
+   const float weight          = after_height / (after_height - before_height);
+   const vec2  final_tex_coord = prev_tex_coord * weight + current_texture_coordinate * (1.0 - weight);
 
-   return final_texture_coordinate;
+   // Discard fragment if texture coordinate is out of bounds.
+   if(final_tex_coord.x > 1.0 || final_tex_coord.y > 1.0 || final_tex_coord.x < 0.0 || final_tex_coord.y < 0.0) discard;
+
+   return final_tex_coord;
 }
-
-vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
 
 void main()
 {
-   const vec2 texture_coordinate = CalculateParallax();
+   const vec2 texture_coord   = CalculateParallax();
+   const vec4 material_colour = u_use_diffuse_map ? texture(u_diffuse_map, texture_coord) : v_data_in.Colour;
+   const vec4 lighting_colour = CalculateDirectionalLight(texture_coord) +
+                                CalculatePointLights(texture_coord) +
+                                CalculateSpotLights(texture_coord);
 
-   if(texture_coordinate.x > 1.0 || texture_coordinate.y > 1.0 || texture_coordinate.x < 0.0 || texture_coordinate.y < 0.0) discard;
+   // Discard fragment if transparent.
+   if(material_colour.a < 0.0001) discard;
 
-   const vec4 lighting = CalculateDirectionalLight(texture_coordinate) +
-                         CalculatePointLights(texture_coordinate) +
-                         CalculateSpotLights(texture_coordinate);
-
-   const vec3 material_colour = u_use_diffuse_map ? texture(u_diffuse_map, texture_coordinate).rgb : v_data_in.Colour;
-
-//   fragment_colour = GammaCorrect(vec4(lighting.rgb * material_colour, 1.0f));
-   fragment_colour = vec4(lighting.rgb * material_colour, 1.0f);
+   // Blend lighting and material colours.
+   fragment_colour = vec4(lighting_colour.rgb * material_colour.rgb, material_colour.a);
 
    // If the fragment brightness is higher than the threshold, write to bloom colour buffer.
    float brightness = dot(fragment_colour.rgb, vec3(0.2126, 0.7152, 0.0722));
-   bloom_colour     = brightness > 1.0 ? vec4(fragment_colour.rgb, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+   bloom_colour     = brightness > 1.0 ? fragment_colour : vec4(0.0, 0.0, 0.0, 1.0);
 }
