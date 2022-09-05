@@ -40,8 +40,8 @@ void
 Texture::Read(const std::string& file_path, const GLint wrap_type)
 {
    // Load texture image with stbi.
-   stbi_set_flip_vertically_on_load(1);
    int width, height;
+   stbi_set_flip_vertically_on_load(true);
    _LocalBuffer.reset(stbi_load(file_path.c_str(), &width, &height, &_ChannelCount, 0));
    ASSERT(_LocalBuffer, "Could not load file \"", file_path, "\" to texture.")
 
@@ -58,46 +58,54 @@ Texture::Read(const std::string& file_path, const GLint wrap_type)
 
 void
 Texture::Init(const GLuint width, const GLuint height, const GLint internal_format, const GLenum format, const GLenum data_type,
-              const GLint wrap_type, const SVector4<GLfloat>& border_colour)
+              const GLint wrap_type, const size_t n_samples, const SVector4<GLfloat>& border_colour)
 {
    ASSERT(glfwGetCurrentContext(), "Cannot intialise a texture without an OpenGL context.")
+   ASSERT(n_samples > 0, "The sample count for each texture must be at least one.")
 
    GLCall(glGenTextures(1, &_ID));
 
-   _Width  = width;
-   _Height = height;
-   const auto opengl_type = OpenGLType(_Type);
+   _Width          = width;
+   _Height         = height;
+   _SampleCount    = n_samples;
+   _isMultiSampled = n_samples > 1;
+   const auto gl_type = OpenGLType();
 
    Bind();
 
    // Common settings
-   GLCall(glTexParameteri(opengl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-   GLCall(glTexParameteri(opengl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+   GLCall(glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+   GLCall(glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
    // OpenGL type-specific settings
-   if(opengl_type == GL_TEXTURE_2D)
+   if(gl_type == OneOf(GL_TEXTURE_2D, GL_TEXTURE_2D_MULTISAMPLE))
    {
-     if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(opengl_type, GL_TEXTURE_BORDER_COLOR, border_colour.data())); }
+     if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(gl_type, GL_TEXTURE_BORDER_COLOR, border_colour.data())); }
 
-     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, wrap_type));
-     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type));
 
-     GLCall(glTexImage2D(opengl_type, 0, internal_format, _Width, _Height, 0, format, data_type, _isFBOAttachment ? nullptr : _LocalBuffer.get()));
+     if(gl_type == GL_TEXTURE_2D)
+     {
+        GLCall(glTexImage2D(gl_type, 0, internal_format, _Width, _Height, 0, format, data_type, _LocalBuffer.get()));
+     }
+     else
+     {
+        GLCall(glTexImage2DMultisample(gl_type, _SampleCount, internal_format, _Width, _Height, GL_TRUE));
+     }
    }
-   else if(opengl_type == GL_TEXTURE_CUBE_MAP)
+   else if(gl_type == GL_TEXTURE_CUBE_MAP)
    {
      ASSERT(wrap_type == GL_CLAMP_TO_EDGE, "Only GL_CLAMP_TO_EDGE is currently supported for cube maps.")
 
-     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_S, wrap_type));
-     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_T, wrap_type));
-     GLCall(glTexParameteri(opengl_type, GL_TEXTURE_WRAP_R, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, wrap_type));
 
      FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, _Width, _Height, 0, format, data_type, nullptr)); }
    }
 
-//   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-   if(!_isFBOAttachment) GLCall(glGenerateMipmap(opengl_type));
+   if(!_isFBOAttachment) GLCall(glGenerateMipmap(gl_type));
 
    Unbind();
 }
@@ -106,11 +114,11 @@ void
 Texture::Bind(const UInt slot) const
 {
    GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-   GLCall(glBindTexture(OpenGLType(_Type), _ID));
+   GLCall(glBindTexture(OpenGLType(_Type, _isFBOAttachment), _ID));
 }
 
 void
-Texture::Unbind() const { GLCall(glBindTexture(OpenGLType(_Type), 0)); }
+Texture::Unbind() const { GLCall(glBindTexture(OpenGLType(_Type, _isFBOAttachment), 0)); }
 
 void
 Texture::Delete()
@@ -136,18 +144,18 @@ Texture::operator=(Texture&& texture) noexcept
    return *this;
 }
 
-/***************************************************************************************************************************************************************
-* Texture Stand-alone Functions
-***************************************************************************************************************************************************************/
 GLint
-OpenGLType(TextureType type)
+Texture::OpenGLType()
 {
    typedef TextureType TT;
-   if(type == OneOf(TT::Diffuse, TT::Normal, TT::Displacement, TT::DirectionalDepth)) return GL_TEXTURE_2D;
-   else if(type == TT::PointDepth) return GL_TEXTURE_CUBE_MAP;
+   if(_Type == OneOf(TT::Diffuse, TT::Normal, TT::Displacement, TT::DirectionalDepth)) return _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+   else if(_Type == TT::PointDepth) return GL_TEXTURE_CUBE_MAP;
    else EXIT("Unrecongnised texture type.")
 }
 
+/***************************************************************************************************************************************************************
+* Texture Stand-alone Functions
+***************************************************************************************************************************************************************/
 std::string
 TextureName(const std::string& material, const std::string& item, const size_t index, const size_t resolution)
 {

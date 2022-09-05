@@ -73,6 +73,7 @@ Visualiser::Init()
    _Window.SetTitle("Apeiron");
 
    // Initialise all scenes (and their models and lights), tex-boxes, textures, cameras, shaders, and the post-processor.
+   InitOpenGL();
    InitScenes();
    InitTeXBoxes();
    InitTextures();
@@ -82,6 +83,32 @@ Visualiser::Init()
 
    // Zero the clock time.
    _Window.InitTime();
+}
+
+void
+Visualiser::InitOpenGL()
+{
+   // Initialise OpenGL debug output
+#ifdef DEBUG_MODE
+   int flags;
+   GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
+   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+   {
+      GLCall(glEnable(GL_DEBUG_OUTPUT));
+      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+      GLCall(glDebugMessageCallback(GLDebugOutput, nullptr));
+      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
+   }
+#endif
+
+   GLCall(glEnable(GL_DEPTH_TEST));
+   GLCall(glEnable(GL_MULTISAMPLE));
+//   GLCall(glEnable(GL_CULL_FACE));
+//   GLCall(glCullFace(GL_FRONT));
+//   GLCall(glFrontFace(GL_CCW));
+   GLCall(glEnable(GL_BLEND));
+   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
 }
 
 void
@@ -136,7 +163,7 @@ Visualiser::InitTeXBoxes()
    FOR(i, tex_boxes.size())
    {
       auto tex_box = tex_boxes[i].second;
-      tex_box->_Mesh = ModelFactory::Rectangle(13.0, 2.0)._Mesh;
+      tex_box->_Mesh = ModelFactory::Rectangle(11.0, 2.0)._Mesh;
       tex_box->Init(i);
    }
 
