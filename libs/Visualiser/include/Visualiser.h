@@ -56,6 +56,8 @@ class Visualiser
  private:
    void Init();
 
+   void InitOpenGL();
+
    void InitScenes();
 
    void InitTeXBoxes();

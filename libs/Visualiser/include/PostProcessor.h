@@ -41,27 +41,30 @@ struct FrameImage
 class PostProcessor
 {
  public:
-   void Init(UInt width, UInt height, bool is_hdr);
+   void Init(UInt width, UInt height);
+
+   void InitMultiSampledBuffers();
+
+   void InitResolvedBuffers();
 
    void InitBlurBuffers();
 
-   void InitOutputBuffers();
+   void StartWrite() const;
+
+   void StopWrite() const;
 
    void Render();
 
-   void StartWrite() const;
-
-   inline void StopWrite() const { _Output.FBO.Unbind(); }
-
  private:
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   Model            _ScreenQuad;
-   UMap<Shader>     _Shaders;
-   UMap<FrameImage> _FrameImages;
-   FrameImage       _Output;
-   UInt             _Width;
-   UInt             _Height;
-   bool             _isHDR;
+   FrameImage                _MultiSampledImage;
+   FrameImage                _ResolvedImage;
+   UMap<FrameImage>          _BlurBuffers;
+   UMap<Shader>              _Shaders;
+   Model                     _ScreenQuad;
+   UInt                      _Width;
+   UInt                      _Height;
+   inline static std::string _Default = "Default";
 };
 
 }

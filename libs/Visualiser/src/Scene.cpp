@@ -220,8 +220,8 @@ Scene::RenderModels(Shader& shader)
 //    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
 
    constexpr int slot_offset(3);
-   shader.SetUniform1i("u_use_diffuse_map", 0);
-   shader.SetUniform1i("u_use_normal_map", 0);
+   shader.SetUniform1i("u_use_diffuse_map"     , 0);
+   shader.SetUniform1i("u_use_normal_map"      , 0);
    shader.SetUniform1i("u_use_displacement_map", 0);
 
    FOR_EACH(_, model, _Models)

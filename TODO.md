@@ -14,8 +14,10 @@
 - [x] Off-screen rendering
 - [x] HDR
 - [x] Bloom
-- [ ] Check for possible double Gamma correction between HDR and blur shaders
+- [x] Check for possible double Gamma correction between HDR and blur shaders
+- [ ] Update Texture interface to offer more versatility
 - [ ] Multi-sampled frame buffer attachments
+- [ ] Resurrect line shader
 - [ ] ImGui re-integration
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] GDB debugger
