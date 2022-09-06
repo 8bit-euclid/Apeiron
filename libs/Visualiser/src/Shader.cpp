@@ -236,16 +236,16 @@ Shader::Create(const std::string& vertex_shader, const std::string& geometry_sha
 UInt
 Shader::Compile(unsigned int type, const std::string& source)
 {
-   GLCall(GLuint shader_ID = glCreateShader(type));
+   GLuint shader_ID = glCreateShader(type);
    const GLchar* src       = source.c_str();
 
-   GLCall(glShaderSource(shader_ID, 1, &src, nullptr));
-   GLCall(glCompileShader(shader_ID));
+   GLCall(glShaderSource(shader_ID, 1, &src, nullptr))
+   GLCall(glCompileShader(shader_ID))
 
    // Check that shader compiled
    GLint result = 0;
    GLchar error_log[1024] = { 0 };
-   GLCall(glGetShaderiv(shader_ID, GL_COMPILE_STATUS, &result));
+   GLCall(glGetShaderiv(shader_ID, GL_COMPILE_STATUS, &result))
    if(!result)
    {
       GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
@@ -265,7 +265,7 @@ int Shader::UniformLocation(const std::string& name)
 {
    if(_UniformLocationCache.contains(name)) return _UniformLocationCache[name];
 
-   GLCall(int location = glGetUniformLocation(_ID, name.c_str()));
+   int location = glGetUniformLocation(_ID, name.c_str());
    if(_WarningsOn && location < 0) WARN("Could not find the location for uniform ", name)
    _UniformLocationCache[name] = location;
 

@@ -60,7 +60,7 @@ class Texture
 
    void Read(const std::string& file_path, const GLint wrap_type);
 
-   void Init(const GLuint width, const GLuint height, const GLint internal_format, const GLenum format, const GLenum data_type, const GLint wrap_type,
+   void Init(GLuint width, GLuint height, GLint internal_format, GLenum format, GLenum data_type, GLint wrap_type, size_t n_samples = 1,
              const SVector4<GLfloat>& border_colour = { 1.0f, 1.0f, 1.0f, 1.0f });
 
    void Bind(UInt slot = 0) const;
@@ -87,6 +87,8 @@ class Texture
    friend class Model;
    friend class Shadow;
 
+   GLint OpenGLType() const;
+
    UInt                 _ID;
    int                  _Width;
    int                  _Height;
@@ -94,15 +96,14 @@ class Texture
    UPtr<UChar>          _LocalBuffer;
    std::optional<Float> _MapScale;
    TextureType          _Type;
+   size_t               _SampleCount;
+   bool                 _isMultiSampled;
    bool                 _isFBOAttachment;
 };
 
 /***************************************************************************************************************************************************************
 * Texture Stand-alone Functions
 ***************************************************************************************************************************************************************/
-GLint
-OpenGLType(TextureType type);
-
 std::string
 TextureName(const std::string& material, const std::string& item, const size_t index, const size_t resolution);
 
