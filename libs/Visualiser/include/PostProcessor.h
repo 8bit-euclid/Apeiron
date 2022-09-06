@@ -53,6 +53,8 @@ class PostProcessor
 
    void StopWrite() const;
 
+   void ResolveFrameBuffer() const;
+
    void Render();
 
  private:
@@ -64,6 +66,7 @@ class PostProcessor
    Model                     _ScreenQuad;
    UInt                      _Width;
    UInt                      _Height;
+   constexpr static UInt     _SampleCount{32}; // For MSAA
    inline static std::string _Default = "Default";
 };
 

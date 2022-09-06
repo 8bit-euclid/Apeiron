@@ -87,7 +87,7 @@ class Texture
    friend class Model;
    friend class Shadow;
 
-   GLint OpenGLType();
+   GLint OpenGLType() const;
 
    UInt                 _ID;
    int                  _Width;

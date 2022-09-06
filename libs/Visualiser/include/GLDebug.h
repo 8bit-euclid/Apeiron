@@ -21,7 +21,7 @@ namespace aprn::vis {
 
 /** OpenGL function wrapper for error checking in debug mode. */
 #ifdef DEBUG_MODE
-   #define GLCall(function) GLClearErrors(); function; GLLogCall(#function, __FILE__, __LINE__)
+   #define GLCall(function) { GLClearErrors(); function; GLLogCall(#function, __FILE__, __LINE__); }
 #else
    #define GLCall(function) function
 #endif

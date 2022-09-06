@@ -15,9 +15,10 @@
 - [x] HDR
 - [x] Bloom
 - [x] Check for possible double Gamma correction between HDR and blur shaders
-- [ ] Update Texture interface to offer more versatility
-- [ ] Multi-sampled frame buffer attachments
+- [x] Update Texture interface to offer more versatility
+- [x] Multi-sampled frame buffer attachments
 - [ ] Resurrect line shader
+- [ ] Investigate Texture move constructor/assignment bug
 - [ ] ImGui re-integration
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] GDB debugger

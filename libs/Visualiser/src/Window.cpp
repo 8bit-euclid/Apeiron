@@ -43,7 +43,7 @@ Window::Open(const GLint width, const GLint height)
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Enforces backward incompatibility
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-   glfwWindowHint(GLFW_SAMPLES, 24); // Anti-aliasing multi-sample count
+//   glfwWindowHint(GLFW_SAMPLES, 24); // Anti-aliasing multi-sample count
 #ifdef DEBUG_MODE
    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif

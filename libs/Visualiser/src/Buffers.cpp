@@ -188,7 +188,7 @@ FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) c
 void
 FrameBuffer::Check() const
 {
-   GLCall(auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
+   auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
    if(fb_status != GL_FRAMEBUFFER_COMPLETE)
    {
       std::string prefix = "Could not intialise frame buffer. Cause: ";
@@ -219,7 +219,7 @@ FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer
 * Render Buffer Class
 ***************************************************************************************************************************************************************/
 void
-RenderBuffer::Init(size_t n_samples)
+RenderBuffer::Init(const size_t n_samples)
 {
    ASSERT(n_samples > 0, "The sample count for each render buffer must be at least one.")
    _SampleCount    = n_samples;
