@@ -56,6 +56,8 @@ class Visualiser
  private:
    void Init();
 
+   void InitOpenGL();
+
    void InitScenes();
 
    void InitTeXBoxes();
@@ -91,7 +93,6 @@ class Visualiser
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
    bool                _ViewPortModified{};
-   bool                _PostProcess{true};
 };
 
 }

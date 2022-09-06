@@ -19,10 +19,9 @@
 namespace aprn::vis {
 
 void
-PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
+PostProcessor::Init(const UInt width, const UInt height)
 {
    // Set member variables.
-   _isHDR  = is_hdr;
    _Width  = width;
    _Height = height;
 
@@ -30,8 +29,9 @@ PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
    for(std::string shader : {"HDR", "Blur", "Blend"}) _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
 
    // Initialise required post-processing buffers.
+   InitMultiSampledBuffers();
+   InitResolvedBuffers();
    InitBlurBuffers();
-   InitOutputBuffers();
 
    // Create rectangular screen-filling quad (a square in normalised device coordinates) to draw each texture to.
    _ScreenQuad = ModelFactory::ScreenQuad();
@@ -39,55 +39,122 @@ PostProcessor::Init(const UInt width, const UInt height, bool is_hdr)
 }
 
 void
+PostProcessor::InitMultiSampledBuffers()
+{
+   auto& fbo      = _MultiSampledImage.FBO;
+   auto& rbo      = _MultiSampledImage.RBO;
+   auto& textures = _MultiSampledImage.Textures;
+
+   // Initialise and bind an MSAA frame buffer.
+   fbo.Init(true);
+   fbo.Bind();
+
+   // Add MSAA HDR buffer and bright buffer textures.
+   textures.emplace("HDR"   , Texture(TextureType::Diffuse, true));
+   textures.emplace("Bright", Texture(TextureType::Diffuse, true));
+
+   // Attach MSAA textures as the frame buffer's colour buffers.
+   size_t i = 0;
+   DArray<GLenum> attachments;
+   for (std::string name : { "HDR", "Bright" }) // Note: must be attached to the frame buffer in this order.
+   {
+      auto& texture = textures.at(name);
+      attachments.push_back(GL_COLOR_ATTACHMENT0 + i++);
+
+      texture.Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, _SampleCount);
+      fbo.AttachTexture2D(attachments.back(), texture.ID());
+   }
+   fbo.Draw(attachments);
+
+   // Attach a render buffer as the frame buffer's depth/stencil buffer.
+   rbo.Init(_SampleCount);
+   rbo.Allocate(GL_DEPTH24_STENCIL8, _Width, _Height);
+   fbo.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, rbo.ID());
+
+   fbo.Unbind();
+}
+
+void
+PostProcessor::InitResolvedBuffers()
+{
+   auto& fbo      = _ResolvedImage.FBO;
+   auto& textures = _ResolvedImage.Textures;
+
+   // Initialise and bind a non-MSAA frame buffer.
+   fbo.Init(false);
+   fbo.Bind();
+
+   // Add non-MSAA HDR buffer and bright buffer textures.
+   textures.emplace("HDR"   , Texture(TextureType::Diffuse, true));
+   textures.emplace("Bright", Texture(TextureType::Diffuse, true));
+
+   // Attach textures as frame buffer's colour buffers.
+   size_t i = 0;
+   DArray<GLenum> attachments;
+   for (std::string name : { "HDR", "Bright" }) // Note: must be attached to the frame buffer in this order.
+   {
+      auto& texture = textures.at(name);
+      attachments.push_back(GL_COLOR_ATTACHMENT0 + i++);
+
+      texture.Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
+      fbo.AttachTexture2D(attachments.back(), texture.ID());
+   }
+   fbo.Draw(attachments);
+
+   fbo.Unbind();
+}
+
+void
 PostProcessor::InitBlurBuffers()
 {
    // Configure ping-pong buffers
-   for(auto name : {"Ping", "Pong"})
+   for(auto name : { "Ping", "Pong" })
    {
-      auto& buffer = _FrameImages[name]; // Note: emplacement is intended here.
+      auto& buffer   = _BlurBuffers[name]; // Note: emplacement is intended here.
+      auto& fbo      = buffer.FBO;
+      auto& textures = buffer.Textures;
 
-      buffer.FBO.Init();
-      buffer.FBO.Bind();
+      // Initialise and bind a non-MSAA frame buffer.
+      fbo.Init(false);
+      fbo.Bind();
 
-      // Add a single colour buffer.
-      buffer.Textures.emplace("Image", Texture(TextureType::Diffuse, true));
-      buffer.Textures.at("Image").Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
-      buffer.FBO.AttachTexture2D(GL_COLOR_ATTACHMENT0, buffer.Textures.at("Image").ID());
-      buffer.FBO.Draw(GL_COLOR_ATTACHMENT0);
+      // Attach a single colour buffer texture.
+      textures.emplace(_Default, Texture(TextureType::Diffuse, true));
+      auto& texture = textures.at(_Default);
+      texture.Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
+      fbo.AttachTexture2D(GL_COLOR_ATTACHMENT0, texture.ID());
+      fbo.Draw(GL_COLOR_ATTACHMENT0);
 
-      buffer.FBO.Unbind();
+      fbo.Unbind();
    }
 }
 
 void
-PostProcessor::InitOutputBuffers()
+PostProcessor::StartWrite() const
 {
-   _Output.FBO.Init();
-   _Output.FBO.Bind();
+   _MultiSampledImage.FBO.Bind();
+   ClearFrameBuffer();
+}
 
-   // Add colour buffer and bloom buffer textures.
-   _Output.Textures.emplace("HDR"   , Texture(TextureType::Diffuse, true));
-   _Output.Textures.emplace("Bright", Texture(TextureType::Diffuse, true));
+void
+PostProcessor::StopWrite() const
+{
+   ResolveFrameBuffer();
+   _MultiSampledImage.FBO.Unbind();
+}
 
-   // Attach textures as the main frame buffer's colour buffers.
-   size_t i = 0;
-   DArray<GLenum> attachments;
-   for(std::string texture_name : {"HDR", "Bright"}) // Note: must be attached to the frame buffer in this order.
+void
+PostProcessor::ResolveFrameBuffer() const
+{
+   glBindFramebuffer(GL_READ_FRAMEBUFFER, _MultiSampledImage.FBO.ID());
+   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _ResolvedImage.FBO.ID());
+   FOR(i, 2)
    {
-      auto& texture = _Output.Textures.at(texture_name);
-      attachments.push_back(GL_COLOR_ATTACHMENT0 + i++);
-
-      texture.Init(_Width, _Height, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE);
-      _Output.FBO.AttachTexture2D(attachments.back(), texture.ID());
+      const GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+      glReadBuffer(attachment);
+      glDrawBuffer(attachment);
+      glBlitFramebuffer(0, 0, _Width, _Height, 0, 0, _Width, _Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
    }
-   _Output.FBO.Draw(attachments);
-
-   // Attach a render buffer as the frame buffer's depth/stencil buffer.
-   _Output.RBO.Init();
-   _Output.RBO.Allocate(GL_DEPTH24_STENCIL8, _Width, _Height);
-   _Output.FBO.AttachRenderBuffer(GL_DEPTH_STENCIL_ATTACHMENT, _Output.RBO.ID());
-
-   _Output.FBO.Unbind();
 }
 
 void
@@ -98,8 +165,8 @@ PostProcessor::Render()
    GLCall(glDisable(GL_DEPTH_TEST));
 
    // Apply Gaussian blur.
-   DArray<FrameImage*> buffers = {&_FrameImages.at("Ping"),
-                                  &_FrameImages.at("Pong")};
+   DArray<FrameImage*> buffers = {&_BlurBuffers.at("Ping"),
+                                  &_BlurBuffers.at("Pong")};
    const size_t n_passes = 6;
    bool horizontal = true;
    auto& blur_shader = _Shaders.at("Blur");
@@ -110,7 +177,7 @@ PostProcessor::Render()
       auto pong = buffers[!horizontal];
 
       // Bind the FBO of the Ping buffer and the texture of the Pong buffer.
-      auto& texture = i == 0 ? _Output.Textures.at("Bright") : pong->Textures.at("Image");
+      auto& texture = i == 0 ? _ResolvedImage.Textures.at("Bright") : pong->Textures.at(_Default);
       ping->FBO.Bind();
       texture.Bind();
 
@@ -125,30 +192,22 @@ PostProcessor::Render()
    }
    blur_shader.Unbind();
 
-   auto& hdr_texture  = _Output.Textures.at("HDR");
-   auto& blur_texture = buffers[!horizontal]->Textures.at("Image");
+   // Now blend the HDR and blurred bright textures.
+   auto& hdr_texture  = _ResolvedImage.Textures.at("HDR");
+   auto& blur_texture = buffers[!horizontal]->Textures.at(_Default);
+   auto& blend_shader = _Shaders.at("Blend");
+   blend_shader.Bind();
 
-//   auto& shader = _Shaders.at("HDR");
-   auto& shader = _Shaders.at("Blend");
-   shader.Bind();
-
-//   shader.UseTexture(texture, "u_texture", 0);
-   shader.UseTexture(hdr_texture , "u_hdr_texture", 0);
-   shader.UseTexture(blur_texture, "u_blur_texture", 1);
-   shader.SetUniform1f("u_exposure", 1.0);
+   // Load textures.
+   blend_shader.UseTexture(hdr_texture , "u_hdr_texture", 0);
+   blend_shader.UseTexture(blur_texture, "u_blur_texture", 1);
+   blend_shader.SetUniform1f("u_exposure", 1.0);
 
    _ScreenQuad.Render();
 
    hdr_texture.Unbind();
    blur_texture.Unbind();
-   shader.Unbind();
-}
-
-void
-PostProcessor::StartWrite() const
-{
-   _Output.FBO.Bind();
-   ClearFrameBuffer();
+   blend_shader.Unbind();
 }
 
 }

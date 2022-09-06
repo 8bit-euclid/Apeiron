@@ -158,6 +158,13 @@ IndexBuffer::Load(const DynamicArray<GLuint>& indices)
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
 void
+FrameBuffer::Init(bool is_multi_sampled)
+{
+   _isMultiSampled = is_multi_sampled;
+   Buffer::Init();
+}
+
+void
 FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) const
 {
    GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0));
@@ -167,7 +174,7 @@ FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) co
 void
 FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, GL_TEXTURE_2D, texture_id, 0));
+   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture_id, 0));
    Check();
 }
 
@@ -181,7 +188,7 @@ FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) c
 void
 FrameBuffer::Check() const
 {
-   GLCall(auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
+   auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
    if(fb_status != GL_FRAMEBUFFER_COMPLETE)
    {
       std::string prefix = "Could not intialise frame buffer. Cause: ";
@@ -212,10 +219,26 @@ FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer
 * Render Buffer Class
 ***************************************************************************************************************************************************************/
 void
+RenderBuffer::Init(const size_t n_samples)
+{
+   ASSERT(n_samples > 0, "The sample count for each render buffer must be at least one.")
+   _SampleCount    = n_samples;
+   _isMultiSampled = n_samples > 1;
+   Buffer::Init();
+}
+
+void
 RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei height)
 {
    Bind();
-   GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
+   if(_isMultiSampled)
+   {
+      GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, _SampleCount, format, width, height));
+   }
+   else
+   {
+      GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
+   }
    Unbind();
 }
 

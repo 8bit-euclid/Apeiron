@@ -119,6 +119,8 @@ struct IndexBuffer : public detail::Buffer<BufferType::EBO>
 ***************************************************************************************************************************************************************/
 struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 {
+   void Init(bool is_multi_sampled = false);
+
    void AttachTexture(GLenum attachement, GLuint texture_id) const;
 
    void AttachTexture2D(GLenum attachement, GLuint texture_id) const;
@@ -132,6 +134,9 @@ struct FrameBuffer : public detail::Buffer<BufferType::FBO>
    void Draw(const DArray<GLenum>& modes) const;
 
    void Read(GLenum mode) const;
+
+ private:
+   bool _isMultiSampled;
 };
 
 /***************************************************************************************************************************************************************
@@ -139,7 +144,13 @@ struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 ***************************************************************************************************************************************************************/
 struct RenderBuffer : public detail::Buffer<BufferType::RBO>
 {
+   void Init(size_t n_samples = 1);
+
    void Allocate(const GLenum format, const GLsizei width, const GLsizei height);
+
+ private:
+   size_t _SampleCount;
+   bool   _isMultiSampled;
 };
 
 /***************************************************************************************************************************************************************
