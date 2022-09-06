@@ -93,7 +93,6 @@ class Visualiser
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
    bool                _ViewPortModified{};
-   bool                _PostProcess{true};
 };
 
 }
