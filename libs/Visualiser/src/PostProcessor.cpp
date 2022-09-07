@@ -160,9 +160,9 @@ PostProcessor::ResolveFrameBuffer() const
 void
 PostProcessor::Render()
 {
-   GLCall(glClearColor(1.0f, 1.0f, 1.0f, 1.0f));
-   GLCall(glClear(GL_COLOR_BUFFER_BIT));
-   GLCall(glDisable(GL_DEPTH_TEST));
+   GLCall(glClearColor(1.0f, 1.0f, 1.0f, 1.0f))
+   GLCall(glClear(GL_COLOR_BUFFER_BIT))
+   GLCall(glDisable(GL_DEPTH_TEST))
 
    // Apply Gaussian blur.
    DArray<FrameImage*> buffers = {&_BlurBuffers.at("Ping"),
@@ -199,7 +199,7 @@ PostProcessor::Render()
    blend_shader.Bind();
 
    // Load textures.
-   blend_shader.UseTexture(hdr_texture , "u_hdr_texture", 0);
+   blend_shader.UseTexture(hdr_texture , "u_hdr_texture" , 0);
    blend_shader.UseTexture(blur_texture, "u_blur_texture", 1);
    blend_shader.SetUniform1f("u_exposure", 1.0);
 

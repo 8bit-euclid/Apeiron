@@ -48,30 +48,37 @@ Glyph::SetLabel(const std::string& label)
 }
 
 Glyph&
+Glyph::SetFontSize(char font_size)
+{
+   if(!_FontSize.has_value()) _FontSize = font_size;
+   return *this;
+}
+
+Glyph&
 Glyph::SetColour(const Colour& colour)
 {
-   if(!_Colour.isSet()) _Colour.Set(colour);
+   if(!_Colour.has_value()) _Colour = colour;
    return *this;
 }
 
 Glyph&
 Glyph::SetScale(const Float width_scale, const std::optional<Float> height_scale)
 {
-   if(!_Scale.isSet()) _Scale.Set({width_scale, height_scale.has_value() ? height_scale.value() : width_scale});
+   if(!_Scale.has_value()) _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
    return *this;
 }
 
 Glyph&
 Glyph::SetItalic(const bool is_italic)
 {
-   if(!_isItalic.isSet()) _isItalic.Set(is_italic);
+   if(!_isItalic.has_value()) _isItalic = is_italic;
    return *this;
 }
 
 Glyph&
 Glyph::SetBold(const bool is_bold)
 {
-   if(!_isBold.isSet()) _isBold.Set(is_bold);
+   if(!_isBold.has_value()) _isBold = is_bold;
    return *this;
 }
 

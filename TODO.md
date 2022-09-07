@@ -11,6 +11,7 @@
 **Visualiser**
 - [ ] LaTeX text/math rendering
 - [ ] Background texture embedding onto text
+- [ ] Texture coordinate transformation uniforms in shaders
 - [x] Off-screen rendering
 - [x] HDR
 - [x] Bloom
@@ -18,13 +19,16 @@
 - [x] Update Texture interface to offer more versatility
 - [x] Multi-sampled frame buffer attachments
 - [ ] Resurrect line shader
+- [ ] Add switches for post-processing effects
 - [ ] Investigate Texture move constructor/assignment bug
 - [ ] ImGui re-integration
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] GDB debugger
 - [ ] RenderDoc debugger
 - [ ] Perlin noise generator
+- [ ] Curl noise generator
 - [x] Fix border shrinking bug during off-screen rendering
+- [ ] Implement MSAA frame buffers for directional/point shadow maps
 - [ ] Fix parallax occlusion bug
 - [ ] Deferred rendering
 - [ ] Screen-space ambient occlusion (SSAO)

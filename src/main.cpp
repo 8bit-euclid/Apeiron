@@ -41,8 +41,8 @@ int main(void)
 
    TeXBox tex_box;
    tex_box.Add(R"(Test $\tau$ and $\sum$,)")
+          .SetPixelDensity(2000)
           .OffsetPosition({0.0f, 2.0f, 2.0f});
-//          .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
    scene.Add(tex_box);
 
    // Cube

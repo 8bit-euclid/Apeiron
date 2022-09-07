@@ -50,7 +50,6 @@ void
 Visualiser::Render()
 {
    Init();
-
    while(_Window.isOpen())
    {
       BeginFrame();
@@ -160,12 +159,7 @@ Visualiser::InitTeXBoxes()
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    TeXBox::InitTeXDirectory();
-   FOR(i, tex_boxes.size())
-   {
-      auto tex_box = tex_boxes[i].second;
-      tex_box->_Mesh = ModelFactory::Rectangle(11.0, 2.0)._Mesh;
-      tex_box->Init(i);
-   }
+   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
 
    // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
@@ -179,9 +173,6 @@ Visualiser::InitTeXBoxes()
          UMap<Texture> texture_files;
          texture_files.emplace(type_string, Texture(texture_type, tex_box->ImagePath()));
          _Textures.emplace(texture_name, std::move(texture_files));
-
-         // Link texture to the tex-box's glyphsheet image.
-         tex_box->LinkTexture(&_Textures.at(texture_name).at(type_string));
 
          // Point to the textures from the scene.
          UMap<Texture&> texture_file_map;

@@ -35,8 +35,8 @@ struct Vertex
 
 struct VertexAttribute
 {
-   VertexAttribute(const GLenum type, const GLuint _n_components, const GLboolean _is_normalised)
-     : GLType(type), nComponents(_n_components), isNormalised(_is_normalised) {}
+   VertexAttribute(const GLenum type, const GLuint n_components, const GLboolean is_normalised)
+      : GLType(type), nComponents(n_components), isNormalised(is_normalised) {}
 
    GLenum    GLType;
    GLuint    nComponents;
@@ -63,7 +63,7 @@ class Mesh
 
    inline bool isInitialised() const { return !Vertices.empty(); }
 
-   inline const VertexAttributeLayout& GetVertexLayout() { return VertexLayout; }
+   inline const VertexAttributeLayout& GetVertexLayout() const { return VertexLayout; }
 
  private:
    friend class Model;

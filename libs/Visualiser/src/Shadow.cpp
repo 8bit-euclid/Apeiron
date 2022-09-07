@@ -36,7 +36,7 @@ void Shadow::Init(const GLsizei width, const GLsizei height)
 void Shadow::StartWrite() const
 {
    _FBO.Bind();
-   GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+   GLCall(glClear(GL_DEPTH_BUFFER_BIT))
 }
 
 }

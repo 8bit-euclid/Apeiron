@@ -65,6 +65,13 @@ String::SetLabel(const std::string& label)
 }
 
 String&
+String::SetFontSize(const char font_size)
+{
+   FOR_EACH(glyph, _Glyphs) glyph->SetFontSize(font_size);
+   return *this;
+}
+
+String&
 String::SetColour(const Colour& colour)
 {
    FOR_EACH(glyph, _Glyphs) glyph->SetColour(colour);

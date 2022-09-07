@@ -129,11 +129,11 @@ struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 
    void Check() const;
 
-   void Draw(GLenum mode) const;
+   void Draw(GLenum attachment) const;
 
-   void Draw(const DArray<GLenum>& modes) const;
+   void Draw(const DArray<GLenum>& attachments) const;
 
-   void Read(GLenum mode) const;
+   void Read(GLenum attachment) const;
 
  private:
    bool _isMultiSampled;
