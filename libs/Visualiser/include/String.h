@@ -43,6 +43,8 @@ class String final : public Model
 
    String& SetLabel(const std::string& label);
 
+   String& SetFontSize(char font_size);
+
    String& SetColour(const Colour& colour);
 
    String& SetScale(const Float width_scale, const std::optional<Float> height_scale = std::nullopt);
