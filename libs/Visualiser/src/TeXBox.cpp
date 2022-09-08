@@ -115,6 +115,8 @@ TeXBox::SetScale(const Float width_scale, const std::optional<Float> height_scal
    ASSERT(!_Dimensions.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
 
    _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
+   ASSERT(_Scale->x() > Zero && _Scale->y() > Zero, "Can only scale by positive numbers.")
+
    FOR_EACH(str, _Strings) str->SetScale(width_scale, height_scale);
    return *this;
 }
@@ -287,8 +289,11 @@ TeXBox::ComputeTeXBoxDimensions()
    _Dimensions = { static_cast<Float>(_GlyphSheet.Width), static_cast<Float>(_GlyphSheet.Height) };
    _Dimensions.value() *= scale_factor;
 
+   // If a custom scaling has been prescribed, scale the dimensions.
+   if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
+
    // Set model mesh.
-   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y())._Mesh;
+   _Geometry = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
 }
 
 void

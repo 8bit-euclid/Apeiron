@@ -20,12 +20,12 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Scene::Scene()
-   : Scene(-One, true) {}
+   : Scene(1000.0, true) {}
 
 Scene::Scene(Float duration, bool adjust_duration)
    : _Duration(duration), _AdjustDuration(adjust_duration)
 {
-   ASSERT(isPositive(duration) || _AdjustDuration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
+   ASSERT(isPositive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
    ASSERT(_isSingleScene, "This constructor should only be called for the first scene.")
 
    _isSingleScene = false;
@@ -34,9 +34,9 @@ Scene::Scene(Float duration, bool adjust_duration)
 Scene::Scene(Scene& prev_scene, Float duration, bool adjust_duration)
    : _Duration(duration), _AdjustDuration(adjust_duration)
 {
-   ASSERT(Zero < duration, "Cannot have a negative duration for a scene.")
-   ASSERT(!_isSingleScene, "This constructor should not be called for the first scene.")
-   ASSERT(_PrevScene, "The current scene has already been assigned a previous scene.")
+   ASSERT(Zero < duration      , "Cannot have a negative duration for a scene.")
+   ASSERT(!_isSingleScene      , "This constructor should not be called for the first scene.")
+   ASSERT(_PrevScene           , "The current scene has already been assigned a previous scene.")
    ASSERT(prev_scene._NextScene, "The previous scene has already been assigned a next scene.")
 
    _PrevScene = &prev_scene;
@@ -134,6 +134,54 @@ void
 Scene::UpdateModels(const Float current_time) { FOR_EACH(_, model, _Models) model->Update(current_time); }
 
 void
+Scene::RenderDirecShadows(Shader& shader)
+{
+   if(_DLights.empty()) return;
+   else ASSERT(_DLights.size() == 1, "Can currently only handle one directional light.")
+
+   shader.Bind();
+   shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
+
+   auto& shadow_map = _DLights["Sun"].ShadowMap();
+   GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()))
+
+//  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
+
+   shadow_map.StartWrite();
+   RenderModels(shader);
+   shadow_map.StopWrite();
+
+//   GLCall(glCullFace(GL_BACK));
+
+   shader.Unbind();
+}
+
+void
+Scene::RenderPointShadows(Shader& shader)
+{
+   if(_PLights.empty()) return;
+   else ASSERT(_PLights.size() < 5, "Can currently handle at most four point lights.")
+
+   shader.Bind();
+
+   FOR_EACH(_, point_light, _PLights)
+   {
+      shader.SetPointLightSpaceMatrices(point_light.LightSpaceMatrices());
+      shader.SetPointPosition(point_light.Position());
+      shader.SetPointFarPlane(PointLight::FarPlane());
+
+      auto& shadow_map = point_light.ShadowMap();
+      GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
+
+      shadow_map.StartWrite();
+      RenderModels(shader);
+      shadow_map.StopWrite();
+   }
+
+   shader.Unbind();
+}
+
+void
 Scene::RenderScene(Shader& shader, Camera& camera)
 {
    ASSERT(_DLights.size() <= 1, "Can currently only handle at most one directional light.")
@@ -165,53 +213,6 @@ Scene::RenderScene(Shader& shader, Camera& camera)
 }
 
 void
-Scene::RenderDirecShadows(Shader& shader)
-{
-   if(_DLights.empty()) return;
-   else ASSERT(_DLights.size() == 1, "Can currently only handle one directional light.")
-
-   shader.Bind();
-   shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
-
-   auto& shadow_map = _DLights["Sun"].ShadowMap();
-   GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
-
-//  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
-
-   shadow_map.StartWrite();
-   RenderModels(shader);
-   shadow_map.StopWrite();
-
-//   GLCall(glCullFace(GL_BACK));
-
-   shader.Unbind();
-}
-
-void
-Scene::RenderPointShadows(Shader& shader)
-{
-   if(_PLights.empty()) return;
-
-   shader.Bind();
-
-   FOR_EACH(_, point_light, _PLights)
-   {
-      shader.SetPointLightSpaceMatrices(point_light.LightSpaceMatrices());
-      shader.SetPointPosition(point_light.Position());
-      shader.SetPointFarPlane(PointLight::FarPlane());
-
-      auto& shadow_map = point_light.ShadowMap();
-      GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
-
-      shadow_map.StartWrite();
-      RenderModels(shader);
-      shadow_map.StopWrite();
-   }
-
-   shader.Unbind();
-}
-
-void
 Scene::RenderModels(Shader& shader)
 {
    // Line segment
@@ -227,10 +228,10 @@ Scene::RenderModels(Shader& shader)
    FOR_EACH(_, model, _Models)
    {
       if(model->_Material.has_value()) shader.UseMaterial(model->_Material.value());
-      if(model->_Texture.has_value())
+      if(model->_TextureInfo.has_value())
       {
          size_t texture_index = 0;
-         FOR_EACH(type_string, texture, _Textures[model->_Texture.value()])
+         FOR_EACH(type_string, texture, _Textures[model->_TextureInfo.value().first])
          {
             // Configure respective texture uniform.
             const auto& uniform_name = TextureUniformString(type_string);
@@ -251,8 +252,8 @@ Scene::RenderModels(Shader& shader)
       model->Render();
 
       // Switch off texture maps
-      if(model->_Texture.has_value())
-         FOR_EACH(type_string, _, _Textures[model->_Texture.value()])
+      if(model->_TextureInfo.has_value())
+         FOR_EACH(type_string, _, _Textures[model->_TextureInfo.value().first])
             shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
    }
 

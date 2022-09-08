@@ -71,11 +71,11 @@ class Scene
 
    void UpdateModels(const Float current_time);
 
-   void RenderScene(Shader& shader, Camera& camera);
-
    void RenderDirecShadows(Shader& shader);
 
    void RenderPointShadows(Shader& shader);
+
+   void RenderScene(Shader& shader, Camera& camera);
 
    void RenderModels(Shader& shader);
 
