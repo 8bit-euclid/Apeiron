@@ -71,7 +71,7 @@ Model::Delete()
 Model&
 Model::SetColour(const SVectorF4& rgb_colour)
 {
-   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
+   FOR_EACH(vertex, _Geometry.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
    return *this;
 }
 
@@ -83,9 +83,15 @@ Model::SetMaterial(const std::string& name, const Float specular_intensity, cons
 }
 
 Model&
-Model::SetTexture(const std::string& material, const std::string& item, const size_t index, const size_t resolution)
+Model::SetTexture(const std::string& material, size_t index, size_t resolution, const Float dispacement_scale)
 {
-   _Texture.emplace(TextureName(material, item, index, resolution));
+   return SetTexture(material, "", index, resolution ,dispacement_scale);
+}
+
+Model&
+Model::SetTexture(const std::string& material, const std::string& item, const size_t index, const size_t resolution, const Float dispacement_scale)
+{
+   _TextureInfo.emplace(std::make_pair(TextureName(material, item, index, resolution), dispacement_scale));
    return *this;
 }
 
@@ -216,9 +222,9 @@ Model::operator=(const Model& model)
    ASSERT(!model._isInitialised, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Mesh            = model._Mesh;
+   _Geometry        = model._Geometry;
    _SubModels       = model._SubModels;
-   _Texture         = model._Texture;
+   _TextureInfo     = model._TextureInfo;
    _Material        = model._Material;
    _Actions         = model._Actions;
    _Centroid        = model._Centroid;
@@ -240,9 +246,9 @@ Model::operator=(Model&& model) noexcept
    ASSERT(!model._isInitialised, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Mesh            = std::move(model._Mesh);
+   _Geometry        = std::move(model._Geometry);
    _SubModels       = std::move(model._SubModels);
-   _Texture         = std::move(model._Texture);
+   _TextureInfo     = std::move(model._TextureInfo);
    _Material        = std::move(model._Material);
    _Centroid        = std::move(model._Centroid);
    _StrokeColour    = std::move(model._StrokeColour);
@@ -271,19 +277,19 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(_isInitialised || !_Mesh.isInitialised()) return;
+   if(_isInitialised || !_Geometry.isInitialised()) return;
 
    // Compute vertex normals.
-   _Mesh.ComputeVertexNormals();
+   _Geometry.ComputeVertexNormals();
 
    // Initialise VAO, VBO, and EBO.
    _VAO.Init();
-   _VBO.Init(_Mesh.Vertices);
-   _EBO.Init(_Mesh.Indices);
+   _VBO.Init(_Geometry.Vertices);
+   _EBO.Init(_Geometry.Indices);
 
    // Add vertex buffer to vertex array object.
    _VAO.Bind();
-   _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
+   _VAO.AddBuffer(_VBO, _Geometry.GetVertexLayout());
    _VAO.Unbind();
 
    // Initialise each sub-model.

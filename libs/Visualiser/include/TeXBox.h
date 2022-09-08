@@ -123,7 +123,7 @@ class TeXBox final : public Model
    fm::Path                 _TeXFile;
    UInt                     _PixelDensity{2000}; // Dots per inch
    constexpr static UInt32  _FontSize10{655360}; // Height of a 10pt font size expressed in LaTeX scaled points (1pt = 65536sp).
-   constexpr static Float   _UnitLength{0.1};    // Unit of length in world space equivalent to a 10pt font size.
+   constexpr static Float   _UnitLength{1.0};    // Unit of length in world space equivalent to a 10pt font size.
 };
 
 

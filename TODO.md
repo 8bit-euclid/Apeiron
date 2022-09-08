@@ -9,35 +9,38 @@
 - [ ] Use pure virtual interfaces where possible
 
 **Visualiser**
-- [ ] LaTeX text/math rendering
-- [ ] Background texture embedding onto text
-- [ ] Texture coordinate transformation uniforms in shaders
 - [x] Off-screen rendering
 - [x] HDR
 - [x] Bloom
 - [x] Check for possible double Gamma correction between HDR and blur shaders
 - [x] Update Texture interface to offer more versatility
 - [x] Multi-sampled frame buffer attachments
+- [x] Investigate Texture move constructor/assignment bug
+- [x] Fix border shrinking bug during off-screen rendering
+- [x] Update shadow shaders to account for transparency
+- [ ] LaTeX text/math rendering
+- [ ] Background texture embedding onto text
+- [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Resurrect line shader
-- [ ] Add switches for post-processing effects
-- [ ] Investigate Texture move constructor/assignment bug
 - [ ] ImGui re-integration
+- [ ] Add switches for post-processing effects
+- [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
-- [ ] GDB debugger
 - [ ] RenderDoc debugger
 - [ ] Perlin noise generator
 - [ ] Curl noise generator
-- [x] Fix border shrinking bug during off-screen rendering
 - [ ] Implement MSAA frame buffers for directional/point shadow maps
+- [ ] Motion blur
 - [ ] Fix parallax occlusion bug
 - [ ] Deferred rendering
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR
+- [ ] GDB debugger
 - [ ] Model loading using Assimp
-- [ ] Motion blur
 - [ ] Depth of field
 - [ ] Vulkan integration
 - [ ] Ray-tracing
 - [ ] Gnuplot writer
 - [ ] Pyplot writer
 - [ ] Wireframe vs solid models
+- [ ] Resurrect spotlights
