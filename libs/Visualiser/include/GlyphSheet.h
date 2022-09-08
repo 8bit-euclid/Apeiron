@@ -25,11 +25,11 @@ namespace aprn::vis {
 template<typename T = Int64>
 struct GlyphBox
 {
-   wchar_t     Char;
-   T           Width;
-   T           Height;
-   T           Depth;
-   SVector2<T> Position;
+   wchar_t     Char{};
+   T           Width{};
+   T           Height{};
+   T           Depth{};
+   SVector2<T> Position{};
 };
 
 struct GlyphSheet
@@ -37,10 +37,9 @@ struct GlyphSheet
    typedef UInt16 IndexT;
    template<class type> using UMap = std::unordered_map<IndexT, type>;
 
-   UMap<GlyphBox<Int64>> Boxes;
-   const Texture*        Image;
-   Int64                 Width;
-   Int64                 Height;
+   UMap<GlyphBox<Int64>> Boxes{};
+   Int64                 Width{};
+   Int64                 Height{};
 };
 
 }

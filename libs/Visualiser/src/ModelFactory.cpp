@@ -73,13 +73,13 @@ ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>
    Model model = Polygon(v0, v1, v2, v3);
 
    // Set tangents
-   FOR_EACH(vertex, model._Mesh.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+   FOR_EACH(vertex, model._Geometry.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 
    // Set texture coordinates
-   model._Mesh.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
-   model._Mesh.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
-   model._Mesh.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
-   model._Mesh.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
+   model._Geometry.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
+   model._Geometry.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
+   model._Geometry.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
+   model._Geometry.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
    return model;
 }
@@ -89,10 +89,10 @@ Model
 ModelFactory::Polygon(const svectors&... vs)
 {
    Model model;
-   model._Mesh.Shading = ShadingType::Flat;
+   model._Geometry.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices  = model._Mesh.Indices;
+   auto& vertices = model._Geometry.Vertices;
+   auto& indices  = model._Geometry.Indices;
 
    constexpr size_t n_vertices = sizeof...(svectors);
    vertices.resize(n_vertices);
@@ -147,10 +147,10 @@ Model
 ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
    Model model;
-   model._Mesh.Shading = ShadingType::Flat;
+   model._Geometry.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices  = model._Mesh.Indices;
+   auto& vertices = model._Geometry.Vertices;
+   auto& indices  = model._Geometry.Indices;
 
    vertices.resize(4);
    vertices[0].Position = SArrayToGlmVec(v0);
@@ -202,10 +202,10 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    SVector3<GLfloat> v7{ x,  y, -z};
 
    Model model;
-   model._Mesh.Shading = ShadingType::Flat;
+   model._Geometry.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices = model._Mesh.Indices;
+   auto& vertices = model._Geometry.Vertices;
+   auto& indices = model._Geometry.Indices;
 
    vertices.resize(8);
    vertices[0].Position = SArrayToGlmVec(v0);

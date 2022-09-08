@@ -61,23 +61,29 @@ class TeXBox final : public Model
 
    TeXBox& SetAnchor(const SVectorF3& anchor);
 
+   TeXBox& SetFontSize(char font_size);
+
    TeXBox& SetColour(const Colour& colour);
 
-   TeXBox& SetDimensions(const Float width, const std::optional<Float> height = std::nullopt);
+   TeXBox& SetDimensions(Float width, std::optional<Float> height = std::nullopt);
 
-   TeXBox& SetScale(const Float width_scale, const std::optional<Float> height_scale = std::nullopt);
+   TeXBox& SetScale(Float width_scale, std::optional<Float> height_scale = std::nullopt);
 
-   TeXBox& SetItalic(const bool is_italic);
+   TeXBox& SetItalic(bool is_italic);
 
-   TeXBox& SetBold(const bool is_bold);
+   TeXBox& SetBold(bool is_bold);
+
+   TeXBox& SetPixelDensity(UInt density);
 
  private:
    friend class Scene;
    friend class Visualiser;
 
-   void Init(const size_t id);
+   void Init(size_t id);
 
    void AddStringText();
+
+   void CompileLaTeXSource();
 
    void CreateTeXBoxImage();
 
@@ -87,17 +93,13 @@ class TeXBox final : public Model
 
    void ReadGlyphBoxAttributes();
 
-   void SetGlyphSheetDimensions();
+   void ComputeGlyphSheetDimensions();
 
    void LinkGlyphSheet();
 
-   void LinkTexture(const Texture* texture);
+   void ComputeTeXBoxDimensions();
 
-   void ComputeDimensions();
-
-   void ComputeScale();
-
-   void SetCompileDirectory(const size_t id);
+   void SetCompileDirectory(size_t id);
 
    fm::Path ImagePath() const;
 
@@ -112,11 +114,16 @@ class TeXBox final : public Model
    std::string              _Label;
    std::string              _Text;
    DArray<SPtr<String>>     _Strings;
-   SVectorF3                _Anchor; // Bottom-left corner
+   SVectorF3                _Anchor;             // Bottom-left corner.
+   char                     _FontSize{10};       // Defaults to a 10pt font.
+   std::optional<SVectorF2> _Dimensions;         // [width, height] in world-space coordinates
    std::optional<SVectorF2> _Scale;
-   std::optional<SVectorF2> _Dimensions;
    GlyphSheet               _GlyphSheet;
    fm::Path                 _CompileDirectory;
+   fm::Path                 _TeXFile;
+   UInt                     _PixelDensity{2000}; // Dots per inch
+   constexpr static UInt32  _FontSize10{655360}; // Height of a 10pt font size expressed in LaTeX scaled points (1pt = 65536sp).
+   constexpr static Float   _UnitLength{1.0};    // Unit of length in world space equivalent to a 10pt font size.
 };
 
 

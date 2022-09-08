@@ -57,7 +57,9 @@ class Model
 
    Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
 
-   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution);
+   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Float dispacement_scale);
+
+   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Float dispacement_scale);
 
    Model& Add(Model& sub_model, const std::string& name);
 
@@ -104,6 +106,8 @@ class Model
    ************************************************************************************************************************************************************/
    inline const glm::mat4& ModelMatrix() const { return _ModelMatrix; }
 
+   inline const Mesh& Geometry() const { return _Geometry; }
+
  protected:
    friend class Visualiser;
    friend class Scene;
@@ -131,10 +135,10 @@ class Model
    template<class T> using Map = std::unordered_map<std::string, T>;
    using ATComp                = ActionTypeComparator;
 
-   Mesh                                           _Mesh;
+   Mesh                                           _Geometry;
    Map<SPtr<Model>>                               _SubModels;
    std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
-   std::optional<std::string>                     _Texture;
+   std::optional<Pair<std::string, Float>>        _TextureInfo;
    std::optional<Material>                        _Material;
    Colour                                         _StrokeColour;
    Colour                                         _FillColour;

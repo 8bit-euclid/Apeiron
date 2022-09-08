@@ -210,20 +210,20 @@ Shader::Create(const std::string& vertex_shader, const std::string& geometry_sha
    // Link shader program
    GLint result = 0;
    GLchar error_log[1024] = {0};
-   GLCall(glLinkProgram(_ID));
-   GLCall(glGetProgramiv(_ID, GL_LINK_STATUS, &result));
+   GLCall(glLinkProgram(_ID))
+   GLCall(glGetProgramiv(_ID, GL_LINK_STATUS, &result))
    if(!result)
    {
-     GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log));
+     GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
      EXIT("Could not link shader program.")
    }
 
    // Validate shader program
    GLCall(glValidateProgram(_ID));
-   GLCall(glGetProgramiv(_ID, GL_VALIDATE_STATUS, &result));
+   GLCall(glGetProgramiv(_ID, GL_VALIDATE_STATUS, &result))
    if(!result)
    {
-      GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log));
+      GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
       EXIT("Could not validate shader program.")
    }
 
@@ -248,18 +248,18 @@ Shader::Compile(unsigned int type, const std::string& source)
    GLCall(glGetShaderiv(shader_ID, GL_COMPILE_STATUS, &result))
    if(!result)
    {
-      GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log));
+      GLCall(glGetShaderInfoLog(shader_ID, sizeof(error_log), nullptr, error_log))
       EXIT("Failed to compile ", (type == GL_VERTEX_SHADER ? "vertex" : type == GL_GEOMETRY_SHADER ? "geometry" : "fragment"), " shader:\n ", error_log)
    }
 
    return shader_ID;
 }
 
-void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(_ID, shader)); }
+void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(_ID, shader)) }
 
-void Shader::Delete(GLuint shader) { GLCall(glDeleteShader(shader)); }
+void Shader::Delete(GLuint shader) { GLCall(glDeleteShader(shader)) }
 
-void Shader::Delete() { GLCall(glDeleteProgram(_ID)); }
+void Shader::Delete() { GLCall(glDeleteProgram(_ID)) }
 
 int Shader::UniformLocation(const std::string& name)
 {

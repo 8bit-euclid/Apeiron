@@ -77,7 +77,7 @@ class Texture
 
    inline const std::optional<Float>& MapScale() const { return _MapScale; }
 
-   inline void SetMapScale(Float scale) { _MapScale.emplace(scale); }
+   inline void SetMapScale(const Float scale) { _MapScale.emplace(scale); }
 
    Texture& operator=(const Texture& texture) = delete;
 

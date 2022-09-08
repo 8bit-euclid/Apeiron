@@ -32,21 +32,21 @@ protected:
 
 public:
   /** Scalar arithmetic operator overloads. */
-  constexpr derived operator+(const std::convertible_to<T> auto _scalar) const;
+  constexpr derived operator+(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator-(const std::convertible_to<T> auto _scalar) const;
+  constexpr derived operator-(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator*(const std::convertible_to<T> auto _scalar) const;
+  constexpr derived operator*(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator/(const std::convertible_to<T> auto _scalar) const;
+  constexpr derived operator/(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived& operator+=(const std::convertible_to<T> auto _scalar);
+  constexpr derived& operator+=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator-=(const std::convertible_to<T> auto _scalar);
+  constexpr derived& operator-=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator*=(const std::convertible_to<T> auto _scalar);
+  constexpr derived& operator*=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator/=(const std::convertible_to<T> auto _scalar);
+  constexpr derived& operator/=(const std::convertible_to<T> auto scalar);
 
   /** Entry-wise binary arithmetic operator overloads. */
   template<class D>
@@ -96,7 +96,7 @@ private:
 
 /** Stand-alone Operator overloads. */
 template<Arithmetic T, class derived>
-constexpr derived operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container);
+constexpr derived operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container);
 
 }//aprn
 

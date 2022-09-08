@@ -16,37 +16,14 @@
 
 #include "../../../include/Global.h"
 #include "LinearAlgebra/include/Vector.h"
-#include "Visualiser/include/Colour.h"
-#include "Visualiser/include/Model.h"
+#include "Colour.h"
+#include "Model.h"
 #include "GlyphSheet.h"
+
+#include <optional>
 
 namespace aprn::vis {
 
-/***************************************************************************************************************************************************************
-* Glyph Attribute Class
-***************************************************************************************************************************************************************/
-template<typename T>
-class GlyphAttribute
-{
- public:
-   GlyphAttribute() {}
-
-   GlyphAttribute(const T& attribute) : _Data(attribute) {}
-
-   inline void Set(const T& attribute) { _isSet = true; _Data = attribute; }
-
-   inline bool isSet() const { return _isSet; }
-
-   inline const T& Get() const { return _Data; }
-
- private:
-   T    _Data{};
-   bool _isSet{false};
-};
-
-/***************************************************************************************************************************************************************
-* Glyph Class
-***************************************************************************************************************************************************************/
 class Glyph final : public Model
 {
  public:
@@ -63,6 +40,8 @@ class Glyph final : public Model
    Glyph& Set(Glyph&& glyph);
 
    Glyph& SetLabel(const std::string& label);
+
+   Glyph& SetFontSize(char font_size);
 
    Glyph& SetColour(const Colour& colour);
 
@@ -99,19 +78,20 @@ class Glyph final : public Model
 
    inline void SetAnchor(const SVectorF3* anchor) { _Anchor = anchor; }
 
-   std::string               _Label;
-   std::string               _Text;
-   GlyphSheet::IndexT        _Index;
-   GlyphAttribute<Colour>    _Colour{};
-   GlyphAttribute<SVectorF2> _Scale{{One, One}};
-   GlyphAttribute<bool>      _isItalic{false};
-   GlyphAttribute<bool>      _isBold{false};
-   GlyphBox<Float>           _Box;
-   const SVectorF3*          _Anchor{}; // Bottom-left corner of the parent TeX-box
-   const GlyphSheet*         _GlyphSheet{};
-   DArray<SPtr<Glyph>>       _SubGlyphs;
-   bool                      _Render{true};
-   bool                      _isInit{false};
+   std::string              _Label;
+   std::string              _Text;
+   GlyphSheet::IndexT       _Index;
+   std::optional<char>      _FontSize{10};
+   std::optional<Colour>    _Colour{};
+   std::optional<SVectorF2> _Scale{{One, One}};
+   std::optional<bool>      _isItalic{false};
+   std::optional<bool>      _isBold{false};
+   GlyphBox<Float>          _Box;
+   const SVectorF3*         _Anchor{}; // Bottom-left corner of the parent TeX-box
+   const GlyphSheet*        _GlyphSheet{};
+   DArray<SPtr<Glyph>>      _SubGlyphs;
+   bool                     _Render{true};
+   bool                     _isInit{false};
 
    /** Friend unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;
