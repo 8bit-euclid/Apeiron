@@ -58,7 +58,8 @@ set(LINK_LIBRARIES
         FileManagerLibrary
         FunctionalLibrary
         LinearAlgebraLibrary
-        glfw)
+        glfw
+        ImGui)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
 target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../dependencies/stb_image)

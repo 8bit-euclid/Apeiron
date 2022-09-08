@@ -23,6 +23,10 @@
 #include <string>
 #include <string_view>
 
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 using namespace aprn::test;
 
 int main(void)

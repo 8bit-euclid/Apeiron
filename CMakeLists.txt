@@ -98,6 +98,18 @@ if(NOT TBB_FOUND)
 endif(NOT TBB_FOUND)
 
 #***************************************************************************************************************************************************************
+# Build instructions for ImGui and its dependencies.
+#***************************************************************************************************************************************************************
+
+# Compile ImGui as static library
+set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/dependencies/imgui)
+file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp)
+add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
+target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
+target_link_libraries(ImGui glfw)
+target_compile_options(ImGui PRIVATE -Wno-old-style-cast -Wno-sign-promo -Wno-strict-overflow -Wno-cast-qual)
+
+#***************************************************************************************************************************************************************
 # Setup project sub-directories.
 #***************************************************************************************************************************************************************
 include_directories(${PROJECT_SOURCE_DIR}/libs)
@@ -148,6 +160,7 @@ target_link_libraries(${PROJECT_NAME}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
+        ImGui
         tbb)
 
 #***************************************************************************************************************************************************************
