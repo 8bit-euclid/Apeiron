@@ -77,41 +77,35 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
    // Common settings
    if(!_isMultiSampled)
    {
-      GLCall(glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-      GLCall(glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+      GLCall(glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR))
+      GLCall(glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR))
    }
 
    // OpenGL type-specific settings
    if(gl_type == OneOf(GL_TEXTURE_2D, GL_TEXTURE_2D_MULTISAMPLE))
    {
-     if(wrap_type == GL_CLAMP_TO_BORDER) { GLCall(glTexParameterfv(gl_type, GL_TEXTURE_BORDER_COLOR, border_colour.data())); }
+     if(wrap_type == GL_CLAMP_TO_BORDER) GLCall(glTexParameterfv(gl_type, GL_TEXTURE_BORDER_COLOR, border_colour.data()))
 
      if(gl_type == GL_TEXTURE_2D)
      {
-        GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type));
-        GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type));
+        GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type))
+        GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
         GLCall(glTexImage2D(gl_type, 0, internal_format, _Width, _Height, 0, format, data_type, _LocalBuffer.get()));
      }
-     else
-     {
-        GLCall(glTexImage2DMultisample(gl_type, _SampleCount, internal_format, _Width, _Height, GL_TRUE));
-     }
+     else GLCall(glTexImage2DMultisample(gl_type, _SampleCount, internal_format, _Width, _Height, GL_TRUE));
    }
    else if(gl_type == GL_TEXTURE_CUBE_MAP)
    {
      ASSERT(wrap_type == GL_CLAMP_TO_EDGE, "Only GL_CLAMP_TO_EDGE is currently supported for cube maps.")
 
-     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type));
-     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type));
-     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, wrap_type));
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type))
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
+     GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, wrap_type))
 
-     FOR(i, 6) { GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, _Width, _Height, 0, format, data_type, nullptr)); }
+     FOR(i, 6) GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, _Width, _Height, 0, format, data_type, nullptr))
    }
 
-   if(!_isFBOAttachment)
-   {
-      GLCall(glGenerateMipmap(gl_type));
-   }
+   if(!_isFBOAttachment) GLCall(glGenerateMipmap(gl_type))
 
    Unbind();
 }
@@ -119,8 +113,8 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
 void
 Texture::Bind(const UInt slot) const
 {
-   GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-   GLCall(glBindTexture(OpenGLType(), _ID));
+   GLCall(glActiveTexture(GL_TEXTURE0 + slot))
+   GLCall(glBindTexture(OpenGLType(), _ID))
 }
 
 void
@@ -129,7 +123,7 @@ Texture::Unbind() const { GLCall(glBindTexture(OpenGLType(), 0)) }
 void
 Texture::Delete()
 {
-   GLCall(glDeleteTextures(1, &_ID));
+   GLCall(glDeleteTextures(1, &_ID))
    _ID = 0;
 }
 

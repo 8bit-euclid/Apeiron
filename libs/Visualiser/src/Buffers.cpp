@@ -34,10 +34,10 @@ Buffer<T>::Init()
 {
    ASSERT(glfwGetCurrentContext(), "Cannot intialise buffer without an OpenGL context.")
 
-   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &_ID)); }
-   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &_ID)); }
-   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &_ID)); }
-   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &_ID)); }
+   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &_ID)) }
+   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &_ID)) }
+   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &_ID)) }
+   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &_ID)) }
    else throw "Cannot initialise buffer - unrecognised buffer type.";
 }
 
@@ -55,10 +55,10 @@ Buffer<T>::Delete()
 {
    if(_ID != 0)
    {
-      if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glDeleteBuffers(1, &_ID)); }
-      else if(T == BT::VAO) { GLCall(glDeleteVertexArrays(1, &_ID)); }
-      else if(T == BT::FBO) { GLCall(glDeleteFramebuffers(1, &_ID)); }
-      else if(T == BT::RBO) { GLCall(glDeleteRenderbuffers(1, &_ID)); }
+      if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glDeleteBuffers(1, &_ID)) }
+      else if(T == BT::VAO) { GLCall(glDeleteVertexArrays(1, &_ID)) }
+      else if(T == BT::FBO) { GLCall(glDeleteFramebuffers(1, &_ID)) }
+      else if(T == BT::RBO) { GLCall(glDeleteRenderbuffers(1, &_ID)) }
       else throw "Cannot delete buffer - unrecognised buffer type.";
       _ID = 0;
    }
@@ -78,12 +78,12 @@ template<BufferType T>
 void
 Buffer<T>::Bind(const GLuint id) const
 {
-   if constexpr(T == BT::VBO)  { GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id)); }
-   else if     (T == BT::EBO)  { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id)); }
-   else if     (T == BT::SSBO) { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id)); }
-   else if     (T == BT::FBO)  { GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id)); }
-   else if     (T == BT::RBO)  { GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id)); }
-   else if     (T == BT::VAO)  { GLCall(glBindVertexArray(id)); }
+   if constexpr(T == BT::VBO)  { GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id)) }
+   else if     (T == BT::EBO)  { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id)) }
+   else if     (T == BT::SSBO) { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id)) }
+   else if     (T == BT::FBO)  { GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id)) }
+   else if     (T == BT::RBO)  { GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id)) }
+   else if     (T == BT::VAO)  { GLCall(glBindVertexArray(id)) }
    else throw "Cannot bind/unbind buffer - unrecognised buffer type.";
 }
 
@@ -111,7 +111,7 @@ VertexBuffer::Init(const DynamicArray<Vertex>& vertices)
 void
 VertexBuffer::Load(const DynamicArray<Vertex>& vertices) const
 {
-   GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
+   GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW))
 }
 
 /***************************************************************************************************************************************************************
@@ -126,8 +126,8 @@ VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeL
    FOR(i, vertex_layout.Attributes.size())
    {
       const auto& element = vertex_layout.Attributes[i];
-      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, vertex_layout.Stride, reinterpret_cast<void*>(offset)));
-      GLCall(glEnableVertexAttribArray(i));
+      GLCall(glVertexAttribPointer(i, element.nComponents, element.GLType, element.isNormalised, vertex_layout.Stride, reinterpret_cast<void*>(offset)))
+      GLCall(glEnableVertexAttribArray(i))
 
       offset += element.nComponents * GLTypeSize(element.GLType);
    }
@@ -207,13 +207,13 @@ FrameBuffer::Check() const
 }
 
 void
-FrameBuffer::Draw(const GLenum mode) const { GLCall(glNamedFramebufferDrawBuffer(_ID, mode)); }
+FrameBuffer::Draw(const GLenum attachment) const { GLCall(glNamedFramebufferDrawBuffer(_ID, attachment)) }
 
 void
-FrameBuffer::Draw(const DArray<GLenum>& modes) const { GLCall(glNamedFramebufferDrawBuffers(_ID, modes.size(), modes.data())); }
+FrameBuffer::Draw(const DArray<GLenum>& attachments) const { GLCall(glNamedFramebufferDrawBuffers(_ID, attachments.size(), attachments.data())) }
 
 void
-FrameBuffer::Read(const GLenum mode) const { GLCall(glNamedFramebufferReadBuffer(_ID, mode)); }
+FrameBuffer::Read(const GLenum attachment) const { GLCall(glNamedFramebufferReadBuffer(_ID, attachment)) }
 
 /***************************************************************************************************************************************************************
 * Render Buffer Class

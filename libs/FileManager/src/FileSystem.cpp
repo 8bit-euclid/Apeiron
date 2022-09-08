@@ -162,7 +162,7 @@ CompileTeXFile(const std::string& tex_compiler, const Path& tex_path)
 }
 
 void
-ConvertPDFtoPNG(Path pdf_path, const unsigned pixel_density)
+ConvertPDFtoPNG(Path pdf_path, const UInt pixel_density)
 {
    ASSERT(CommandExists("magick"), "Please install Magick to convert a .pdf file to a .png file.")
    ASSERT(pdf_path.extension() == ".pdf", "The given file has the extension ", pdf_path.extension(), ". Expected a .pdf file.")

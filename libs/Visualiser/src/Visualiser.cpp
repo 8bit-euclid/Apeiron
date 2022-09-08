@@ -50,7 +50,6 @@ void
 Visualiser::Render()
 {
    Init();
-
    while(_Window.isOpen())
    {
       BeginFrame();
@@ -160,12 +159,7 @@ Visualiser::InitTeXBoxes()
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    TeXBox::InitTeXDirectory();
-   FOR(i, tex_boxes.size())
-   {
-      auto tex_box = tex_boxes[i].second;
-      tex_box->_Mesh = ModelFactory::Rectangle(11.0, 2.0)._Mesh;
-      tex_box->Init(i);
-   }
+   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
 
    // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
@@ -180,16 +174,13 @@ Visualiser::InitTeXBoxes()
          texture_files.emplace(type_string, Texture(texture_type, tex_box->ImagePath()));
          _Textures.emplace(texture_name, std::move(texture_files));
 
-         // Link texture to the tex-box's glyphsheet image.
-         tex_box->LinkTexture(&_Textures.at(texture_name).at(type_string));
-
          // Point to the textures from the scene.
          UMap<Texture&> texture_file_map;
          FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
          scene._Textures.emplace(texture_name, texture_file_map);
 
          // Point to the texture from the tex-box model.
-         tex_box->_Texture = texture_name;
+         tex_box->_TextureInfo = { texture_name, Zero };
       }
 }
 
@@ -199,36 +190,42 @@ Visualiser::InitTextures()
    // Load model textures
    FOR_EACH(_, scene, _Scenes)
       FOR_EACH_CONST(_, model, scene._Models)
-         if(model->_Texture.has_value() && !_Textures.contains(model->_Texture.value()))
+         if(model->_TextureInfo.has_value())
          {
-            // Add all files associated to the given texture
-            const auto& texture_name = model->_Texture.value();
-            const auto  texture_list = { TextureType::Diffuse,
-                                         TextureType::Normal,
-                                         TextureType::Displacement }; // Add appropriate enums if more textures are to be read
-            UMap<Texture> texture_files;
-            FOR_EACH_CONST(texture_type, texture_list)
+            const auto& texture_info = model->_TextureInfo;
+            const auto& texture_name = texture_info.value().first;
+
+            if(!_Textures.contains(texture_name))
             {
-               const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
-               if(path.has_value())
+               // Add all files associated to the given texture
+               const auto  texture_list = { TextureType::Diffuse,
+                                            TextureType::Normal,
+                                            TextureType::Displacement }; // Add appropriate enums if more textures are to be read
+               UMap<Texture> texture_files;
+               FOR_EACH_CONST(texture_type, texture_list)
                {
-                  texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
-                  if(texture_type == TextureType::Displacement)
+                  const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
+                  if(path.has_value())
                   {
-                     const Float displacement_map_scale = 0.08; // TODO: Temporarily hard-code
-                     texture_files.at(TextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
+                     texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
+                     if(texture_type == TextureType::Displacement)
+                     {
+                        const auto& displacement_map_scale = texture_info.value().second;
+                        texture_files.at(TextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
+                     }
                   }
+                  else EXIT("Could not locate the texture files of texture ", texture_name)
                }
-               else EXIT("Could not locate the texture files of texture ", texture_name)
+
+               // Add texture files to the list of textures
+               _Textures.emplace(texture_name, std::move(texture_files));
+
+               // Point to the textures from the scene
+               UMap<Texture&> texture_file_map;
+               FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+               scene._Textures.emplace(texture_name, texture_file_map);
             }
 
-            // Add texture files to the list of textures
-            _Textures.emplace(texture_name, std::move(texture_files));
-
-            // Point to the textures from the scene
-            UMap<Texture&> texture_file_map;
-            FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-            scene._Textures.emplace(texture_name, texture_file_map);
          }
 }
 

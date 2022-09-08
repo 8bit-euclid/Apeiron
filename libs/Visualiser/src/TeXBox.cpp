@@ -87,6 +87,13 @@ TeXBox::SetAnchor(const SVectorF3& anchor)
 }
 
 TeXBox&
+TeXBox::SetFontSize(const char font_size)
+{
+   FOR_EACH(str, _Strings) str->SetFontSize(font_size);
+   return *this;
+}
+
+TeXBox&
 TeXBox::SetColour(const Colour& colour)
 {
    FOR_EACH(str, _Strings) str->SetColour(colour);
@@ -108,6 +115,8 @@ TeXBox::SetScale(const Float width_scale, const std::optional<Float> height_scal
    ASSERT(!_Dimensions.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
 
    _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
+   ASSERT(_Scale->x() > Zero && _Scale->y() > Zero, "Can only scale by positive numbers.")
+
    FOR_EACH(str, _Strings) str->SetScale(width_scale, height_scale);
    return *this;
 }
@@ -126,6 +135,13 @@ TeXBox::SetBold(const bool is_bold)
    return *this;
 }
 
+TeXBox&
+TeXBox::SetPixelDensity(const UInt density)
+{
+   _PixelDensity = density;
+   return *this;
+}
+
 /***************************************************************************************************************************************************************
 * TeXBox Private Interface
 ***************************************************************************************************************************************************************/
@@ -134,9 +150,11 @@ TeXBox::Init(const size_t id)
 {
    AddStringText();
    SetCompileDirectory(id);
+   CompileLaTeXSource();
    CreateTeXBoxImage();
    CreateGlyphSheet();
-   Model::Init(); // Embed TeX-box into a rectangular model with the same position, height, and width, and initialise model.
+   ComputeTeXBoxDimensions();
+   Model::Init();
 }
 
 void
@@ -153,7 +171,7 @@ TeXBox::AddStringText()
 }
 
 void
-TeXBox::CreateTeXBoxImage()
+TeXBox::CompileLaTeXSource()
 {
    const auto& comp_dir = _CompileDirectory;
 
@@ -164,22 +182,24 @@ TeXBox::CreateTeXBoxImage()
    fm::CopyFile(LuaTeXTemplate(), comp_dir);
 
    // Transfer TeX-box text to the .tex file.
-   fm::Path file_path = comp_dir / LaTeXTemplate().filename();
-   fm::File file(file_path, fm::Mode::Append);
+   _TeXFile = comp_dir / LaTeXTemplate().filename();
+   fm::File file(_TeXFile, fm::Mode::Append);
    file.Write("\n", _Text, "\n\\end{document}");
    file.Close();
 
    // Compile LaTeX source code.
-   fm::CompileTeXFile("lualatex", file_path);
-   fm::ConvertPDFtoPNG(file_path.replace_extension(".pdf"), 2000); // NOTE: pixel density is currently hard-coded.
+   fm::CompileTeXFile("lualatex", _TeXFile);
 }
+
+void
+TeXBox::CreateTeXBoxImage() { fm::ConvertPDFtoPNG(_TeXFile.replace_extension(".pdf"), _PixelDensity); }
 
 void
 TeXBox::CreateGlyphSheet()
 {
    ReadGlyphBoxPositions();
    ReadGlyphBoxAttributes();
-   SetGlyphSheetDimensions();
+   ComputeGlyphSheetDimensions();
    LinkGlyphSheet();
 }
 
@@ -231,7 +251,7 @@ TeXBox::ReadGlyphBoxAttributes()
 }
 
 void
-TeXBox::SetGlyphSheetDimensions()
+TeXBox::ComputeGlyphSheetDimensions()
 {
    using int_T  = decltype(_GlyphSheet.Width);
    using coor_T = SVector2<int_T>;
@@ -259,18 +279,21 @@ void
 TeXBox::LinkGlyphSheet() { FOR_EACH(str, _Strings) str->LinkGlyphSheet(&_GlyphSheet); }
 
 void
-TeXBox::LinkTexture(const Texture* texture) { _GlyphSheet.Image = texture; }
-
-void
-TeXBox::ComputeDimensions()
+TeXBox::ComputeTeXBoxDimensions()
 {
+   ASSERT(_GlyphSheet.Width && _GlyphSheet.Height, "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
+   if(_Dimensions.has_value()) return;
 
-}
+   // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
+   const Float scale_factor = _UnitLength / static_cast<Float>(_FontSize10);
+   _Dimensions = { static_cast<Float>(_GlyphSheet.Width), static_cast<Float>(_GlyphSheet.Height) };
+   _Dimensions.value() *= scale_factor;
 
-void
-TeXBox::ComputeScale()
-{
+   // If a custom scaling has been prescribed, scale the dimensions.
+   if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
 
+   // Set model mesh.
+   _Geometry = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
 }
 
 void

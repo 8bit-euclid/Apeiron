@@ -20,71 +20,71 @@ namespace detail {
 /** Scalar arithmetic operator overloads. */
 template<Arithmetic T, class derived>
 constexpr derived
-NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto _scalar) const
+NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto scalar) const
 {
   derived out(Derived());
-  FOR_EACH(entry, out) entry += _scalar;
+  FOR_EACH(entry, out) entry += scalar;
   return out;
 }
 
 template<Arithmetic T, class derived>
 constexpr derived
-NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto _scalar) const
+NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto scalar) const
 {
   derived out(Derived());
-  FOR_EACH(entry, out) entry -= _scalar;
+  FOR_EACH(entry, out) entry -= scalar;
   return out;
 }
 
 template<Arithmetic T, class derived>
 constexpr derived
-NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto _scalar) const
+NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto scalar) const
 {
   derived out(Derived());
-  FOR_EACH(entry, out) entry *= _scalar;
+  FOR_EACH(entry, out) entry *= scalar;
   return out;
 }
 
 template<Arithmetic T, class derived>
 constexpr derived
-NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto _scalar) const
+NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto scalar) const
 {
-  DEBUG_ASSERT(!isEqual(_scalar, Zero), "Cannot divide by zero.")
+  DEBUG_ASSERT(!isEqual(scalar, Zero), "Cannot divide by zero.")
   derived out(Derived());
-  FOR_EACH(entry, out) entry /= _scalar;
+  FOR_EACH(entry, out) entry /= scalar;
   return out;
 }
 
 template<Arithmetic T, class derived>
 constexpr derived&
-NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto _scalar)
+NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto scalar)
 {
-  FOR_EACH(entry, Derived()) entry += _scalar;
+  FOR_EACH(entry, Derived()) entry += scalar;
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 constexpr derived&
-NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto _scalar)
+NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto scalar)
 {
-  FOR_EACH(entry, Derived()) entry -= _scalar;
+  FOR_EACH(entry, Derived()) entry -= scalar;
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 constexpr derived&
-NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto _scalar)
+NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto scalar)
 {
-  FOR_EACH(entry, Derived()) entry *= _scalar;
+  FOR_EACH(entry, Derived()) entry *= scalar;
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 constexpr derived&
-NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto _scalar)
+NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto scalar)
 {
-  DEBUG_ASSERT(!isEqual(_scalar, Zero), "Cannot divide by zero.")
-  FOR_EACH(entry, Derived()) entry /= _scalar;
+  DEBUG_ASSERT(!isEqual(scalar, Zero), "Cannot divide by zero.")
+  FOR_EACH(entry, Derived()) entry /= scalar;
   return Derived();
 }
 
@@ -191,6 +191,6 @@ void NumericContainer<T, derived>::ResetRandomiser(const T min, const T max) { R
 /** Stand-alone Operator overloads. */
 template<Arithmetic T, class derived>
 constexpr derived
-operator*(const std::convertible_to<T> auto _scalar, const detail::NumericContainer<T, derived>& _container) { return _container.Derived() * _scalar; }
+operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container) { return _container.Derived() * scalar; }
 
 }//aprn
