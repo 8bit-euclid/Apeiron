@@ -20,6 +20,7 @@
 
 #include "Camera.h"
 #include "GlyphSheet.h"
+#include "GUI.h"
 #include "ModelFactory.h"
 #include "Light.h"
 #include "Model.h"
@@ -56,7 +57,11 @@ class Visualiser
  private:
    void Init();
 
+   void InitWindow();
+
    void InitOpenGL();
+
+   void InitGUI();
 
    void InitScenes();
 
@@ -92,6 +97,7 @@ class Visualiser
    PostProcessor       _PostProcessor;
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
+   GUI                 _GUI;
    bool                _ViewPortModified{};
 };
 

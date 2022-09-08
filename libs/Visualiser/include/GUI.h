@@ -12,42 +12,23 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
+#pragma once
+
 #include "../include/Global.h"
-#include "../include/Testing.h"
-#include "Visualiser/include/Visualiser.h"
-#include "Visualiser/include/Scene.h"
-
-#include "FileManager/include/File.h"
-#include "FileManager/include/FileSystem.h"
-
-#include <string>
-#include <string_view>
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <GLFW/glfw3.h>
 
-using namespace aprn::test;
+namespace aprn::vis {
 
-int main(void)
+class GUI
 {
-//   RotatingCube();
-//   EuclidsElementsEp1();
+ public:
+   void Init(GLFWwindow* window);
 
-   return 0;
+ private:
+};
+
 }
-
-//  visualiser.Shaders.emplace_back("libs/Visualiser/resources/shaders/Line.glsl");
-//  visualiser.Shaders[0].Bind();
-//  visualiser.Shaders[0].SetUniform1f("u_thickness", 20.0);
-//  visualiser.Shaders[0].Unbind();
-//  DynamicArray<glm::vec4> varray;
-//  varray.emplace_back(glm::vec4(-0.6f, -0.6f, 0.0f, 1.0f));
-//  varray.emplace_back(glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f));
-//  varray.emplace_back(glm::vec4(0.5f, 0.5f, 0.0f, 1.0f));
-//  varray.emplace_back(glm::vec4(0.6f, 0.6f, 0.0f, 1.0f));
-//  ShaderStorageBuffer shader_storage_buffer(varray);
-//  VertexArray vertex_array;
-//  vertex_array.Bind();
-
-//  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
