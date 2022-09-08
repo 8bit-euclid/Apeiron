@@ -10,6 +10,7 @@ set(SOURCE_FILES
         include/GLTypes.h
         include/Glyph.h
         include/GlyphSheet.h
+        include/GUI.h
         include/Light.h
         include/ParseTeX.h
         include/ParseTeX.tpp
@@ -34,6 +35,7 @@ set(SOURCE_FILES
         src/Buffers.cpp
         src/Camera.cpp
         src/Glyph.cpp
+        src/GUI.cpp
         src/Light.cpp
         src/ParseTeX.cpp
         src/Mesh.cpp

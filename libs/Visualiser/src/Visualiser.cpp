@@ -49,7 +49,10 @@ Visualiser::Add(Camera&& camera, const std::string& name)
 void
 Visualiser::Render()
 {
+   // Initialise all visualiser entities.
    Init();
+
+   // Run main render loop.
    while(_Window.isOpen())
    {
       BeginFrame();
@@ -67,21 +70,24 @@ Visualiser::Render()
 void
 Visualiser::Init()
 {
-   // Open a window and set its title.
-   _Window.Open();
-   _Window.SetTitle("Apeiron");
-
-   // Initialise all scenes (and their models and lights), tex-boxes, textures, cameras, shaders, and the post-processor.
+   InitWindow();
    InitOpenGL();
+   InitGUI();
    InitScenes();
    InitTeXBoxes();
    InitTextures();
    InitCameras();
    InitShaders();
    InitPostProcessor();
-
-   // Zero the clock time.
    _Window.InitTime();
+}
+
+void
+Visualiser::InitWindow()
+{
+   // Open a window and set its title.
+   _Window.Open();
+   _Window.SetTitle("Apeiron");
 }
 
 void
@@ -108,6 +114,14 @@ Visualiser::InitOpenGL()
    GLCall(glEnable(GL_BLEND))
    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 //   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE))
+}
+
+void
+Visualiser::InitGUI()
+{
+#ifdef DEBUG_MODE
+   _GUI.Init(_Window._GlfwWindow);
+#endif
 }
 
 void
