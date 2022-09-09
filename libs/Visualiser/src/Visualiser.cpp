@@ -52,7 +52,6 @@ Visualiser::Animate()
    // Initialise all visualiser entities.
    Init();
 
-
    // Run main render loop.
    while(_Window.isOpen())
    {
@@ -251,9 +250,9 @@ Visualiser::InitTextures()
 void
 Visualiser::InitCameras()
 {
-   // Set default settings of the main camera.
+   // Set default settings of the current active camera.
    ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
-   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
+   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 2.0f), 0.0, 0.0);
    _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 }
 
@@ -281,7 +280,7 @@ Visualiser::BeginFrame()
 #ifdef DEBUG_MODE
    _GUI.BeginFrame();
 #endif
-   EXIT("Testing...")
+
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
    _Window.ComputeDeltaTime();
    _Window.ComputeFrameRate();
@@ -308,9 +307,9 @@ Visualiser::UpdateScene()
 void
 Visualiser::HandleUserInputs()
 {
-   // Handle key, cursor, and mouse wheel inputs.
+   // Handle cursor, key, and mouse wheel inputs.
+   if(_HideCursor) _ActiveCamera->CursorControl(_Window.CursorDisplacement());
    _ActiveCamera->KeyControl(_Window._Keys, _Window.DeltaTime());
-   _ActiveCamera->CursorControl(_Window.CursorDisplacement());
    _ActiveCamera->WheelControl(_Window.WheelDisplacement());
 
    // If the viewport was modified, update the view frustum and adjust line shader resolution.

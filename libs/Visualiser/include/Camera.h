@@ -74,7 +74,7 @@ class Camera
 
    constexpr static glm::vec3 _WorldUp    {0.0f, 1.0f, 0.0f};
    constexpr static GLfloat   _MotionSensitivity      {6.0f};
-   constexpr static GLfloat   _RotationSensitivity    {7.0f};
+   constexpr static GLfloat   _RotationSensitivity    {7.5f};
    constexpr static GLfloat   _MouseCursorSensitivity {0.4f};
    constexpr static GLfloat   _MouseWheelSensitivity  {1.0f};
 };
