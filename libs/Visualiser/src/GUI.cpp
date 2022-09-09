@@ -28,6 +28,37 @@ GUI::Init(GLFWwindow* window)
 
    ImGui_ImplGlfw_InitForOpenGL(window, true);
    ImGui_ImplOpenGL3_Init("version 460");
+
+   _isInitialised = true;
+}
+
+void
+GUI::BeginFrame()
+{
+   DEBUG_ASSERT(_isInitialised, "The GUI has not yet been initialised.")
+
+   ImGui_ImplOpenGL3_NewFrame();
+   ImGui_ImplGlfw_NewFrame();
+   ImGui::NewFrame();
+}
+
+void
+GUI::Render()
+{
+   ImGui::Begin("Debugging GUI");
+   ImGui::Text("Hello World!");
+   ImGui::End();
+
+   ImGui::Render();
+   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void
+GUI::Terminate()
+{
+   ImGui_ImplOpenGL3_Shutdown();
+   ImGui_ImplGlfw_Shutdown();
+   ImGui::DestroyContext();
 }
 
 }

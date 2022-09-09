@@ -35,7 +35,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <map>
+#include <unordered_map>
 
 namespace aprn::vis {
 
@@ -52,7 +52,7 @@ class Visualiser
 
    void Add(Camera&& camera, const std::string& name = "");
 
-   void Render();
+   void Animate();
 
  private:
    void Init();
@@ -85,7 +85,11 @@ class Visualiser
 
    void PostProcess();
 
+   void RenderGUI();
+
    void EndFrame();
+
+   void Terminate();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
 
@@ -98,7 +102,7 @@ class Visualiser
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
    GUI                 _GUI;
-   bool                _ViewPortModified{};
+   bool                _wasViewPortModified{};
 };
 
 }
