@@ -103,6 +103,7 @@ class Visualiser
    Scene*              _CurrentScene;
    GUI                 _GUI;
    bool                _wasViewPortModified{};
+   bool                _HideCursor{false};
 };
 
 }
