@@ -28,7 +28,14 @@ class GUI
  public:
    void Init(GLFWwindow* window);
 
+   void BeginFrame();
+
+   void Render();
+
+   void Terminate();
+
  private:
+   bool _isInitialised{};
 };
 
 }

@@ -47,10 +47,11 @@ Visualiser::Add(Camera&& camera, const std::string& name)
 }
 
 void
-Visualiser::Render()
+Visualiser::Animate()
 {
    // Initialise all visualiser entities.
    Init();
+
 
    // Run main render loop.
    while(_Window.isOpen())
@@ -60,8 +61,12 @@ Visualiser::Render()
       HandleUserInputs();
       RenderScene();
       PostProcess();
+      RenderGUI();
       EndFrame();
    }
+
+   // Finalise and destroy contexts.
+   Terminate();
 }
 
 /***************************************************************************************************************************************************************
@@ -272,10 +277,15 @@ Visualiser::BeginFrame()
    // Clear currently bound frame buffer.
    ClearFrameBuffer();
 
+   // Set new GUI frame, if debugging.
+#ifdef DEBUG_MODE
+   _GUI.BeginFrame();
+#endif
+   EXIT("Testing...")
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
    _Window.ComputeDeltaTime();
    _Window.ComputeFrameRate();
-   _ViewPortModified = _Window.isViewportModified();
+   _wasViewPortModified = _Window.isViewportModified();
 }
 
 void
@@ -304,7 +314,7 @@ Visualiser::HandleUserInputs()
    _ActiveCamera->WheelControl(_Window.WheelDisplacement());
 
    // If the viewport was modified, update the view frustum and adjust line shader resolution.
-   if(_ViewPortModified)
+   if(_wasViewPortModified)
    {
       _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio());
       _Shaders.at("Line").SetUniform2f("u_resolution", _Window._ViewportDimensions[0], _Window._ViewportDimensions[1]);
@@ -335,10 +345,28 @@ void
 Visualiser::PostProcess() { _PostProcessor.Render(); }
 
 void
+Visualiser::RenderGUI()
+{
+   // Render GUI elements, if debugging.
+#ifdef DEBUG_MODE
+   _GUI.Render();
+#endif
+}
+
+void
 Visualiser::EndFrame()
 {
    _Window.SwapBuffers();
    glfwPollEvents();
+}
+
+void
+Visualiser::Terminate()
+{
+   // Terminate GUI, if debugging.
+#ifdef DEBUG_MODE
+   _GUI.Terminate();
+#endif
 }
 
 }

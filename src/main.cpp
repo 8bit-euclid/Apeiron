@@ -32,7 +32,7 @@ using namespace aprn::test;
 int main(void)
 {
 //   RotatingCube();
-//   EuclidsElementsEp1();
+   EuclidsElementsEp1();
 
    return 0;
 }
