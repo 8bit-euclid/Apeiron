@@ -21,10 +21,7 @@ Camera::Camera()
 
 Camera::Camera(const glm::vec3& position, GLfloat pitch, GLfloat yaw)
   : _Position(position), _Front(glm::vec3(0.0f, 0.0f, -1.0f)), _Pitch(pitch), _Yaw(yaw), _AspectRatio(0.0), _FieldOfView(45.0), _NearPlane(0.0),
-    _FarPlane(0.0)
-{
-  SetOrientation(_Position, _Pitch, _Yaw);
-}
+    _FarPlane(0.0) { SetOrientation(_Position, _Pitch, _Yaw); }
 
 void Camera::SetOrientation(const glm::vec3& position, GLfloat pitch, GLfloat yaw)
 {
@@ -80,6 +77,9 @@ void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& 
    // Yaw control
    if(keys[GLFW_KEY_LEFT])  _Yaw -= _RotationSensitivity * displacement;
    if(keys[GLFW_KEY_RIGHT]) _Yaw += _RotationSensitivity * displacement;
+
+   // Update camera orientation
+   SetOrientation(_Position, _Pitch, _Yaw);
 }
 
 void Camera::CursorControl(const SVectorF2& cursor_displacement)

@@ -40,6 +40,8 @@ class Window
 
    void Close();
 
+   void Terminate();
+
    bool isViewportModified();
 
    void ResetViewport() const;
@@ -103,8 +105,8 @@ class Window
 
 inline void ClearFrameBuffer()
 {
-   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+   GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f))
+   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
    GLCall(glEnable(GL_DEPTH_TEST));
 }
 

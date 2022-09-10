@@ -3,47 +3,35 @@
 #***************************************************************************************************************************************************************
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 
-project(Apeiron)
+project(Apeiron LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
-set(CMAKE_BUILD_TYPE Debug)
-#set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug) # [Debug, Release]
 
-# Set compiler standard
+# Set C++ compiler standard
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # Set default, debug, and release flags
-set(CMAKE_CXX_FLAGS " -fopenmp -Wall -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Werror -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
+set(CMAKE_CXX_FLAGS         "-fopenmp -Wall -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops")
+set(CMAKE_CXX_FLAGS_DEBUG   "-g -Wall -Wextra -Werror -pedantic -Wcast-align -Wcast-qual -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wold-style-cast -Woverloaded-virtual -Wredundant-decls -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wno-unused -Wno-variadic-macros -Wno-parentheses -fdiagnostics-show-option")
 
 #***************************************************************************************************************************************************************
 # Setup build, library, and bin directories
 #***************************************************************************************************************************************************************
 set(BUILD_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
-set(LIB_DIRECTORY "${BUILD_DIRECTORY}/lib")
-set(BIN_DIRECTORY "${BUILD_DIRECTORY}/bin")
+set(LIB_DIRECTORY   "${BUILD_DIRECTORY}/lib")
+set(BIN_DIRECTORY   "${BUILD_DIRECTORY}/bin")
 
 # Set all compiler outputs to the build directory.
 set(DEFAULT_OUT_OF_SOURCE_FOLDER ${BUILD_DIRECTORY})
-set(CMAKE_BUILD_FILES_DIRECTORY ${BUILD_DIRECTORY})
-set(CMAKE_BUILD_DIRECTORY ${BUILD_DIRECTORY})
+set(CMAKE_BUILD_FILES_DIRECTORY  ${BUILD_DIRECTORY})
+set(CMAKE_BUILD_DIRECTORY        ${BUILD_DIRECTORY})
 
 # Set cmake library and binary output folders
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIRECTORY})
-set(CMAKE_LIBRARY_OUTPUT_PATH ${LIB_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_PATH      ${LIB_DIRECTORY})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIRECTORY})
-
-#***************************************************************************************************************************************************************
-# Build instructions for OpenMP.
-#***************************************************************************************************************************************************************
-find_package(OpenMP REQUIRED)
-include_directories(${OpenMP_INCLUDE_DIRS})
-link_directories(${OpenMP_LIBRARY_DIRS})
-add_definitions(${OpenMP_DEFINITIONS})
-if(NOT OpenMP_FOUND)
-    message("Error: OpenMP not found")
-endif(NOT OpenMP_FOUND)
 
 #***************************************************************************************************************************************************************
 # Build instructions for OpenGL and its dependencies.
@@ -98,6 +86,29 @@ if(NOT TBB_FOUND)
 endif(NOT TBB_FOUND)
 
 #***************************************************************************************************************************************************************
+# Build instructions for ImGui and its dependencies.
+#***************************************************************************************************************************************************************
+
+# Compile ImGui as static library
+set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/dependencies/imgui)
+file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/backends/*.cpp)
+add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
+target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
+target_compile_options(ImGui PRIVATE -Wno-old-style-cast -Wno-sign-promo -Wno-strict-overflow -Wno-cast-qual)
+target_link_libraries(ImGui ${CMAKE_DL_LIBS} glfw)
+
+#***************************************************************************************************************************************************************
+# Build instructions for OpenMP.
+#***************************************************************************************************************************************************************
+find_package(OpenMP REQUIRED)
+include_directories(${OpenMP_INCLUDE_DIRS})
+link_directories(${OpenMP_LIBRARY_DIRS})
+add_definitions(${OpenMP_DEFINITIONS})
+if(NOT OpenMP_FOUND)
+    message("Error: OpenMP not found")
+endif(NOT OpenMP_FOUND)
+
+#***************************************************************************************************************************************************************
 # Setup project sub-directories.
 #***************************************************************************************************************************************************************
 include_directories(${PROJECT_SOURCE_DIR}/libs)
@@ -134,13 +145,6 @@ set(APEIRON_LINK_LIBRARIES
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-        ${PROJECT_SOURCE_DIR}/include/Global.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/Array.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/MultiArray.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
-        ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
-
 target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}
         ${OPENMP_LIBRARIES}
@@ -148,6 +152,7 @@ target_link_libraries(${PROJECT_NAME}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
+        ImGui
         tbb)
 
 #***************************************************************************************************************************************************************

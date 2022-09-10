@@ -47,9 +47,12 @@ Visualiser::Add(Camera&& camera, const std::string& name)
 }
 
 void
-Visualiser::Render()
+Visualiser::Animate()
 {
+   // Initialise all visualiser entities.
    Init();
+
+   // Run main render loop.
    while(_Window.isOpen())
    {
       BeginFrame();
@@ -57,8 +60,12 @@ Visualiser::Render()
       HandleUserInputs();
       RenderScene();
       PostProcess();
+      RenderGUIWindow();
       EndFrame();
    }
+
+   // Finalise and destroy contexts.
+   Terminate();
 }
 
 /***************************************************************************************************************************************************************
@@ -67,21 +74,24 @@ Visualiser::Render()
 void
 Visualiser::Init()
 {
-   // Open a window and set its title.
-   _Window.Open();
-   _Window.SetTitle("Apeiron");
-
-   // Initialise all scenes (and their models and lights), tex-boxes, textures, cameras, shaders, and the post-processor.
+   InitWindow();
    InitOpenGL();
+   InitGUI();
    InitScenes();
    InitTeXBoxes();
    InitTextures();
    InitCameras();
    InitShaders();
    InitPostProcessor();
-
-   // Zero the clock time.
    _Window.InitTime();
+}
+
+void
+Visualiser::InitWindow()
+{
+   // Open a window and set its title.
+   _Window.Open();
+   _Window.SetTitle("Apeiron");
 }
 
 void
@@ -108,6 +118,14 @@ Visualiser::InitOpenGL()
    GLCall(glEnable(GL_BLEND))
    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 //   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE))
+}
+
+void
+Visualiser::InitGUI()
+{
+#ifdef DEBUG_MODE
+   _GUI.Init(_Window._GlfwWindow);
+#endif
 }
 
 void
@@ -232,9 +250,9 @@ Visualiser::InitTextures()
 void
 Visualiser::InitCameras()
 {
-   // Set default settings of the main camera.
+   // Set default settings of the current active camera.
    ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
-   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 1.0f), 0.0, 90.0);
+   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 2.0f), 0.0, 0.0);
    _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 }
 
@@ -258,10 +276,15 @@ Visualiser::BeginFrame()
    // Clear currently bound frame buffer.
    ClearFrameBuffer();
 
+   // Set new GUI frame, if debugging.
+#ifdef DEBUG_MODE
+   _GUI.NewFrame();
+#endif
+
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
    _Window.ComputeDeltaTime();
    _Window.ComputeFrameRate();
-   _ViewPortModified = _Window.isViewportModified();
+   _wasViewPortModified = _Window.isViewportModified();
 }
 
 void
@@ -284,13 +307,13 @@ Visualiser::UpdateScene()
 void
 Visualiser::HandleUserInputs()
 {
-   // Handle key, cursor, and mouse wheel inputs.
+   // Handle cursor, key, and mouse wheel inputs.
+   if(_HideCursor) _ActiveCamera->CursorControl(_Window.CursorDisplacement());
    _ActiveCamera->KeyControl(_Window._Keys, _Window.DeltaTime());
-   _ActiveCamera->CursorControl(_Window.CursorDisplacement());
    _ActiveCamera->WheelControl(_Window.WheelDisplacement());
 
    // If the viewport was modified, update the view frustum and adjust line shader resolution.
-   if(_ViewPortModified)
+   if(_wasViewPortModified)
    {
       _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio());
       _Shaders.at("Line").SetUniform2f("u_resolution", _Window._ViewportDimensions[0], _Window._ViewportDimensions[1]);
@@ -321,10 +344,97 @@ void
 Visualiser::PostProcess() { _PostProcessor.Render(); }
 
 void
+Visualiser::RenderGUIWindow()
+{
+#ifdef DEBUG_MODE
+   // Start a GUI window and add required elements to it.
+   _GUI.StartWindow();
+   AddGUIElements();
+   _GUI.EndWindow();
+
+   // Render the GUI elements in the window.
+   _GUI.Render();
+#endif
+}
+
+void
+Visualiser::AddGUIElements()
+{
+#ifdef DEBUG_MODE
+   using namespace ImGui;
+
+   auto& scene = *_CurrentScene; // Only add current scene elements.
+
+   if(CollapsingHeader("General"))
+   {
+
+   }
+
+   if(CollapsingHeader("Models"))
+   {
+
+   }
+
+   if(CollapsingHeader("TeXBoxes"))
+   {
+
+   }
+
+   if(CollapsingHeader("Lights"))
+   {
+      if(TreeNode("Directional lights"))
+      {
+         TreePop();
+         Separator();
+      }
+
+      if(TreeNode("Point lights"))
+      {
+         FOR_EACH(name, light, scene._PLights)
+            if(TreeNode(name.c_str()))
+            {
+               light.AddGUIElements();
+               TreePop();
+               Separator();
+            }
+         TreePop();
+         Separator();
+      }
+
+      if(TreeNode("Spot lights"))
+      {
+         TreePop();
+         Separator();
+      }
+   }
+
+   if(CollapsingHeader("Camera"))
+   {
+
+   }
+
+   if(CollapsingHeader("Post-processor"))
+   {
+
+   }
+#endif
+}
+
+void
 Visualiser::EndFrame()
 {
    _Window.SwapBuffers();
    glfwPollEvents();
+}
+
+void
+Visualiser::Terminate()
+{
+   // Terminate GUI, if debugging.
+#ifdef DEBUG_MODE
+   _GUI.Terminate();
+#endif
+   _Window.Terminate();
 }
 
 }

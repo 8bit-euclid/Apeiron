@@ -57,6 +57,8 @@ class Camera
    inline const glm::mat4& ProjMatrix() const { return _ProjMatrix; }
 
  private:
+   friend class Visualiser;
+
    void ClipPitch() { Clip(_Pitch, -89.0f, 89.0f); }
 
    glm::mat4 _ViewMatrix{1.0};
@@ -74,7 +76,7 @@ class Camera
 
    constexpr static glm::vec3 _WorldUp    {0.0f, 1.0f, 0.0f};
    constexpr static GLfloat   _MotionSensitivity      {6.0f};
-   constexpr static GLfloat   _RotationSensitivity    {7.0f};
+   constexpr static GLfloat   _RotationSensitivity    {7.5f};
    constexpr static GLfloat   _MouseCursorSensitivity {0.4f};
    constexpr static GLfloat   _MouseWheelSensitivity  {1.0f};
 };

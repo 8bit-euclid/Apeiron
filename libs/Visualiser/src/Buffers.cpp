@@ -216,7 +216,7 @@ void
 FrameBuffer::Read(const GLenum attachment) const { GLCall(glNamedFramebufferReadBuffer(_ID, attachment)) }
 
 /***************************************************************************************************************************************************************
-* Render Buffer Class
+* Animate Buffer Class
 ***************************************************************************************************************************************************************/
 void
 RenderBuffer::Init(const size_t n_samples)
