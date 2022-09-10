@@ -85,7 +85,9 @@ class Visualiser
 
    void PostProcess();
 
-   void RenderGUI();
+   void RenderGUIWindow();
+
+   void AddGUIElements();
 
    void EndFrame();
 

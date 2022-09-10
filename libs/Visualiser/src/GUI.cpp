@@ -22,8 +22,8 @@ GUI::Init(GLFWwindow* window)
    // Setup ImGui binding
    IMGUI_CHECKVERSION();
    ImGui::CreateContext();
-   ImGuiIO& io = ImGui::GetIO();
-   static_cast<void>(io);
+   _ImGuiIO = &ImGui::GetIO();
+   static_cast<void>(*_ImGuiIO);
    ImGui::StyleColorsDark();
 
    ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -33,24 +33,34 @@ GUI::Init(GLFWwindow* window)
 }
 
 void
-GUI::BeginFrame()
+GUI::NewFrame()
 {
    DEBUG_ASSERT(_isInitialised, "The GUI has not yet been initialised.")
-
    ImGui_ImplOpenGL3_NewFrame();
    ImGui_ImplGlfw_NewFrame();
    ImGui::NewFrame();
 }
 
 void
-GUI::Render()
+GUI::StartWindow()
 {
    DEBUG_ASSERT(_isInitialised, "The GUI has not yet been initialised.")
 
-   ImGui::Begin("Debugging GUI");
-   ImGui::Text("Hello World!");
-   ImGui::End();
+   // Set window position and size.
+   const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+   ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 650, main_viewport->WorkPos.y + 20), ImGuiCond_FirstUseEver);
+   ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
 
+   ImGui::Begin("Visualiser Debugging Window");
+}
+
+void
+GUI::EndWindow() { ImGui::End(); }
+
+void
+GUI::Render()
+{
+   DEBUG_ASSERT(_isInitialised, "The GUI has not yet been initialised.")
    ImGui::Render();
    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -59,7 +69,6 @@ void
 GUI::Terminate()
 {
    DEBUG_ASSERT(_isInitialised, "The GUI has not yet been initialised.")
-
    ImGui_ImplOpenGL3_Shutdown();
    ImGui_ImplGlfw_Shutdown();
    ImGui::DestroyContext();

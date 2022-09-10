@@ -15,6 +15,7 @@
 #pragma once
 
 #include "../include/Global.h"
+#include "DataContainer/include/Array.h"
 
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -28,14 +29,19 @@ class GUI
  public:
    void Init(GLFWwindow* window);
 
-   void BeginFrame();
+   void NewFrame();
+
+   void StartWindow();
+
+   void EndWindow();
 
    void Render();
 
    void Terminate();
 
  private:
-   bool _isInitialised{};
+   ImGuiIO* _ImGuiIO;
+   bool     _isInitialised{};
 };
 
 }
