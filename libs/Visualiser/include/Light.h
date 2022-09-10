@@ -40,18 +40,16 @@ enum class LightType
 
 class Light
 {
-   friend class Shader;
-
  protected:
    Light();
 
-   Light(const Light& light) = delete;
-
    Light(Light&& light) noexcept;
 
-   Light(LightType type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
+   Light(LightType type, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
  public:
+   Light(const Light& light) = delete;
+
    ~Light() = default;
 
    virtual UInt Index() const = 0;
@@ -67,6 +65,11 @@ class Light
    Light& operator=(Light&& light) noexcept;
 
  protected:
+   friend class Visualiser;
+   friend class Shader;
+
+   virtual void AddGUIElements();
+
    glm::vec4 _Colour;
    GLfloat   _AmbientIntensity;
    GLfloat   _DiffuseIntensity;
@@ -133,6 +136,8 @@ class PointLightBase : public Light
    PointLightBase<derived>& operator=(PointLightBase<derived>&& _other) = default;
 
  protected:
+   void AddGUIElements() override;
+
    constexpr static UInt     _MaxPointLights{4};
    constexpr static GLfloat  _FarPlane{25.0f};
    inline static UInt        _PointLightCount = 0;
@@ -153,6 +158,8 @@ class PointLight : public detail::PointLightBase<PointLight>
    PointLight(const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
               const SVector3<GLfloat>& attenuation_coefficients);
 
+   void AddGUIElements() override;
+
    friend class Shader;
 };
 
@@ -164,6 +171,8 @@ class SpotLight : public detail::PointLightBase<SpotLight>
  public:
    SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat cone_angle, GLfloat ambient_intensity,
              GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients);
+
+   void AddGUIElements() override;
 
  private:
    friend class Shader;

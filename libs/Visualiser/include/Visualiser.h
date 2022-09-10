@@ -20,6 +20,7 @@
 
 #include "Camera.h"
 #include "GlyphSheet.h"
+#include "GUI.h"
 #include "ModelFactory.h"
 #include "Light.h"
 #include "Model.h"
@@ -34,7 +35,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <map>
+#include <unordered_map>
 
 namespace aprn::vis {
 
@@ -51,12 +52,16 @@ class Visualiser
 
    void Add(Camera&& camera, const std::string& name = "");
 
-   void Render();
+   void Animate();
 
  private:
    void Init();
 
+   void InitWindow();
+
    void InitOpenGL();
+
+   void InitGUI();
 
    void InitScenes();
 
@@ -80,7 +85,13 @@ class Visualiser
 
    void PostProcess();
 
+   void RenderGUIWindow();
+
+   void AddGUIElements();
+
    void EndFrame();
+
+   void Terminate();
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
 
@@ -92,7 +103,9 @@ class Visualiser
    PostProcessor       _PostProcessor;
    Camera*             _ActiveCamera;
    Scene*              _CurrentScene;
-   bool                _ViewPortModified{};
+   GUI                 _GUI;
+   bool                _wasViewPortModified{};
+   bool                _HideCursor{false};
 };
 
 }

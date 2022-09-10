@@ -31,7 +31,6 @@ inline void RotatingCube()
    TeXBox tex_box;
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")
-          .SetScale(10.0)
           .SetPixelDensity(2000)
           .OffsetPosition({0.0f, 2.0f, 2.0f});
    scene.Add(tex_box);
@@ -68,7 +67,7 @@ inline void RotatingCube()
         .Add(PointLight(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5}), "Sun");
 
    visualiser.Add(scene);
-   visualiser.Render();
+   visualiser.Animate();
 }
 
 inline void EuclidsElementsEp1()
@@ -93,7 +92,7 @@ inline void EuclidsElementsEp1()
    scene.Add(PointLight(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5}), "Lamp");
 
    visualiser.Add(scene);
-   visualiser.Render();
+   visualiser.Animate();
 }
 
 }

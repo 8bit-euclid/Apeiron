@@ -58,6 +58,8 @@ class PostProcessor
    void Render();
 
  private:
+   friend class Visualiser;
+
    template<class type> using UMap = std::unordered_map<std::string, type>;
    FrameImage                _MultiSampledImage;
    FrameImage                _ResolvedImage;
