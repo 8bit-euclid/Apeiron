@@ -95,7 +95,7 @@ file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/b
 add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
 target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
 target_compile_options(ImGui PRIVATE -Wno-old-style-cast -Wno-sign-promo -Wno-strict-overflow -Wno-cast-qual)
-target_link_libraries(ImGui glfw)
+target_link_libraries(ImGui ${CMAKE_DL_LIBS} glfw)
 
 #***************************************************************************************************************************************************************
 # Build instructions for OpenMP.
@@ -152,7 +152,6 @@ target_link_libraries(${PROJECT_NAME}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
-        ${CMAKE_DL_LIBS}
         ImGui
         tbb)
 
