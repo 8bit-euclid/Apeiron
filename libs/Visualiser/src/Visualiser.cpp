@@ -60,7 +60,7 @@ Visualiser::Animate()
       HandleUserInputs();
       RenderScene();
       PostProcess();
-      RenderGUI();
+      RenderGUIWindow();
       EndFrame();
    }
 
@@ -278,7 +278,7 @@ Visualiser::BeginFrame()
 
    // Set new GUI frame, if debugging.
 #ifdef DEBUG_MODE
-   _GUI.BeginFrame();
+   _GUI.NewFrame();
 #endif
 
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
@@ -344,11 +344,79 @@ void
 Visualiser::PostProcess() { _PostProcessor.Render(); }
 
 void
-Visualiser::RenderGUI()
+Visualiser::RenderGUIWindow()
 {
-   // Render GUI elements, if debugging.
 #ifdef DEBUG_MODE
+   // Start a GUI window and add required elements to it.
+   _GUI.StartWindow();
+   AddGUIElements();
+   _GUI.EndWindow();
+
+   // Render the GUI elements in the window.
    _GUI.Render();
+#endif
+}
+
+void
+Visualiser::AddGUIElements()
+{
+#ifdef DEBUG_MODE
+   using namespace ImGui;
+
+   auto& scene = *_CurrentScene; // Only add current scene elements.
+
+   if(CollapsingHeader("General"))
+   {
+
+   }
+
+   if(CollapsingHeader("Models"))
+   {
+
+   }
+
+   if(CollapsingHeader("TeXBoxes"))
+   {
+
+   }
+
+   if(CollapsingHeader("Lights"))
+   {
+      if(TreeNode("Directional lights"))
+      {
+         TreePop();
+         Separator();
+      }
+
+      if(TreeNode("Point lights"))
+      {
+         FOR_EACH(name, light, scene._PLights)
+            if(TreeNode(name.c_str()))
+            {
+               light.AddGUIElements();
+               TreePop();
+               Separator();
+            }
+         TreePop();
+         Separator();
+      }
+
+      if(TreeNode("Spot lights"))
+      {
+         TreePop();
+         Separator();
+      }
+   }
+
+   if(CollapsingHeader("Camera"))
+   {
+
+   }
+
+   if(CollapsingHeader("Post-processor"))
+   {
+
+   }
 #endif
 }
 
@@ -366,6 +434,7 @@ Visualiser::Terminate()
 #ifdef DEBUG_MODE
    _GUI.Terminate();
 #endif
+   _Window.Terminate();
 }
 
 }

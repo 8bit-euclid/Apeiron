@@ -40,6 +40,8 @@ class Window
 
    void Close();
 
+   void Terminate();
+
    bool isViewportModified();
 
    void ResetViewport() const;

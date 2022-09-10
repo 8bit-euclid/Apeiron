@@ -94,8 +94,8 @@ set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/dependencies/imgui)
 file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/backends/*.cpp)
 add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
 target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})
-target_link_libraries(ImGui glfw)
 target_compile_options(ImGui PRIVATE -Wno-old-style-cast -Wno-sign-promo -Wno-strict-overflow -Wno-cast-qual)
+target_link_libraries(ImGui glfw)
 
 #***************************************************************************************************************************************************************
 # Build instructions for OpenMP.
@@ -145,12 +145,12 @@ set(APEIRON_LINK_LIBRARIES
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE
-        ${PROJECT_SOURCE_DIR}/include/Global.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/Array.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/MultiArray.h
-        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
-        ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
+#target_precompile_headers(${PROJECT_NAME} PRIVATE
+#        ${PROJECT_SOURCE_DIR}/include/Global.h
+#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/Array.h
+#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/MultiArray.h
+#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
+#        ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
 
 target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}

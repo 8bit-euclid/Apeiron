@@ -24,7 +24,7 @@ namespace aprn::vis {
 Window::Window(GLint width, GLint height)
    : _WindowDimensions{width, height} {  }
 
-Window::~Window() { glfwTerminate(); }
+Window::~Window() { Terminate(); }
 
 void
 Window::Open() { Open(_WindowDimensions.x(), _WindowDimensions.y()); }
@@ -74,8 +74,7 @@ Window::Open(const GLint width, const GLint height)
    // Initialise GLEW
    if(glewInit() != GLEW_OK)
    {
-      glfwDestroyWindow(_GlfwWindow);
-      glfwTerminate();
+      Terminate();
       EXIT("Failed to Initialise GLEW.")
    }
    else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
@@ -88,6 +87,13 @@ Window::isOpen() const { return !glfwWindowShouldClose(_GlfwWindow); }
 
 void
 Window::Close() { glfwSetWindowShouldClose(_GlfwWindow, GL_TRUE); }
+
+void
+Window::Terminate()
+{
+   glfwDestroyWindow(_GlfwWindow);
+   glfwTerminate();
+}
 
 bool
 Window::isViewportModified()

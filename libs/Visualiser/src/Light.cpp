@@ -13,6 +13,7 @@
 ***************************************************************************************************************************************************************/
 
 #include "../include/Light.h"
+#include "../include/GUI.h"
 
 namespace aprn::vis {
 
@@ -26,7 +27,7 @@ Light::Light(Light&& light) noexcept
   : _Colour(std::move(light._Colour)), _AmbientIntensity(std::move(light._AmbientIntensity)), _DiffuseIntensity(std::move(light._DiffuseIntensity)),
     _ShadowMap(std::move(light._ShadowMap)), _Type(std::move(light._Type)) {}
 
-Light::Light(LightType type, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
+Light::Light(LightType type, const glm::vec4& rgba_colour, const GLfloat ambient_intensity, const GLfloat diffuse_intensity)
   : _Colour(rgba_colour), _AmbientIntensity(ambient_intensity), _DiffuseIntensity(diffuse_intensity),
     _ShadowMap(type == OneOf(LightType::Point, LightType::Spot)), _Type(type) {}
 
@@ -40,6 +41,14 @@ Light::operator=(Light&& light) noexcept
    _Type             = std::move(light._Type);
 
   return *this;
+}
+
+void
+Light::AddGUIElements()
+{
+   ImGui::ColorEdit4("Colour", &_Colour.r);
+   ImGui::SliderFloat("Ambient Intensity", &_AmbientIntensity, 0.0f, 20.0f);
+   ImGui::SliderFloat("Diffuse Intensity", &_DiffuseIntensity, 0.0f, 20.0f);
 }
 
 /***************************************************************************************************************************************************************
@@ -90,6 +99,15 @@ PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcep
 template<class derived>
 PointLightBase<derived>::~PointLightBase() { _PointLightCount--; }
 
+template<class derived>
+void
+PointLightBase<derived>::AddGUIElements()
+{
+   ImGui::SliderFloat3("Position"   , &_Position.x, -10.0f, 10.0f);
+   ImGui::SliderFloat3("Attenuation", _AttenuationCoefficients.data(), 0.0f, 2.0f);
+   Light::AddGUIElements();
+}
+
 }
 
 template class detail::PointLightBase<PointLight>;
@@ -102,6 +120,9 @@ PointLight::PointLight(const glm::vec3& position, const glm::vec4& rgba_colour, 
                        const SVector3<GLfloat>& attenuation_coefficients)
   : PointLightBase(LightType::Point, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients) {}
 
+void
+PointLight::AddGUIElements() { PointLightBase::AddGUIElements(); }
+
 /***************************************************************************************************************************************************************
 * Spotlight Class
 ***************************************************************************************************************************************************************/
@@ -109,5 +130,12 @@ SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction, cons
                      GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients)
   : PointLightBase(LightType::Spot, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients),
     _Direction(glm::normalize(direction)), _ConeAngle(cone_angle), _CosConeAngle(std::cos(DegToRad(cone_angle))) {}
+
+void
+SpotLight::AddGUIElements()
+{
+   PointLightBase::AddGUIElements();
+   EXIT("Need to populate elements.")
+}
 
 }
