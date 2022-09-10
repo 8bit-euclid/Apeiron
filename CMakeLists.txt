@@ -145,13 +145,6 @@ set(APEIRON_LINK_LIBRARIES
 
 add_executable(${PROJECT_NAME} ${APEIRON_SOURCE_FILES})
 
-#target_precompile_headers(${PROJECT_NAME} PRIVATE
-#        ${PROJECT_SOURCE_DIR}/include/Global.h
-#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/Array.h
-#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/MultiArray.h
-#        ${PROJECT_SOURCE_DIR}/libs/DataContainer/include/NumericContainer.h
-#        ${PROJECT_SOURCE_DIR}/libs/LinearAlgebra/include/Vector.h)
-
 target_link_libraries(${PROJECT_NAME}
         ${APEIRON_LINK_LIBRARIES}
         ${OPENMP_LIBRARIES}
@@ -159,6 +152,7 @@ target_link_libraries(${PROJECT_NAME}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         ImGui
         tbb)
 
