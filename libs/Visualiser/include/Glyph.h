@@ -29,17 +29,15 @@ class Glyph final : public Model
  public:
    Glyph() = default;
 
-   explicit Glyph(const char tex_char, const std::string& label = "");
+   explicit Glyph(const char tex_char);
 
-   explicit Glyph(const std::string& tex_str, const std::string& label = "");
+   explicit Glyph(const std::string& tex_str);
 
    Glyph& Set(const char tex_char);
 
    Glyph& Set(const std::string& tex_str);
 
    Glyph& Set(Glyph&& glyph);
-
-   Glyph& SetLabel(const std::string& label);
 
    Glyph& SetFontSize(char font_size);
 
@@ -74,20 +72,22 @@ class Glyph final : public Model
 
    void Init(UInt16& index_offset);
 
+   void ComputeDimensions();
+
    inline bool isCompound() const { return !_SubGlyphs.empty(); }
 
    inline void SetAnchor(const SVectorF3* anchor) { _Anchor = anchor; }
 
-   std::string              _Label;
    std::string              _Text;
    GlyphSheet::IndexT       _Index;
-   std::optional<char>      _FontSize{10};
-   std::optional<Colour>    _Colour{};
-   std::optional<SVectorF2> _Scale{{One, One}};
-   std::optional<bool>      _isItalic{false};
-   std::optional<bool>      _isBold{false};
-   GlyphBox<Float>          _Box;
-   const SVectorF3*         _Anchor{}; // Bottom-left corner of the parent TeX-box
+   std::optional<char>      _FontSize;
+   std::optional<Colour>    _Colour;
+   std::optional<bool>      _isItalic;
+   std::optional<bool>      _isBold;
+   std::optional<SVectorF2> _Dimensions; // [width, height] in world-space coordinates.
+   std::optional<SVectorF2> _Scale;      // [width-scale, height-scale]
+   SVectorF2                _Position;   // Position (associated to the LaTeX glyph) in world-space coordinates.
+   const SVectorF3*         _Anchor{};   // Bottom-left corner of the parent TeX-box
    const GlyphSheet*        _GlyphSheet{};
    DArray<SPtr<Glyph>>      _SubGlyphs;
    bool                     _Render{true};

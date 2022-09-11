@@ -20,11 +20,10 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Glyph Public Interface
 ***************************************************************************************************************************************************************/
-Glyph::Glyph(const char tex_char, const std::string& label)
-   : Glyph(std::string(1, tex_char), label) {}
+Glyph::Glyph(const char tex_char)
+   : Glyph(std::string(1, tex_char)) {}
 
-Glyph::Glyph(const std::string& tex_str, const std::string& label)
-   : _Label(label) { Set(tex_str); }
+Glyph::Glyph(const std::string& tex_str) { Set(tex_str); }
 
 Glyph&
 Glyph::Set(const char tex_char) { return Set(std::string(1, tex_char)); }
@@ -39,13 +38,6 @@ Glyph::Set(const std::string& tex_str)
 
 Glyph&
 Glyph::Set(Glyph&& glyph) { return *this = std::move(glyph); }
-
-Glyph&
-Glyph::SetLabel(const std::string& label)
-{
-   _Label = label;
-   return *this;
-}
 
 Glyph&
 Glyph::SetFontSize(char font_size)
@@ -106,14 +98,11 @@ Glyph::Add(std::string&& str) { _Text.append(std::move(str)); }
 void
 Glyph::Init(UInt16& index_offset)
 {
-   // Initialise subglyphs and compute character count.
+   ASSERT(!_isInit, "This glyph has already been initialised.")
+
+   // Initialise subglyphs and assign glyph index.
    if(isCompound()) FOR_EACH(glyph, _SubGlyphs) glyph->Init(index_offset);
-   else _Index = index_offset++;
-
-   // Compute the position, height, and width of this glyph.
-
-   // Embed glyph into a rectangular model with the same position, height, and width, and initialise model.
-   Model::Init();
+   else if(isRendered()) _Index = index_offset++;
 
    _isInit = true;
 }

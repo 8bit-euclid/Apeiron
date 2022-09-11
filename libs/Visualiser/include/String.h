@@ -27,21 +27,19 @@ class String final : public Model
  public:
    String() = default;
 
-   explicit String(const char* str, const std::string& label = "");
+   explicit String(const char* str);
 
-   explicit String(const std::string& str, const std::string& label = "");
+   explicit String(const std::string& str);
 
-   explicit String(const Glyph& glyph, const std::string& label = "");
+   explicit String(const Glyph& glyph);
 
-   explicit String(const DArray<Glyph>& glyphs, const std::string& label = "");
+   explicit String(const DArray<Glyph>& glyphs);
 
    String& Add(const std::string& str);
 
    String& Add(const Glyph& glyph);
 
    String& Add(const DArray<Glyph>& glyphs);
-
-   String& SetLabel(const std::string& label);
 
    String& SetFontSize(char font_size);
 
@@ -64,12 +62,8 @@ class String final : public Model
 
    void LinkGlyphSheet(const GlyphSheet* glyph_sheet);
 
-   std::string         _Label;
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;
-   const SVectorF3*    _Anchor; // Bottom-left corner of the parent TeX-box
-   Float               _Width;
-   Float               _Height;
 };
 
 }

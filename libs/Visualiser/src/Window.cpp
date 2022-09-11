@@ -82,6 +82,32 @@ Window::Open(const GLint width, const GLint height)
    glfwSetWindowUserPointer(_GlfwWindow, this);
 }
 
+void
+Window::InitOpenGL()
+{
+   // Initialise OpenGL debug output
+#ifdef DEBUG_MODE
+   int flags;
+   GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags))
+   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+   {
+      GLCall(glEnable(GL_DEBUG_OUTPUT))
+      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS))
+      GLCall(glDebugMessageCallback(GLDebugOutput, nullptr))
+      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE))
+   }
+#endif
+
+   GLCall(glEnable(GL_DEPTH_TEST))
+   GLCall(glEnable(GL_MULTISAMPLE))
+//   GLCall(glEnable(GL_CULL_FACE))
+//   GLCall(glCullFace(GL_FRONT))
+//   GLCall(glFrontFace(GL_CCW))
+   GLCall(glEnable(GL_BLEND))
+   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE))
+}
+
 bool
 Window::isOpen() const { return !glfwWindowShouldClose(_GlfwWindow); }
 

@@ -106,7 +106,7 @@ class Model
    ************************************************************************************************************************************************************/
    inline const glm::mat4& ModelMatrix() const { return _ModelMatrix; }
 
-   inline const Mesh& Geometry() const { return _Geometry; }
+   inline const Mesh& Geometry() const { return _Mesh; }
 
  protected:
    friend class Visualiser;
@@ -135,7 +135,7 @@ class Model
    template<class T> using Map = std::unordered_map<std::string, T>;
    using ATComp                = ActionTypeComparator;
 
-   Mesh                                           _Geometry;
+   Mesh                                           _Mesh;
    Map<SPtr<Model>>                               _SubModels;
    std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
    std::optional<Pair<std::string, Float>>        _TextureInfo;

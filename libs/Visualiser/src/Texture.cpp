@@ -16,7 +16,7 @@
 #include "FileManager/include/FileSystem.h"
 
 #include <GLFW/glfw3.h>
-#include "../../../dependencies/stb_image/stb_image.h"
+#include "../../../external/stb_image/stb_image.h"
 
 namespace aprn::vis {
 

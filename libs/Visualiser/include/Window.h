@@ -36,6 +36,8 @@ class Window
 
    void Open(GLint width, GLint height);
 
+   void InitOpenGL();
+
    bool isOpen() const;
 
    void Close();
@@ -82,9 +84,6 @@ class Window
 
    static void
    HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
-
-   static void APIENTRY
-   glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam);
 
    std::string            _Title;
    Float                  _CurrentTime{};

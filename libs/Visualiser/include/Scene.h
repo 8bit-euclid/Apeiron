@@ -61,15 +61,15 @@ class Scene
 
    Scene& Add(SpotLight&& light, const std::string& name = "");
 
-   inline bool isCurrent(const Float current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
+   inline bool isCurrent(Float current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
 
  private:
    friend class Visualiser;
    friend class Transition;
 
-   void Init(const Float start_time);
+   void Init(Float start_time);
 
-   void UpdateModels(const Float current_time);
+   void UpdateModels(Float current_time);
 
    void RenderDirecShadows(Shader& shader);
 

@@ -18,6 +18,10 @@
 #include <optional>
 #include <string>
 
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
@@ -49,7 +53,7 @@ Visualiser::Add(Camera&& camera, const std::string& name)
 void
 Visualiser::Animate()
 {
-   // Initialise all visualiser entities.
+   // Initialise all visualiser elements.
    Init();
 
    // Run main render loop.
@@ -64,7 +68,7 @@ Visualiser::Animate()
       EndFrame();
    }
 
-   // Finalise and destroy contexts.
+   // Destroy all graphics contexts.
    Terminate();
 }
 
@@ -75,7 +79,6 @@ void
 Visualiser::Init()
 {
    InitWindow();
-   InitOpenGL();
    InitGUI();
    InitScenes();
    InitTeXBoxes();
@@ -89,35 +92,10 @@ Visualiser::Init()
 void
 Visualiser::InitWindow()
 {
-   // Open a window and set its title.
+   // Open a window, set its title, and initialise OpenGL.
    _Window.Open();
    _Window.SetTitle("Apeiron");
-}
-
-void
-Visualiser::InitOpenGL()
-{
-   // Initialise OpenGL debug output
-#ifdef DEBUG_MODE
-   int flags;
-   GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags))
-   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-   {
-      GLCall(glEnable(GL_DEBUG_OUTPUT))
-      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS))
-      GLCall(glDebugMessageCallback(GLDebugOutput, nullptr))
-      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE))
-   }
-#endif
-
-   GLCall(glEnable(GL_DEPTH_TEST))
-   GLCall(glEnable(GL_MULTISAMPLE))
-//   GLCall(glEnable(GL_CULL_FACE))
-//   GLCall(glCullFace(GL_FRONT))
-//   GLCall(glFrontFace(GL_CCW))
-   GLCall(glEnable(GL_BLEND))
-   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
-//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE))
+   _Window.InitOpenGL();
 }
 
 void
@@ -176,14 +154,14 @@ Visualiser::InitTeXBoxes()
    FOR_EACH(_, scene, _Scenes) FOR_EACH(_, tex_box, scene._TeXBoxes) tex_boxes.push_back({ tex_boxes.size(), tex_box.get() });
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
-   TeXBox::InitTeXDirectory();
+   InitTeXDirectory();
    FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
 
    // Load tex-box model textures. Note: only diffuse texture required.
    FOR_EACH(_, scene, _Scenes)
-      FOR_EACH_CONST(_, tex_box, scene._TeXBoxes)
+      FOR_EACH_CONST(tex_box_name, tex_box, scene._TeXBoxes)
       {
-         const auto texture_name = tex_box->_Label + "_texture"; // TODO - what if the label is empty??!
+         const auto texture_name = tex_box_name + "_texture";
          const auto texture_type = TextureType::Diffuse;
          const auto type_string  = TextureTypeString(texture_type);
 

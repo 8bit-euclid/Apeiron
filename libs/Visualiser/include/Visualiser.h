@@ -59,8 +59,6 @@ class Visualiser
 
    void InitWindow();
 
-   void InitOpenGL();
-
    void InitGUI();
 
    void InitScenes();
