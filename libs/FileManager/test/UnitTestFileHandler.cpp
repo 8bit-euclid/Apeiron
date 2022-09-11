@@ -27,7 +27,7 @@ namespace fs = std::filesystem;
 class FileHandlerTest : public testing::Test
 {
  public:
-   const std::string DataDir{"../libs/FileManager/test/data"};
+   const std::string DataDir{"../libs/FileManager/test/data"}; // Relative to CMake build directory.
 
    FileHandlerTest() {}
 

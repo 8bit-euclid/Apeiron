@@ -29,12 +29,13 @@ set(SOURCE_FILES
         include/Transition.h
         include/Visualiser.h
         include/Window.h
-        ../../dependencies/stb_image/stb_image.h
+        ../../external/stb_image/stb_image.h
         include/Action.tpp
         src/ActionBase.cpp
         src/Buffers.cpp
         src/Camera.cpp
         src/Glyph.cpp
+        src/GlyphSheet.cpp
         src/GUI.cpp
         src/Light.cpp
         src/ParseTeX.cpp
@@ -51,7 +52,7 @@ set(SOURCE_FILES
         src/Transition.cpp
         src/Visualiser.cpp
         src/Window.cpp
-        ../../dependencies/stb_image/stb_image.cpp)
+        ../../external/stb_image/stb_image.cpp)
 
 set(LINK_LIBRARIES
         ${OPENGL_LIBRARIES}
@@ -64,5 +65,5 @@ set(LINK_LIBRARIES
         ImGui)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
-target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../dependencies/stb_image)
+target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../external/stb_image)
 target_link_libraries(VisualiserLibrary ${LINK_LIBRARIES})

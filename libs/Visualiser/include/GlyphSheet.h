@@ -16,30 +16,75 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
+#include "FileManager/include/FileSystem.h"
 #include "Visualiser/include/Texture.h"
 
 #include <unordered_map>
 
 namespace aprn::vis {
 
-template<typename T = Int64>
+namespace fm = flmgr;
+
+/***************************************************************************************************************************************************************
+* Glyph Box Struct
+***************************************************************************************************************************************************************/
 struct GlyphBox
 {
-   wchar_t     Char{};
-   T           Width{};
-   T           Height{};
-   T           Depth{};
-   SVector2<T> Position{};
+   wchar_t         Char{};
+   Int64           Width{};
+   Int64           Height{};
+   Int64           Depth{};
+   SVector2<Int64> Position{};
 };
 
-struct GlyphSheet
+/***************************************************************************************************************************************************************
+* Glyph Sheet Class
+***************************************************************************************************************************************************************/
+class GlyphSheet
 {
-   typedef UInt16 IndexT;
-   template<class type> using UMap = std::unordered_map<IndexT, type>;
+ public:
+   void Init(size_t id, const std::string& text);
 
-   UMap<GlyphBox<Int64>> Boxes{};
-   Int64                 Width{};
-   Int64                 Height{};
+   void CompileLaTeXSource(const std::string& text);
+
+   void CreateGlyphSheetImage();
+
+   void ReadGlyphBoxPositions();
+
+   void ReadGlyphBoxAttributes();
+
+   void ComputeDimensions();
+
+   inline auto CompileDirectory() const { return _CompileDirectory; }
+
+   inline auto Width() const { return _Width; }
+
+   inline auto Height() const { return _Height; }
+
+   typedef UInt16 IndexT;
+   constexpr static Float FontSize10Scale{0.5 / 655360.0}; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
+
+ private:
+   friend class TeXBox;
+
+   template<class type> using UMap = std::unordered_map<IndexT, type>;
+   UMap<GlyphBox> _Boxes;
+   fm::Path       _CompileDirectory;
+   fm::Path       _TeXFile;
+   Int64          _Width{};
+   Int64          _Height{};
+   UInt16         _PixelDensity{2000}; // Measured in DPI.
 };
+
+/***************************************************************************************************************************************************************
+* Stand-alone Functions
+***************************************************************************************************************************************************************/
+inline fm::Path LaTeXDirectory() { return "./libs/Visualiser/data/latex"; }
+
+inline fm::Path LaTeXTemplate() { return "./libs/Visualiser/resources/latex/texbox.tex"; }
+
+inline fm::Path LuaTeXTemplate() { return "./libs/Visualiser/resources/latex/write_boxes.lua"; }
+
+inline void InitTeXDirectory() { fm::CreateDirectory(LaTeXDirectory(), true); }
 
 }

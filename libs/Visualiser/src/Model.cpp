@@ -71,7 +71,7 @@ Model::Delete()
 Model&
 Model::SetColour(const SVectorF4& rgb_colour)
 {
-   FOR_EACH(vertex, _Geometry.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
+   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
    return *this;
 }
 
@@ -222,7 +222,7 @@ Model::operator=(const Model& model)
    ASSERT(!model._isInitialised, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Geometry        = model._Geometry;
+   _Mesh        = model._Mesh;
    _SubModels       = model._SubModels;
    _TextureInfo     = model._TextureInfo;
    _Material        = model._Material;
@@ -246,7 +246,7 @@ Model::operator=(Model&& model) noexcept
    ASSERT(!model._isInitialised, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Geometry        = std::move(model._Geometry);
+   _Mesh        = std::move(model._Mesh);
    _SubModels       = std::move(model._SubModels);
    _TextureInfo     = std::move(model._TextureInfo);
    _Material        = std::move(model._Material);
@@ -277,19 +277,19 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(_isInitialised || !_Geometry.isInitialised()) return;
+   if(_isInitialised || !_Mesh.isInitialised()) return;
 
    // Compute vertex normals.
-   _Geometry.ComputeVertexNormals();
+   _Mesh.ComputeVertexNormals();
 
    // Initialise VAO, VBO, and EBO.
    _VAO.Init();
-   _VBO.Init(_Geometry.Vertices);
-   _EBO.Init(_Geometry.Indices);
+   _VBO.Init(_Mesh.Vertices);
+   _EBO.Init(_Mesh.Indices);
 
    // Add vertex buffer to vertex array object.
    _VAO.Bind();
-   _VAO.AddBuffer(_VBO, _Geometry.GetVertexLayout());
+   _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
    _VAO.Unbind();
 
    // Initialise each sub-model.

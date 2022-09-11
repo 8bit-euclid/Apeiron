@@ -79,7 +79,7 @@ inline void EuclidsElementsEp1()
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")
           .SetPixelDensity(2000)
-          .OffsetPosition({0.0, 0.0, 0.2});
+          .OffsetPosition({0.0, 0.0, 0.05});
    scene.Add(tex_box);
 
    // Paper sheet

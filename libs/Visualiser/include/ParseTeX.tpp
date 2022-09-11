@@ -96,7 +96,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
             // Add opening brace, subglyph text, and closing brace.
             encl_str += '{';
-            FOR_EACH(glyph, sub_glyphs) encl_str += glyph.GetText();
+            FOR_EACH(sub_glyph, sub_glyphs) encl_str += sub_glyph.GetText();
             encl_str += '}';
 
             glyph.Add(std::move(sub_glyphs));
