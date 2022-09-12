@@ -62,6 +62,8 @@ class String final : public Model
 
    void LinkGlyphSheet(const GlyphSheet* glyph_sheet);
 
+   void ComputeDimensions();
+
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;
 };

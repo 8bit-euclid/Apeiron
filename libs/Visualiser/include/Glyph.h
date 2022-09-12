@@ -86,7 +86,7 @@ class Glyph final : public Model
    std::optional<bool>      _isBold;
    std::optional<SVectorF2> _Dimensions; // [width, height] in world-space coordinates.
    std::optional<SVectorF2> _Scale;      // [width-scale, height-scale]
-   SVectorF2                _Position;   // Position (associated to the LaTeX glyph) in world-space coordinates.
+   SVectorF2                _Position;   // Position (of the LaTeX glyph) in world-space coordinates.
    const SVectorF3*         _Anchor{};   // Bottom-left corner of the parent TeX-box
    const GlyphSheet*        _GlyphSheet{};
    DArray<SPtr<Glyph>>      _SubGlyphs;

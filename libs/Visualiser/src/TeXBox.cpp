@@ -13,7 +13,6 @@
 ***************************************************************************************************************************************************************/
 
 #include "../include/TeXBox.h"
-#include "../include/ModelFactory.h"
 #include "../include/Texture.h"
 #include "FileManager/include/File.h"
 
@@ -80,6 +79,7 @@ TeXBox::SetAnchor(const SVectorF3& anchor)
 TeXBox&
 TeXBox::SetFontSize(const char font_size)
 {
+   _FontSize = font_size;
    FOR_EACH(str, _Strings) str->SetFontSize(font_size);
    return *this;
 }
@@ -129,7 +129,7 @@ TeXBox::SetBold(const bool is_bold)
 TeXBox&
 TeXBox::SetPixelDensity(const UInt density)
 {
-   _GlyphSheet._PixelDensity = density;
+   _GlyphSheet.SetPixelDensity(density);
    return *this;
 }
 
@@ -147,7 +147,7 @@ TeXBox::Init(const size_t id)
    FOR_EACH(str, _Strings) str->LinkGlyphSheet(&_GlyphSheet);
 
    ComputeDimensions();
-   Model::Init();
+//   Model::Init();
 }
 
 void
@@ -168,21 +168,29 @@ TeXBox::ComputeDimensions()
 {
    ASSERT(_GlyphSheet.Width() && _GlyphSheet.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
 
+   const auto width  = static_cast<Float>(_GlyphSheet.Width());
+   const auto height = static_cast<Float>(_GlyphSheet.Height());
+
    if(!_Dimensions.has_value())
    {
       // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
-      _Dimensions = { static_cast<Float>(_GlyphSheet.Width()), static_cast<Float>(_GlyphSheet.Height()) };
-      _Dimensions.value() *= GlyphSheet::FontSize10Scale;
+      _Dimensions = { width, height };
+      _Dimensions.value() *= GlyphSheet::FontScaleFactor();
 
       // If a custom scaling has been prescribed, scale the dimensions.
       if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
    }
+   else if(_Dimensions.value().y() < Zero) // If height dimension has not been prescribed, i.e. must preserve aspect-ratio.
+   {
+      const auto scale = _Dimensions.value().x() / width;
+      _Dimensions.value().y() = scale * height;
+   }
 
    // If an anchor has not already been set, anchor at origin.
-   if(!_Anchor.has_value()) SetAnchor({Zero, Zero, Zero});
+   if(!_Anchor.has_value()) SetAnchor({ Zero, Zero, Zero });
 
-   // Set model mesh.
-   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
+   // Compute sub-glyph dimensions.
+   FOR_EACH(str, _Strings) str->ComputeDimensions();
 }
 
 fm::Path

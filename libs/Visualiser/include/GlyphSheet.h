@@ -43,6 +43,8 @@ struct GlyphBox
 class GlyphSheet
 {
  public:
+   typedef UInt16 IndexT;
+
    void Init(size_t id, const std::string& text);
 
    void CompileLaTeXSource(const std::string& text);
@@ -55,25 +57,25 @@ class GlyphSheet
 
    void ComputeDimensions();
 
-   inline auto CompileDirectory() const { return _CompileDirectory; }
-
    inline auto Width() const { return _Width; }
 
    inline auto Height() const { return _Height; }
 
-   typedef UInt16 IndexT;
-   constexpr static Float FontSize10Scale{0.5 / 655360.0}; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
+   inline auto CompileDirectory() const { return _CompileDirectory; }
+
+   inline void SetPixelDensity(const UInt density) { _PixelDensity = density; }
+
+   consteval static Float FontScaleFactor() { return 0.5 / 655360.0; } // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
 
  private:
-   friend class TeXBox;
 
    template<class type> using UMap = std::unordered_map<IndexT, type>;
-   UMap<GlyphBox> _Boxes;
-   fm::Path       _CompileDirectory;
-   fm::Path       _TeXFile;
-   Int64          _Width{};
-   Int64          _Height{};
-   UInt16         _PixelDensity{2000}; // Measured in DPI.
+   UMap<GlyphBox>         _Boxes;
+   fm::Path               _CompileDirectory;
+   fm::Path               _TeXFile;
+   Int64                  _Width{};
+   Int64                  _Height{};
+   UInt16                 _PixelDensity{2000}; // Measured in DPI.
 };
 
 /***************************************************************************************************************************************************************
