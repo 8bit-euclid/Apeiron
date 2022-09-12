@@ -20,6 +20,8 @@ namespace aprn::vis {
 void
 GlyphSheet::Init(size_t id, const std::string& text)
 {
+   ASSERT(!text.empty(), "The TeXBox being compiled has no text.")
+
    // Set the compile directory for this glyph sheet.
    _CompileDirectory = LaTeXDirectory() / ("texbox" + ToString(id));
 

@@ -13,6 +13,7 @@
 ***************************************************************************************************************************************************************/
 
 #include "../include/Glyph.h"
+#include "../include/ModelFactory.h"
 #include "../include/ParseTeX.h"
 
 namespace aprn::vis {
@@ -105,6 +106,15 @@ Glyph::Init(UInt16& index_offset)
    else if(isRendered()) _Index = index_offset++;
 
    _isInit = true;
+}
+
+void
+Glyph::ComputeDimensions()
+{
+   ASSERT(_GlyphSheet, "Cannot compute the glyph dimensions as the glyph sheet has not yet been linked.")
+
+   // Set model mesh.
+   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
 }
 
 }

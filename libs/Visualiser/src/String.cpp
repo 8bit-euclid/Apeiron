@@ -119,4 +119,7 @@ String::Parse(const std::string& str)
 void
 String::LinkGlyphSheet(const GlyphSheet* glyph_sheet) { FOR_EACH(glyph, _Glyphs) glyph->_GlyphSheet = glyph_sheet; }
 
+void
+String::ComputeDimensions() { FOR_EACH(glyph, _Glyphs) glyph->ComputeDimensions(); }
+
 }
