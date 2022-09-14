@@ -55,7 +55,7 @@ String::Add(const DArray<Glyph>& glyphs)
 }
 
 String&
-String::SetFontSize(const char font_size)
+String::SetFontSize(const UChar font_size)
 {
    FOR_EACH(glyph, _Glyphs) glyph->SetFontSize(font_size);
    return *this;
@@ -65,13 +65,6 @@ String&
 String::SetColour(const Colour& colour)
 {
    FOR_EACH(glyph, _Glyphs) glyph->SetColour(colour);
-   return *this;
-}
-
-String&
-String::SetScale(const Float width_scale, const std::optional<Float> height_scale)
-{
-   FOR_EACH(glyph, _Glyphs) glyph->SetScale(width_scale, height_scale);
    return *this;
 }
 
@@ -93,7 +86,7 @@ String::SetBold(bool is_bold)
 * String Private Interface
 ***************************************************************************************************************************************************************/
 void
-String::Init(UInt16& index_offset)
+String::Init(GlyphSheet::IndexT& index_offset)
 {
    // Compute the position, height, and width of this string.
    _Text.clear();
@@ -101,13 +94,9 @@ String::Init(UInt16& index_offset)
    {
       // Add contribution from the glyph to the TeX string.
       glyph->Init(index_offset);
-      index_offset++;
       _Text += glyph->_Text;
    }
 }
-
-void
-String::SetAnchor(const SVectorF3* anchor) { FOR_EACH(glyph, _Glyphs) glyph->SetAnchor(anchor); }
 
 DArray<Glyph>
 String::Parse(const std::string& str)
@@ -117,9 +106,6 @@ String::Parse(const std::string& str)
 }
 
 void
-String::LinkGlyphSheet(const GlyphSheet* glyph_sheet) { FOR_EACH(glyph, _Glyphs) glyph->_GlyphSheet = glyph_sheet; }
-
-void
-String::ComputeDimensions() { FOR_EACH(glyph, _Glyphs) glyph->ComputeDimensions(); }
+String::ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor) { FOR_EACH(glyph, _Glyphs) glyph->ComputeDimensions(glyph_sheet, anchor); }
 
 }

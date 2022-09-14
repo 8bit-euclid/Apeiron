@@ -55,13 +55,6 @@ Glyph::SetColour(const Colour& colour)
 }
 
 Glyph&
-Glyph::SetScale(const Float width_scale, const std::optional<Float> height_scale)
-{
-   if(!_Scale.has_value()) _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
-   return *this;
-}
-
-Glyph&
 Glyph::SetItalic(const bool is_italic)
 {
    if(!_isItalic.has_value()) _isItalic = is_italic;
@@ -97,24 +90,39 @@ Glyph::Add(std::string&& str) { _Text.append(std::move(str)); }
 * Glyph Private Interface
 ***************************************************************************************************************************************************************/
 void
-Glyph::Init(UInt16& index_offset)
+Glyph::Init(GlyphSheet::IndexT& index_offset)
 {
    ASSERT(!_isInit, "This glyph has already been initialised.")
 
    // Initialise subglyphs and assign glyph index.
    if(isCompound()) FOR_EACH(glyph, _SubGlyphs) glyph->Init(index_offset);
-   else if(isRendered()) _Index = index_offset++;
-
-   _isInit = true;
+   else if(isRendered())
+   {
+      _isInit = true;
+      _Index  = index_offset++;
+      if(!_FontSize.has_value()) _FontSize = _DefaultFontSize;
+   }
 }
 
 void
-Glyph::ComputeDimensions()
+Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor)
 {
-   ASSERT(_GlyphSheet, "Cannot compute the glyph dimensions as the glyph sheet has not yet been linked.")
+   if(!isRendered()) return;
 
-   // Set model mesh.
+   ASSERT(_isInit, "The glyph must be initialise before its dimensions are computed.")
+
+   const auto& glyph_info = glyph_sheet.GlyphInfo(_Index);
+   const auto  scale      = GlyphSheet::FontSizeScale(_FontSize.value());
+
+   _Dimensions.x() = scale * static_cast<Real>(glyph_info.Width);
+   _Dimensions.y() = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   _Position       = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+
+   // Offset glyph position with respect to the parent TeXBox anchor.
+
+   // Set model mesh and initialise model.
    _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
+   Model::Init();
 }
 
 }

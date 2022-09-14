@@ -82,7 +82,7 @@ void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& 
    SetOrientation(_Position, _Pitch, _Yaw);
 }
 
-void Camera::CursorControl(const SVectorF2& cursor_displacement)
+void Camera::CursorControl(const SVectorR2& cursor_displacement)
 {
    // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
    _Yaw   += _MouseCursorSensitivity * cursor_displacement[0];
@@ -93,7 +93,7 @@ void Camera::CursorControl(const SVectorF2& cursor_displacement)
    SetOrientation(_Position, _Pitch, _Yaw);
 }
 
-void Camera::WheelControl(const SVectorF2& wheel_displacement)
+void Camera::WheelControl(const SVectorR2& wheel_displacement)
 {
    GLfloat displacement = _MouseWheelSensitivity * wheel_displacement[1];
    _Position += displacement * _Front;

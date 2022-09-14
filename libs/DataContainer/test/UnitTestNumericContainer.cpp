@@ -58,13 +58,13 @@ class NumericContainerTest : public testing::Test
 {
 public:
   Random<int> RandomInt;
-  Random<Float> RandomFloat;
+  Random<Real> RandomFloat;
 
   StaticNumericContainer<int, ContainerSize> IntStaticContainer;
-  StaticNumericContainer <Float, ContainerSize> FloatStaticContainer;
+  StaticNumericContainer <Real, ContainerSize> FloatStaticContainer;
 
   DynamicNumericContainer<int> IntDynamicContainer;
-  DynamicNumericContainer <Float> FloatDynamicContainer;
+  DynamicNumericContainer <Real> FloatDynamicContainer;
 
   NumericContainerTest()
     : RandomInt(-10, 10), RandomFloat(-Ten, Ten), IntDynamicContainer(ContainerSize), FloatDynamicContainer(ContainerSize) {}

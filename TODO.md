@@ -18,6 +18,7 @@
 - [x] ImGui re-integration
 - [ ] Add GUI switches for post-processing effects
 - [ ] LaTeX text/math rendering
+- [ ] Deprecate String
 - [ ] Background texture embedding onto text
 - [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Resurrect line shader

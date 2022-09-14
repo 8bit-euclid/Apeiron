@@ -28,7 +28,7 @@ class CurveTest : public testing::Test
 {
 public:
   Random<int> RandomInt;
-  Random<Float> RandomFloat;
+  Random<Real> RandomFloat;
 
   CurveTest()
     : RandomInt(-10, 10), RandomFloat(-Ten, Ten) {}
@@ -46,7 +46,7 @@ public:
 ***************************************************************************************************************************************************************/
 TEST_F(CurveTest, Line)
 {
-  SVectorF3 p, direction, norm_direction, centre;
+  SVectorR3 p, direction, norm_direction, centre;
   direction.Randomise();
   centre.Randomise();
   norm_direction = Normalise(direction);
@@ -64,7 +64,7 @@ TEST_F(CurveTest, Line)
 
   // Unit speed parametrised
   line.SetIfUnitSpeed(true);
-  const Float random = RandomFloat();
+  const Real random = RandomFloat();
   p = line.Point(random);
   FOR(i, 3) EXPECT_NEAR(p[i], centre[i] + random * norm_direction[i], Two * Small);
 
@@ -74,7 +74,7 @@ TEST_F(CurveTest, Line)
 
 TEST_F(CurveTest, Ray)
 {
-  SVectorF3 p, start, direction, norm_direction;
+  SVectorR3 p, start, direction, norm_direction;
   start.Randomise();
   direction.Randomise();
   norm_direction = Normalise(direction);
@@ -95,7 +95,7 @@ TEST_F(CurveTest, Ray)
   // Unit speed parametrised
   ray.SetIfUnitSpeed(true);
   RandomFloat.Reset(Zero, Ten);
-  const Float random = RandomFloat();
+  const Real random = RandomFloat();
   p = ray.Point(random);
   FOR(i, 3) EXPECT_NEAR(p[i], start[i] + random * norm_direction[i], Small);
 
@@ -104,12 +104,12 @@ TEST_F(CurveTest, Ray)
 
 TEST_F(CurveTest, Segment)
 {
-  SVectorF3 p, start, end, direction, norm_direction;
+  SVectorR3 p, start, end, direction, norm_direction;
   start.Randomise();
   end.Randomise();
   direction = end - start;
   norm_direction = Normalise(direction);
-  const Float magnitude = Magnitude(direction);
+  const Real magnitude = Magnitude(direction);
   Segment segment(start, end);
 
   // Not unit speed parametrised
@@ -128,7 +128,7 @@ TEST_F(CurveTest, Segment)
   // Unit speed parametrised
   segment.SetIfUnitSpeed(true);
   RandomFloat.Reset(Zero, magnitude);
-  const Float random = RandomFloat();
+  const Real random = RandomFloat();
   p = segment.Point(random);
   FOR(i, 3) EXPECT_NEAR(p[i], start[i] + random * norm_direction[i], Small);
 
@@ -141,11 +141,11 @@ TEST_F(CurveTest, SegmentChain)
   RandomInt.Reset(3, 12);
   const size_t n_vertices = RandomInt();
 
-  DynamicArray<SVectorF3> vertices(n_vertices);
-  DynamicArray<SVectorF3> directions(n_vertices - 1);
-  DynamicArray<SVectorF3> norm_directions(n_vertices - 1);
-  DynamicArray<Float> magnitudes(n_vertices - 1);
-  Float chain_length{};
+  DynamicArray<SVectorR3> vertices(n_vertices);
+  DynamicArray<SVectorR3> directions(n_vertices - 1);
+  DynamicArray<SVectorR3> norm_directions(n_vertices - 1);
+  DynamicArray<Real> magnitudes(n_vertices - 1);
+  Real chain_length{};
   FOR(i, vertices.size())
   {
     vertices[i].Randomise();
@@ -160,7 +160,7 @@ TEST_F(CurveTest, SegmentChain)
   }
 
   SegmentChain chain(vertices);
-  SVectorF3 p;
+  SVectorR3 p;
 
   // Not unit speed parametrised
   p = chain.Point(Zero);
@@ -170,11 +170,11 @@ TEST_F(CurveTest, SegmentChain)
   FOR(i, 3) EXPECT_NEAR(p[i], vertices.back()[i], Ten * Small);
 
   RandomFloat.Reset(Zero, One);
-  Float random = RandomFloat();
+  Real random = RandomFloat();
   p = chain.Point(random);
-  Float param_length = random * chain_length;
-  Float sum{};
-  SVectorF3 p_check;
+  Real param_length = random * chain_length;
+  Real sum{};
+  SVectorR3 p_check;
   bool isfound{};
   FOR(i, magnitudes.size())
   {
@@ -182,7 +182,7 @@ TEST_F(CurveTest, SegmentChain)
     sum += magnitudes[i];
     if(param_length <= sum)
     {
-      const Float r = (param_length - sum_prev) / magnitudes[i];
+      const Real r = (param_length - sum_prev) / magnitudes[i];
       p_check = (One - r) * vertices[i] + r * vertices[i + 1];
       isfound = true;
       break;
@@ -216,7 +216,7 @@ TEST_F(CurveTest, SegmentChain)
     sum += magnitudes[i];
     if(param_length <= sum)
     {
-      const Float r = (param_length - sum_prev) / magnitudes[i];
+      const Real r = (param_length - sum_prev) / magnitudes[i];
       p_check = (One - r) * vertices[i] + r * vertices[i + 1];
       isfound = true;
       break;
@@ -243,8 +243,8 @@ TEST_F(CurveTest, SegmentChain)
 TEST_F(CurveTest, Circle)
 {
   RandomFloat.Reset(One, Ten);
-  const Float radius = RandomFloat();
-  SVectorF2 p, p_check, centre;
+  const Real radius = RandomFloat();
+  SVectorR2 p, p_check, centre;
   centre.Randomise();
   Circle circle(radius, centre);
 
@@ -264,23 +264,23 @@ TEST_F(CurveTest, Circle)
   // Unit speed parametrised
   circle.SetIfUnitSpeed(true);
   RandomFloat.Reset(-Ten, Ten);
-  const Float random = RandomFloat();
+  const Real random = RandomFloat();
   p = circle.Point(random);
-  Float theta = random / radius;
-  p_check = centre + radius * SVectorF2{Cos(theta), Sin(theta)};
+  Real theta = random / radius;
+  p_check = centre + radius * SVectorR2{Cos(theta), Sin(theta)};
   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
 
   p = circle.Point(-random);
-  p_check = centre + radius * SVectorF2{Cos(theta), -Sin(theta)};
+  p_check = centre + radius * SVectorR2{Cos(theta), -Sin(theta)};
   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
 }
 
 TEST_F(CurveTest, Ellipse)
 {
   RandomFloat.Reset(One, Ten);
-  const Float radius_x = RandomFloat();
-  const Float radius_y = RandomFloat();
-  SVectorF2 p, p_check, centre;
+  const Real radius_x = RandomFloat();
+  const Real radius_y = RandomFloat();
+  SVectorR2 p, p_check, centre;
   centre.Randomise();
   Ellipse ellipse(radius_x, radius_y, centre);
 
@@ -289,7 +289,7 @@ TEST_F(CurveTest, Ellipse)
   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] + radius_x * xAxis2[i]);
 
   p = ellipse.Point(QuartPi);
-  p_check = centre + SVectorF2{radius_x / Sqrt(Two), radius_y / Sqrt(Two)};
+  p_check = centre + SVectorR2{radius_x / Sqrt(Two), radius_y / Sqrt(Two)};
   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], Two * Small);
 
   p = ellipse.Point(HalfPi);

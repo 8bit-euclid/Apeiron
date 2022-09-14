@@ -54,21 +54,17 @@ class TeXBox final : public Model
 
    TeXBox& Add(const DArray<String>& strings);
 
-   TeXBox& SetAnchor(const SVectorF3& anchor);
+   TeXBox& SetPixelDensity(UInt density);
 
-   TeXBox& SetFontSize(char font_size);
+   TeXBox& SetAnchor(const SVectorR3& anchor);
+
+   TeXBox& SetFontSize(const UChar font_size);
 
    TeXBox& SetColour(const Colour& colour);
-
-   TeXBox& SetDimensions(Float width, std::optional<Float> height = std::nullopt);
-
-   TeXBox& SetScale(Float width_scale, std::optional<Float> height_scale = std::nullopt);
 
    TeXBox& SetItalic(bool is_italic);
 
    TeXBox& SetBold(bool is_bold);
-
-   TeXBox& SetPixelDensity(UInt density);
 
  private:
    friend class Scene;
@@ -76,7 +72,7 @@ class TeXBox final : public Model
 
    void Init(size_t id);
 
-   void InitStrings();
+   void InitSubGlyphs();
 
    void ReadGlyphBoxPositions();
 
@@ -84,19 +80,15 @@ class TeXBox final : public Model
 
    void ComputeGlyphSheetDimensions();
 
-   void LinkGlyphSheet();
-
    void ComputeDimensions();
 
    fm::Path ImagePath() const;
 
-   std::string              _Text;
-   DArray<SPtr<String>>     _Strings;
-   GlyphSheet               _GlyphSheet;
-   std::optional<SVectorF3> _Anchor;       // Bottom-left corner.
-   std::optional<SVectorF2> _Dimensions;   // [width, height] in world-space coordinates.
-   std::optional<SVectorF2> _Scale;        // [width-scale, height-scale]
-   char                     _FontSize{10}; // Defaults to a 10pt font.
+   std::string          _Text;
+   DArray<SPtr<String>> _Strings;
+   GlyphSheet           _GlyphSheet;
+   SVectorR2            _Dimensions{}; // [width, height] in world-space.
+   SVectorR3            _Anchor{};     // Bottom-left corner.
 };
 
 

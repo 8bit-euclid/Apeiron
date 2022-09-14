@@ -115,7 +115,7 @@ Visualiser::InitScenes()
    _CurrentScene = &first_scene_it->second;
    Scene* current_scene(_CurrentScene);
    size_t scene_count{};
-   Float  start_time{};
+   Real  start_time{};
 
    // Loop through scenes
    do

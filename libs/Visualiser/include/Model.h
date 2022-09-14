@@ -45,7 +45,7 @@ class Model
 
    ~Model();
 
-   void Update(Float global_time);
+   void Update(Real global_time);
 
    void Render();
 
@@ -53,13 +53,13 @@ class Model
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetColour(const SVectorF4& rgb_colour);
+   Model& SetColour(const SVectorR4& rgb_colour);
 
-   Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
+   Model& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness);
 
-   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Float dispacement_scale);
+   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale);
 
-   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Float dispacement_scale);
+   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale);
 
    Model& Add(Model& sub_model, const std::string& name);
 
@@ -67,34 +67,34 @@ class Model
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
-   Model& OffsetPosition(const SVectorF3& displacement);
+   Model& OffsetPosition(const SVectorR3& displacement);
 
-   Model& OffsetOrientation(Float angle, const SVectorF3& axis);
+   Model& OffsetOrientation(Real angle, const SVectorR3& axis);
 
-   Model& Scale(Float factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& Scale(const SVectorF3& factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& MoveBy(const SVectorF3& displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& MoveTo(const SVectorF3& position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& MoveAt(const SVectorF3& velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
+   Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity);
 
-   Model& Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time = InfFloat<>);
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>);
 
    template<class D>
-   Model& Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& Trace(const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& RotateBy(Float angle, const SVectorF3& axis, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
 
-   Model& RotateAt(const SVectorF3& angular_velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
+   Model& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity);
 
-   Model& RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point, Float start_time, Float end_time,
-                    const std::function<Float(Float)>& reparam = Linear);
+   Model& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
+                    const std::function<Real(Real)>& reparam = Linear);
 
-   Model& RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time = Zero,
-                    const std::function<Float(Float)>& ramp = Identity);
+   Model& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
+                    const std::function<Real(Real)>& ramp = Identity);
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -138,15 +138,15 @@ class Model
    Mesh                                           _Mesh;
    Map<SPtr<Model>>                               _SubModels;
    std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
-   std::optional<Pair<std::string, Float>>        _TextureInfo;
+   std::optional<Pair<std::string, Real>>        _TextureInfo;
    std::optional<Material>                        _Material;
    Colour                                         _StrokeColour;
    Colour                                         _FillColour;
    glm::vec3                                      _Centroid;
    glm::mat4                                      _ModelMatrix{1.0f};
    glm::mat4                                      _PreviousActions{1.0f};
-   Float                                          _EntryTime{Zero};
-   Float                                          _ExitTime{InfFloat<>};
+   Real                                          _EntryTime{Zero};
+   Real                                          _ExitTime{InfFloat<>};
    bool                                           _isInitialised{false};
 
    /** Data Buffers

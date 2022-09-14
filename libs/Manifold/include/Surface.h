@@ -31,7 +31,7 @@ using Surface = Manifold<derived, 2, 3>;
 class Plane : public Surface<Plane>
 {
 public:
-  Plane(const SVectorF3& _unit_normal, const SVectorF3& _point = {Zero, Zero, Zero});
+  Plane(const SVectorR3& _unit_normal, const SVectorR3& _point = {Zero, Zero, Zero});
 };
 
 }

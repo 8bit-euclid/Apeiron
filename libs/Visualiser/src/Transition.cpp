@@ -25,7 +25,7 @@ namespace aprn::vis {
 * Private Interface
 ***************************************************************************************************************************************************************/
 void
-Transition::Init(const Float start_time)
+Transition::Init(const Real start_time)
 {
 
 }

@@ -136,7 +136,7 @@ template<typename T> using SArray4 = SArray<T, 4>;
 template<size_t N> using SArrayB = SArray<Bool, N>;
 template<size_t N> using SArrayU = SArray<size_t, N>;
 template<size_t N> using SArrayI = SArray<int, N>;
-template<size_t N> using SArrayF = SArray<Float, N>;
+template<size_t N> using SArrayF = SArray<Real, N>;
 
 /***************************************************************************************************************************************************************
 * Dynamic Array Aliases
@@ -146,7 +146,7 @@ template<typename T> using DArray = DynamicArray<T>;
 using DArrayB = DArray<Bool>;
 using DArrayU = DArray<size_t>;
 using DArrayI = DArray<int>;
-using DArrayF = DArray<Float>;
+using DArrayF = DArray<Real>;
 
 }
 

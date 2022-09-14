@@ -23,8 +23,8 @@ namespace aprn{
 
 TEST_F(ApeironTest, isEqual)
 {
-  const Float rela_tol = RelativeTolerance;
-  const Float zero_tol = ZeroTolerance;
+  const Real rela_tol = RelativeTolerance;
+  const Real zero_tol = ZeroTolerance;
 
   // Zero toleranced equality (Floats only)
   EXPECT_TRUE(isEqual(Zero, Zero));
@@ -37,7 +37,7 @@ TEST_F(ApeironTest, isEqual)
   FOR(i, 1000)
   {
     const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
+    const Real random_float = RandomFloat();
 
     // Exact precision equality
     EXPECT_TRUE(isEqual<true>(random_int, random_int));
@@ -61,8 +61,8 @@ TEST_F(ApeironTest, isEqual)
 
 TEST_F(ApeironTest, isLess)
 {
-  const Float rela_tol = RelativeTolerance;
-  const Float zero_tol = ZeroTolerance;
+  const Real rela_tol = RelativeTolerance;
+  const Real zero_tol = ZeroTolerance;
 
   // Zero toleranced lesser than (Floats only)
   EXPECT_TRUE(isLess(Zero, One));
@@ -73,7 +73,7 @@ TEST_F(ApeironTest, isLess)
   FOR(i, 1000)
   {
     const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
+    const Real random_float = RandomFloat();
 
     // Exact precision lesser than
     EXPECT_TRUE(isLess<true>(random_int, random_int + 1));
@@ -93,8 +93,8 @@ TEST_F(ApeironTest, isLess)
 
 TEST_F(ApeironTest, isLessEqual)
 {
-  const Float rela_tol = RelativeTolerance;
-  const Float zero_tol = ZeroTolerance;
+  const Real rela_tol = RelativeTolerance;
+  const Real zero_tol = ZeroTolerance;
 
   // Zero toleranced lesser than or equal to (Floats only)
   EXPECT_TRUE(isLessEqual(Zero, Zero));
@@ -105,7 +105,7 @@ TEST_F(ApeironTest, isLessEqual)
   FOR(i, 1000)
   {
     const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
+    const Real random_float = RandomFloat();
 
     // Exact precision lesser than or equal to
     EXPECT_TRUE(isLessEqual<true>(random_int, random_int));
@@ -127,7 +127,7 @@ TEST_F(ApeironTest, isLarger)
   FOR(i, 1000)
   {
     const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
+    const Real random_float = RandomFloat();
 
     EXPECT_EQ(isLarger<true>(random_int, random_int), !isLessEqual<true>(random_int, random_int));
     EXPECT_EQ(isLarger<true>(random_float, random_float), !isLessEqual<true>(random_float, random_float));
@@ -140,7 +140,7 @@ TEST_F(ApeironTest, isLargerEqual)
   FOR(i, 1000)
   {
     const int random_int = RandomInt();
-    const Float random_float = RandomFloat();
+    const Real random_float = RandomFloat();
 
     EXPECT_EQ(isLargerEqual<true>(random_int, random_int), !isLess<true>(random_int, random_int));
     EXPECT_EQ(isLargerEqual<true>(random_float, random_float), !isLess<true>(random_float, random_float));
@@ -154,8 +154,8 @@ TEST_F(ApeironTest, isBounded)
   {
     const int min_int = -Abs(RandomInt());
     const int max_int = min_int + 1 + Abs(RandomInt());
-    const Float min_float = -Abs(RandomFloat());
-    const Float max_float = min_float + One + Abs(RandomFloat());
+    const Real min_float = -Abs(RandomFloat());
+    const Real max_float = min_float + One + Abs(RandomFloat());
 
     // Test left bounds
     EXPECT_TRUE(isBounded(min_int, min_int, max_int));

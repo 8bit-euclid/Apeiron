@@ -30,8 +30,8 @@ namespace aprn::vis {
 
 /** Reparametriser/Ramp Functors
 ***************************************************************************************************************************************************************/
-constexpr auto Identity = [](Float t){ return One; };
-constexpr auto Linear   = [](Float t){ return func::Linear(t, One, Zero); };
+constexpr auto Identity = [](Real t){ return One; };
+constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 
 //constexpr auto Sigmoid = [](Float t){ return t; };
 //
@@ -113,12 +113,12 @@ class ActionBase
  public:
    ActionBase(Model& model, ActionType _action_type);
 
-   ActionBase(Model& model, ActionType _action_type, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   ActionBase(Model& model, ActionType _action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   ActionBase(Model& model, ActionType _action_type, Float start_time, std::function<Float(Float)> ramp = Identity);
+   ActionBase(Model& model, ActionType _action_type, Real start_time, std::function<Real(Real)> ramp = Identity);
 
    virtual void
-   Do(const Float global_time) = 0;
+   Do(const Real global_time) = 0;
 
    inline ActionType
    GetType() const { return Type; }
@@ -129,16 +129,16 @@ class ActionBase
  protected:
    friend class Model;
 
-   std::optional<Float>
-   ComputeParameter(const Float global_time);
+   std::optional<Real>
+   ComputeParameter(const Real global_time);
 
    RWpr<Model>                 Actor;
    ActionType                  Type;
-   const Float                 StartTime;
-   const Float                 EndTime;
-   Float                       ParameterNormaliser;
-   std::function<Float(Float)> Reparametriser;
-   std::function<Float(Float)> Ramp;
+   const Real                 StartTime;
+   const Real                 EndTime;
+   Real                       ParameterNormaliser;
+   std::function<Real(Real)> Reparametriser;
+   std::function<Real(Real)> Ramp;
    bool                        Status{false};
 };
 

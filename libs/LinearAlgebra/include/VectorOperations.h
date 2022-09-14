@@ -32,15 +32,15 @@ InnerProduct(const Vector<T, D>& vector0, const Vector<T, D>& vector1)
 }
 
 template<typename T, class D>
-constexpr SVectorF3
+constexpr SVectorR3
 CrossProduct(const Vector<T, D>& vector0, const Vector<T, D>& vector1)
 {
    const auto& v0 = vector0.Derived();
    const auto& v1 = vector1.Derived();
    ASSERT(v0.size() == v1.size() && (v0.size() == 2 || v0.size() == 3), "Cross products can only be computed for 2D or 3D vectors.")
 
-   return v0.size() == 2 ? SVectorF3{Zero, Zero, v0[0] * v1[1] - v0[1] * v1[0]} :
-                           SVectorF3{v0[1]*v1[2] - v0[2]*v1[1], v0[2]*v1[0] - v0[0]*v1[2], v0[0]*v1[1] - v0[1]*v1[0]};
+   return v0.size() == 2 ? SVectorR3{Zero, Zero, v0[0] * v1[1] - v0[1] * v1[0]} :
+          SVectorR3{v0[1] * v1[2] - v0[2] * v1[1], v0[2] * v1[0] - v0[0] * v1[2], v0[0] * v1[1] - v0[1] * v1[0]};
 }
 
 /***************************************************************************************************************************************************************
@@ -48,7 +48,7 @@ CrossProduct(const Vector<T, D>& vector0, const Vector<T, D>& vector1)
 ***************************************************************************************************************************************************************/
 template<size_t p, typename T, class D>
 requires Arithmetic<T>
-constexpr Float
+constexpr Real
 LpNorm(const Vector<T, D>& v)
 {
    STATIC_ASSERT(0 < p && p < 4, "Lp-norms can currently only be computed for p = 1, 2, 3.")
@@ -67,7 +67,7 @@ constexpr T
 L1Norm(const Vector<T, D>& v) { return static_cast<T>(LpNorm<1>(v)); }
 
 template<typename T, class D>
-constexpr Float
+constexpr Real
 L2Norm(const Vector<T, D>& v) { return LpNorm<2>(v); }
 
 template<typename T, class D>
@@ -75,7 +75,7 @@ constexpr T
 LInfNorm(const Vector<T, D>& v) { return MaxEntry(v.Derived().begin(), v.Derived().end()); }
 
 template<typename T, class D>
-constexpr Float
+constexpr Real
 Magnitude(const Vector<T, D>& v) { return L2Norm(v); }
 
 template<typename T, class D>
@@ -94,8 +94,8 @@ Normalise(const Vector<T, D>& v)
 * Vector Angle/Alignment/Rotation
 ***************************************************************************************************************************************************************/
 template<bool orientangle = false, typename T, class D>
-constexpr Float
-ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorF3& _orient = zAxis3)
+constexpr Real
+ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorR3& _orient = zAxis3)
 {
   const auto smallangle = Arccos(InnerProduct(Normalise(v0), Normalise(v1)));
   if constexpr(!orientangle) return smallangle;
@@ -104,7 +104,7 @@ ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorF3& _o
 
 template<typename T, class D>
 constexpr bool
-isAligned(const Vector<T, D>& v0, const Vector<T, D>& v1, const Float angle_thresh = TwelfthPi)
+isAligned(const Vector<T, D>& v0, const Vector<T, D>& v1, const Real angle_thresh = TwelfthPi)
 {
   const auto angle = ComputeAngle(v0, v1);
   return isBounded(angle_thresh, Zero, HalfPi) ? angle < angle_thresh || angle > (Pi - angle_thresh) :
@@ -113,14 +113,14 @@ isAligned(const Vector<T, D>& v0, const Vector<T, D>& v1, const Float angle_thre
 
 template<typename T, class D>
 constexpr D
-RotateAbout(const Vector<T, D>& vector, const Float& angle, const SVectorF3& axis = zAxis3)
+RotateAbout(const Vector<T, D>& vector, const Real& angle, const SVectorR3& axis = zAxis3)
 {
   return D{};
 }
 
 template<typename T, class D>
 constexpr D
-RotateTowards(const Vector<T, D>& vector, const Float& angle, const Vector<T, D>& reference)
+RotateTowards(const Vector<T, D>& vector, const Real& angle, const Vector<T, D>& reference)
 {
   return D{};
 }

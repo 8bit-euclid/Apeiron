@@ -40,7 +40,7 @@ struct Action : public ActionBase
 {
    Action(Model& model) : ActionBase(model, type, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
 
-   void Do(const Float global_time) override {}
+   void Do(const Real global_time) override {}
 };
 
 ///** Ramp
@@ -67,13 +67,13 @@ class Action<type> final : public ActionBase
  public:
    Action(Model& model, const glm::vec3& position_offset);
 
-   Action(Model& model, Float angle_offset, const glm::vec3& axis);
+   Action(Model& model, Real angle_offset, const glm::vec3& axis);
 
-   void Do(const Float global_time) override;
+   void Do(const Real global_time) override;
 
  private:
    glm::vec3 Position;
-   Float     Angle;
+   Real     Angle;
    glm::vec3 Axis;
 };
 
@@ -84,11 +84,11 @@ requires Scale<type>
 class Action<type> final : public ActionBase
 {
  public:
-   Action(Model& model, Float scale, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, Real scale, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   Action(Model& model, const glm::vec3& scales, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   void Do(const Float global_time) override;
+   void Do(const Real global_time) override;
 
  private:
    const glm::vec3 Scales{One};
@@ -101,19 +101,19 @@ requires Translation<type>
 class Action<type> final : public ActionBase
 {
  public:
-   Action(Model& model, const glm::vec3& disp_or_posi, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   Action(Model& model, StaticArray<std::function<Float(Float)>, 3> path, Float start_time, Float end_time);
+   Action(Model& model, StaticArray<std::function<Real(Real)>, 3> path, Real start_time, Real end_time);
 
-   Action(Model& model, std::function<SVectorF3(Float)> path, Float start_time, Float end_time);
+   Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time);
 
    template<class D>
-   Action(Model& model, const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   void Do(const Float global_time) override;
+   void Do(const Real global_time) override;
 
  private:
-   std::function<glm::vec3(Float)> Displacement;
+   std::function<glm::vec3(Real)> Displacement;
 };
 
 /** Rotation
@@ -123,20 +123,20 @@ requires Rotation<type>
 class Action<type> final : public ActionBase
 {
  public:
-   Action(Model& model, Float angle, const glm::vec3& axis, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   Action(Model& model, Float angle, const glm::vec3& axis, const glm::vec3& ref_point, Float start_time, Float end_time,
-          std::function<Float(Float)> reparam = Linear);
+   Action(Model& model, Real angle, const glm::vec3& axis, const glm::vec3& ref_point, Real start_time, Real end_time,
+          std::function<Real(Real)> reparam = Linear);
 
-   Action(Model& model, const glm::vec3& angular_velocity, Float start_time = Zero, std::function<Float(Float)> ramp = Identity);
+   Action(Model& model, const glm::vec3& angular_velocity, Real start_time = Zero, std::function<Real(Real)> ramp = Identity);
 
-   void Do(const Float global_time) override;
+   void Do(const Real global_time) override;
 
  private:
-   std::function<Float(Float)> Angle;
+   std::function<Real(Real)> Angle;
    const glm::vec3             Axis;
    const glm::vec3             Reference;
-   Float                       AngularSpeed;
+   Real                       AngularSpeed;
 };
 
 ///** Reflection

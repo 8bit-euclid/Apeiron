@@ -29,7 +29,7 @@ enum class ColourModel
 
 struct Colour
 {
-   SVectorF4   Values{};
+   SVectorR4   Values{};
    ColourModel Type{ColourModel::RGB};
 };
 

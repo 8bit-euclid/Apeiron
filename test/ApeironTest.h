@@ -24,10 +24,10 @@ class ApeironTest : public testing::Test
 {
 public:
   Random<int> RandomInt;
-  Random<Float> RandomFloat;
+  Random<Real> RandomFloat;
 
   std::array<int, 100> IntArray;
-  std::array<Float, 100> FloatArray;
+  std::array<Real, 100> FloatArray;
 
   ApeironTest()
     : RandomInt(-10, 10), RandomFloat(-Ten, Ten) {}

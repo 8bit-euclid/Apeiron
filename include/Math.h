@@ -41,31 +41,31 @@ constexpr T
 Modulo(const T _numerator, const T _denominator, std::false_type, std::true_type) { return std::fmod(_numerator, _denominator); }
 
 /** Newton-Raphson for constexpr Sqrt function. */
-constexpr Float
-SqrtNewtonRaphson(const Float _x, const Float _curr, const Float _prev)
+constexpr Real
+SqrtNewtonRaphson(const Real _x, const Real _curr, const Real _prev)
 { return isEqual<true>(_curr, _prev) ? _curr : SqrtNewtonRaphson(_x, Half * (_curr + _x / _curr), _curr); }
 
 /** Newton-Raphson for constexpr Cbrt function. */
-constexpr Float
-CbrtNewtonRaphson(const Float _x, const Float _curr, const Float _prev)
+constexpr Real
+CbrtNewtonRaphson(const Real _x, const Real _curr, const Real _prev)
 { return isEqual<true>(_curr, _prev) ? _curr : CbrtNewtonRaphson(_x, Third * (Two * _curr + _x / (_curr * _curr)), _curr); }
 
 /** Taylor expansion for constexpr Exp function. */
-constexpr Float
-Exp(const Float _x, const Float _sum, const Float n, const int _iteration, const Float _delta)
+constexpr Real
+Exp(const Real _x, const Real _sum, const Real n, const int _iteration, const Real _delta)
 { return isEqual<true>(_delta/n, Zero) ? _sum : Exp(_x, _sum + _delta / n, n * _iteration, _iteration + 1, _delta * _x); }
 
 template<typename T>
-constexpr Float
+constexpr Real
 TrigonometricSeries(const T x, const T sum, const T n, const int i, const int s, const T t)
 { return isEqual<true>(t*s/n, Zero) ? sum : TrigonometricSeries(x, sum + t * s / n, n * i * (i + 1), i + 2, -s, t * x * x); }
 
 template<typename T>
-constexpr Float
+constexpr Real
 InverseTrigonometricSeries(const T x, const T sum, const int n, const T t)
 {
-  return isEqual<true>(sum, sum + t * static_cast<Float>(n) / (n + 2.0)) ? sum :
-         InverseTrigonometricSeries(x, sum + t * static_cast<Float>(n)/(n + 2.0), n + 2, t * x * x * static_cast<Float>(n) / (n + 3.0));
+  return isEqual<true>(sum, sum + t * static_cast<Real>(n) / (n + 2.0)) ? sum :
+         InverseTrigonometricSeries(x, sum + t * static_cast<Real>(n) / (n + 2.0), n + 2, t * x * x * static_cast<Real>(n) / (n + 3.0));
 }
 
 }
@@ -114,11 +114,11 @@ Product(const iter first, const iter last)
 
 /** Division function. */
 template<typename T>
-constexpr Float
+constexpr Real
 Divide(const T _numerator, const T _denominator)
 {
-  return !isEqual(static_cast<Float>(_denominator), Zero) ? static_cast<Float>(_numerator)/static_cast<Float>(_denominator) :
-                                                            throw std::logic_error("Denominator must be non-zero during division.");
+  return !isEqual(static_cast<Real>(_denominator), Zero) ? static_cast<Real>(_numerator) / static_cast<Real>(_denominator) :
+         throw std::logic_error("Denominator must be non-zero during division.");
 }
 
 /** Modulo function. */
@@ -126,7 +126,7 @@ template<typename T>
 constexpr T
 Modulo(const T _numerator, const T _denominator)
 {
-  return !isEqual(static_cast<Float>(_denominator), Zero) ?
+  return !isEqual(static_cast<Real>(_denominator), Zero) ?
          detail::Modulo<T>(_numerator, _denominator, std::is_integral<T>(), std::is_floating_point<T>()) :
          throw std::logic_error("Denominator must be non-zero during modulo operation.");
 }
@@ -181,55 +181,55 @@ constexpr T
 Cube(const T _x) { return iPow(_x, 3); }
 
 /** Constexpr version of std::sqrt. */
-constexpr Float
-Sqrt(const Float _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
+constexpr Real
+Sqrt(const Real _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
 
 /** Constexpr version of std::cbrt. */
-constexpr Float
-Cbrt(const Float _x) { return detail::CbrtNewtonRaphson(_x, One, Zero); }
+constexpr Real
+Cbrt(const Real _x) { return detail::CbrtNewtonRaphson(_x, One, Zero); }
 
 /** Constexpr version of std::hypot. */
-constexpr Float
-Hypot(const Float _x, const Float _y) { return Sqrt(Square(_x) + Square(_y)); }
+constexpr Real
+Hypot(const Real _x, const Real _y) { return Sqrt(Square(_x) + Square(_y)); }
 
 /** Constexpr version of std::exp. */
-constexpr Float
-Exp(const Float _x) { return detail::Exp(_x, 1.0, 1.0, 2, _x); }
+constexpr Real
+Exp(const Real _x) { return detail::Exp(_x, 1.0, 1.0, 2, _x); }
 
 /***************************************************************************************************************************************************************
 * Trigonometric/Inverse-Trigonometric Functions
 ***************************************************************************************************************************************************************/
 /** Constexpr sine function. */
-constexpr Float
-Sin(const Float _x) { return detail::TrigonometricSeries(_x, _x, static_cast<Float>(6), 4, -1, iPow(_x, 3)); }
+constexpr Real
+Sin(const Real _x) { return detail::TrigonometricSeries(_x, _x, static_cast<Real>(6), 4, -1, iPow(_x, 3)); }
 
 /** Constexpr cosine function. */
-constexpr Float
-Cos(const Float _x) { return Sin(_x + HalfPi); }
+constexpr Real
+Cos(const Real _x) { return Sin(_x + HalfPi); }
 
 /** Constexpr tan function. */
-constexpr Float
-Tan(const Float _x)
+constexpr Real
+Tan(const Real _x)
 {
   const auto denom = Cos(_x);
   return !isEqual(denom, Zero) ? Sin(_x) / denom : throw std::domain_error("Cannot compute tan(x) as cos(x) is 0.");
 }
 
 /** Constexpr arcsine function. */
-constexpr Float
-Arcsin(const Float _x)
+constexpr Real
+Arcsin(const Real _x)
 {
-  return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ?
+  return isBounded<false, false, true>(static_cast<Real>(_x), -1.0, 1.0) ?
          detail::InverseTrigonometricSeries(_x, _x, 1, _x * _x * _x / 2.0) :
          Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToString(_x) + " is out of the arcsin domain bounds.");
 }
 
 /** Constexpr arccos function. */
-constexpr Float
-Arccos(const Float _x)
+constexpr Real
+Arccos(const Real _x)
 {
-  return isBounded<false, false, true>(static_cast<Float>(_x), -1.0, 1.0) ? HalfPi - Arcsin(_x) : isEqual(_x, -1.0) ? Pi : isEqual(_x, 1.0) ? Zero :
-                                                           throw std::domain_error("The value " + ToString(_x) + " is out of the arccos domain bounds.");
+  return isBounded<false, false, true>(static_cast<Real>(_x), -1.0, 1.0) ? HalfPi - Arcsin(_x) : isEqual(_x, -1.0) ? Pi : isEqual(_x, 1.0) ? Zero :
+                                                                                                                          throw std::domain_error("The value " + ToString(_x) + " is out of the arccos domain bounds.");
 }
 
 /***************************************************************************************************************************************************************

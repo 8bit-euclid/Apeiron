@@ -41,11 +41,9 @@ class String final : public Model
 
    String& Add(const DArray<Glyph>& glyphs);
 
-   String& SetFontSize(char font_size);
+   String& SetFontSize(const UChar font_size);
 
    String& SetColour(const Colour& colour);
-
-   String& SetScale(const Float width_scale, const std::optional<Float> height_scale = std::nullopt);
 
    String& SetItalic(bool is_italic);
 
@@ -54,15 +52,11 @@ class String final : public Model
  private:
    friend class TeXBox;
 
-   void Init(UInt16& index_offset);
-
-   void SetAnchor(const SVectorF3* anchor);
+   void Init(GlyphSheet::IndexT& index_offset);
 
    DArray<Glyph> Parse(const std::string& str);
 
-   void LinkGlyphSheet(const GlyphSheet* glyph_sheet);
-
-   void ComputeDimensions();
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor);
 
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;

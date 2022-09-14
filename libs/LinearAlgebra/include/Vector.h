@@ -122,10 +122,10 @@ class DynamicVector final : public DynamicArray<T>,
 
 /** Generic Vector Aliases
 ***************************************************************************************************************************************************************/
-template<class D> using VectorB = Vector<Bool, D>;
+template<class D> using VectorB = Vector<Bool  , D>;
 template<class D> using VectorU = Vector<size_t, D>;
-template<class D> using VectorI = Vector<int, D>;
-template<class D> using VectorF = Vector<Float, D>;
+template<class D> using VectorI = Vector<int   , D>;
+template<class D> using VectorF = Vector<Real  , D>;
 
 /** Static Vector Aliases
 ***************************************************************************************************************************************************************/
@@ -136,19 +136,19 @@ template<typename T> using SVector2 = SVector<T, 2>;
 template<typename T> using SVector3 = SVector<T, 3>;
 template<typename T> using SVector4 = SVector<T, 4>;
 
-/** Sized Float vectors */
-template<size_t N> using SVectorF = SVector<Float, N>;
-using SVectorF1 = SVectorF<1>;
-using SVectorF2 = SVectorF<2>;
-using SVectorF3 = SVectorF<3>;
-using SVectorF4 = SVectorF<4>;
+/** Sized Real vectors */
+template<size_t N> using SVectorR = SVector<Real, N>;
+using SVectorR1 = SVectorR<1>;
+using SVectorR2 = SVectorR<2>;
+using SVectorR3 = SVectorR<3>;
+using SVectorR4 = SVectorR<4>;
 
 /** Coordinate Axes */
-constexpr SVectorF2 xAxis2{1.0, 0.0};
-constexpr SVectorF2 yAxis2{0.0, 1.0};
-constexpr SVectorF3 xAxis3{1.0, 0.0, 0.0};
-constexpr SVectorF3 yAxis3{0.0, 1.0, 0.0};
-constexpr SVectorF3 zAxis3{0.0, 0.0, 1.0};
+constexpr SVectorR2 xAxis2{ 1.0, 0.0 };
+constexpr SVectorR2 yAxis2{ 0.0, 1.0 };
+constexpr SVectorR3 xAxis3{ 1.0, 0.0, 0.0 };
+constexpr SVectorR3 yAxis3{ 0.0, 1.0, 0.0 };
+constexpr SVectorR3 zAxis3{ 0.0, 0.0, 1.0 };
 
 /** Dynamic Vector Aliases
 ***************************************************************************************************************************************************************/
@@ -157,20 +157,18 @@ template<typename T> using DVector = DynamicVector<T>;
 using DVectorB = DVector<Bool>;
 using DVectorU = DVector<size_t>;
 using DVectorI = DVector<int>;
-using DVectorF = DVector<Float>;
+using DVectorR = DVector<Real>;
 
 /***************************************************************************************************************************************************************
 * Static Vector Conversion
 ***************************************************************************************************************************************************************/
 template<size_t N, size_t M, typename T>
 constexpr SVector<T, N>
-ConvertVector(const SVector<T, M>& _from_vector)
+ConvertVector(const SVector<T, M>& from)
 {
-   StaticVector<T, N> to_vector;
-   std::copy(_from_vector.begin(), (_from_vector.begin() + Min(M, N)), to_vector.begin());
-   return to_vector;
+   SVector<T, N> to;
+   std::copy(from.begin(), (from.begin() + Min(M, N)), to.begin());
+   return to;
 }
 
 }
-
-//#include "../src/Vector.cpp"

@@ -34,14 +34,14 @@ ActionBase::ActionBase(Model& model, ActionType _action_type)
    ASSERT(_action_type == ActionType::OffsetOrientation || _action_type == ActionType::OffsetPosition, "Only static actions are accepted.")
 }
 
-ActionBase::ActionBase(Model& model, ActionType _action_type, Float start_time, Float end_time, std::function<Float(Float)> reparam)
+ActionBase::ActionBase(Model& model, ActionType _action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam)
    : Actor(model), Type(_action_type), StartTime(start_time), EndTime(end_time), ParameterNormaliser(One / (EndTime - StartTime)), Reparametriser(reparam) {}
 
-ActionBase::ActionBase(Model& model, ActionType _action_type, Float start_time, std::function<Float(Float)> ramp)
+ActionBase::ActionBase(Model& model, ActionType _action_type, Real start_time, std::function<Real(Real)> ramp)
    : Actor(model), Type(_action_type), StartTime(start_time), EndTime(InfFloat<>), Ramp(ramp) {}
 
-std::optional<Float>
-ActionBase::ComputeParameter(const Float global_time)
+std::optional<Real>
+ActionBase::ComputeParameter(const Real global_time)
 {
    const auto local_time = global_time - StartTime;
 

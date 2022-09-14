@@ -141,28 +141,28 @@ Abs(const T& value) { return value < static_cast<T>(0) ? -value : value; }
 ***************************************************************************************************************************************************************/
 /** Floor function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Floor(const Float& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
+constexpr Real
+Floor(const Real& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
 
 /** Ceiling function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Ceil(const Float& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
+constexpr Real
+Ceil(const Real& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
 
 /** Rounding function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Round(const Float& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
+constexpr Real
+Round(const Real& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
 
 /***************************************************************************************************************************************************************
 * Mathematical Conversions
 ***************************************************************************************************************************************************************/
 /** Convert degrees to radians. */
-constexpr Float
-DegToRad(const Float& angle_degrees) { return angle_degrees * Pi / 180.0; }
+constexpr Real
+DegToRad(const Real& angle_degrees) { return angle_degrees * Pi / 180.0; }
 
 /** Convert radians to degrees. */
-constexpr Float
-RadToDeg(const Float& angle_radians) { return angle_radians * 180.0 / Pi; }
+constexpr Real
+RadToDeg(const Real& angle_radians) { return angle_radians * 180.0 / Pi; }
 
 }
