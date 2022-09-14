@@ -55,7 +55,7 @@ struct StaticPolytope : public Polytope<StaticPolytope<cat, dim>, cat, dim>
 
    virtual constexpr ~StaticPolytope() = 0;
 
-   StaticArray<SVectorF<dim>, PolytopeVertexCount<cat>()> Vertices;
+   StaticArray<SVectorR<dim>, PolytopeVertexCount<cat>()> Vertices;
    constexpr static auto Faces{GetPolytopeFaces<cat, dim>()};
 };
 
@@ -69,7 +69,7 @@ struct DynamicPolytope : public Polytope<DynamicPolytope<cat, dim>, cat, dim>
 
    virtual ~DynamicPolytope() = 0;
 
-   DynamicArray<SVectorF<dim>> Vertices;
+   DynamicArray<SVectorR<dim>> Vertices;
    DynamicArray<DynamicArray<size_t>> Faces;
 };
 

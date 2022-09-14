@@ -58,15 +58,15 @@ class Window
 
    void ComputeFrameRate();
 
-   Float DeltaTime() const;
+   Real DeltaTime() const;
 
-   Float CurrentTime() const;
+   Real CurrentTime() const;
 
    GLfloat ViewportAspectRatio() const;
 
-   SVectorF2 CursorDisplacement();
+   SVectorR2 CursorDisplacement();
 
-   SVectorF2 WheelDisplacement();
+   SVectorR2 WheelDisplacement();
 
  private:
    friend class Visualiser;
@@ -86,18 +86,18 @@ class Window
    HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
    std::string            _Title;
-   Float                  _CurrentTime{};
-   Float                  _PreviousTime{};
-   Float                  _DeltaTime{};
-   SVectorF2              _PreviousCursorPosition;
-   SVectorF2              _CursorDisplacement;
-   SVectorF2              _WheelDisplacement;
+   Real                  _CurrentTime{};
+   Real                  _PreviousTime{};
+   Real                  _DeltaTime{};
+   SVectorR2              _PreviousCursorPosition;
+   SVectorR2              _CursorDisplacement;
+   SVectorR2              _WheelDisplacement;
    SVector2<GLint>        _WindowDimensions;
    SVector2<GLint>        _ViewportDimensions;
    constexpr static GLint _KeyCount{1024};
    SArrayB<_KeyCount>     _Keys;
    GLFWwindow*            _GlfwWindow;
-   Float                  _PreviousFrameTime{};
+   Real                  _PreviousFrameTime{};
    size_t                 _FrameCounter;
    bool                   _isFirstCursorMotion;
 };

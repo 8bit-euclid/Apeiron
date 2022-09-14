@@ -175,7 +175,7 @@ Window::ComputeFrameRate()
 
    if(delta_time > Tenth)
    {
-      const auto fps = static_cast<Float>(_FrameCounter) / delta_time;
+      const auto fps = static_cast<Real>(_FrameCounter) / delta_time;
       const auto frame_duration = 1.0e3 / fps; // in milliseconds
       const std::string title_suffix = "  |  " + ToString(fps, 2) + " fps  |  " + ToString(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
@@ -185,16 +185,16 @@ Window::ComputeFrameRate()
    }
 }
 
-Float
+Real
 Window::CurrentTime() const { return _CurrentTime; }
 
-Float
+Real
 Window::DeltaTime() const { return _DeltaTime; }
 
 GLfloat
 Window::ViewportAspectRatio() const { return static_cast<GLfloat>(_ViewportDimensions[0]) / static_cast<GLfloat>(_ViewportDimensions[1]); }
 
-SVectorF2
+SVectorR2
 Window::CursorDisplacement()
 {
    const auto x_disp = _CursorDisplacement[0];
@@ -204,7 +204,7 @@ Window::CursorDisplacement()
    return { x_disp, y_disp };
 }
 
-SVectorF2
+SVectorR2
 Window::WheelDisplacement()
 {
    const auto x_disp = _WheelDisplacement[0];

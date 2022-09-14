@@ -28,11 +28,11 @@ class ArrayTest : public testing::Test
 public:
   StaticArray<bool , ContainerSize> BoolStaticArray;
   StaticArray<int  , ContainerSize> IntStaticArray;
-  StaticArray<Float, ContainerSize> FloatStaticArray;
+  StaticArray<Real, ContainerSize> FloatStaticArray;
 
   DynamicArray<Bool>  BoolDynamicArray;
   DynamicArray<int>   IntDynamicArray;
-  DynamicArray<Float> FloatDynamicArray;
+  DynamicArray<Real> FloatDynamicArray;
 
   ArrayTest()
     : BoolDynamicArray(ContainerSize), IntDynamicArray(ContainerSize), FloatDynamicArray(ContainerSize) {}
@@ -48,13 +48,13 @@ TEST_F(ArrayTest, Initialisation)
   // Initilise constexpr StaticArray objects.
   constexpr StaticArray<bool, ContainerSize> ConstexprBoolArray;
   constexpr StaticArray<int, ContainerSize> ConstexprIntArray(2);
-  constexpr StaticArray<Float, 5> ConstexprFloatArray1{One, Two, Three, Four, Five};
-  constexpr StaticArray<Float, 3> ConstexprFloatArray2(ConstexprFloatArray1.begin(), ConstexprFloatArray1.begin() + 3);
+  constexpr StaticArray<Real, 5> ConstexprFloatArray1{One, Two, Three, Four, Five};
+  constexpr StaticArray<Real, 3> ConstexprFloatArray2(ConstexprFloatArray1.begin(), ConstexprFloatArray1.begin() + 3);
 
   FOR(i, 5)
   {
-    EXPECT_EQ(ConstexprFloatArray1[i], Float(i + 1));
-    if(i < 3) { EXPECT_EQ(ConstexprFloatArray2[i], Float(i + 1)); }
+    EXPECT_EQ(ConstexprFloatArray1[i], Real(i + 1));
+    if(i < 3) { EXPECT_EQ(ConstexprFloatArray2[i], Real(i + 1)); }
   }
 
   // Test default initialisation of arrays.
@@ -98,7 +98,7 @@ TEST_F(ArrayTest, AssignmentOperator)
 {
   const bool rand_bool = Random<bool>()();
   const int rand_int = Random(-100, 100)();
-  const Float rand_float = Random(-100.0, 100.0)();
+  const Real rand_float = Random(-100.0, 100.0)();
 
   BoolStaticArray = rand_bool;
   IntStaticArray = rand_int;

@@ -69,17 +69,22 @@ TeXBox::Add(const DArray<String>& strings)
 }
 
 TeXBox&
-TeXBox::SetAnchor(const SVectorF3& anchor)
+TeXBox::SetPixelDensity(const UInt density)
 {
-   _Anchor = anchor;
-   FOR_EACH(str, _Strings) str->SetAnchor(&_Anchor.value());
+   _GlyphSheet.SetPixelDensity(density);
    return *this;
 }
 
 TeXBox&
-TeXBox::SetFontSize(const char font_size)
+TeXBox::SetAnchor(const SVectorR3& anchor)
 {
-   _FontSize = font_size;
+   _Anchor = anchor;
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetFontSize(const UChar font_size)
+{
    FOR_EACH(str, _Strings) str->SetFontSize(font_size);
    return *this;
 }
@@ -88,27 +93,6 @@ TeXBox&
 TeXBox::SetColour(const Colour& colour)
 {
    FOR_EACH(str, _Strings) str->SetColour(colour);
-   return *this;
-}
-
-TeXBox&
-TeXBox::SetDimensions(const Float width, const std::optional<Float> height)
-{
-   ASSERT(!_Scale.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
-
-   _Dimensions = { width, height.has_value() ? height.value() : -One };
-   return *this;
-}
-
-TeXBox&
-TeXBox::SetScale(const Float width_scale, const std::optional<Float> height_scale)
-{
-   ASSERT(!_Dimensions.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
-
-   _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
-   ASSERT(_Scale->x() > Zero && _Scale->y() > Zero, "Can only scale by positive numbers.")
-
-   FOR_EACH(str, _Strings) str->SetScale(width_scale, height_scale);
    return *this;
 }
 
@@ -126,13 +110,6 @@ TeXBox::SetBold(const bool is_bold)
    return *this;
 }
 
-TeXBox&
-TeXBox::SetPixelDensity(const UInt density)
-{
-   _GlyphSheet.SetPixelDensity(density);
-   return *this;
-}
-
 /***************************************************************************************************************************************************************
 * TeXBox Private Interface
 ***************************************************************************************************************************************************************/
@@ -140,21 +117,20 @@ void
 TeXBox::Init(const size_t id)
 {
    // Initialise sub-strings and accumulate text.
-   InitStrings();
+   InitSubGlyphs();
 
    // Initialise glyph sheet and link to all sub-glyphs.
    _GlyphSheet.Init(id, _Text);
-   FOR_EACH(str, _Strings) str->LinkGlyphSheet(&_GlyphSheet);
+   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _Anchor);
 
    ComputeDimensions();
-//   Model::Init();
 }
 
 void
-TeXBox::InitStrings()
+TeXBox::InitSubGlyphs()
 {
-   // Initialise strings and add contributions from each string to the TeX-box string.
-   UInt16 glyph_index{};
+   // Initialise sub-glyphs and add contributions from each sub-glyph to the TeX-box string.
+   GlyphSheet::IndexT glyph_index{};
    _Text.clear();
    FOR_EACH(str, _Strings)
    {
@@ -168,14 +144,14 @@ TeXBox::ComputeDimensions()
 {
    ASSERT(_GlyphSheet.Width() && _GlyphSheet.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
 
-   const auto width  = static_cast<Float>(_GlyphSheet.Width());
-   const auto height = static_cast<Float>(_GlyphSheet.Height());
+   const auto width  = static_cast<Real>(_GlyphSheet.Width());
+   const auto height = static_cast<Real>(_GlyphSheet.Height());
 
    if(!_Dimensions.has_value())
    {
       // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
       _Dimensions = { width, height };
-      _Dimensions.value() *= GlyphSheet::FontScaleFactor();
+      _Dimensions.value() *= GlyphSheet::FontSizeScale(_FontSize);
 
       // If a custom scaling has been prescribed, scale the dimensions.
       if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
@@ -185,12 +161,6 @@ TeXBox::ComputeDimensions()
       const auto scale = _Dimensions.value().x() / width;
       _Dimensions.value().y() = scale * height;
    }
-
-   // If an anchor has not already been set, anchor at origin.
-   if(!_Anchor.has_value()) SetAnchor({ Zero, Zero, Zero });
-
-   // Compute sub-glyph dimensions.
-   FOR_EACH(str, _Strings) str->ComputeDimensions();
 }
 
 fm::Path

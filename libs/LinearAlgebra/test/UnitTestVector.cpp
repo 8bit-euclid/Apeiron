@@ -31,17 +31,17 @@ class VectorTest : public testing::Test
 {
 public:
   Random<int> RandomInt;
-  Random<Float> RandomFloat;
+  Random<Real> RandomFloat;
 
   StaticVector<int, ContainerSize> IntStaticVector;
-  StaticVector<Float, ContainerSize> FloatStaticVector;
+  StaticVector<Real, ContainerSize> FloatStaticVector;
   DynamicVector<int> IntDynamicVector;
-  DynamicVector<Float> FloatDynamicVector;
+  DynamicVector<Real> FloatDynamicVector;
 
   StaticVector<int, ContainerSize> IntStaticVectorTest;
-  StaticVector<Float, ContainerSize> FloatStaticVectorTest;
+  StaticVector<Real, ContainerSize> FloatStaticVectorTest;
   DynamicVector<int> IntDynamicVectorTest;
-  DynamicVector<Float> FloatDynamicVectorTest;
+  DynamicVector<Real> FloatDynamicVectorTest;
 
   VectorTest()
     : RandomInt(-10, 10), RandomFloat(-Ten, Ten), IntDynamicVector(ContainerSize), FloatDynamicVector(ContainerSize),
@@ -72,7 +72,7 @@ public:
 TEST_F(VectorTest, ScalarPlus)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   IntStaticVectorTest = IntStaticVector + random_int;
   IntDynamicVectorTest = IntDynamicVector + random_int;
@@ -91,7 +91,7 @@ TEST_F(VectorTest, ScalarPlus)
 TEST_F(VectorTest, ScalarMinus)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   IntStaticVectorTest = IntStaticVector - random_int;
   IntDynamicVectorTest = IntDynamicVector - random_int;
@@ -110,7 +110,7 @@ TEST_F(VectorTest, ScalarMinus)
 TEST_F(VectorTest, ScalarMultiply)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   // Test pre-multiplication
   IntStaticVectorTest = random_int * IntStaticVector;
@@ -144,7 +144,7 @@ TEST_F(VectorTest, ScalarMultiply)
 TEST_F(VectorTest, ScalarDivide)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   if(random_int == 0) random_int++;
   if(isEqual(random_float, Zero)) random_float++;
@@ -166,7 +166,7 @@ TEST_F(VectorTest, ScalarDivide)
 TEST_F(VectorTest, ScalarPlusEqual)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   IntStaticVectorTest += random_int;
   IntDynamicVectorTest += random_int;
@@ -185,7 +185,7 @@ TEST_F(VectorTest, ScalarPlusEqual)
 TEST_F(VectorTest, ScalarMinusEqual)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   IntStaticVectorTest -= random_int;
   IntDynamicVectorTest -= random_int;
@@ -204,7 +204,7 @@ TEST_F(VectorTest, ScalarMinusEqual)
 TEST_F(VectorTest, ScalarMultiplyEqual)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   IntStaticVectorTest *= random_int;
   IntDynamicVectorTest *= random_int;
@@ -223,7 +223,7 @@ TEST_F(VectorTest, ScalarMultiplyEqual)
 TEST_F(VectorTest, ScalarDivideEqual)
 {
   int random_int = RandomInt();
-  Float random_float = RandomFloat();
+  Real random_float = RandomFloat();
 
   if(random_int == 0) random_int++;
   if(isEqual(random_float, Zero)) random_float++;
@@ -417,7 +417,7 @@ TEST_F(VectorTest, InnerProduct)
   EXPECT_DOUBLE_EQ(InnerProduct(yAxis3, zAxis3), Zero);
 
   // Arbitrary test
-  SVectorF3 random0, random1;
+  SVectorR3 random0, random1;
   random0.Randomise();
   random1.Randomise();
   EXPECT_NEAR(InnerProduct(random0, random1), L2Norm(random0) * L2Norm(random1) * Cos(ComputeAngle(random0, random1)), Two*Small);
@@ -425,9 +425,9 @@ TEST_F(VectorTest, InnerProduct)
 
 TEST_F(VectorTest, CrossProduct)
 {
-  SVectorF3 random0;
+  SVectorR3 random0;
   random0.Randomise();
-  SVectorF3 cross_product;
+  SVectorR3 cross_product;
 
   // Parallel test (same/opposite directions)
   cross_product = CrossProduct(ConvertVector<2>(random0), ConvertVector<2>(random0));
@@ -452,7 +452,7 @@ TEST_F(VectorTest, CrossProduct)
   EXPECT_TRUE(cross_product == yAxis3);
 
   // Arbitrary test
-  SVectorF3 random1;
+  SVectorR3 random1;
   random1.Randomise();
   EXPECT_NEAR(Magnitude(CrossProduct(random0, random1)), Magnitude(random0)*Magnitude(random1)*Sin(ComputeAngle(random0, random1)), Two*Small);
 }
@@ -465,7 +465,7 @@ TEST_F(VectorTest, L1Norm)
 
 TEST_F(VectorTest, L2Norm)
 {
-  Float inner_prod{};
+  Real inner_prod{};
   FOR_EACH(entry, FloatStaticVector) inner_prod += iPow(entry, 2);
   EXPECT_DOUBLE_EQ(L2Norm(FloatStaticVector), Sqrt(inner_prod));
 
@@ -490,7 +490,7 @@ TEST_F(VectorTest, isNormalised)
 TEST_F(VectorTest, Normalise)
 {
   FloatStaticVector = Normalise(FloatStaticVector);
-  Float inner_prod{};
+  Real inner_prod{};
   FOR_EACH(entry, FloatStaticVector) inner_prod += iPow(entry, 2);
   EXPECT_DOUBLE_EQ(Sqrt(inner_prod), One);
 }
@@ -500,33 +500,33 @@ TEST_F(VectorTest, ComputeAngle)
   // Non-oriented tests
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, xAxis2), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, -xAxis2), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorF2{One, One}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorF2{One, One}, xAxis2), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorF2{-One, One}), ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorF2{-One, One}, xAxis2), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{One, One}), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{One, One}, xAxis2), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{-One, One}), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{-One, One}, xAxis2), ThreeQuartPi);
 
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, xAxis3), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, -xAxis3), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorF3{One, One, Zero}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorF3{-One, One, Zero}), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{One, One, Zero}), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{-One, One, Zero}), ThreeQuartPi);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, yAxis3), HalfPi);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, -yAxis3), HalfPi);
 
   // Oriented tests
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, xAxis2), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, -xAxis2), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorF2{One, One}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorF2{-One, One}), ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorF2{-One, One}, -zAxis3), -ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorF2{-One, -One}), -ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorF2{One, One}, xAxis2), -QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorF2{One, One}, xAxis2, -zAxis3), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{One, One}), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}, -zAxis3), -ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, -One}), -ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2), -QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2, -zAxis3), QuartPi);
 
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, xAxis3), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, -xAxis3), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, SVectorF3{One, One, Zero}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorF3{One, One, Zero}, xAxis3), -QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorF3{One, One, Zero}, xAxis3, -zAxis3), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, SVectorR3{One, One, Zero}), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3), -QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3, -zAxis3), QuartPi);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, yAxis3), HalfPi);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, -yAxis3), -HalfPi);
 }
@@ -537,19 +537,19 @@ TEST_F(VectorTest, isAligned)
   EXPECT_TRUE(isAligned(xAxis2, -xAxis2));
   EXPECT_FALSE(isAligned(xAxis2, yAxis2));
   EXPECT_FALSE(isAligned(xAxis2, -yAxis2));
-  EXPECT_FALSE(isAligned(xAxis2, SVectorF2{One, One}));
-  EXPECT_TRUE(isAligned(xAxis2, SVectorF2{One, One}, DegToRad(45.00001)));
-  EXPECT_TRUE(isAligned(xAxis2, SVectorF2{Ten, One}));
+  EXPECT_FALSE(isAligned(xAxis2, SVectorR2{One, One}));
+  EXPECT_TRUE(isAligned(xAxis2, SVectorR2{One, One}, DegToRad(45.00001)));
+  EXPECT_TRUE(isAligned(xAxis2, SVectorR2{Ten, One}));
 
   EXPECT_TRUE(isAligned(xAxis3, xAxis3));
   EXPECT_TRUE(isAligned(xAxis3, -xAxis3));
   EXPECT_FALSE(isAligned(xAxis3, yAxis3));
   EXPECT_FALSE(isAligned(xAxis3, -yAxis3));
-  EXPECT_FALSE(isAligned(xAxis3, SVectorF3{One, One, Zero}));
-  EXPECT_TRUE(isAligned(xAxis3, SVectorF3{One, One, Zero}, DegToRad(45.00001)));
-  EXPECT_TRUE(isAligned(xAxis3, SVectorF3{Ten, One, Zero}));
+  EXPECT_FALSE(isAligned(xAxis3, SVectorR3{One, One, Zero}));
+  EXPECT_TRUE(isAligned(xAxis3, SVectorR3{One, One, Zero}, DegToRad(45.00001)));
+  EXPECT_TRUE(isAligned(xAxis3, SVectorR3{Ten, One, Zero}));
 
-  EXPECT_THROW(isAligned(xAxis3, SVectorF3{One, Zero, Zero}, DegToRad(90.00001)), std::domain_error);
+  EXPECT_THROW(isAligned(xAxis3, SVectorR3{One, Zero, Zero}, DegToRad(90.00001)), std::domain_error);
 }
 
 }

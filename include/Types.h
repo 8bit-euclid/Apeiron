@@ -93,7 +93,7 @@ template<typename T = int> requires std::integral<T> constexpr T MaxInt(std::num
 //#define LONG_DOUBLE_PRECISION
 
 #if defined(DOUBLE_PRECISION)
-  typedef double Float;
+  typedef double Real;
 #elif defined(LONG_DOUBLE_PRECISION)
   typedef long double Float;
 #else
@@ -102,13 +102,13 @@ template<typename T = int> requires std::integral<T> constexpr T MaxInt(std::num
 #endif
 
 /** Floating-point limits. */
-template<typename T = Float> requires std::floating_point<T> constexpr T Epsilon     (std::numeric_limits<T>::epsilon());
-template<typename T = Float> requires std::floating_point<T> constexpr T MinFloat    (std::numeric_limits<T>::min());
-template<typename T = Float> requires std::floating_point<T> constexpr T MaxFloat    (std::numeric_limits<T>::max());
-template<typename T = Float> requires std::floating_point<T> constexpr T LowestFloat (std::numeric_limits<T>::lowest());
-template<typename T = Float> requires std::floating_point<T> constexpr T InfFloat    (std::numeric_limits<T>::infinity());
-template<typename T = Float> requires std::floating_point<T> constexpr T QuietNaN    (std::numeric_limits<T>::quiet_NaN());
-template<typename T = Float> requires std::floating_point<T> constexpr T SignalNaN   (std::numeric_limits<T>::signaling_NaN());
+template<typename T = Real> requires std::floating_point<T> constexpr T Epsilon     (std::numeric_limits<T>::epsilon());
+template<typename T = Real> requires std::floating_point<T> constexpr T MinFloat    (std::numeric_limits<T>::min());
+template<typename T = Real> requires std::floating_point<T> constexpr T MaxFloat    (std::numeric_limits<T>::max());
+template<typename T = Real> requires std::floating_point<T> constexpr T LowestFloat (std::numeric_limits<T>::lowest());
+template<typename T = Real> requires std::floating_point<T> constexpr T InfFloat    (std::numeric_limits<T>::infinity());
+template<typename T = Real> requires std::floating_point<T> constexpr T QuietNaN    (std::numeric_limits<T>::quiet_NaN());
+template<typename T = Real> requires std::floating_point<T> constexpr T SignalNaN   (std::numeric_limits<T>::signaling_NaN());
 
 /** Open if a value is NaN. */
 template<typename T>

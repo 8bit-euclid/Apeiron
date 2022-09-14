@@ -42,9 +42,9 @@ class Camera
 
    void KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& delta_time);
 
-   void CursorControl(const SVectorF2& cursor_displacement);
+   void CursorControl(const SVectorR2& cursor_displacement);
 
-   void WheelControl(const SVectorF2& wheel_displacement);
+   void WheelControl(const SVectorR2& wheel_displacement);
 
    void UpdateViewMatrix();
 

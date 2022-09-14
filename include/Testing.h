@@ -39,11 +39,11 @@ inline void RotatingCube()
    model = ModelFactory::Cube(1.0);
    model.SetColour({1.0, 1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
-        .Trace([](Float t){ return SVectorF3{ Three*std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
+        .Trace([](Real t){ return SVectorR3{Three * std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
    scene.Add(model, "Cube");
 
    // Floor
-   const Float height_scale = 0.08;
+   const Real height_scale = 0.08;
    model = ModelFactory::Square(10.0);
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)

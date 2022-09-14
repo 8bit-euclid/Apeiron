@@ -29,20 +29,20 @@ class Transition
  public:
    Transition() = default;
 
-   Transition(TransitionType type, Float duration)
+   Transition(TransitionType type, Real duration)
       : _Type(type), _Duration(duration) {}
 
  private:
    friend class Visualiser;
 
-   void Init(const Float start_time);
+   void Init(const Real start_time);
 
    TransitionType _Type{TransitionType::None};
    SPtr<Scene>    _FromScene;
    SPtr<Scene>    _ToScene;
-   Float          _Duration{};
-   Float          _StartTime;
-   Float          _EndTime;
+   Real          _Duration{};
+   Real          _StartTime;
+   Real          _EndTime;
 };
 
 }

@@ -22,7 +22,7 @@ namespace aprn::vis {
 Scene::Scene()
    : Scene(1000.0, true) {}
 
-Scene::Scene(Float duration, bool adjust_duration)
+Scene::Scene(Real duration, bool adjust_duration)
    : _Duration(duration), _AdjustDuration(adjust_duration)
 {
    ASSERT(isPositive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
@@ -31,7 +31,7 @@ Scene::Scene(Float duration, bool adjust_duration)
    _isSingleScene = false;
 }
 
-Scene::Scene(Scene& prev_scene, Float duration, bool adjust_duration)
+Scene::Scene(Scene& prev_scene, Real duration, bool adjust_duration)
    : _Duration(duration), _AdjustDuration(adjust_duration)
 {
    ASSERT(Zero < duration      , "Cannot have a negative duration for a scene.")
@@ -101,13 +101,13 @@ Scene::Add(SpotLight&& light, const std::string& name)
 }
 
 void
-Scene::Init(const Float start_time)
+Scene::Init(const Real start_time)
 {
    // Compute the start and end times of the scene.
    const auto max_duration(1.0e5);
    if(_AdjustDuration)
    {
-      Float duration = -One;
+      Real duration = -One;
       FOR_EACH_CONST(_, model, _Models) if(model->_ExitTime < max_duration) Maximise(duration, model->_ExitTime);
       _Duration = isPositive(duration) ? duration : _Duration;
       ASSERT(isPositive(_Duration), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", _Title)
@@ -131,7 +131,7 @@ Scene::Init(const Float start_time)
 * Private Interface
 ***************************************************************************************************************************************************************/
 void
-Scene::UpdateModels(const Float current_time) { FOR_EACH(_, model, _Models) model->Update(current_time); }
+Scene::UpdateModels(const Real current_time) { FOR_EACH(_, model, _Models) model->Update(current_time); }
 
 void
 Scene::RenderDirecShadows(Shader& shader)

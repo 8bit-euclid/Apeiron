@@ -33,9 +33,9 @@ class Scene
  public:
    Scene();
 
-   Scene(Float duration, bool adjust_duration = true);
+   Scene(Real duration, bool adjust_duration = true);
 
-   Scene(Scene& prev_scene, Float duration = -One, bool adjust_duration = true);
+   Scene(Scene& prev_scene, Real duration = -One, bool adjust_duration = true);
 
    Scene(const Scene& other) = default;
 
@@ -61,15 +61,15 @@ class Scene
 
    Scene& Add(SpotLight&& light, const std::string& name = "");
 
-   inline bool isCurrent(Float current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
+   inline bool isCurrent(Real current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
 
  private:
    friend class Visualiser;
    friend class Transition;
 
-   void Init(Float start_time);
+   void Init(Real start_time);
 
-   void UpdateModels(Float current_time);
+   void UpdateModels(Real current_time);
 
    void RenderDirecShadows(Shader& shader);
 
@@ -90,9 +90,9 @@ class Scene
    Transition             _Transition{};
    Scene*                 _PrevScene{nullptr};
    Scene*                 _NextScene{nullptr};
-   Float                  _Duration;
-   Float                  _StartTime;
-   Float                  _EndTime;
+   Real                  _Duration;
+   Real                  _StartTime;
+   Real                  _EndTime;
    bool                   _AdjustDuration{false};
    inline static bool     _isSingleScene {true};
 };

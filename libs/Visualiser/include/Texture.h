@@ -75,9 +75,9 @@ class Texture
 
    inline int Height() const { return _Height; }
 
-   inline const std::optional<Float>& MapScale() const { return _MapScale; }
+   inline const std::optional<Real>& MapScale() const { return _MapScale; }
 
-   inline void SetMapScale(const Float scale) { _MapScale.emplace(scale); }
+   inline void SetMapScale(const Real scale) { _MapScale.emplace(scale); }
 
    Texture& operator=(const Texture& texture) = delete;
 
@@ -94,7 +94,7 @@ class Texture
    int                  _Height;
    int                  _ChannelCount;
    UPtr<UChar>          _LocalBuffer;
-   std::optional<Float> _MapScale;
+   std::optional<Real> _MapScale;
    TextureType          _Type;
    size_t               _SampleCount;
    bool                 _isMultiSampled;

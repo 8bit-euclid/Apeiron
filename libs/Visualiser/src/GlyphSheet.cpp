@@ -32,7 +32,7 @@ GlyphSheet::Init(size_t id, const std::string& text)
    // Read glyph data and size the glyph sheet.
    ReadGlyphBoxPositions();
    ReadGlyphBoxAttributes();
-   ComputeDimensions();
+//   ComputeDimensions();
 }
 
 void
@@ -63,11 +63,12 @@ void
 GlyphSheet::ReadGlyphBoxPositions()
 {
    fm::File file(_CompileDirectory / "positions.txt", fm::Mode::Read);
-   UInt16 glyph_index{};
+   IndexT glyph_index{};
 
    while(!file.isEnd())
    {
-      auto& x = _Boxes[glyph_index].Position.x(); // Note: emplacement occurs here.
+      _Boxes.emplace_back();
+      auto& x = _Boxes[glyph_index].Position.x();
       auto& y = _Boxes[glyph_index].Position.y();
 
       file.Read(x, y);
@@ -87,11 +88,11 @@ GlyphSheet::ReadGlyphBoxAttributes()
    // Read glyph box attributes. Note: need to read with a wide file, as the glyph characters must be read in as wchar_t.
    fm::WFile wfile;
    wfile.Open(_CompileDirectory / "attributes.txt", fm::Mode::Read);
-   UInt16 glyph_index{};
+   IndexT glyph_index{};
 
    while(wfile.isValid())
    {
-      DEBUG_ASSERT(_Boxes.find(glyph_index) != _Boxes.end(), "The glyph index ", glyph_index, " was not previously populated.")
+      DEBUG_ASSERT(glyph_index < _Boxes.size(), "The glyph index ", glyph_index, " exceeds the total number of glyphs.")
 
       auto& c = _Boxes[glyph_index].Char;
       auto& w = _Boxes[glyph_index].Width;
@@ -116,7 +117,7 @@ GlyphSheet::ComputeDimensions()
    coor_T min_pos(MaxInt<int_T>);
    coor_T max_pos(MinInt<int_T>);
 
-   FOR_EACH_CONST(_, glyph, _Boxes)
+   FOR_EACH_CONST(glyph, _Boxes)
    {
       const coor_T bott_left = { glyph.Position.x()              , glyph.Position.y() - glyph.Depth  };
       const coor_T top_right = { glyph.Position.x() + glyph.Width, glyph.Position.y() + glyph.Height };
@@ -129,6 +130,13 @@ GlyphSheet::ComputeDimensions()
    }
    _Width  = max_pos.x() - min_pos.x();
    _Height = max_pos.y() - min_pos.y();
+}
+
+const GlyphBox&
+GlyphSheet::GlyphInfo(const GlyphSheet::IndexT glyph_index) const
+{
+   ASSERT(glyph_index < _Boxes.size(), "The glyph index ", glyph_index," is out of bounds.")
+   return _Boxes[glyph_index];
 }
 
 }

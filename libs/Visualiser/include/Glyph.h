@@ -43,8 +43,6 @@ class Glyph final : public Model
 
    Glyph& SetColour(const Colour& colour);
 
-   Glyph& SetScale(const Float width_scale, const std::optional<Float> height_scale = std::nullopt);
-
    Glyph& SetItalic(const bool is_italic);
 
    Glyph& SetBold(const bool is_bold);
@@ -61,37 +59,33 @@ class Glyph final : public Model
 
    void Add(std::string&& str);
 
-   inline void DoNotRender() { _Render = false; }
+   inline bool isCompound() const { return !_SubGlyphs.empty(); }
 
-   inline bool isRendered() const { return _Render; }
+   inline void DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compund glyph to no-render."); }
+
+   inline bool isRendered() const { return _Render && !isCompound(); }
 
    inline const std::string& GetText() const { return _Text; }
 
  private:
    friend class String;
 
-   void Init(UInt16& index_offset);
+   void Init(GlyphSheet::IndexT& index_offset);
 
-   void ComputeDimensions();
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor);
 
-   inline bool isCompound() const { return !_SubGlyphs.empty(); }
-
-   inline void SetAnchor(const SVectorF3* anchor) { _Anchor = anchor; }
-
-   std::string              _Text;
-   GlyphSheet::IndexT       _Index;
-   std::optional<char>      _FontSize;
-   std::optional<Colour>    _Colour;
-   std::optional<bool>      _isItalic;
-   std::optional<bool>      _isBold;
-   std::optional<SVectorF2> _Dimensions; // [width, height] in world-space coordinates.
-   std::optional<SVectorF2> _Scale;      // [width-scale, height-scale]
-   SVectorF2                _Position;   // Position (of the LaTeX glyph) in world-space coordinates.
-   const SVectorF3*         _Anchor{};   // Bottom-left corner of the parent TeX-box
-   const GlyphSheet*        _GlyphSheet{};
-   DArray<SPtr<Glyph>>      _SubGlyphs;
-   bool                     _Render{true};
-   bool                     _isInit{false};
+   std::string            _Text;
+   GlyphSheet::IndexT     _Index{MaxInt<GlyphSheet::IndexT>};
+   std::optional<UChar>   _FontSize;
+   std::optional<Colour>  _Colour;
+   std::optional<bool>    _isItalic;
+   std::optional<bool>    _isBold;
+   SVectorR2              _Position{};   // Position (of the LaTeX glyph) in the xy-plane in world-space coordinates.
+   SVectorR2              _Dimensions{};   // Position (of the LaTeX glyph) in the xy-plane in world-space coordinates.
+   DArray<SPtr<Glyph>>    _SubGlyphs;
+   bool                   _Render{true};
+   bool                   _isInit{false};
+   constexpr static UChar _DefaultFontSize{10};
 
    /** Friend unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;

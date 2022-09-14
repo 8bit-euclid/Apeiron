@@ -30,23 +30,23 @@ class Manifold
    static_assert(manifold_dim <= ambient_dim, "The dimension of a manifold cannot be larger than that of the ambient space in which it is embedded.");
 
  protected:
-   using Vect  = SVectorF<ambient_dim>;
-   using Param = SVectorF<manifold_dim>;
+   using Vect  = SVectorR<ambient_dim>;
+   using Param = SVectorR<manifold_dim>;
 
  public:
    constexpr Manifold();
 
    constexpr Vect
-   Point(const std::convertible_to<Float> auto... _params);
+   Point(const std::convertible_to<Real> auto... _params);
 
    constexpr Vect
-   Tangent(const std::convertible_to<Float> auto... _params);
+   Tangent(const std::convertible_to<Real> auto... _params);
 
    constexpr Vect
-   Bitangent(const std::convertible_to<Float> auto... _params);
+   Bitangent(const std::convertible_to<Real> auto... _params);
 
    constexpr Vect
-   Normal(const std::convertible_to<Float> auto... _params);
+   Normal(const std::convertible_to<Real> auto... _params);
 
  protected:
    virtual constexpr Vect
@@ -63,7 +63,7 @@ class Manifold
 
  private:
    constexpr void
-   ParamCountCheck(const std::convertible_to<Float> auto... _params) const;
+   ParamCountCheck(const std::convertible_to<Real> auto... _params) const;
 
    /** Derived Class Access */
    constexpr derived&

@@ -39,8 +39,8 @@ ModelFactory::Triangle(GLfloat length) { return Triangle(length, length * Sin(Th
 Model
 ModelFactory::Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio)
 {
-   const GLfloat x = Half * static_cast<Float>(length);
-   const GLfloat y = static_cast<Float>(height);
+   const GLfloat x = Half * static_cast<Real>(length);
+   const GLfloat y = static_cast<Real>(height);
    const GLfloat apex_x = x * (Two * _apex_ratio - One);
 
    return Triangle(SVector3<GLfloat>{-x, Zero, Zero}, SVector3<GLfloat>{x, Zero, Zero}, SVector3<GLfloat>{apex_x, y, Zero});
@@ -137,7 +137,7 @@ ModelFactory::Ellipse(const GLfloat radius_x, const GLfloat radius_y)
 Model
 ModelFactory::Tetrahedron(const GLfloat length)
 {
-   const GLfloat width  = static_cast<Float>(length) * Sin(ThirdPi);
+   const GLfloat width  = static_cast<Real>(length) * Sin(ThirdPi);
    const GLfloat height = Sqrt(iPow(length, 2) - iPow(TwoThird * width, 2));
 
    return Tetrahedron({-0.5f * length, 0.0f, width / 3.0f}, {0.5f * length, 0.0f, width / 3.0f}, {0.0f, 0.0f, -2.0f * width / 3.0f}, {0.0f, height, 0.0f});
@@ -188,9 +188,9 @@ ModelFactory::Cube(const GLfloat length) { return Cuboid(length, length, length)
 Model
 ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat height)
 {
-   const GLfloat x = Half * static_cast<Float>(length);
-   const GLfloat y = Half * static_cast<Float>(width);
-   const GLfloat z = Half * static_cast<Float>(height);
+   const GLfloat x = Half * static_cast<Real>(length);
+   const GLfloat y = Half * static_cast<Real>(width);
+   const GLfloat z = Half * static_cast<Real>(height);
 
    SVector3<GLfloat> v0{-x, -y,  z};
    SVector3<GLfloat> v1{ x, -y,  z};

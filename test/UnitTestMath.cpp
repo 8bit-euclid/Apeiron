@@ -37,7 +37,7 @@ TEST_F(ApeironTest, Sum)
   constexpr int intSum = Sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
   EXPECT_EQ(intSum, 55);
 
-  constexpr Float floatSum = Sum(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
+  constexpr Real floatSum = Sum(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0);
   EXPECT_DOUBLE_EQ(floatSum, 55.0);
 }
 
@@ -46,7 +46,7 @@ TEST_F(ApeironTest, Product)
   constexpr int intProd = Product(1, 2, 3, 4, 5);
   EXPECT_EQ(intProd, 120);
 
-  constexpr Float floatProd = Product(1.0, 2.0, 3.0, 4.0, 5.0);
+  constexpr Real floatProd = Product(1.0, 2.0, 3.0, 4.0, 5.0);
   EXPECT_DOUBLE_EQ(floatProd, 120.0);
 }
 

@@ -29,7 +29,7 @@ struct Polyhedron : public StaticPolytope<cat, 3>
 {
   Polyhedron() { STATIC_ASSERT((isNPolytope<cat, 3>()), "A polyhedron must be a 3-polytope.") }
 
-  Polyhedron(const Float _side_length);
+  Polyhedron(const Real _side_length);
 
   template<class... t_static_vector>
   Polyhedron(const t_static_vector&... vertices);
@@ -46,17 +46,17 @@ struct Polyhedron<PolytopeCategory::Arbitrary3D> : public DynamicPolytope<Polyto
 ***************************************************************************************************************************************************************/
 struct Tetrahedron : public Polyhedron<PolytopeCategory::Tetrahedron>
 {
-  Tetrahedron(const SVectorF3& v0, const SVectorF3& v1, const SVectorF3& v2, const SVectorF3& v3);
+  Tetrahedron(const SVectorR3& v0, const SVectorR3& v1, const SVectorR3& v2, const SVectorR3& v3);
 };
 
 struct RegularTetrahedron : public Tetrahedron
 {
-  RegularTetrahedron(const Float _side_length);
+  RegularTetrahedron(const Real _side_length);
 };
 
 struct TrirectangularTetrahedron : public Tetrahedron
 {
-  TrirectangularTetrahedron(const Float length, const Float height, const Float width, const bool _flip_horizontally = false);
+  TrirectangularTetrahedron(const Real length, const Real height, const Real width, const bool _flip_horizontally = false);
 };
 
 /***************************************************************************************************************************************************************
