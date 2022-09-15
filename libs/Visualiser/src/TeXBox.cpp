@@ -85,7 +85,7 @@ TeXBox::SetAnchor(const SVectorR3& anchor)
 TeXBox&
 TeXBox::SetFontSize(const UChar font_size)
 {
-   FOR_EACH(str, _Strings) str->SetFontSize(font_size);
+   _FontSize = font_size;
    return *this;
 }
 
@@ -121,7 +121,7 @@ TeXBox::Init(const size_t id)
 
    // Initialise glyph sheet and link to all sub-glyphs.
    _GlyphSheet.Init(id, _Text);
-   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _Anchor);
+   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _FontSize, _Anchor);
 
    ComputeDimensions();
 }
@@ -144,23 +144,9 @@ TeXBox::ComputeDimensions()
 {
    ASSERT(_GlyphSheet.Width() && _GlyphSheet.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
 
-   const auto width  = static_cast<Real>(_GlyphSheet.Width());
-   const auto height = static_cast<Real>(_GlyphSheet.Height());
-
-   if(!_Dimensions.has_value())
-   {
-      // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
-      _Dimensions = { width, height };
-      _Dimensions.value() *= GlyphSheet::FontSizeScale(_FontSize);
-
-      // If a custom scaling has been prescribed, scale the dimensions.
-      if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
-   }
-   else if(_Dimensions.value().y() < Zero) // If height dimension has not been prescribed, i.e. must preserve aspect-ratio.
-   {
-      const auto scale = _Dimensions.value().x() / width;
-      _Dimensions.value().y() = scale * height;
-   }
+   // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
+   _Dimensions = { _GlyphSheet.Width(), _GlyphSheet.Height() };
+   _Dimensions *= GlyphSheet::FontSizeScale(_FontSize);
 }
 
 fm::Path

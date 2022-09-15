@@ -81,7 +81,7 @@ class Model
 
    Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity);
 
-   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>);
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfReal<>);
 
    template<class D>
    Model& Trace(const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear);
@@ -146,7 +146,7 @@ class Model
    glm::mat4                                      _ModelMatrix{1.0f};
    glm::mat4                                      _PreviousActions{1.0f};
    Real                                          _EntryTime{Zero};
-   Real                                          _ExitTime{InfFloat<>};
+   Real                                          _ExitTime{InfReal<>};
    bool                                           _isInitialised{false};
 
    /** Data Buffers

@@ -50,28 +50,28 @@ public:
 
   /** Entry-wise binary arithmetic operator overloads. */
   template<class D>
-  constexpr derived operator+(const NumericContainer<T, D>& _container) const;
+  constexpr derived operator+(const NumericContainer<T, D>& container) const;
 
   template<class D>
-  constexpr derived operator-(const NumericContainer<T, D>& _container) const;
+  constexpr derived operator-(const NumericContainer<T, D>& container) const;
 
   template<class D>
-  constexpr derived operator*(const NumericContainer<T, D>& _container) const;
+  constexpr derived operator*(const NumericContainer<T, D>& container) const;
 
   template<class D>
-  constexpr derived operator/(const NumericContainer<T, D>& _container) const;
+  constexpr derived operator/(const NumericContainer<T, D>& container) const;
 
   template<class D>
-  constexpr derived& operator+=(const NumericContainer<T, D>& _container);
+  constexpr derived& operator+=(const NumericContainer<T, D>& container);
 
   template<class D>
-  constexpr derived& operator-=(const NumericContainer<T, D>& _container);
+  constexpr derived& operator-=(const NumericContainer<T, D>& container);
 
   template<class D>
-  constexpr derived& operator*=(const NumericContainer<T, D>& _container);
+  constexpr derived& operator*=(const NumericContainer<T, D>& container);
 
   template<class D>
-  constexpr derived& operator/=(const NumericContainer<T, D>& _container);
+  constexpr derived& operator/=(const NumericContainer<T, D>& container);
 
   /** Entry-wise unary operator overloads. */
   constexpr derived operator-() const;
@@ -96,7 +96,7 @@ private:
 
 /** Stand-alone Operator overloads. */
 template<Arithmetic T, class derived>
-constexpr derived operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container);
+constexpr derived operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& container);
 
 }//aprn
 

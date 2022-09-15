@@ -92,44 +92,44 @@ NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto scala
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
-NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container) const
+NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& container) const
 {
   derived out(Derived());
-  FOR(i, out.size()) out[i] += _container.Derived()[i];
+  FOR(i, out.size()) out[i] += container.Derived()[i];
   return out;
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
-NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& _container) const
+NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& container) const
 {
   derived out(Derived());
-  FOR(i, out.size()) out[i] -= _container.Derived()[i];
+  FOR(i, out.size()) out[i] -= container.Derived()[i];
   return out;
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
-NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& _container) const
+NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& container) const
 {
   derived out(Derived());
-  FOR(i, out.size()) out[i] *= _container.Derived()[i];
+  FOR(i, out.size()) out[i] *= container.Derived()[i];
   return out;
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived
-NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container) const
+NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& container) const
 {
   derived out(Derived());
 
   FOR(i, out.size())
   {
-    DEBUG_ASSERT(!isEqual(_container.Derived()[i], Zero), "Cannot divide by zero.")
-    out[i] /= _container.Derived()[i];
+    DEBUG_ASSERT(!isEqual(container.Derived()[i], Zero), "Cannot divide by zero.")
+    out[i] /= container.Derived()[i];
   }
   return out;
 }
@@ -137,39 +137,39 @@ NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
-NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _container)
+NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] += _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] += container.Derived()[i];
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
-NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _container)
+NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] -= _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] -= container.Derived()[i];
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
-NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _container)
+NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] *= _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] *= container.Derived()[i];
   return Derived();
 }
 
 template<Arithmetic T, class derived>
 template<class D>
 constexpr derived&
-NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _container)
+NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& container)
 {
   FOR(i, Derived().size())
   {
-    DEBUG_ASSERT(!isEqual(_container.Derived()[i], Zero), "Cannot divide by zero.")
-    Derived()[i] /= _container.Derived()[i];
+    DEBUG_ASSERT(!isEqual(container.Derived()[i], Zero), "Cannot divide by zero.")
+    Derived()[i] /= container.Derived()[i];
   }
   return Derived();
 }
@@ -191,6 +191,6 @@ void NumericContainer<T, derived>::ResetRandomiser(const T min, const T max) { R
 /** Stand-alone Operator overloads. */
 template<Arithmetic T, class derived>
 constexpr derived
-operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container) { return _container.Derived() * scalar; }
+operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& container) { return container.Derived() * scalar; }
 
 }//aprn

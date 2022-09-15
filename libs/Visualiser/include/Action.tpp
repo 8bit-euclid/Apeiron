@@ -24,12 +24,12 @@ namespace aprn::vis {
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
 //requires Ramp<type>
-//Action<type>::Action(Model& model, RampType _ramp_type, Float start_time, Float end_time, std::function<Float(Float)> reparam)
+//Action<type>::Action(Model& model, RampType _ramp_type, Real start_time, Real end_time, std::function<Real(Real)> reparam)
 //   : ActionBase(model, type, start_time, end_time, reparam), Ramp(_ramp_type) {}
 //
 //template<ActionType type>
 //requires Ramp<type>
-//void Action<type>::Do(const Float global_time)
+//void Action<type>::Do(const Real global_time)
 //{
 //
 //}
@@ -175,8 +175,8 @@ Action<type>::Do(const Real global_time)
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
 //requires Reflect<type>
-//Action<type>::Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Float start_time, Float end_time,
-//                     std::function<Float(Float)> reparam)
+//Action<type>::Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time,
+//                     std::function<Real(Real)> reparam)
 //   : ActionBase(model, type, start_time, end_time, reparam), Normal(_normal), ReferencePoint(ref_point)
 //{
 //
@@ -194,8 +194,8 @@ Action<type>::Do(const Real global_time)
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
 //requires Morph<type>
-//Action<type>::Action(Model& model, const Model& _other_actor, Float start_time, Float end_time, std::function<Float()> global_time,
-//                     std::function<Float(Float)> reparam)
+//Action<type>::Action(Model& model, const Model& _other_actor, Real start_time, Real end_time, std::function<Real()> global_time,
+//                     std::function<Real(Real)> reparam)
 //   : ActionBase(model, start_time, end_time, global_time, reparam)
 //{
 //
@@ -212,8 +212,8 @@ Action<type>::Do(const Real global_time)
 //***************************************************************************************************************************************************************/
 //template<ActionType type>
 //requires SetColour<type>
-//Action<type>::Action(Model& model, Float _new_colour, Float start_time, Float end_time, std::function<Float()> global_time,
-//                     std::function<Float(Float)> reparam)
+//Action<type>::Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real()> global_time,
+//                     std::function<Real(Real)> reparam)
 //   : ActionBase(model, start_time, end_time, global_time, reparam)
 //{
 //

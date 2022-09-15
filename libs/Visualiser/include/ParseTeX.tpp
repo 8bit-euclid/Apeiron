@@ -55,7 +55,7 @@ ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode)
       if(glyph.isRendered() && *current == OneOf('_', '^'))
       {
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
-         glyph.Add(Glyph(glyph.GetText())); // Need to add base glyph as a subglyph first.
+         glyph.Add(Glyph(glyph.Text())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }
@@ -96,7 +96,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
             // Add opening brace, subglyph text, and closing brace.
             encl_str += '{';
-            FOR_EACH(sub_glyph, sub_glyphs) encl_str += sub_glyph.GetText();
+            FOR_EACH(sub_glyph, sub_glyphs) encl_str += sub_glyph.Text();
             encl_str += '}';
 
             glyph.Add(std::move(sub_glyphs));
@@ -111,7 +111,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
          // Check for subscripts/superscripts. If there are any, add them as sub-glyphs of this glyph.
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
-         glyph.Add(Glyph(glyph.GetText())); // Need to add base glyph as a subglyph first.
+         glyph.Add(Glyph(glyph.Text())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }
@@ -179,7 +179,7 @@ ParseAllTeXScriptText(Iter& current, const Iter last)
 
          // Add subglyphs.
          auto script_glyphs = ParseTeXScriptText(current, last);
-         FOR_EACH(glyph, script_glyphs) script_str += glyph.GetText();
+         FOR_EACH(glyph, script_glyphs) script_str += glyph.Text();
 
          // Add closing brace and append subglyphs.
          if(is_braced) script_str += '}';

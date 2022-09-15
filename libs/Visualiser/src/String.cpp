@@ -55,13 +55,6 @@ String::Add(const DArray<Glyph>& glyphs)
 }
 
 String&
-String::SetFontSize(const UChar font_size)
-{
-   FOR_EACH(glyph, _Glyphs) glyph->SetFontSize(font_size);
-   return *this;
-}
-
-String&
 String::SetColour(const Colour& colour)
 {
    FOR_EACH(glyph, _Glyphs) glyph->SetColour(colour);
@@ -106,6 +99,10 @@ String::Parse(const std::string& str)
 }
 
 void
-String::ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor) { FOR_EACH(glyph, _Glyphs) glyph->ComputeDimensions(glyph_sheet, anchor); }
+String::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor)
+{
+   FOR_EACH(glyph, _Glyphs)
+      glyph->ComputeDimensions(glyph_sheet, font_size, anchor);
+}
 
 }

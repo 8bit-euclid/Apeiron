@@ -41,8 +41,6 @@ class String final : public Model
 
    String& Add(const DArray<Glyph>& glyphs);
 
-   String& SetFontSize(const UChar font_size);
-
    String& SetColour(const Colour& colour);
 
    String& SetItalic(bool is_italic);
@@ -56,7 +54,7 @@ class String final : public Model
 
    DArray<Glyph> Parse(const std::string& str);
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor);
 
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;

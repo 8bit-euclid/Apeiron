@@ -95,20 +95,20 @@ template<typename T = int> requires std::integral<T> constexpr T MaxInt(std::num
 #if defined(DOUBLE_PRECISION)
   typedef double Real;
 #elif defined(LONG_DOUBLE_PRECISION)
-  typedef long double Float;
+  typedef long double Real;
 #else
-  typedef double Float;
+  typedef double Real;
   #error No numerical precision defined.
 #endif
 
 /** Floating-point limits. */
-template<typename T = Real> requires std::floating_point<T> constexpr T Epsilon     (std::numeric_limits<T>::epsilon());
-template<typename T = Real> requires std::floating_point<T> constexpr T MinFloat    (std::numeric_limits<T>::min());
-template<typename T = Real> requires std::floating_point<T> constexpr T MaxFloat    (std::numeric_limits<T>::max());
-template<typename T = Real> requires std::floating_point<T> constexpr T LowestFloat (std::numeric_limits<T>::lowest());
-template<typename T = Real> requires std::floating_point<T> constexpr T InfFloat    (std::numeric_limits<T>::infinity());
-template<typename T = Real> requires std::floating_point<T> constexpr T QuietNaN    (std::numeric_limits<T>::quiet_NaN());
-template<typename T = Real> requires std::floating_point<T> constexpr T SignalNaN   (std::numeric_limits<T>::signaling_NaN());
+template<typename T = Real> requires std::floating_point<T> constexpr T Epsilon    (std::numeric_limits<T>::epsilon());
+template<typename T = Real> requires std::floating_point<T> constexpr T MinReal    (std::numeric_limits<T>::min());
+template<typename T = Real> requires std::floating_point<T> constexpr T MaxReal    (std::numeric_limits<T>::max());
+template<typename T = Real> requires std::floating_point<T> constexpr T LowestReal (std::numeric_limits<T>::lowest());
+template<typename T = Real> requires std::floating_point<T> constexpr T InfReal    (std::numeric_limits<T>::infinity());
+template<typename T = Real> requires std::floating_point<T> constexpr T QuietNaN   (std::numeric_limits<T>::quiet_NaN());
+template<typename T = Real> requires std::floating_point<T> constexpr T SignalNaN  (std::numeric_limits<T>::signaling_NaN());
 
 /** Open if a value is NaN. */
 template<typename T>

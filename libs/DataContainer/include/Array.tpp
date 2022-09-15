@@ -65,8 +65,9 @@ Array<T, derived>::operator=(const std::convertible_to<T> auto value) noexcept
 }
 
 template<typename T, class derived>
+template<std::convertible_to<T> T2>
 constexpr derived&
-Array<T, derived>::operator=(const std::initializer_list<T>& value_list) noexcept
+Array<T, derived>::operator=(const std::initializer_list<T2>& value_list) noexcept
 {
    if constexpr(isTypeSame<derived, DynamicArray<T>>()) Derived().resize(value_list.size());
    size_t index(0);
@@ -108,11 +109,12 @@ constexpr StaticArray<T, size>::StaticArray()
   : StaticArray(GetStaticInitValue<T>()) {}
 
 template<typename T, size_t size>
-constexpr StaticArray<T, size>::StaticArray(const T& value)
+constexpr StaticArray<T, size>::StaticArray(const std::convertible_to<T> auto& value)
   : std::array<T, size>(detail::InitStaticArray<T, size>(value)) {}
 
 template<typename T, size_t size>
-constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T>& list)
+template<std::convertible_to<T> T2>
+constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T2>& list)
   : std::array<T, size>(detail::InitStaticArray<T, size>(list))
 {
   ASSERT(size == list.size(), "The initializer list should be of size ", size, ".")
@@ -137,10 +139,11 @@ template<typename T>
 DynamicArray<T>::DynamicArray(const size_t size) : DynamicArray(size, GetDynamicInitValue<T>()) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const size_t size, const T& value) : std::vector<T>(size, value) {}
+DynamicArray<T>::DynamicArray(const size_t size, const std::convertible_to<T> auto& value) : std::vector<T>(size, value) {}
 
 template<typename T>
-DynamicArray<T>::DynamicArray(const std::initializer_list<T>& list) : std::vector<T>(list) {}
+template<std::convertible_to<T> T2>
+DynamicArray<T>::DynamicArray(const std::initializer_list<T2>& list) : std::vector<T>(list) {}
 
 template<typename T>
 template<class Iter>
