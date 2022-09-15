@@ -103,7 +103,7 @@ private:
 };
 
 
-//StaticTensor<Float, 3> test;
+//StaticTensor<Real, 3> test;
 //
 //template<typename T, unsigned dim>
 //class StaticVector : public StaticTensor<T, 1, dim> {};
@@ -111,7 +111,7 @@ private:
 //template<typename T, unsigned t_dimension0, unsigned t_dimension1>
 //class StaticMatrix : public StaticTensor<T, 2, t_dimension0, t_dimension1> {};
 //
-//typedef StaticTensor<Float, 1, 1> Vector_StFl;
+//typedef StaticTensor<Real, 1, 1> Vector_StFl;
 
 }
 

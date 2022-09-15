@@ -34,15 +34,11 @@ class Vector : public detail::NumericContainer<T, derived>
 
    constexpr T& z() { return Derived()[2]; }
 
-   constexpr T& w() { return Derived()[3]; }
-
    constexpr const T& x() const { return Derived()[0]; }
 
    constexpr const T& y() const { return Derived()[1]; }
 
    constexpr const T& z() const { return Derived()[2]; }
-
-   constexpr const T& w() const { return Derived()[3]; }
 
    /** Derived Class Access */
    constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
@@ -68,10 +64,11 @@ class StaticVector final : public StaticArray<T, N>,
    constexpr StaticVector()
      : BaseArray() {}
 
-   explicit constexpr StaticVector(const T& value)
+   explicit constexpr StaticVector(const std::convertible_to<T> auto& value)
      : BaseArray(value) {}
 
-   constexpr StaticVector(const std::initializer_list<T>& list)
+   template<std::convertible_to<T> T2>
+   constexpr StaticVector(const std::initializer_list<T2>& list)
      : BaseArray(list) {}
 
    template<class iter>
@@ -101,10 +98,11 @@ class DynamicVector final : public DynamicArray<T>,
    explicit DynamicVector(const size_t size)
      : BaseArray(size) {}
 
-   DynamicVector(const size_t size, const T& value)
+   DynamicVector(const size_t size, const std::convertible_to<T> auto& value)
      : BaseArray(size, value) {}
 
-   DynamicVector(const std::initializer_list<T>& list)
+   template<std::convertible_to<T> T2>
+   DynamicVector(const std::initializer_list<T2>& list)
      : BaseArray(list) {}
 
    template<class iter>

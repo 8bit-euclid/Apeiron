@@ -157,7 +157,7 @@ Model::MoveTo(const SVectorR3& position, const Real start_time, const Real end_t
 }
 
 //Model&
-//Model::MoveAt(const SVectorF3& velocity, Float start_time, const std::function<Float(Float)>& ramp)
+//Model::MoveAt(const SVectorF3& velocity, Real start_time, const std::function<Real(Real)>& ramp)
 //{
 //   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAt>>(*this, SArrayToGlmVec(position), start_time, end_time);
 //   Actions.insert({ActionType::MoveAt, ptr});
@@ -208,7 +208,7 @@ Model::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_
 }
 
 //Model&
-//Model::RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time, const std::function<Float(Float)>& ramp)
+//Model::RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Real start_time, const std::function<Real(Real)>& ramp)
 //{
 //   return <#initializer#>;
 //}

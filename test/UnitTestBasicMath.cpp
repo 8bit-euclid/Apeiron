@@ -110,7 +110,7 @@ TEST_F(ApeironTest, MinEntry)
   FOR_EACH(entry, IntArray) minInt = Min(minInt, entry);
   EXPECT_EQ(MinEntry(IntArray.begin(), IntArray.end()), minInt);
 
-  Real minFloat = MaxFloat<>;
+  Real minFloat = MaxReal<>;
   FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
   EXPECT_EQ(MinEntry(FloatArray.begin(), FloatArray.end()), minFloat);
 }
@@ -121,7 +121,7 @@ TEST_F(ApeironTest, MaxEntry)
   FOR_EACH(entry, IntArray) maxInt = Max(maxInt, entry);
   EXPECT_EQ(MaxEntry(IntArray.begin(), IntArray.end()), maxInt);
 
-  Real maxFloat = MinFloat<>;
+  Real maxFloat = MinReal<>;
   FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
   EXPECT_EQ(MaxEntry(FloatArray.begin(), FloatArray.end()), maxFloat);
 }
@@ -135,8 +135,8 @@ TEST_F(ApeironTest, MinMaxEntries)
   EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).first, minInt);
   EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).second, maxInt);
 
-  Real minFloat = MaxFloat<>;
-  Real maxFloat = MinFloat<>;
+  Real minFloat = MaxReal<>;
+  Real maxFloat = MinReal<>;
   FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
   FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
   EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).first, minFloat);

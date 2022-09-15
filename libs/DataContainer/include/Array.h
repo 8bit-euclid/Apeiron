@@ -45,7 +45,8 @@ class Array
    /** Assignment Operator Overloads */
    constexpr derived& operator=(const std::convertible_to<T> auto value) noexcept;
 
-   constexpr derived& operator=(const std::initializer_list<T>& value_list) noexcept;
+   template<std::convertible_to<T> T2>
+   constexpr derived& operator=(const std::initializer_list<T2>& value_list) noexcept;
 
    /** Comparison Operator Overloads */
    constexpr bool operator==(const Array<T, derived>& _other) noexcept;
@@ -74,9 +75,10 @@ class StaticArray : public std::array<T, N>,
  public:
    constexpr StaticArray();
 
-   explicit constexpr StaticArray(const T& value);
+   explicit constexpr StaticArray(const std::convertible_to<T> auto& value);
 
-   constexpr StaticArray(const std::initializer_list<T>& list);
+   template<std::convertible_to<T> T2>
+   constexpr StaticArray(const std::initializer_list<T2>& list);
 
    template<class Iter>
    constexpr StaticArray(Iter first, Iter last);
@@ -99,9 +101,10 @@ class DynamicArray : public std::vector<T>,
 
    explicit DynamicArray(const size_t size);
 
-   DynamicArray(const size_t size, const T& value);
+   DynamicArray(const size_t size, const std::convertible_to<T> auto& value);
 
-   DynamicArray(const std::initializer_list<T>& list);
+   template<std::convertible_to<T> T2>
+   DynamicArray(const std::initializer_list<T2>& list);
 
    template<class Iter>
    DynamicArray(Iter first, Iter last);

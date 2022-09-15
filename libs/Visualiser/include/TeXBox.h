@@ -89,6 +89,7 @@ class TeXBox final : public Model
    GlyphSheet           _GlyphSheet;
    SVectorR2            _Dimensions{}; // [width, height] in world-space.
    SVectorR3            _Anchor{};     // Bottom-left corner.
+   UChar                _FontSize{10}; // Defaults to a 10pt font.
 };
 
 

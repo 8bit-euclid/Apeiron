@@ -38,7 +38,7 @@ ActionBase::ActionBase(Model& model, ActionType _action_type, Real start_time, R
    : Actor(model), Type(_action_type), StartTime(start_time), EndTime(end_time), ParameterNormaliser(One / (EndTime - StartTime)), Reparametriser(reparam) {}
 
 ActionBase::ActionBase(Model& model, ActionType _action_type, Real start_time, std::function<Real(Real)> ramp)
-   : Actor(model), Type(_action_type), StartTime(start_time), EndTime(InfFloat<>), Ramp(ramp) {}
+   : Actor(model), Type(_action_type), StartTime(start_time), EndTime(InfReal<>), Ramp(ramp) {}
 
 std::optional<Real>
 ActionBase::ComputeParameter(const Real global_time)

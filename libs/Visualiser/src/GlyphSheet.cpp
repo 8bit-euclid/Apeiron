@@ -32,7 +32,7 @@ GlyphSheet::Init(size_t id, const std::string& text)
    // Read glyph data and size the glyph sheet.
    ReadGlyphBoxPositions();
    ReadGlyphBoxAttributes();
-//   ComputeDimensions();
+   ComputeDimensions();
 }
 
 void

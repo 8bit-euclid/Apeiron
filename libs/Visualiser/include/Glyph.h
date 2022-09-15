@@ -39,8 +39,6 @@ class Glyph final : public Model
 
    Glyph& Set(Glyph&& glyph);
 
-   Glyph& SetFontSize(char font_size);
-
    Glyph& SetColour(const Colour& colour);
 
    Glyph& SetItalic(const bool is_italic);
@@ -59,33 +57,31 @@ class Glyph final : public Model
 
    void Add(std::string&& str);
 
-   inline bool isCompound() const { return !_SubGlyphs.empty(); }
+   void DoNotRender();
 
-   inline void DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compund glyph to no-render."); }
+   inline bool isCompound() const { return !_SubGlyphs.empty(); }
 
    inline bool isRendered() const { return _Render && !isCompound(); }
 
-   inline const std::string& GetText() const { return _Text; }
+   inline const std::string& Text() const { return _Text; }
 
  private:
    friend class String;
 
    void Init(GlyphSheet::IndexT& index_offset);
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor);
 
    std::string            _Text;
    GlyphSheet::IndexT     _Index{MaxInt<GlyphSheet::IndexT>};
-   std::optional<UChar>   _FontSize;
    std::optional<Colour>  _Colour;
    std::optional<bool>    _isItalic;
    std::optional<bool>    _isBold;
    SVectorR2              _Position{};   // Position (of the LaTeX glyph) in the xy-plane in world-space coordinates.
-   SVectorR2              _Dimensions{};   // Position (of the LaTeX glyph) in the xy-plane in world-space coordinates.
+   SVectorR2              _Dimensions{}; // Dimensions (of the LaTeX glyph) in the xy-plane in world-space coordinates.
    DArray<SPtr<Glyph>>    _SubGlyphs;
    bool                   _Render{true};
    bool                   _isInit{false};
-   constexpr static UChar _DefaultFontSize{10};
 
    /** Friend unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;

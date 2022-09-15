@@ -50,9 +50,9 @@ struct Action : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, RampType _ramp_type, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+//   Action(Model& model, RampType _ramp_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
-//   void Do(const Float global_time) override;
+//   void Do(const Real global_time) override;
 //
 // private:
 //   RampType Ramp{RampType::Scale};
@@ -146,7 +146,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+//   Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -165,7 +165,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, const Model& _other_actor, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+//   Action(Model& model, const Model& _other_actor, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -183,7 +183,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, Float _new_colour, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+//   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void
 //   Do() override;
@@ -200,7 +200,7 @@ class Action<type> final : public ActionBase
 //class Action<type> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, Float _new_colour, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+//   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void
 //   Do() override;

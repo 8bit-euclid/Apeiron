@@ -33,10 +33,10 @@ namespace aprn::vis {
 constexpr auto Identity = [](Real t){ return One; };
 constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 
-//constexpr auto Sigmoid = [](Float t){ return t; };
+//constexpr auto Sigmoid = [](Real t){ return t; };
 //
 //template<size_t shape, size_t location>
-//constexpr auto SigmoidMod = [](Float t)
+//constexpr auto SigmoidMod = [](Real t)
 //                            {
 //                               static_assert(isBounded<true, true, true>(location, 0ul, 100ul), "The sigmoid centre location must be a percentage.");
 //                               return t;

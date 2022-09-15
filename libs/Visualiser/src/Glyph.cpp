@@ -41,13 +41,6 @@ Glyph&
 Glyph::Set(Glyph&& glyph) { return *this = std::move(glyph); }
 
 Glyph&
-Glyph::SetFontSize(char font_size)
-{
-   if(!_FontSize.has_value()) _FontSize = font_size;
-   return *this;
-}
-
-Glyph&
 Glyph::SetColour(const Colour& colour)
 {
    if(!_Colour.has_value()) _Colour = colour;
@@ -86,6 +79,9 @@ Glyph::Add(DArray<Glyph>&& glyphs) { FOR_EACH(glyph, glyphs) Add(std::move(glyph
 void
 Glyph::Add(std::string&& str) { _Text.append(std::move(str)); }
 
+void
+Glyph::DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compound glyph to no-render."); }
+
 /***************************************************************************************************************************************************************
 * Glyph Private Interface
 ***************************************************************************************************************************************************************/
@@ -100,29 +96,27 @@ Glyph::Init(GlyphSheet::IndexT& index_offset)
    {
       _isInit = true;
       _Index  = index_offset++;
-      if(!_FontSize.has_value()) _FontSize = _DefaultFontSize;
    }
 }
 
 void
-Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const SVectorR3& anchor)
+Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor)
 {
    if(!isRendered()) return;
 
    ASSERT(_isInit, "The glyph must be initialise before its dimensions are computed.")
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(_Index);
-   const auto  scale      = GlyphSheet::FontSizeScale(_FontSize.value());
+   const auto  scale      = GlyphSheet::FontSizeScale(font_size);
 
    _Dimensions.x() = scale * static_cast<Real>(glyph_info.Width);
    _Dimensions.y() = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
-   _Position       = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   _Position       = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() };
+   _Position      += SVectorR2{ anchor.x(), anchor.y() }; // Offset glyph position with respect to the parent TeXBox anchor.
 
-   // Offset glyph position with respect to the parent TeXBox anchor.
-
-   // Set model mesh and initialise model.
-   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
-   Model::Init();
+//   // Set model mesh and initialise model.
+//   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
+//   Model::Init();
 }
 
 }

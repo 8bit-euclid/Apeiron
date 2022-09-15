@@ -175,7 +175,7 @@ TEST_F(ApeironTest, isBounded)
 
     // Test inclusion/exclusion
 //    const int random_int = RandomInt();
-//    const Float random_float = RandomFloat();
+//    const Real random_float = RandomFloat();
 //
 //    EXPECT_EQ((isBounded<false, false, true>(random_int, min_int, max_int)), ());
 //    EXPECT_EQ(isBounded<true>(random_int, min_int, max_int));
