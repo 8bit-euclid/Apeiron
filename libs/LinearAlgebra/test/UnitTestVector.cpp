@@ -430,9 +430,9 @@ TEST_F(VectorTest, CrossProduct)
   SVectorR3 cross_product;
 
   // Parallel test (same/opposite directions)
-  cross_product = CrossProduct(ConvertVector<2>(random0), ConvertVector<2>(random0));
+  cross_product = CrossProduct(ToVector<2>(random0), ToVector<2>(random0));
   FOR_EACH(entry, cross_product) EXPECT_DOUBLE_EQ(entry, Zero);
-  cross_product = CrossProduct(ConvertVector<2>(random0), ConvertVector<2>(-random0));
+  cross_product = CrossProduct(ToVector<2>(random0), ToVector<2>(-random0));
   FOR_EACH(entry, cross_product) EXPECT_DOUBLE_EQ(entry, Zero);
   cross_product = CrossProduct(random0, random0);
   FOR_EACH(entry, cross_product) EXPECT_DOUBLE_EQ(entry, Zero);

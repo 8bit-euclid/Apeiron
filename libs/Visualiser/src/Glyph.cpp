@@ -100,7 +100,7 @@ Glyph::Init(GlyphSheet::IndexT& index_offset)
 }
 
 void
-Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor)
+Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
    if(!isRendered()) return;
 
@@ -108,15 +108,28 @@ Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, c
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(_Index);
    const auto  scale      = GlyphSheet::FontSizeScale(font_size);
+   SVectorR2   dimensions; // Dimensions of the glyph in the xy-plane in world-space coordinates.
+   SVectorR2   anchor;     // Bottom-left corner of the glyph in world-space coordinates.
 
-   _Dimensions.x() = scale * static_cast<Real>(glyph_info.Width);
-   _Dimensions.y() = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
-   _Position       = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() };
-   _Position      += SVectorR2{ anchor.x(), anchor.y() }; // Offset glyph position with respect to the parent TeXBox anchor.
+   dimensions.x() = scale * static_cast<Real>(glyph_info.Width);
+   dimensions.y() = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   anchor         = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
 
-//   // Set model mesh and initialise model.
-//   _Mesh = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
-//   Model::Init();
+   // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
+   _Mesh = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).Geometry();
+   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { _Mesh.Vertices[i].TextureCoordinates =
+                                                                     glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
+   set_tex_coor(0, anchor);
+   set_tex_coor(1, anchor + SVectorR2{ dimensions.x(), Zero });
+   set_tex_coor(2, anchor + dimensions);
+   set_tex_coor(3, anchor + SVectorR2{ Zero, dimensions.y() });
+
+   // Offset the glyph w.r.t. the parent tex-box's anchor. Also need to offset by half the glyph's dimensions as the glyph's rectangle is centred on the origin.
+   anchor += Half * SVectorR2{ dimensions.x(), dimensions.y() };
+   anchor += SVectorR2{ texbox_anchor.x(), texbox_anchor.y() };
+   OffsetPosition(ToVector<3>(anchor));
+
+   Model::Init();
 }
 
 }

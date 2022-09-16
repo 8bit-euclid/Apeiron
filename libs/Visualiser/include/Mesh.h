@@ -50,8 +50,8 @@ struct VertexAttributeLayout
    template<typename T>
    void AddAttribute(GLuint n_values);
 
-   DynamicArray<VertexAttribute> Attributes;
-   GLuint                        Stride;
+   DArray<VertexAttribute> Attributes;
+   GLuint                  Stride;
 };
 
 class Mesh
@@ -68,11 +68,12 @@ class Mesh
  private:
    friend class Model;
    friend class ModelFactory;
+   friend class Glyph;
 
    VertexAttributeLayout VertexLayout;
-   DynamicArray<Vertex>  Vertices;
-   DynamicArray<GLuint>  Indices;
-   ShadingType           Shading{ShadingType::Flat};
+   DArray<Vertex>  Vertices;
+   DArray<GLuint>  Indices;
+   ShadingType     Shading{ShadingType::Flat};
 };
 
 }

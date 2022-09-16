@@ -265,7 +265,7 @@ Model::operator=(Model&& model) noexcept
    model = Unmove(Model());
 
    // Very tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
-   FOR_EACH(_, action, _Actions) action->Actor = std::ref(*this);
+   FOR_EACH(_, action, _Actions) action->_Actor = std::ref(*this);
 
    return *this;
 }
@@ -306,15 +306,9 @@ Model::ComputeLifespan()
 {
    FOR_EACH(_, action, _Actions)
    {
-      _EntryTime = Min(_EntryTime, action->StartTime);
-      _ExitTime  = Max(_ExitTime, action->EndTime);
+      _EntryTime = Min(_EntryTime, action->_StartTime);
+      _ExitTime  = Max(_ExitTime , action->_EndTime);
    }
-}
-
-void
-Model::SetTeXBoxTexture()
-{
-
 }
 
 }

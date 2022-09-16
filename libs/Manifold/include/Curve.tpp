@@ -152,7 +152,7 @@ constexpr SVectorR<ambient_dim>
 Circle<ambient_dim>::ComputePoint(const SVectorR1& t)
 {
   const auto s = t[0] * (isUnitSpeed ? Normaliser : One);
-  return ConvertVector<ambient_dim>(SVectorR3{Radius * Cos(s), Radius * Sin(s), Zero}) + Centre;
+  return ToVector<ambient_dim>(SVectorR3{Radius * Cos(s), Radius * Sin(s), Zero}) + Centre;
 }
 
 template<size_t ambient_dim>
@@ -186,7 +186,7 @@ template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
 Ellipse<ambient_dim>::ComputePoint(const SVectorR1& t)
 {
-  return ConvertVector<ambient_dim>(SVectorR3{RadiusX * Cos(t[0]), RadiusY * Sin(t[0]), Zero}) + Centre;
+  return ToVector<ambient_dim>(SVectorR3{RadiusX * Cos(t[0]), RadiusY * Sin(t[0]), Zero}) + Centre;
 }
 
 template<size_t ambient_dim>

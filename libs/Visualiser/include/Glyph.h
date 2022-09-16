@@ -70,15 +70,13 @@ class Glyph final : public Model
 
    void Init(GlyphSheet::IndexT& index_offset);
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
 
    std::string            _Text;
    GlyphSheet::IndexT     _Index{MaxInt<GlyphSheet::IndexT>};
    std::optional<Colour>  _Colour;
    std::optional<bool>    _isItalic;
    std::optional<bool>    _isBold;
-   SVectorR2              _Position{};   // Position (of the LaTeX glyph) in the xy-plane in world-space coordinates.
-   SVectorR2              _Dimensions{}; // Dimensions (of the LaTeX glyph) in the xy-plane in world-space coordinates.
    DArray<SPtr<Glyph>>    _SubGlyphs;
    bool                   _Render{true};
    bool                   _isInit{false};

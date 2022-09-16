@@ -120,8 +120,6 @@ class Model
 
    void ComputeLifespan();
 
-   void SetTeXBoxTexture();
-
    inline void Reset() { _ModelMatrix = glm::mat4(1.0); }
 
    inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }

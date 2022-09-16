@@ -51,8 +51,8 @@ requires Offset<type>
 void
 Action<type>::Do(const Real global_time)
 {
-   if(type == ActionType::OffsetPosition) Actor.get().Translate(Position);
-   else if(type == ActionType::OffsetOrientation) Actor.get().Rotate(Angle, Axis);
+   if(type == ActionType::OffsetPosition) _Actor.get().Translate(Position);
+   else if(type == ActionType::OffsetOrientation) _Actor.get().Rotate(Angle, Axis);
 }
 
 /** Scale
@@ -73,7 +73,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param.has_value() && isPositive(param.value())) Actor.get().Scale(static_cast<float>(param.value()) * Scales);
+   if(param.has_value() && isPositive(param.value())) _Actor.get().Scale(static_cast<float>(param.value()) * Scales);
    else {} // Remove action
 }
 
@@ -126,7 +126,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param.has_value() && isPositive(param.value())) Actor.get().Translate(this->Displacement(param.value()));
+   if(param.has_value() && isPositive(param.value())) _Actor.get().Translate(this->Displacement(param.value()));
    else {} // Remove action
 }
 
@@ -152,7 +152,7 @@ Action<type>::Action(Model& model, const glm::vec3& angular_velocity, Real start
    : ActionBase(model, type, start_time, ramp), Axis(glm::normalize(angular_velocity)), Reference({0.0, 0.0, 0.0}),
      AngularSpeed(glm::length(angular_velocity))
 {
-   this->Angle = [this](Real t){ return t * AngularSpeed * Ramp(t); };
+   this->Angle = [this](Real t){ return t * AngularSpeed * _Ramp(t); };
 }
 
 template<ActionType type>
@@ -164,9 +164,9 @@ Action<type>::Do(const Real global_time)
    if(param.has_value() && isPositive(param.value()))
    {
       const bool is_revolution = type == ActionType::RevolveBy || type == ActionType::RevolveAt;
-      if(is_revolution) Actor.get().Translate(-Reference);
-      Actor.get().Rotate(this->Angle(param.value()), Axis);
-      if(is_revolution) Actor.get().Translate(Reference);
+      if(is_revolution) _Actor.get().Translate(-Reference);
+      _Actor.get().Rotate(this->Angle(param.value()), Axis);
+      if(is_revolution) _Actor.get().Translate(Reference);
    }
    else {} // Remove action
 }

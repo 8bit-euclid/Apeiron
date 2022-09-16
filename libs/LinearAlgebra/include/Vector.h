@@ -120,28 +120,29 @@ class DynamicVector final : public DynamicArray<T>,
 
 /** Generic Vector Aliases
 ***************************************************************************************************************************************************************/
-template<class D> using VectorB = Vector<Bool  , D>;
-template<class D> using VectorU = Vector<size_t, D>;
-template<class D> using VectorI = Vector<int   , D>;
-template<class D> using VectorF = Vector<Real  , D>;
+template<class D> using VectorB = Vector<Bool, D>;
+template<class D> using VectorU = Vector<UInt, D>;
+template<class D> using VectorI = Vector<Int , D>;
+template<class D> using VectorR = Vector<Real, D>;
 
 /** Static Vector Aliases
 ***************************************************************************************************************************************************************/
 template<typename T, size_t N> using SVector = StaticVector<T, N>;
 
-/** Sized vectors of arbitrary type */
+/** Sized vectors of arbitrary type. */
+template<typename T> using SVector1 = SVector<T, 1>;
 template<typename T> using SVector2 = SVector<T, 2>;
 template<typename T> using SVector3 = SVector<T, 3>;
 template<typename T> using SVector4 = SVector<T, 4>;
 
-/** Sized Real vectors */
+/** Sized Real vectors. */
 template<size_t N> using SVectorR = SVector<Real, N>;
 using SVectorR1 = SVectorR<1>;
 using SVectorR2 = SVectorR<2>;
 using SVectorR3 = SVectorR<3>;
 using SVectorR4 = SVectorR<4>;
 
-/** Coordinate Axes */
+/** 2D and 3D Cartesian coordinate standard basis vectors. */
 constexpr SVectorR2 xAxis2{ 1.0, 0.0 };
 constexpr SVectorR2 yAxis2{ 0.0, 1.0 };
 constexpr SVectorR3 xAxis3{ 1.0, 0.0, 0.0 };
@@ -153,8 +154,8 @@ constexpr SVectorR3 zAxis3{ 0.0, 0.0, 1.0 };
 template<typename T> using DVector = DynamicVector<T>;
 
 using DVectorB = DVector<Bool>;
-using DVectorU = DVector<size_t>;
-using DVectorI = DVector<int>;
+using DVectorU = DVector<UInt>;
+using DVectorI = DVector<Int>;
 using DVectorR = DVector<Real>;
 
 /***************************************************************************************************************************************************************
@@ -162,7 +163,7 @@ using DVectorR = DVector<Real>;
 ***************************************************************************************************************************************************************/
 template<size_t N, size_t M, typename T>
 constexpr SVector<T, N>
-ConvertVector(const SVector<T, M>& from)
+ToVector(const SVector<T, M>& from)
 {
    SVector<T, N> to;
    std::copy(from.begin(), (from.begin() + Min(M, N)), to.begin());
