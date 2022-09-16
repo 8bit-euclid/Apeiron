@@ -54,7 +54,7 @@ class String final : public Model
 
    DArray<Glyph> Parse(const std::string& str);
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
 
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;

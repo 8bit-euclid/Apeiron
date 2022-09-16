@@ -43,7 +43,7 @@ ModelFactory::Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio)
    const GLfloat y = static_cast<Real>(height);
    const GLfloat apex_x = x * (Two * _apex_ratio - One);
 
-   return Triangle(SVector3<GLfloat>{-x, Zero, Zero}, SVector3<GLfloat>{x, Zero, Zero}, SVector3<GLfloat>{apex_x, y, Zero});
+   return Triangle(SVector3<GLfloat>{-x, 0.0f, 0.0f}, SVector3<GLfloat>{x, 0.0f, 0.0f}, SVector3<GLfloat>{apex_x, y, 0.0f});
 }
 
 Model
@@ -58,10 +58,10 @@ ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
    const GLfloat x = Half * length;
    const GLfloat y = Half * height;
 
-   return Quadrilateral(SVector3<GLfloat>{-x, -y, Zero},
-                        SVector3<GLfloat>{ x, -y, Zero},
-                        SVector3<GLfloat>{ x,  y, Zero},
-                        SVector3<GLfloat>{-x,  y, Zero});
+   return Quadrilateral(SVector3<GLfloat>{-x, -y, 0.0f},
+                        SVector3<GLfloat>{ x, -y, 0.0f},
+                        SVector3<GLfloat>{ x,  y, 0.0f},
+                        SVector3<GLfloat>{-x,  y, 0.0f});
 }
 
 Model

@@ -99,10 +99,10 @@ String::Parse(const std::string& str)
 }
 
 void
-String::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& anchor)
+String::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
    FOR_EACH(glyph, _Glyphs)
-      glyph->ComputeDimensions(glyph_sheet, font_size, anchor);
+      glyph->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
 }
 
 }

@@ -44,7 +44,7 @@ constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 
 /** Action Types and Sub-Types
 ***************************************************************************************************************************************************************/
-enum class ActionType // NOTE: The order is important - higher-up actions must be performed first.
+enum class ActionType // NOTE: The order here is important - higher-up actions must be performed first.
 {
    /** Model centroid invariant actions. */
    RampUp,
@@ -111,20 +111,18 @@ class Model;
 class ActionBase
 {
  public:
-   ActionBase(Model& model, ActionType _action_type);
+   ActionBase(Model& model, ActionType action_type);
 
-   ActionBase(Model& model, ActionType _action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 
-   ActionBase(Model& model, ActionType _action_type, Real start_time, std::function<Real(Real)> ramp = Identity);
+   ActionBase(Model& model, ActionType action_type, Real start_time, std::function<Real(Real)> ramp = Identity);
 
    virtual void
    Do(const Real global_time) = 0;
 
-   inline ActionType
-   GetType() const { return Type; }
+   inline auto Type() const { return _Type; }
 
-   inline bool
-   isComplete() const { return Status; }
+   inline bool isDone() const { return _isDone; }
 
  protected:
    friend class Model;
@@ -132,14 +130,14 @@ class ActionBase
    std::optional<Real>
    ComputeParameter(const Real global_time);
 
-   RWpr<Model>                 Actor;
-   ActionType                  Type;
-   const Real                 StartTime;
-   const Real                 EndTime;
-   Real                       ParameterNormaliser;
-   std::function<Real(Real)> Reparametriser;
-   std::function<Real(Real)> Ramp;
-   bool                        Status{false};
+   RWpr<Model>               _Actor;
+   ActionType                _Type;
+   const Real                _StartTime;
+   const Real                _EndTime;
+   Real                      _ParamNormaliser;
+   std::function<Real(Real)> _Reparametriser;
+   std::function<Real(Real)> _Ramp;
+   bool                      _isDone{false};
 };
 
 }

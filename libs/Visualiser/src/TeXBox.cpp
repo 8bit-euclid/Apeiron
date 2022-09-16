@@ -119,11 +119,12 @@ TeXBox::Init(const size_t id)
    // Initialise sub-strings and accumulate text.
    InitSubGlyphs();
 
-   // Initialise glyph sheet and link to all sub-glyphs.
+   // Initialise glyph sheet and compute tex-box dimensions.
    _GlyphSheet.Init(id, _Text);
-   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _FontSize, _Anchor);
-
    ComputeDimensions();
+
+   // Compute the sub-glyph dimensions and their texture coordinates.
+   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _FontSize, _Anchor, _Dimensions);
 }
 
 void
