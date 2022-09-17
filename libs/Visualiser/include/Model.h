@@ -16,13 +16,13 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "DataContainer/include/List.h"
 
 #include "ActionBase.h"
 #include "Buffers.h"
 #include "Colour.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "Object.h"
 #include "Texture.h"
 
 #include <map>
@@ -102,11 +102,13 @@ class Model
 
    Model& operator=(Model&& model) noexcept;
 
-   /** Members Accessors
+   /** Accessors
    ************************************************************************************************************************************************************/
    inline const glm::mat4& ModelMatrix() const { return _ModelMatrix; }
 
    inline const Mesh& Geometry() const { return _Mesh; }
+
+   inline bool isMeshLoaded() const { return _Mesh.isLoaded(); }
 
  protected:
    friend class Visualiser;
@@ -136,15 +138,15 @@ class Model
    Mesh                                           _Mesh;
    Map<SPtr<Model>>                               _SubModels;
    std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
-   std::optional<Pair<std::string, Real>>        _TextureInfo;
+   std::optional<Pair<std::string, Real>>         _TextureInfo;
    std::optional<Material>                        _Material;
    Colour                                         _StrokeColour;
    Colour                                         _FillColour;
    glm::vec3                                      _Centroid;
    glm::mat4                                      _ModelMatrix{1.0f};
    glm::mat4                                      _PreviousActions{1.0f};
-   Real                                          _EntryTime{Zero};
-   Real                                          _ExitTime{InfReal<>};
+   Real                                           _EntryTime{Zero};
+   Real                                           _ExitTime{InfReal<>};
    bool                                           _isInitialised{false};
 
    /** Data Buffers

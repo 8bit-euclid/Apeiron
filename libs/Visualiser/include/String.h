@@ -56,6 +56,8 @@ class String final : public Model
 
    void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
 
+   void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
+
    std::string         _Text;
    DArray<SPtr<Glyph>> _Glyphs;
 };

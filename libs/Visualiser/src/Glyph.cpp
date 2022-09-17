@@ -129,6 +129,7 @@ Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, c
    anchor += SVectorR2{ texbox_anchor.x(), texbox_anchor.y() };
    OffsetPosition(ToVector<3>(anchor));
 
+   // Initialise underlying model.
    Model::Init();
 }
 

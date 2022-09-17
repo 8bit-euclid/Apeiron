@@ -28,14 +28,14 @@ class ArrayTest : public testing::Test
 public:
   StaticArray<bool , ContainerSize> BoolStaticArray;
   StaticArray<int  , ContainerSize> IntStaticArray;
-  StaticArray<Real, ContainerSize> FloatStaticArray;
+  StaticArray<Real, ContainerSize>  RealStaticArray;
 
-  DynamicArray<Bool>  BoolDynamicArray;
-  DynamicArray<int>   IntDynamicArray;
-  DynamicArray<Real> FloatDynamicArray;
+  DynamicArray<Bool> BoolDynamicArray;
+  DynamicArray<int>  IntDynamicArray;
+  DynamicArray<Real> RealDynamicArray;
 
   ArrayTest()
-    : BoolDynamicArray(ContainerSize), IntDynamicArray(ContainerSize), FloatDynamicArray(ContainerSize) {}
+    : BoolDynamicArray(ContainerSize), IntDynamicArray(ContainerSize), RealDynamicArray(ContainerSize) {}
 
   void SetUp() override
   {
@@ -47,14 +47,14 @@ TEST_F(ArrayTest, Initialisation)
 {
   // Initilise constexpr StaticArray objects.
   constexpr StaticArray<bool, ContainerSize> ConstexprBoolArray;
-  constexpr StaticArray<int, ContainerSize> ConstexprIntArray(2);
-  constexpr StaticArray<Real, 5> ConstexprFloatArray1{One, Two, Three, Four, Five};
-  constexpr StaticArray<Real, 3> ConstexprFloatArray2(ConstexprFloatArray1.begin(), ConstexprFloatArray1.begin() + 3);
+  constexpr StaticArray<int, ContainerSize>  ConstexprIntArray(2);
+  constexpr StaticArray<Real, 5> ConstexprRealArray1{One, Two, Three, Four, Five};
+  constexpr StaticArray<Real, 3> ConstexprRealArray2(ConstexprRealArray1.begin(), ConstexprRealArray1.begin() + 3);
 
   FOR(i, 5)
   {
-    EXPECT_EQ(ConstexprFloatArray1[i], Real(i + 1));
-    if(i < 3) { EXPECT_EQ(ConstexprFloatArray2[i], Real(i + 1)); }
+    EXPECT_EQ(ConstexprRealArray1[i], Real(i + 1));
+    if(i < 3) { EXPECT_EQ(ConstexprRealArray2[i], Real(i + 1)); }
   }
 
   // Test default initialisation of arrays.
@@ -63,12 +63,12 @@ TEST_F(ArrayTest, Initialisation)
     // Static arrays
     EXPECT_EQ(BoolStaticArray[i], false);
     EXPECT_EQ(IntStaticArray[i], -1);
-    EXPECT_EQ(FloatStaticArray[i], Zero);
+    EXPECT_EQ(RealStaticArray[i], Zero);
 
     // Dynamic arrays
     EXPECT_EQ(BoolDynamicArray[i], false);
     EXPECT_EQ(IntDynamicArray[i], -1);
-    EXPECT_EQ(FloatDynamicArray[i], Zero);
+    EXPECT_EQ(RealDynamicArray[i], Zero);
   }
 }
 
@@ -79,18 +79,18 @@ TEST_F(ArrayTest, SubscriptOperator)
     // Static arrays
     BoolStaticArray[i] = true;
     IntStaticArray[i] = 1;
-    FloatStaticArray[i] = Zero;
+     RealStaticArray[i] = Zero;
     EXPECT_EQ(BoolStaticArray[i], true);
     EXPECT_EQ(IntStaticArray[i], 1);
-    EXPECT_EQ(FloatStaticArray[i], Zero);
+    EXPECT_EQ(RealStaticArray[i], Zero);
 
     // Dynamic arrays
     BoolDynamicArray[i] = true;
     IntDynamicArray[i] = 1;
-    FloatDynamicArray[i] = Zero;
+     RealDynamicArray[i] = Zero;
     EXPECT_EQ(BoolDynamicArray[i], true);
     EXPECT_EQ(IntDynamicArray[i], 1);
-    EXPECT_EQ(FloatDynamicArray[i], Zero);
+    EXPECT_EQ(RealDynamicArray[i], Zero);
   }
 }
 
@@ -102,23 +102,23 @@ TEST_F(ArrayTest, AssignmentOperator)
 
   BoolStaticArray = rand_bool;
   IntStaticArray = rand_int;
-  FloatStaticArray = rand_float;
+   RealStaticArray = rand_float;
 
   BoolDynamicArray = rand_bool;
   IntDynamicArray = rand_int;
-  FloatDynamicArray = rand_float;
+   RealDynamicArray = rand_float;
 
   FOR(i, ContainerSize)
   {
     // Static arrays
     EXPECT_EQ(BoolStaticArray[i], rand_bool);
     EXPECT_EQ(IntStaticArray[i], rand_int);
-    EXPECT_EQ(FloatStaticArray[i], rand_float);
+    EXPECT_EQ(RealStaticArray[i], rand_float);
 
     // Dynamic arrays
     EXPECT_EQ(BoolDynamicArray[i], rand_bool);
     EXPECT_EQ(IntDynamicArray[i], rand_int);
-    EXPECT_EQ(FloatDynamicArray[i], rand_float);
+    EXPECT_EQ(RealDynamicArray[i], rand_float);
   }
 }
 

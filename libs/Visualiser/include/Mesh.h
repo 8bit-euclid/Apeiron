@@ -61,7 +61,7 @@ class Mesh
 
    void ComputeVertexNormals();
 
-   inline bool isInitialised() const { return !Vertices.empty(); }
+   inline bool isLoaded() const { return !Vertices.empty(); }
 
    inline const VertexAttributeLayout& GetVertexLayout() const { return VertexLayout; }
 

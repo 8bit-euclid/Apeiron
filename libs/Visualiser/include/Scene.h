@@ -79,6 +79,8 @@ class Scene
 
    void RenderModels(Shader& shader);
 
+   void RenderModel(SPtr<Model>& model, Shader& shader);
+
    template<class type> using UMap = std::unordered_map<std::string, type>;
    std::string            _Title;
    UMap<SPtr<Model>>      _Models;
@@ -90,9 +92,9 @@ class Scene
    Transition             _Transition{};
    Scene*                 _PrevScene{nullptr};
    Scene*                 _NextScene{nullptr};
-   Real                  _Duration;
-   Real                  _StartTime;
-   Real                  _EndTime;
+   Real                   _Duration;
+   Real                   _StartTime;
+   Real                   _EndTime;
    bool                   _AdjustDuration{false};
    inline static bool     _isSingleScene {true};
 };

@@ -105,4 +105,7 @@ String::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, 
       glyph->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
 }
 
+void
+String::LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info) { FOR_EACH(glyph, _Glyphs) glyph->_TextureInfo = texture_info; }
+
 }
