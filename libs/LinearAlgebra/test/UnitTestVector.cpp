@@ -29,41 +29,41 @@ namespace aprn {
 ***************************************************************************************************************************************************************/
 class VectorTest : public testing::Test
 {
-public:
-  Random<int> RandomInt;
-  Random<Real> RandomFloat;
+ public:
+   Random<int>  RandomInt;
+   Random<Real> RandomReal;
 
-  StaticVector<int, ContainerSize> IntStaticVector;
-  StaticVector<Real, ContainerSize> FloatStaticVector;
-  DynamicVector<int> IntDynamicVector;
-  DynamicVector<Real> FloatDynamicVector;
+   StaticVector<int, ContainerSize>  IntStaticVector;
+   StaticVector<Real, ContainerSize> RealStaticVector;
+   DynamicVector<int>  IntDynamicVector;
+   DynamicVector<Real> RealDynamicVector;
 
-  StaticVector<int, ContainerSize> IntStaticVectorTest;
-  StaticVector<Real, ContainerSize> FloatStaticVectorTest;
-  DynamicVector<int> IntDynamicVectorTest;
-  DynamicVector<Real> FloatDynamicVectorTest;
+   StaticVector<int, ContainerSize>  IntStaticVectorTest;
+   StaticVector<Real, ContainerSize> RealStaticVectorTest;
+   DynamicVector<int>  IntDynamicVectorTest;
+   DynamicVector<Real> RealDynamicVectorTest;
 
-  VectorTest()
-    : RandomInt(-10, 10), RandomFloat(-Ten, Ten), IntDynamicVector(ContainerSize), FloatDynamicVector(ContainerSize),
-                          IntDynamicVectorTest(ContainerSize), FloatDynamicVectorTest(ContainerSize) {}
+   VectorTest()
+      : RandomInt(-10, 10), RandomReal(-Ten, Ten), IntDynamicVector(ContainerSize), RealDynamicVector(ContainerSize),
+        IntDynamicVectorTest(ContainerSize), RealDynamicVectorTest(ContainerSize) {}
 
-  void SetUp() override
-  {
-    IntStaticVector.ResetRandomiser(-10, 10);
-    IntDynamicVector.ResetRandomiser(-10, 10);
-    FloatStaticVector.ResetRandomiser(-Ten, Ten);
-    FloatDynamicVector.ResetRandomiser(-Ten, Ten);
+   void SetUp() override
+   {
+      IntStaticVector.ResetRandomiser(-10, 10);
+      IntDynamicVector.ResetRandomiser(-10, 10);
+      RealStaticVector.ResetRandomiser(-Ten, Ten);
+      RealDynamicVector.ResetRandomiser(-Ten, Ten);
 
-    IntStaticVector.Randomise();
-    IntDynamicVector.Randomise();
-    FloatStaticVector.Randomise();
-    FloatDynamicVector.Randomise();
+      IntStaticVector.Randomise();
+      IntDynamicVector.Randomise();
+      RealStaticVector.Randomise();
+      RealDynamicVector.Randomise();
 
-    IntStaticVectorTest = IntStaticVector;
-    IntDynamicVectorTest = IntDynamicVector;
-    FloatStaticVectorTest = FloatStaticVector;
-    FloatDynamicVectorTest = FloatDynamicVector;
-  }
+      IntStaticVectorTest = IntStaticVector;
+      IntDynamicVectorTest = IntDynamicVector;
+      RealStaticVectorTest = RealStaticVector;
+      RealDynamicVectorTest = RealDynamicVector;
+   }
 };
 
 /***************************************************************************************************************************************************************
@@ -72,173 +72,173 @@ public:
 TEST_F(VectorTest, ScalarPlus)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   IntStaticVectorTest = IntStaticVector + random_int;
   IntDynamicVectorTest = IntDynamicVector + random_int;
-  FloatStaticVectorTest = FloatStaticVector + random_float;
-  FloatDynamicVectorTest = FloatDynamicVector + random_float;
+   RealStaticVectorTest = RealStaticVector + random_float;
+   RealDynamicVectorTest = RealDynamicVector + random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] + random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] + random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] + random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] + random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] + random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] + random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarMinus)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   IntStaticVectorTest = IntStaticVector - random_int;
   IntDynamicVectorTest = IntDynamicVector - random_int;
-  FloatStaticVectorTest = FloatStaticVector - random_float;
-  FloatDynamicVectorTest = FloatDynamicVector - random_float;
+   RealStaticVectorTest = RealStaticVector - random_float;
+   RealDynamicVectorTest = RealDynamicVector - random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] - random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] - random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] - random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] - random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] - random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] - random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarMultiply)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   // Test pre-multiplication
   IntStaticVectorTest = random_int * IntStaticVector;
   IntDynamicVectorTest = random_int * IntDynamicVector;
-  FloatStaticVectorTest = random_float * FloatStaticVector;
-  FloatDynamicVectorTest = random_float * FloatDynamicVector;
+   RealStaticVectorTest = random_float * RealStaticVector;
+   RealDynamicVectorTest = random_float * RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], random_int * IntStaticVector[i]);
     EXPECT_EQ(IntDynamicVectorTest[i], random_int * IntDynamicVector[i]);
-    EXPECT_EQ(FloatStaticVectorTest[i], random_float * FloatStaticVector[i]);
-    EXPECT_EQ(FloatDynamicVectorTest[i], random_float * FloatDynamicVector[i]);
+    EXPECT_EQ(RealStaticVectorTest[i], random_float * RealStaticVector[i]);
+    EXPECT_EQ(RealDynamicVectorTest[i], random_float * RealDynamicVector[i]);
   }
 
   // Test post-multiplication
   IntStaticVectorTest = IntStaticVector * random_int;
   IntDynamicVectorTest = IntDynamicVector * random_int;
-  FloatStaticVectorTest = FloatStaticVector * random_float;
-  FloatDynamicVectorTest = FloatDynamicVector * random_float;
+   RealStaticVectorTest = RealStaticVector * random_float;
+   RealDynamicVectorTest = RealDynamicVector * random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], random_int * IntStaticVector[i]);
     EXPECT_EQ(IntDynamicVectorTest[i], random_int * IntDynamicVector[i]);
-    EXPECT_EQ(FloatStaticVectorTest[i], random_float * FloatStaticVector[i]);
-    EXPECT_EQ(FloatDynamicVectorTest[i], random_float * FloatDynamicVector[i]);
+    EXPECT_EQ(RealStaticVectorTest[i], random_float * RealStaticVector[i]);
+    EXPECT_EQ(RealDynamicVectorTest[i], random_float * RealDynamicVector[i]);
   }
 }
 
 TEST_F(VectorTest, ScalarDivide)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   if(random_int == 0) random_int++;
   if(isEqual(random_float, Zero)) random_float++;
 
   IntStaticVectorTest = IntStaticVector / random_int;
   IntDynamicVectorTest = IntDynamicVector / random_int;
-  FloatStaticVectorTest = FloatStaticVector / random_float;
-  FloatDynamicVectorTest = FloatDynamicVector / random_float;
+   RealStaticVectorTest = RealStaticVector / random_float;
+   RealDynamicVectorTest = RealDynamicVector / random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] / random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] / random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] / random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] / random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] / random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] / random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarPlusEqual)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   IntStaticVectorTest += random_int;
   IntDynamicVectorTest += random_int;
-  FloatStaticVectorTest += random_float;
-  FloatDynamicVectorTest += random_float;
+   RealStaticVectorTest += random_float;
+   RealDynamicVectorTest += random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] + random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] + random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] + random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] + random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] + random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] + random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarMinusEqual)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   IntStaticVectorTest -= random_int;
   IntDynamicVectorTest -= random_int;
-  FloatStaticVectorTest -= random_float;
-  FloatDynamicVectorTest -= random_float;
+   RealStaticVectorTest -= random_float;
+   RealDynamicVectorTest -= random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] - random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] - random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] - random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] - random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] - random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] - random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarMultiplyEqual)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   IntStaticVectorTest *= random_int;
   IntDynamicVectorTest *= random_int;
-  FloatStaticVectorTest *= random_float;
-  FloatDynamicVectorTest *= random_float;
+   RealStaticVectorTest *= random_float;
+   RealDynamicVectorTest *= random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] * random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] * random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] * random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] * random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] * random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] * random_float);
   }
 }
 
 TEST_F(VectorTest, ScalarDivideEqual)
 {
   int random_int = RandomInt();
-  Real random_float = RandomFloat();
+  Real random_float = RandomReal();
 
   if(random_int == 0) random_int++;
   if(isEqual(random_float, Zero)) random_float++;
 
   IntStaticVectorTest /= random_int;
   IntDynamicVectorTest /= random_int;
-  FloatStaticVectorTest /= random_float;
-  FloatDynamicVectorTest /= random_float;
+   RealStaticVectorTest /= random_float;
+   RealDynamicVectorTest /= random_float;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], IntStaticVector[i] / random_int);
     EXPECT_EQ(IntDynamicVectorTest[i], IntDynamicVector[i] / random_int);
-    EXPECT_EQ(FloatStaticVectorTest[i], FloatStaticVector[i] / random_float);
-    EXPECT_EQ(FloatDynamicVectorTest[i], FloatDynamicVector[i] / random_float);
+    EXPECT_EQ(RealStaticVectorTest[i], RealStaticVector[i] / random_float);
+    EXPECT_EQ(RealDynamicVectorTest[i], RealDynamicVector[i] / random_float);
   }
 }
 
@@ -246,15 +246,15 @@ TEST_F(VectorTest, VectorPlus)
 {
   IntStaticVectorTest = IntStaticVector + IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector + IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector + FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector + FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector + RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector + RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 2 * IntStaticVector[i]);
     EXPECT_EQ(IntDynamicVectorTest[i], 2 * IntDynamicVector[i]);
-    EXPECT_EQ(FloatStaticVectorTest[i], Two * FloatStaticVector[i]);
-    EXPECT_EQ(FloatDynamicVectorTest[i], Two * FloatDynamicVector[i]);
+    EXPECT_EQ(RealStaticVectorTest[i], Two * RealStaticVector[i]);
+    EXPECT_EQ(RealDynamicVectorTest[i], Two * RealDynamicVector[i]);
   }
 }
 
@@ -262,15 +262,15 @@ TEST_F(VectorTest, VectorMinus)
 {
   IntStaticVectorTest = IntStaticVector - IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector - IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector - FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector - FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector - RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector - RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 0);
     EXPECT_EQ(IntDynamicVectorTest[i], 0);
-    EXPECT_EQ(FloatStaticVectorTest[i], Zero);
-    EXPECT_EQ(FloatDynamicVectorTest[i], Zero);
+    EXPECT_EQ(RealStaticVectorTest[i], Zero);
+    EXPECT_EQ(RealDynamicVectorTest[i], Zero);
   }
 }
 
@@ -278,15 +278,15 @@ TEST_F(VectorTest, VectorMultiply)
 {
   IntStaticVectorTest = IntStaticVector * IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector * IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector * FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector * FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector * RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector * RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], iPow(IntStaticVector[i], 2));
     EXPECT_EQ(IntDynamicVectorTest[i], iPow(IntDynamicVector[i], 2));
-    EXPECT_EQ(FloatStaticVectorTest[i], iPow(FloatStaticVector[i], 2));
-    EXPECT_EQ(FloatDynamicVectorTest[i], iPow(FloatDynamicVector[i], 2));
+    EXPECT_EQ(RealStaticVectorTest[i], iPow(RealStaticVector[i], 2));
+    EXPECT_EQ(RealDynamicVectorTest[i], iPow(RealDynamicVector[i], 2));
   }
 }
 
@@ -294,20 +294,20 @@ TEST_F(VectorTest, VectorDivide)
 {
   FOR_EACH(entry, IntStaticVector) if(entry == 0) entry++;
   FOR_EACH(entry, IntDynamicVector) if(entry == 0) entry++;
-  FOR_EACH(entry, FloatStaticVector) if(isEqual(entry, Zero)) entry++;
-  FOR_EACH(entry, FloatDynamicVector) if(isEqual(entry, Zero)) entry++;
+  FOR_EACH(entry, RealStaticVector) if(isEqual(entry, Zero)) entry++;
+  FOR_EACH(entry, RealDynamicVector) if(isEqual(entry, Zero)) entry++;
 
   IntStaticVectorTest = IntStaticVector / IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector / IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector / FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector / FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector / RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector / RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 1);
     EXPECT_EQ(IntDynamicVectorTest[i], 1);
-    EXPECT_EQ(FloatStaticVectorTest[i], One);
-    EXPECT_EQ(FloatDynamicVectorTest[i], One);
+    EXPECT_EQ(RealStaticVectorTest[i], One);
+    EXPECT_EQ(RealDynamicVectorTest[i], One);
   }
 }
 
@@ -315,20 +315,20 @@ TEST_F(VectorTest, VectorPlusEqual)
 {
   IntStaticVectorTest = IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector;
 
   IntStaticVectorTest += IntStaticVector;
   IntDynamicVectorTest += IntDynamicVector;
-  FloatStaticVectorTest += FloatStaticVector;
-  FloatDynamicVectorTest += FloatDynamicVector;
+   RealStaticVectorTest += RealStaticVector;
+   RealDynamicVectorTest += RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 2 * IntStaticVector[i]);
     EXPECT_EQ(IntDynamicVectorTest[i], 2 * IntDynamicVector[i]);
-    EXPECT_EQ(FloatStaticVectorTest[i], Two * FloatStaticVector[i]);
-    EXPECT_EQ(FloatDynamicVectorTest[i], Two * FloatDynamicVector[i]);
+    EXPECT_EQ(RealStaticVectorTest[i], Two * RealStaticVector[i]);
+    EXPECT_EQ(RealDynamicVectorTest[i], Two * RealDynamicVector[i]);
   }
 }
 
@@ -336,20 +336,20 @@ TEST_F(VectorTest, VectorMinusEqual)
 {
   IntStaticVectorTest = IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector;
 
   IntStaticVectorTest -= IntStaticVector;
   IntDynamicVectorTest -= IntDynamicVector;
-  FloatStaticVectorTest -= FloatStaticVector;
-  FloatDynamicVectorTest -= FloatDynamicVector;
+   RealStaticVectorTest -= RealStaticVector;
+   RealDynamicVectorTest -= RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 0);
     EXPECT_EQ(IntDynamicVectorTest[i], 0);
-    EXPECT_EQ(FloatStaticVectorTest[i], Zero);
-    EXPECT_EQ(FloatDynamicVectorTest[i], Zero);
+    EXPECT_EQ(RealStaticVectorTest[i], Zero);
+    EXPECT_EQ(RealDynamicVectorTest[i], Zero);
   }
 }
 
@@ -357,20 +357,20 @@ TEST_F(VectorTest, VectorMultiplyEqual)
 {
   IntStaticVectorTest = IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector;
 
   IntStaticVectorTest *= IntStaticVector;
   IntDynamicVectorTest *= IntDynamicVector;
-  FloatStaticVectorTest *= FloatStaticVector;
-  FloatDynamicVectorTest *= FloatDynamicVector;
+   RealStaticVectorTest *= RealStaticVector;
+   RealDynamicVectorTest *= RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], iPow(IntStaticVector[i], 2));
     EXPECT_EQ(IntDynamicVectorTest[i], iPow(IntDynamicVector[i], 2));
-    EXPECT_EQ(FloatStaticVectorTest[i], iPow(FloatStaticVector[i], 2));
-    EXPECT_EQ(FloatDynamicVectorTest[i], iPow(FloatDynamicVector[i], 2));
+    EXPECT_EQ(RealStaticVectorTest[i], iPow(RealStaticVector[i], 2));
+    EXPECT_EQ(RealDynamicVectorTest[i], iPow(RealDynamicVector[i], 2));
   }
 }
 
@@ -378,25 +378,25 @@ TEST_F(VectorTest, VectorDivideEqual)
 {
   FOR_EACH(entry, IntStaticVector) if(entry == 0) entry++;
   FOR_EACH(entry, IntDynamicVector) if(entry == 0) entry++;
-  FOR_EACH(entry, FloatStaticVector) if(isEqual(entry, Zero)) entry++;
-  FOR_EACH(entry, FloatDynamicVector) if(isEqual(entry, Zero)) entry++;
+  FOR_EACH(entry, RealStaticVector) if(isEqual(entry, Zero)) entry++;
+  FOR_EACH(entry, RealDynamicVector) if(isEqual(entry, Zero)) entry++;
 
   IntStaticVectorTest = IntStaticVector;
   IntDynamicVectorTest = IntDynamicVector;
-  FloatStaticVectorTest = FloatStaticVector;
-  FloatDynamicVectorTest = FloatDynamicVector;
+   RealStaticVectorTest = RealStaticVector;
+   RealDynamicVectorTest = RealDynamicVector;
 
   IntStaticVectorTest /= IntStaticVector;
   IntDynamicVectorTest /= IntDynamicVector;
-  FloatStaticVectorTest /= FloatStaticVector;
-  FloatDynamicVectorTest /= FloatDynamicVector;
+   RealStaticVectorTest /= RealStaticVector;
+   RealDynamicVectorTest /= RealDynamicVector;
 
   FOR(i, ContainerSize)
   {
     EXPECT_EQ(IntStaticVectorTest[i], 1);
     EXPECT_EQ(IntDynamicVectorTest[i], 1);
-    EXPECT_EQ(FloatStaticVectorTest[i], One);
-    EXPECT_EQ(FloatDynamicVectorTest[i], One);
+    EXPECT_EQ(RealStaticVectorTest[i], One);
+    EXPECT_EQ(RealDynamicVectorTest[i], One);
   }
 }
 
@@ -406,9 +406,9 @@ TEST_F(VectorTest, VectorDivideEqual)
 TEST_F(VectorTest, InnerProduct)
 {
   // Parallel test (same/opposite directions)
-  FloatStaticVector = Normalise(FloatStaticVector);
-  EXPECT_NEAR(InnerProduct(FloatStaticVector, FloatStaticVector), One, Small);
-  EXPECT_NEAR(InnerProduct(FloatStaticVector, -FloatStaticVector), -One, Small);
+  RealStaticVector = Normalise(RealStaticVector);
+  EXPECT_NEAR(InnerProduct(RealStaticVector, RealStaticVector), One, Small);
+  EXPECT_NEAR(InnerProduct(RealStaticVector, -RealStaticVector), -One, Small);
 
   // Orthogonal test
   EXPECT_DOUBLE_EQ(InnerProduct(xAxis2, yAxis2), Zero);
@@ -459,15 +459,15 @@ TEST_F(VectorTest, CrossProduct)
 
 TEST_F(VectorTest, L1Norm)
 {
-  EXPECT_DOUBLE_EQ(L1Norm(FloatStaticVector), std::accumulate(FloatStaticVector.begin(), FloatStaticVector.end(), Zero));
+  EXPECT_DOUBLE_EQ(L1Norm(RealStaticVector), std::accumulate(RealStaticVector.begin(), RealStaticVector.end(), Zero));
   EXPECT_EQ(L1Norm(IntStaticVector), std::accumulate(IntStaticVector.begin(), IntStaticVector.end(), 0));
 }
 
 TEST_F(VectorTest, L2Norm)
 {
   Real inner_prod{};
-  FOR_EACH(entry, FloatStaticVector) inner_prod += iPow(entry, 2);
-  EXPECT_DOUBLE_EQ(L2Norm(FloatStaticVector), Sqrt(inner_prod));
+  FOR_EACH(entry, RealStaticVector) inner_prod += iPow(entry, 2);
+  EXPECT_DOUBLE_EQ(L2Norm(RealStaticVector), Sqrt(inner_prod));
 
   inner_prod = Zero;
   FOR_EACH(entry, IntStaticVector) inner_prod += iPow(entry, 2);
@@ -476,22 +476,22 @@ TEST_F(VectorTest, L2Norm)
 
 TEST_F(VectorTest, LInfNorm)
 {
-  EXPECT_EQ(LInfNorm(FloatStaticVector), *std::max_element(FloatStaticVector.begin(), FloatStaticVector.end()));
+  EXPECT_EQ(LInfNorm(RealStaticVector), *std::max_element(RealStaticVector.begin(), RealStaticVector.end()));
   EXPECT_EQ(LInfNorm(IntStaticVector), *std::max_element(IntStaticVector.begin(), IntStaticVector.end()));
 }
 
 TEST_F(VectorTest, isNormalised)
 {
-  EXPECT_FALSE(isNormalised(FloatStaticVector));
-  FloatStaticVector = Normalise(FloatStaticVector);
-  EXPECT_TRUE(isNormalised(FloatStaticVector));
+  EXPECT_FALSE(isNormalised(RealStaticVector));
+   RealStaticVector = Normalise(RealStaticVector);
+  EXPECT_TRUE(isNormalised(RealStaticVector));
 }
 
 TEST_F(VectorTest, Normalise)
 {
-  FloatStaticVector = Normalise(FloatStaticVector);
+   RealStaticVector = Normalise(RealStaticVector);
   Real inner_prod{};
-  FOR_EACH(entry, FloatStaticVector) inner_prod += iPow(entry, 2);
+  FOR_EACH(entry, RealStaticVector) inner_prod += iPow(entry, 2);
   EXPECT_DOUBLE_EQ(Sqrt(inner_prod), One);
 }
 

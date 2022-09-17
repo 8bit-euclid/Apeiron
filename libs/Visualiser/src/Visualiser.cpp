@@ -175,8 +175,8 @@ Visualiser::InitTeXBoxes()
          FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
          scene._Textures.emplace(texture_name, texture_file_map);
 
-         // Point to the texture from the tex-box model.
-         tex_box->_TextureInfo = { texture_name, Zero };
+         // Point to the texture from the tex-box sub-glyph models.
+         tex_box->LoadSubGlyphTextures({ texture_name, Zero });
       }
 }
 

@@ -150,6 +150,9 @@ TeXBox::ComputeDimensions()
    _Dimensions *= GlyphSheet::FontSizeScale(_FontSize);
 }
 
+void
+TeXBox::LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info) { FOR_EACH(str, _Strings) str->LoadSubGlyphTextures(texture_info); }
+
 fm::Path
 TeXBox::ImagePath() const
 {

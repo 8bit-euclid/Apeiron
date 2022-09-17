@@ -18,11 +18,13 @@ set(SOURCE_FILES
         include/Mesh.h
         include/Model.h
         include/ModelFactory.h
+        include/Object.h
         include/Scene.h
         include/PostProcessor.h
         include/Shader.h
         include/Shadow.h
         include/String.h
+        include/SubModel.h
         include/TeXBox.h
         include/TeXBoxFactory.h
         include/Texture.h

@@ -14,29 +14,6 @@
 
 #pragma once
 
-#include <gtest/gtest.h>
-#include "../include/Global.h"
-#include "../include/Random.h"
-
-namespace aprn{
-
-class ApeironTest : public testing::Test
-{
-public:
-  Random<int>  RandomInt;
-  Random<Real> RandomReal;
-
-  std::array<int, 100>  IntArray;
-  std::array<Real, 100> RealArray;
-
-  ApeironTest()
-    : RandomInt(-10, 10), RandomReal(-Ten, Ten) {}
-
-  void SetUp() override
-  {
-    FOR_EACH(entry, IntArray)  entry = RandomInt();
-    FOR_EACH(entry, RealArray) entry = RandomReal();
-  }
-};
+namespace aprn::vis {
 
 }

@@ -40,22 +40,26 @@ Model::Model(Model&& model) noexcept
 Model::~Model() { Delete(); }
 
 void
-Model::Update(Real global_time)
+Model::Update(const Real global_time)
 {
    Reset();
    FOR_EACH(_, action, _Actions) action->Do(global_time);
+   FOR_EACH(_, sub_model, _SubModels) sub_model->Update(global_time);
 }
 
 void
 Model::Render()
 {
-   _VAO.Bind();
-   _EBO.Bind();
+   if(_isInitialised)
+   {
+      _VAO.Bind();
+      _EBO.Bind();
 
-   GLCall(glDrawElements(GL_TRIANGLES, _EBO.IndexCount(), GL_UNSIGNED_INT, nullptr));
+      GLCall(glDrawElements(GL_TRIANGLES, _EBO.IndexCount(), GL_UNSIGNED_INT, nullptr))
 
-   _EBO.Unbind();
-   _VAO.Unbind();
+      _EBO.Unbind();
+      _VAO.Unbind();
+   }
 }
 
 void
@@ -64,6 +68,7 @@ Model::Delete()
    _VBO.Delete();
    _VAO.Delete();
    _EBO.Delete();
+   FOR_EACH(_, sub_model, _SubModels) sub_model->Delete();
 }
 
 /** Set Model Attributes
@@ -277,37 +282,53 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(_isInitialised || !_Mesh.isInitialised()) return;
+   if(_isInitialised) return;
 
-   // Compute vertex normals.
-   _Mesh.ComputeVertexNormals();
-
-   // Initialise VAO, VBO, and EBO.
-   _VAO.Init();
-   _VBO.Init(_Mesh.Vertices);
-   _EBO.Init(_Mesh.Indices);
-
-   // Add vertex buffer to vertex array object.
-   _VAO.Bind();
-   _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
-   _VAO.Unbind();
-
-   // Initialise each sub-model.
+   // Initialise all sub-models.
    FOR_EACH(_, sub_model, _SubModels) sub_model->Init();
 
    // Compute entry/exit times.
    ComputeLifespan();
 
-   _isInitialised = true;
+   // If a mesh has been loaded, then initialise data buffers,
+   if(isMeshLoaded())
+   {
+      // Compute vertex normals.
+      _Mesh.ComputeVertexNormals();
+
+      // Initialise VAO, VBO, and EBO.
+      _VAO.Init();
+      _VBO.Init(_Mesh.Vertices);
+      _EBO.Init(_Mesh.Indices);
+
+      // Add vertex buffer to vertex array object.
+      _VAO.Bind();
+      _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
+      _VAO.Unbind();
+
+      _isInitialised = true;
+   }
 }
 
 void
 Model::ComputeLifespan()
 {
+   _EntryTime = MaxReal<>;
+   _ExitTime  = LowestReal<>;
+
+   // Compute lifespan of all model actions.
    FOR_EACH(_, action, _Actions)
    {
       _EntryTime = Min(_EntryTime, action->_StartTime);
       _ExitTime  = Max(_ExitTime , action->_EndTime);
+   }
+
+   // Compute lifespan of all sub-models and add contributions to parent model.
+   FOR_EACH(_, sub_model, _SubModels)
+   {
+      sub_model->ComputeLifespan();
+      _EntryTime = Min(_EntryTime, sub_model->_EntryTime);
+      _ExitTime  = Max(_ExitTime , sub_model->_ExitTime);
    }
 }
 

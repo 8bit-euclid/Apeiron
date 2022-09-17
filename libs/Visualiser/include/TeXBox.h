@@ -74,13 +74,9 @@ class TeXBox final : public Model
 
    void InitSubGlyphs();
 
-   void ReadGlyphBoxPositions();
-
-   void ReadGlyphBoxAttributes();
-
-   void ComputeGlyphSheetDimensions();
-
    void ComputeDimensions();
+
+   void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
 
    fm::Path ImagePath() const;
 

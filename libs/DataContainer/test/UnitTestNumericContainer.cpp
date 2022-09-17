@@ -57,24 +57,24 @@ struct DynamicNumericContainer : public DynamicArray<T>,
 class NumericContainerTest : public testing::Test
 {
 public:
-  Random<int> RandomInt;
-  Random<Real> RandomFloat;
+  Random<int>  RandomInt;
+  Random<Real> RandomReal;
 
-  StaticNumericContainer<int, ContainerSize> IntStaticContainer;
-  StaticNumericContainer <Real, ContainerSize> FloatStaticContainer;
+  StaticNumericContainer<int, ContainerSize>   IntStaticContainer;
+  StaticNumericContainer <Real, ContainerSize> RealStaticContainer;
 
-  DynamicNumericContainer<int> IntDynamicContainer;
-  DynamicNumericContainer <Real> FloatDynamicContainer;
+  DynamicNumericContainer<int>   IntDynamicContainer;
+  DynamicNumericContainer <Real> RealDynamicContainer;
 
   NumericContainerTest()
-    : RandomInt(-10, 10), RandomFloat(-Ten, Ten), IntDynamicContainer(ContainerSize), FloatDynamicContainer(ContainerSize) {}
+    : RandomInt(-10, 10), RandomReal(-Ten, Ten), IntDynamicContainer(ContainerSize), RealDynamicContainer(ContainerSize) {}
 
   void SetUp() override
   {
     FOR_EACH(entry, IntStaticContainer)    entry = RandomInt();
     FOR_EACH(entry, IntDynamicContainer)   entry = RandomInt();
-    FOR_EACH(entry, FloatStaticContainer)  entry = RandomFloat();
-    FOR_EACH(entry, FloatDynamicContainer) entry = RandomFloat();
+    FOR_EACH(entry, RealStaticContainer)   entry = RandomReal();
+    FOR_EACH(entry, RealDynamicContainer) entry = RandomReal();
   }
 };
 

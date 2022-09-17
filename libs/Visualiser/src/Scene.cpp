@@ -115,13 +115,14 @@ Scene::Init(const Real start_time)
    else
    {
       FOR_EACH_CONST(_, model, _Models)
-         if(model->_ExitTime < max_duration) ASSERT(model->_ExitTime < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
+         if(model->_ExitTime < max_duration)
+            ASSERT(model->_ExitTime < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
    }
    _StartTime = start_time;
    _EndTime   = _StartTime + _Duration;
 
    // Initialise all models and lights.
-   FOR_EACH(_, model, _Models) model->Init();
+   FOR_EACH(_, model, _Models)   model->Init();
    FOR_EACH(_, dlight, _DLights) dlight.Init();
    FOR_EACH(_, plight, _PLights) plight.Init();
    FOR_EACH(_, slight, _SLights) slight.Init();
@@ -220,12 +221,23 @@ Scene::RenderModels(Shader& shader)
 //    GLsizei N2 = (GLsizei)varray.size() - 2;
 //    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
 
-   constexpr int slot_offset(3);
    shader.SetUniform1i("u_use_diffuse_map"     , 0);
    shader.SetUniform1i("u_use_normal_map"      , 0);
    shader.SetUniform1i("u_use_displacement_map", 0);
 
-   FOR_EACH(_, model, _Models)
+   // Render model and its sub-models.
+   FOR_EACH(_, model, _Models) RenderModel(model, shader);
+
+   // Unbind all textures
+   FOR_EACH(_, sub_textures, _Textures) FOR_EACH(_, texture, sub_textures) texture.Unbind();
+}
+
+void
+Scene::RenderModel(SPtr<Model>& model, Shader& shader)
+{
+   constexpr int slot_offset(3); // TODO - currently hard-coded.
+
+   if(model->_isInitialised)
    {
       if(model->_Material.has_value()) shader.UseMaterial(model->_Material.value());
       if(model->_TextureInfo.has_value())
@@ -257,8 +269,8 @@ Scene::RenderModels(Shader& shader)
             shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
    }
 
-   // Unbind all textures
-   FOR_EACH(_, sub_textures, _Textures) FOR_EACH(_, texture, sub_textures) texture.Unbind();
+   // Render sub-models recursively.
+   FOR_EACH(_, sub_model, model->_SubModels) RenderModel(sub_model, shader);
 }
 
 }
