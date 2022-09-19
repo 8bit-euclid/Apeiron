@@ -15,7 +15,7 @@
 #pragma once
 
 #include "Buffers.h"
-#include "Model.h"
+#include "ModelGroup.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -65,7 +65,7 @@ class PostProcessor
    FrameImage                _ResolvedImage;
    UMap<FrameImage>          _BlurBuffers;
    UMap<Shader>              _Shaders;
-   Model                     _ScreenQuad;
+   ModelGroup                     _ScreenQuad;
    UInt                      _Width;
    UInt                      _Height;
    constexpr static UInt     _SampleCount{32}; // For MSAA

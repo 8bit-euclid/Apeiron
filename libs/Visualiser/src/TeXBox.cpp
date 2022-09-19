@@ -27,35 +27,41 @@ TeXBox::TeXBox(const char* str)
 TeXBox::TeXBox(const std::string& str)
    : TeXBox(String(str)) {}
 
-TeXBox::TeXBox(const Glyph& glyph)
+TeXBox::TeXBox(const TeXGlyph& glyph)
    : TeXBox(String(glyph)) {}
 
-TeXBox::TeXBox(const DArray<Glyph>& glyphs)
+TeXBox::TeXBox(const DArray<TeXGlyph>& glyphs)
    : TeXBox(String(glyphs)) {}
 
-TeXBox::TeXBox(const String& str)
-   : TeXBox(DArray<String>{str}) {}
+TeXBox::TeXBox(const String& tex_boxes)
+   : TeXBox(DArray<String>{tex_boxes}) {}
 
 TeXBox::TeXBox(const DArray<String>& strings) { Add(strings); }
 
 TeXBox&
-TeXBox::Add(const std::string& str) { return Add(String(str)); }
+TeXBox::Add(const char* str)
+{
+   return <#initializer#>;
+}
 
 TeXBox&
-TeXBox::Add(const Glyph& glyph) { return Add(String(glyph)); }
+TeXBox::Add(const std::string& str) { return Add(TeXGlyph(str)); }
+
+TeXBox&
+TeXBox::Add(const TeXGlyph& glyph) { return Add(String(glyph)); }
 
 TeXBox&
 TeXBox::Add(const String& str)
 {
    // Allocate new memory for the string, initialise it, and add it as a sub-model of this TeX-box.
-   const std::string& str_id = "String_" + ToString(_Strings.size());
-   _Strings.emplace_back(std::make_shared<String>(str));
-   _SubModels.emplace(str_id, _Strings.back());
+   const std::string& str_id = "String_" + ToString(_SubGlyphs.size());
+   _SubGlyphs.emplace_back(std::make_shared<String>(str));
+   _SubModels.emplace(str_id, _SubGlyphs.back());
    return *this;
 }
 
 TeXBox&
-TeXBox::Add(const DArray<Glyph>& glyphs)
+TeXBox::Add(const DArray<TeXGlyph>& glyphs)
 {
    Add(String(glyphs));
    return *this;
@@ -92,21 +98,21 @@ TeXBox::SetFontSize(const UChar font_size)
 TeXBox&
 TeXBox::SetColour(const Colour& colour)
 {
-   FOR_EACH(str, _Strings) str->SetColour(colour);
+   FOR_EACH(str, _SubGlyphs) str->SetColour(colour);
    return *this;
 }
 
 TeXBox&
 TeXBox::SetItalic(const bool is_italic)
 {
-   FOR_EACH(str, _Strings) str->SetItalic(is_italic);
+   FOR_EACH(str, _SubGlyphs) str->SetItalic(is_italic);
    return *this;
 }
 
 TeXBox&
 TeXBox::SetBold(const bool is_bold)
 {
-   FOR_EACH(str, _Strings) str->SetBold(is_bold);
+   FOR_EACH(str, _SubGlyphs) str->SetBold(is_bold);
    return *this;
 }
 
@@ -124,7 +130,7 @@ TeXBox::Init(const size_t id)
    ComputeDimensions();
 
    // Compute the sub-glyph dimensions and their texture coordinates.
-   FOR_EACH(str, _Strings) str->ComputeDimensions(_GlyphSheet, _FontSize, _Anchor, _Dimensions);
+   FOR_EACH(str, _SubGlyphs) str->ComputeDimensions(_GlyphSheet, _FontSize, _Anchor, _Dimensions);
 }
 
 void
@@ -133,7 +139,7 @@ TeXBox::InitSubGlyphs()
    // Initialise sub-glyphs and add contributions from each sub-glyph to the TeX-box string.
    GlyphSheet::IndexT glyph_index{};
    _Text.clear();
-   FOR_EACH(str, _Strings)
+   FOR_EACH(str, _SubGlyphs)
    {
       str->Init(glyph_index);
       _Text += str->_Text;
@@ -151,7 +157,7 @@ TeXBox::ComputeDimensions()
 }
 
 void
-TeXBox::LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info) { FOR_EACH(str, _Strings) str->LoadSubGlyphTextures(texture_info); }
+TeXBox::LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info) { FOR_EACH(str, _SubGlyphs) str->LoadSubGlyphTextures(texture_info); }
 
 fm::Path
 TeXBox::ImagePath() const

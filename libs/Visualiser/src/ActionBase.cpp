@@ -31,14 +31,14 @@ isTimeParametrised(ActionType type)
 ActionBase::ActionBase(Model& model, ActionType action_type)
    : ActionBase(model, action_type, -One, -One, nullptr)
 {
-   ASSERT(action_type == ActionType::OffsetOrientation || action_type == ActionType::OffsetPosition, "Only static actions are accepted.")
+   ASSERT(action_type == ActionType::OffsetOrientation || action_type == ActionType::OffsetPosition, "This contructor only accepts static actions.")
 }
 
 ActionBase::ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam)
-   : _Actor(model), _Type(action_type), _StartTime(start_time), _EndTime(end_time), _ParamNormaliser(One / (_EndTime - _StartTime)), _Reparametriser(reparam) {}
+   : _Actor(&model), _Type(action_type), _StartTime(start_time), _EndTime(end_time), _ParamNormaliser(One / (_EndTime - _StartTime)), _Reparametriser(reparam) {}
 
 ActionBase::ActionBase(Model& model, ActionType action_type, Real start_time, std::function<Real(Real)> ramp)
-   : _Actor(model), _Type(action_type), _StartTime(start_time), _EndTime(InfReal<>), _Ramp(ramp) {}
+   : _Actor(&model), _Type(action_type), _StartTime(start_time), _EndTime(InfFloat<>), _Ramp(ramp) {}
 
 std::optional<Real>
 ActionBase::ComputeParameter(const Real global_time)

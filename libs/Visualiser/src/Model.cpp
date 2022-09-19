@@ -12,8 +12,10 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#include "../include/Model.h"
+#include "../include/ModelGroup.h"
 #include "../include/Action.h"
+#include "include/Model.h"
+
 
 namespace aprn::vis {
 
@@ -21,30 +23,30 @@ namespace aprn::vis {
 * Model Public Interface
 ***************************************************************************************************************************************************************/
 Model::Model()
-   : _VAO(), _VBO(), _EBO() {}
-
-Model::Model(const Model& model)
-   : Model()
 {
-   ASSERT(!_isInitialised, "Cannot copy construct a model if it has already been initialised.")
-   *this = model;
+
 }
 
-Model::Model(Model&& model) noexcept
-   : Model()
+Model::Model(const Model& sub_model)
 {
-   ASSERT(!_isInitialised, "Cannot yet move construct a model if it has already been initialised.")
-   *this = std::move(model);
+
 }
 
-Model::~Model() { Delete(); }
+Model::Model(Model&& sub_model) noexcept
+{
+
+}
+
+Model::~Model()
+{
+
+}
 
 void
 Model::Update(const Real global_time)
 {
    Reset();
    FOR_EACH(_, action, _Actions) action->Do(global_time);
-   FOR_EACH(_, sub_model, _SubModels) sub_model->Update(global_time);
 }
 
 void
@@ -68,53 +70,41 @@ Model::Delete()
    _VBO.Delete();
    _VAO.Delete();
    _EBO.Delete();
-   FOR_EACH(_, sub_model, _SubModels) sub_model->Delete();
 }
 
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
-Model&
-Model::SetColour(const SVectorR4& rgb_colour)
+ModelObject&
+Model::SetColour(const SVectorR4& rgba_colour)
 {
-   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgb_colour);
+   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgba_colour);
    return *this;
 }
 
-Model&
+ModelObject&
 Model::SetMaterial(const std::string& name, const Real specular_intensity, const Real smoothness)
 {
    _Material.emplace(name, specular_intensity, smoothness);
    return *this;
 }
 
-Model&
-Model::SetTexture(const std::string& material, size_t index, size_t resolution, const Real dispacement_scale)
+ModelObject&
+Model::SetTexture(const std::string& material, const size_t index, const size_t resolution, const Real dispacement_scale)
 {
-   return SetTexture(material, "", index, resolution ,dispacement_scale);
+   SetTexture(material, "", index, resolution ,dispacement_scale);
+   return *this;
 }
 
-Model&
+ModelObject&
 Model::SetTexture(const std::string& material, const std::string& item, const size_t index, const size_t resolution, const Real dispacement_scale)
 {
    _TextureInfo.emplace(std::make_pair(TextureName(material, item, index, resolution), dispacement_scale));
    return *this;
 }
 
-Model&
-Model::Add(Model& sub_model, const std::string& name) { return Add(std::move(sub_model), name); }
-
-Model&
-Model::Add(Model&& sub_model, const std::string& name)
-{
-   const std::string& id = name.empty() ? "SubModel_" + ToString(_SubModels.size()) : name;
-   auto pmodel = std::make_shared<Model>(std::move(sub_model));
-   _SubModels[id] = pmodel;
-   return *this;
-}
-
 /** Set Model Actions
 ***************************************************************************************************************************************************************/
-Model&
+ModelObject&
 Model::OffsetPosition(const SVectorR3& displacement)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(displacement));
@@ -122,7 +112,7 @@ Model::OffsetPosition(const SVectorR3& displacement)
    return *this;
 }
 
-Model&
+ModelObject&
 Model::OffsetOrientation(const Real angle, const SVectorR3& axis)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetOrientation>>(*this, angle, SArrayToGlmVec(axis));
@@ -130,14 +120,14 @@ Model::OffsetOrientation(const Real angle, const SVectorR3& axis)
    return *this;
 }
 
-Model&
-Model::Scale(const Real factor, const Real start_time, Real end_time, const std::function<Real(Real)>& reparam)
+ModelObject&
+Model::Scale(const Real factor, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    Scale(SVectorR3(factor), start_time, end_time, reparam);
    return *this;
 }
 
-Model&
+ModelObject&
 Model::Scale(const SVectorR3& factors, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(factors), start_time, end_time);
@@ -145,7 +135,7 @@ Model::Scale(const SVectorR3& factors, const Real start_time, const Real end_tim
    return *this;
 }
 
-Model&
+ModelObject&
 Model::MoveBy(const SVectorR3& displacement, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(displacement), start_time, end_time);
@@ -153,7 +143,7 @@ Model::MoveBy(const SVectorR3& displacement, const Real start_time, const Real e
    return *this;
 }
 
-Model&
+ModelObject&
 Model::MoveTo(const SVectorR3& position, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(position), start_time, end_time);
@@ -161,40 +151,30 @@ Model::MoveTo(const SVectorR3& position, const Real start_time, const Real end_t
    return *this;
 }
 
-//Model&
-//Model::MoveAt(const SVectorF3& velocity, Real start_time, const std::function<Real(Real)>& ramp)
-//{
-//   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveAt>>(*this, SArrayToGlmVec(position), start_time, end_time);
-//   Actions.insert({ActionType::MoveAt, ptr});
-//   return *this;
-//}
+ModelObject&
+Model::MoveAt(const SVectorR3& velocity, const Real start_time, const std::function<Real(Real)>& ramp)
+{
+   EXIT("TODO")
+   return *this;
+}
 
-Model&
-Model::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time)
+ModelObject&
+Model::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
    _Actions.insert({ActionType::Trace, ptr});
    return *this;
 }
 
-template<class D>
-Model&
-Model::Trace(const mnfld::Curve<D, 3>& path, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
-{
-   SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
-   _Actions.insert({ActionType::Trace, ptr});
-   return *this;
-}
-
-Model&
-Model::RotateBy(Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelObject&
+Model::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateBy>>(*this, angle, SArrayToGlmVec(axis), start_time, end_time);
    _Actions.insert({ActionType::RotateBy, ptr});
    return *this;
 }
 
-Model&
+ModelObject&
 Model::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const std::function<Real(Real)>& ramp)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateAt>>(*this, SArrayToGlmVec(angular_velocity), start_time, ramp);
@@ -202,7 +182,7 @@ Model::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const 
    return *this;
 }
 
-Model&
+ModelObject&
 Model::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_point, const Real start_time, const Real end_time,
                  const std::function<Real(Real)>& reparam)
 {
@@ -212,11 +192,12 @@ Model::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_
    return *this;
 }
 
-//Model&
-//Model::RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Real start_time, const std::function<Real(Real)>& ramp)
-//{
-//   return <#initializer#>;
-//}
+ModelObject&
+Model::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, const Real start_time, const std::function<Real(Real)>& ramp)
+{
+   EXIT("TODO")
+   return *this;
+}
 
 /** Assignment Operators
 ***************************************************************************************************************************************************************/
@@ -227,8 +208,7 @@ Model::operator=(const Model& model)
    ASSERT(!model._isInitialised, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Mesh        = model._Mesh;
-   _SubModels       = model._SubModels;
+   _Mesh            = model._Mesh;
    _TextureInfo     = model._TextureInfo;
    _Material        = model._Material;
    _Actions         = model._Actions;
@@ -251,8 +231,7 @@ Model::operator=(Model&& model) noexcept
    ASSERT(!model._isInitialised, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   _Mesh        = std::move(model._Mesh);
-   _SubModels       = std::move(model._SubModels);
+   _Mesh            = std::move(model._Mesh);
    _TextureInfo     = std::move(model._TextureInfo);
    _Material        = std::move(model._Material);
    _Centroid        = std::move(model._Centroid);
@@ -265,16 +244,15 @@ Model::operator=(Model&& model) noexcept
    _isInitialised   = std::move(model._isInitialised);
    _Actions         = std::move(model._Actions);
 
-   // Reset moved-from model as it is now in an undefined state. Note: need to specifically invoke the copy assigment operator here,
-   // NOT the move assignment operator.
+   // Reset moved-from model as it is now in an undefined state. Note: to avoid an infinite regress, we need to specifically invoke the copy assigment operator
+   // here, NOT the move assignment operator.
    model = Unmove(Model());
 
-   // Very tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
-   FOR_EACH(_, action, _Actions) action->_Actor = std::ref(*this);
+   // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
+   FOR_EACH(_, action, _Actions) action->_Actor = this;
 
    return *this;
 }
-
 
 /***************************************************************************************************************************************************************
 * Model Protected Interface
@@ -283,38 +261,32 @@ void
 Model::Init()
 {
    if(_isInitialised) return;
-
-   // Initialise all sub-models.
-   FOR_EACH(_, sub_model, _SubModels) sub_model->Init();
+   ASSERT(_Mesh.isLoaded(), "The model cannot be initialised without a mesh.")
 
    // Compute entry/exit times.
    ComputeLifespan();
 
-   // If a mesh has been loaded, then initialise data buffers,
-   if(isMeshLoaded())
-   {
-      // Compute vertex normals.
-      _Mesh.ComputeVertexNormals();
+   // Compute vertex normals.
+   _Mesh.ComputeVertexNormals();
 
-      // Initialise VAO, VBO, and EBO.
-      _VAO.Init();
-      _VBO.Init(_Mesh.Vertices);
-      _EBO.Init(_Mesh.Indices);
+   // Initialise VAO, VBO, and EBO.
+   _VAO.Init();
+   _VBO.Init(_Mesh.Vertices);
+   _EBO.Init(_Mesh.Indices);
 
-      // Add vertex buffer to vertex array object.
-      _VAO.Bind();
-      _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
-      _VAO.Unbind();
+   // Add vertex buffer to vertex array object.
+   _VAO.Bind();
+   _VAO.AddBuffer(_VBO, _Mesh.GetVertexLayout());
+   _VAO.Unbind();
 
-      _isInitialised = true;
-   }
+   _isInitialised = true;
 }
 
 void
 Model::ComputeLifespan()
 {
-   _EntryTime = MaxReal<>;
-   _ExitTime  = LowestReal<>;
+   _EntryTime = MaxFloat<>;
+   _ExitTime  = LowestFloat<>;
 
    // Compute lifespan of all model actions.
    FOR_EACH(_, action, _Actions)
@@ -322,15 +294,6 @@ Model::ComputeLifespan()
       _EntryTime = Min(_EntryTime, action->_StartTime);
       _ExitTime  = Max(_ExitTime , action->_EndTime);
    }
-
-   // Compute lifespan of all sub-models and add contributions to parent model.
-   FOR_EACH(_, sub_model, _SubModels)
-   {
-      sub_model->ComputeLifespan();
-      _EntryTime = Min(_EntryTime, sub_model->_EntryTime);
-      _ExitTime  = Max(_ExitTime , sub_model->_ExitTime);
-   }
 }
 
 }
-

@@ -26,9 +26,9 @@ String::String(const char* str)
 
 String::String(const std::string& str) { Add(str); }
 
-String::String(const Glyph& glyph) { Add(glyph); }
+String::String(const TeXGlyph& glyph) { Add(glyph); }
 
-String::String(const DArray<Glyph>& glyphs) { Add(glyphs); }
+String::String(const DArray<TeXGlyph>& glyphs) { Add(glyphs); }
 
 String&
 String::Add(const std::string& str)
@@ -38,17 +38,17 @@ String::Add(const std::string& str)
 }
 
 String&
-String::Add(const Glyph& glyph)
+String::Add(const TeXGlyph& glyph)
 {
    // Allocate new memory for the glyph, initialise it, and add it as a sub-model of this string.
    const std::string& glyph_id = "Glyph_" + ToString(_Glyphs.size());
-   _Glyphs.push_back(std::make_shared<Glyph>(glyph));
+   _Glyphs.push_back(std::make_shared<TeXGlyph>(glyph));
    _SubModels.emplace(glyph_id, _Glyphs.back());
    return *this;
 }
 
 String&
-String::Add(const DArray<Glyph>& glyphs)
+String::Add(const DArray<TeXGlyph>& glyphs)
 {
    FOR_EACH_CONST(glyph, glyphs) Add(glyph);
    return *this;
@@ -91,7 +91,7 @@ String::Init(GlyphSheet::IndexT& index_offset)
    }
 }
 
-DArray<Glyph>
+DArray<TeXGlyph>
 String::Parse(const std::string& str)
 {
    auto current = str.begin();

@@ -14,6 +14,24 @@
 
 #pragma once
 
-namespace aprn {
+#include "../../../include/Global.h"
+#include "DataContainer/include/Array.h"
+#include "ActionBase.h"
+
+#include <functional>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+
+namespace aprn::vis {
+
+class TeXObject
+{
+ public:
+   TeXObject& SetColour(const Colour& colour);
+
+   TeXObject& SetItalic(bool is_italic);
+
+   TeXObject& SetBold(bool is_bold);
+};
 
 }

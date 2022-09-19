@@ -130,7 +130,7 @@ class ActionBase
    std::optional<Real>
    ComputeParameter(const Real global_time);
 
-   RWpr<Model>               _Actor;
+   Model*                    _Actor;
    ActionType                _Type;
    const Real                _StartTime;
    const Real                _EndTime;

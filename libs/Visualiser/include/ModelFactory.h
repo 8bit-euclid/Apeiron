@@ -20,7 +20,7 @@
 #include "../../Manifold/include/Curve.h"
 #include "GLDebug.h"
 #include "GLTypes.h"
-#include "Model.h"
+#include "ModelGroup.h"
 
 #include <functional>
 #include <memory>
@@ -37,63 +37,63 @@ class ModelFactory
  public:
    /** 1D models
    ************************************************************************************************************************************************************/
-   static Model Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
+   static ModelGroup Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
 
    template<class... svectors>
-   static Model SegmentChain(const svectors&... vs);
+   static ModelGroup SegmentChain(const svectors&... vs);
 
-   static Model Arrow(const SVector3<GLfloat>& start, const SVector3<GLfloat>& end);
+   static ModelGroup Arrow(const SVector3<GLfloat>& start, const SVector3<GLfloat>& end);
 
    /** 2D models
    ************************************************************************************************************************************************************/
-   static Model Triangle(GLfloat length);
+   static ModelGroup Triangle(GLfloat length);
 
-   static Model Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio);
+   static ModelGroup Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio);
 
-   static Model Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2);
+   static ModelGroup Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2);
 
-   static Model Square(GLfloat length);
+   static ModelGroup Square(GLfloat length);
 
-   static Model Rectangle(GLfloat length, GLfloat height);
+   static ModelGroup Rectangle(GLfloat length, GLfloat height);
 
-   static Model ScreenQuad();
+   static ModelGroup ScreenQuad();
 
-   static Model Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
+   static ModelGroup Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
 
    template<class... svectors>
-   static Model Polygon(const svectors&... vs);
+   static ModelGroup Polygon(const svectors&... vs);
 
-   static Model Arc(GLfloat radius, GLfloat angle);
+   static ModelGroup Arc(GLfloat radius, GLfloat angle);
 
-   static Model Sector(GLfloat radius, GLfloat angle);
+   static ModelGroup Sector(GLfloat radius, GLfloat angle);
 
-   static Model Circle(GLfloat radius);
+   static ModelGroup Circle(GLfloat radius);
 
-   static Model Ellipse(GLfloat radius_x, GLfloat radius_y);
+   static ModelGroup Ellipse(GLfloat radius_x, GLfloat radius_y);
 
    /** 3D models
    ************************************************************************************************************************************************************/
-   static Model Tetrahedron(GLfloat length);
+   static ModelGroup Tetrahedron(GLfloat length);
 
-   static Model Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
+   static ModelGroup Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
 
-   static Model Cube(GLfloat length);
+   static ModelGroup Cube(GLfloat length);
 
-   static Model Cuboid(GLfloat length, GLfloat width, GLfloat height);
+   static ModelGroup Cuboid(GLfloat length, GLfloat width, GLfloat height);
 
-   static Model Octahedron(GLfloat length);
+   static ModelGroup Octahedron(GLfloat length);
 
-   static Model Dodecahedron(GLfloat length);
+   static ModelGroup Dodecahedron(GLfloat length);
 
-   static Model Icosahedron(GLfloat length);
+   static ModelGroup Icosahedron(GLfloat length);
 
-   static Model Sphere(GLfloat radius);
+   static ModelGroup Sphere(GLfloat radius);
 
-   static Model Ellipsoid(GLfloat radius_x, GLfloat radius_y, GLfloat radius_z);
+   static ModelGroup Ellipsoid(GLfloat radius_x, GLfloat radius_y, GLfloat radius_z);
 
-   static Model Cylinder(GLfloat radius, GLfloat height);
+   static ModelGroup Cylinder(GLfloat radius, GLfloat height);
 
-   static Model Cone(GLfloat radius, GLfloat height);
+   static ModelGroup Cone(GLfloat radius, GLfloat height);
 };
 
 }

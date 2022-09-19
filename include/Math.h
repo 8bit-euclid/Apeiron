@@ -182,7 +182,7 @@ Cube(const T _x) { return iPow(_x, 3); }
 
 /** Constexpr version of std::sqrt. */
 constexpr Real
-Sqrt(const Real _x) { return isBounded<true, false, true>(_x, Zero, InfReal<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
+Sqrt(const Real _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
 
 /** Constexpr version of std::cbrt. */
 constexpr Real

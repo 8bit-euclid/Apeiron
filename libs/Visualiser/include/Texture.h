@@ -84,7 +84,7 @@ class Texture
    Texture& operator=(Texture&& texture) noexcept;
 
  private:
-   friend class Model;
+   friend class ModelGroup;
    friend class Shadow;
 
    GLint OpenGLType() const;

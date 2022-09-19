@@ -12,7 +12,7 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#include "../include/Glyph.h"
+#include "../include/TeXGlyph.h"
 #include "../include/ModelFactory.h"
 #include "../include/ParseTeX.h"
 
@@ -21,72 +21,72 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * Glyph Public Interface
 ***************************************************************************************************************************************************************/
-Glyph::Glyph(const char tex_char)
-   : Glyph(std::string(1, tex_char)) {}
+TeXGlyph::TeXGlyph(const char tex_char)
+   : TeXGlyph(std::string(1, tex_char)) {}
 
-Glyph::Glyph(const std::string& tex_str) { Set(tex_str); }
+TeXGlyph::TeXGlyph(const std::string& tex_str) { Set(tex_str); }
 
-Glyph&
-Glyph::Set(const char tex_char) { return Set(std::string(1, tex_char)); }
+TeXGlyph&
+TeXGlyph::Set(const char tex_char) { return Set(std::string(1, tex_char)); }
 
-Glyph&
-Glyph::Set(const std::string& tex_str)
+TeXGlyph&
+TeXGlyph::Set(const std::string& tex_str)
 {
    DEBUG_ASSERT(isGlyphString(tex_str), "The following string does not yet qualify as a glyph: ", tex_str)
    _Text = tex_str;
    return *this;
 }
 
-Glyph&
-Glyph::Set(Glyph&& glyph) { return *this = std::move(glyph); }
+TeXGlyph&
+TeXGlyph::Set(TeXGlyph&& glyph) { return *this = std::move(glyph); }
 
-Glyph&
-Glyph::SetColour(const Colour& colour)
+TeXGlyph&
+TeXGlyph::SetColour(const Colour& colour)
 {
    if(!_Colour.has_value()) _Colour = colour;
    return *this;
 }
 
-Glyph&
-Glyph::SetItalic(const bool is_italic)
+TeXGlyph&
+TeXGlyph::SetItalic(const bool is_italic)
 {
    if(!_isItalic.has_value()) _isItalic = is_italic;
    return *this;
 }
 
-Glyph&
-Glyph::SetBold(const bool is_bold)
+TeXGlyph&
+TeXGlyph::SetBold(const bool is_bold)
 {
    if(!_isBold.has_value()) _isBold = is_bold;
    return *this;
 }
 
 void
-Glyph::Add(const Glyph& glyph) { _SubGlyphs.emplace_back(std::make_shared<Glyph>(glyph)); }
+TeXGlyph::Add(const TeXGlyph& glyph) { _SubGlyphs.emplace_back(std::make_shared<TeXGlyph>(glyph)); }
 
 void
-Glyph::Add(const DArray<Glyph>& glyphs) { FOR_EACH_CONST(glyph, glyphs) Add(glyph); }
+TeXGlyph::Add(const DArray<TeXGlyph>& glyphs) { FOR_EACH_CONST(glyph, glyphs) Add(glyph); }
 
 void
-Glyph::Add(const std::string& str) { _Text.append(str); }
+TeXGlyph::Add(const std::string& str) { _Text.append(str); }
 
 void
-Glyph::Add(Glyph&& glyph) { _SubGlyphs.emplace_back(std::make_shared<Glyph>(std::move(glyph))); }
+TeXGlyph::Add(TeXGlyph&& glyph) { _SubGlyphs.emplace_back(std::make_shared<TeXGlyph>(std::move(glyph))); }
 
 void
-Glyph::Add(DArray<Glyph>&& glyphs) { FOR_EACH(glyph, glyphs) Add(std::move(glyph)); }
+TeXGlyph::Add(DArray<TeXGlyph>&& glyphs) { FOR_EACH(glyph, glyphs) Add(std::move(glyph)); }
 
 void
-Glyph::Add(std::string&& str) { _Text.append(std::move(str)); }
+TeXGlyph::Add(std::string&& str) { _Text.append(std::move(str)); }
 
 void
-Glyph::DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compound glyph to no-render."); }
+TeXGlyph::DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compound glyph to no-render."); }
 
 /***************************************************************************************************************************************************************
 * Glyph Private Interface
 ***************************************************************************************************************************************************************/
 void
-Glyph::Init(GlyphSheet::IndexT& index_offset)
+TeXGlyph::Init(GlyphSheet::IndexT& index_offset)
 {
    ASSERT(!_isInit, "This glyph has already been initialised.")
 
@@ -100,7 +100,7 @@ Glyph::Init(GlyphSheet::IndexT& index_offset)
 }
 
 void
-Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
+TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
    if(!isRendered()) return;
 
@@ -130,7 +130,7 @@ Glyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, c
    OffsetPosition(ToVector<3>(anchor));
 
    // Initialise underlying model.
-   Model::Init();
+   ModelGroup::Init();
 }
 
 }

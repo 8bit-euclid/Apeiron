@@ -18,25 +18,25 @@ namespace aprn::vis {
 
 /** 1D models
 ***************************************************************************************************************************************************************/
-Model
+ModelGroup
 ModelFactory::Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1)
 {
-   return Model();
+   return ModelGroup();
 }
 
 template<class... svectors>
-Model
+ModelGroup
 ModelFactory::SegmentChain(const svectors&... vs)
 {
-   return Model();
+   return ModelGroup();
 }
 
 /** 2D models
 ***************************************************************************************************************************************************************/
-Model
+ModelGroup
 ModelFactory::Triangle(GLfloat length) { return Triangle(length, length * Sin(ThirdPi), Half); }
 
-Model
+ModelGroup
 ModelFactory::Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio)
 {
    const GLfloat x = Half * static_cast<Real>(length);
@@ -46,13 +46,13 @@ ModelFactory::Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio)
    return Triangle(SVector3<GLfloat>{-x, 0.0f, 0.0f}, SVector3<GLfloat>{x, 0.0f, 0.0f}, SVector3<GLfloat>{apex_x, y, 0.0f});
 }
 
-Model
+ModelGroup
 ModelFactory::Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2) { return Polygon(v0, v1, v2); }
 
-Model
+ModelGroup
 ModelFactory::Square(const GLfloat length) { return Rectangle(length, length); }
 
-Model
+ModelGroup
 ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
 {
    const GLfloat x = Half * length;
@@ -64,13 +64,13 @@ ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
                         SVector3<GLfloat>{-x,  y, 0.0f});
 }
 
-Model
+ModelGroup
 ModelFactory::ScreenQuad() { return Square(Two); }
 
-Model
+ModelGroup
 ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
-   Model model = Polygon(v0, v1, v2, v3);
+   ModelGroup model = Polygon(v0, v1, v2, v3);
 
    // Set tangents
    FOR_EACH(vertex, model._Mesh.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -85,10 +85,10 @@ ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>
 }
 
 template<class... svectors>
-Model
+ModelGroup
 ModelFactory::Polygon(const svectors&... vs)
 {
-   Model model;
+   ModelGroup model;
    model._Mesh.Shading = ShadingType::Flat;
 
    auto& vertices = model._Mesh.Vertices;
@@ -110,31 +110,31 @@ ModelFactory::Polygon(const svectors&... vs)
    return model;
 }
 
-Model
+ModelGroup
 ModelFactory::Arc(const GLfloat radius, const GLfloat angle)
 {
-   return Model();
+   return ModelGroup();
 }
 
-Model
+ModelGroup
 ModelFactory::Sector(const GLfloat radius, const GLfloat angle)
 {
-   return Model();
+   return ModelGroup();
 }
 
-Model
+ModelGroup
 ModelFactory::Circle(const GLfloat radius)
 {
-   return Model();
+   return ModelGroup();
 }
 
-Model
+ModelGroup
 ModelFactory::Ellipse(const GLfloat radius_x, const GLfloat radius_y)
 {
-   return Model();
+   return ModelGroup();
 }
 
-Model
+ModelGroup
 ModelFactory::Tetrahedron(const GLfloat length)
 {
    const GLfloat width  = static_cast<Real>(length) * Sin(ThirdPi);
@@ -143,10 +143,10 @@ ModelFactory::Tetrahedron(const GLfloat length)
    return Tetrahedron({-0.5f * length, 0.0f, width / 3.0f}, {0.5f * length, 0.0f, width / 3.0f}, {0.0f, 0.0f, -2.0f * width / 3.0f}, {0.0f, height, 0.0f});
 }
 
-Model
+ModelGroup
 ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
-   Model model;
+   ModelGroup model;
    model._Mesh.Shading = ShadingType::Flat;
 
    auto& vertices = model._Mesh.Vertices;
@@ -182,10 +182,10 @@ ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& 
    return model;
 }
 
-Model
+ModelGroup
 ModelFactory::Cube(const GLfloat length) { return Cuboid(length, length, length); }
 
-Model
+ModelGroup
 ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat height)
 {
    const GLfloat x = Half * static_cast<Real>(length);
@@ -201,7 +201,7 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    SVector3<GLfloat> v6{-x,  y, -z};
    SVector3<GLfloat> v7{ x,  y, -z};
 
-   Model model;
+   ModelGroup model;
    model._Mesh.Shading = ShadingType::Flat;
 
    auto& vertices = model._Mesh.Vertices;

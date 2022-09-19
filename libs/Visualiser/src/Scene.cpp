@@ -47,6 +47,9 @@ Scene&
 Scene::Add(Model& model, const std::string& name) { return Add(std::move(model), name); }
 
 Scene&
+Scene::Add(ModelGroup& model_group, const std::string& name) { return Add(std::move(model_group), name); }
+
+Scene&
 Scene::Add(TeXBox& tex_box, const std::string& name) { return Add(std::move(tex_box), name); }
 
 Scene&
@@ -63,6 +66,14 @@ Scene::Add(Model&& model, const std::string& name)
 {
    const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
    _Models.emplace(id, std::make_shared<Model>(std::move(model)));
+   return *this;
+}
+
+Scene&
+Scene::Add(ModelGroup&& model, const std::string& name)
+{
+   const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
+   _Models.emplace(id, std::make_shared<ModelGroup>(std::move(model)));
    return *this;
 }
 
@@ -103,29 +114,30 @@ Scene::Add(SpotLight&& light, const std::string& name)
 void
 Scene::Init(const Real start_time)
 {
+   // Initialise all models and lights.
+   FOR_EACH(_, model , _Models)  model->Init();
+   FOR_EACH(_, dlight, _DLights) dlight.Init();
+   FOR_EACH(_, plight, _PLights) plight.Init();
+   FOR_EACH(_, slight, _SLights) slight.Init();
+
    // Compute the start and end times of the scene.
    const auto max_duration(1.0e5);
    if(_AdjustDuration)
    {
       Real duration = -One;
-      FOR_EACH_CONST(_, model, _Models) if(model->_ExitTime < max_duration) Maximise(duration, model->_ExitTime);
+      FOR_EACH_CONST(_, model, _Models) if(model->ExitTime() < max_duration) Maximise(duration, model->ExitTime());
       _Duration = isPositive(duration) ? duration : _Duration;
       ASSERT(isPositive(_Duration), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", _Title)
    }
    else
    {
       FOR_EACH_CONST(_, model, _Models)
-         if(model->_ExitTime < max_duration)
-            ASSERT(model->_ExitTime < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
+         if(model->ExitTime() < max_duration)
+            ASSERT(model->ExitTime() < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
    }
+
    _StartTime = start_time;
    _EndTime   = _StartTime + _Duration;
-
-   // Initialise all models and lights.
-   FOR_EACH(_, model, _Models)   model->Init();
-   FOR_EACH(_, dlight, _DLights) dlight.Init();
-   FOR_EACH(_, plight, _PLights) plight.Init();
-   FOR_EACH(_, slight, _SLights) slight.Init();
 }
 
 /***************************************************************************************************************************************************************
@@ -233,7 +245,7 @@ Scene::RenderModels(Shader& shader)
 }
 
 void
-Scene::RenderModel(SPtr<Model>& model, Shader& shader)
+Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
 {
    constexpr int slot_offset(3); // TODO - currently hard-coded.
 
