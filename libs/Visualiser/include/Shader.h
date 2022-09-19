@@ -20,7 +20,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Material.h"
-#include "Model.h"
+#include "ModelGroup.h"
 #include "Texture.h"
 
 #include <fstream>
@@ -63,7 +63,7 @@ class Shader
 
    inline void SetWarnings(const bool _is_on) { _WarningsOn = _is_on; }
 
-   void UseModel(const Model& model);
+   void UseModel(const ModelGroup& model);
 
    void UseMaterial(const Material& material);
 

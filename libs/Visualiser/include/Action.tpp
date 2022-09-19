@@ -51,8 +51,8 @@ requires Offset<type>
 void
 Action<type>::Do(const Real global_time)
 {
-   if(type == ActionType::OffsetPosition) _Actor.get().Translate(Position);
-   else if(type == ActionType::OffsetOrientation) _Actor.get().Rotate(Angle, Axis);
+   if     (type == ActionType::OffsetPosition)    _Actor->Translate(Position);
+   else if(type == ActionType::OffsetOrientation) _Actor->Rotate(Angle, Axis);
 }
 
 /** Scale
@@ -73,7 +73,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param.has_value() && isPositive(param.value())) _Actor.get().Scale(static_cast<float>(param.value()) * Scales);
+   if(param.has_value() && isPositive(param.value())) _Actor->Scale(static_cast<float>(param.value()) * Scales);
    else {} // Remove action
 }
 
@@ -126,7 +126,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param.has_value() && isPositive(param.value())) _Actor.get().Translate(this->Displacement(param.value()));
+   if(param.has_value() && isPositive(param.value())) _Actor->Translate(this->Displacement(param.value()));
    else {} // Remove action
 }
 
@@ -164,9 +164,9 @@ Action<type>::Do(const Real global_time)
    if(param.has_value() && isPositive(param.value()))
    {
       const bool is_revolution = type == ActionType::RevolveBy || type == ActionType::RevolveAt;
-      if(is_revolution) _Actor.get().Translate(-Reference);
-      _Actor.get().Rotate(this->Angle(param.value()), Axis);
-      if(is_revolution) _Actor.get().Translate(Reference);
+      if(is_revolution) _Actor->Translate(-Reference);
+      _Actor->Rotate(this->Angle(param.value()), Axis);
+      if(is_revolution) _Actor->Translate(Reference);
    }
    else {} // Remove action
 }

@@ -68,7 +68,7 @@ class Mesh
  private:
    friend class Model;
    friend class ModelFactory;
-   friend class Glyph;
+   friend class TeXGlyph;
 
    VertexAttributeLayout VertexLayout;
    DArray<Vertex>  Vertices;

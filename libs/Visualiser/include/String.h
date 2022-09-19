@@ -16,13 +16,13 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "Glyph.h"
+#include "TeXGlyph.h"
 #include "GlyphSheet.h"
-#include "Model.h"
+#include "ModelGroup.h"
 
 namespace aprn::vis {
 
-class String final : public Model
+class String final : public ModelGroup
 {
  public:
    String() = default;
@@ -31,15 +31,15 @@ class String final : public Model
 
    explicit String(const std::string& str);
 
-   explicit String(const Glyph& glyph);
+   explicit String(const TeXGlyph& glyph);
 
-   explicit String(const DArray<Glyph>& glyphs);
+   explicit String(const DArray<TeXGlyph>& glyphs);
 
    String& Add(const std::string& str);
 
-   String& Add(const Glyph& glyph);
+   String& Add(const TeXGlyph& glyph);
 
-   String& Add(const DArray<Glyph>& glyphs);
+   String& Add(const DArray<TeXGlyph>& glyphs);
 
    String& SetColour(const Colour& colour);
 
@@ -52,14 +52,14 @@ class String final : public Model
 
    void Init(GlyphSheet::IndexT& index_offset);
 
-   DArray<Glyph> Parse(const std::string& str);
+   DArray<TeXGlyph> Parse(const std::string& str);
 
    void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
 
    void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
 
    std::string         _Text;
-   DArray<SPtr<Glyph>> _Glyphs;
+   DArray<SPtr<TeXGlyph>> _Glyphs;
 };
 
 }

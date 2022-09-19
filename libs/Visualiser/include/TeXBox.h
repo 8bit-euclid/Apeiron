@@ -17,9 +17,9 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 
-#include "Glyph.h"
-#include "Model.h"
-#include "String.h"
+#include "TeXGlyph.h"
+#include "TeXObject.h"
+#include "ModelGroup.h"
 #include "Texture.h"
 
 namespace aprn::vis {
@@ -27,7 +27,8 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeXBox Class
 ***************************************************************************************************************************************************************/
-class TeXBox final : public Model
+class TeXBox final : public TeXObject,
+                     public ModelGroup
 {
  public:
    TeXBox() = default;
@@ -36,21 +37,23 @@ class TeXBox final : public Model
 
    TeXBox(const std::string& str);
 
-   TeXBox(const Glyph& glyph);
+   TeXBox(const TeXGlyph& glyph);
 
-   TeXBox(const DArray<Glyph>& glyphs);
+   TeXBox(const DArray<TeXGlyph>& glyphs);
 
-   TeXBox(const String& str);
+   TeXBox(const TeXBox& tex_box);
 
-   TeXBox(const DArray<String>& strings);
+   TeXBox(const DArray<TeXBox>& tex_boxes);
+
+   TeXBox& Add(const char* str);
 
    TeXBox& Add(const std::string& str);
 
-   TeXBox& Add(const Glyph& glyph);
+   TeXBox& Add(const TeXGlyph& glyph);
 
    TeXBox& Add(const String& str);
 
-   TeXBox& Add(const DArray<Glyph>& glyphs);
+   TeXBox& Add(const DArray<TeXGlyph>& glyphs);
 
    TeXBox& Add(const DArray<String>& strings);
 
@@ -80,12 +83,12 @@ class TeXBox final : public Model
 
    fm::Path ImagePath() const;
 
-   std::string          _Text;
-   DArray<SPtr<String>> _Strings;
-   GlyphSheet           _GlyphSheet;
-   SVectorR2            _Dimensions{}; // [width, height] in world-space.
-   SVectorR3            _Anchor{};     // Bottom-left corner.
-   UChar                _FontSize{10}; // Defaults to a 10pt font.
+   std::string             _Text;
+   DArray<SPtr<TeXObject>> _SubGlyphs;
+   GlyphSheet              _GlyphSheet;
+   SVectorR2               _Dimensions{}; // [width, height] in world-space.
+   SVectorR3               _Anchor{};     // Bottom-left corner.
+   UChar                   _FontSize{10}; // Defaults to a 10pt font.
 };
 
 

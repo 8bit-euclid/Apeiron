@@ -15,7 +15,7 @@
 #pragma once
 
 #include "Visualiser/include/Visualiser.h"
-#include "Visualiser/include/Model.h"
+#include "Visualiser/include/ModelGroup.h"
 #include "Visualiser/include/ModelFactory.h"
 #include "Visualiser/include/Scene.h"
 
@@ -27,7 +27,7 @@ inline void RotatingCube()
 {
    Visualiser visualiser;
    Scene scene;
-   Model model;
+   ModelGroup model;
    TeXBox tex_box;
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")
@@ -74,7 +74,7 @@ inline void EuclidsElementsEp1()
 {
    Visualiser visualiser;
    Scene scene;
-   Model model;
+   ModelGroup model;
    TeXBox tex_box;
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")

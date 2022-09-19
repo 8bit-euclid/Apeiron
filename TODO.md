@@ -25,6 +25,8 @@
 - [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] RenderDoc debugger
+- [ ] Convert LaTeX textures into SDFs
+- [ ] SDF text rendering
 - [ ] Perlin noise generator
 - [ ] Curl noise generator
 - [ ] Implement MSAA frame buffers for directional/point shadow maps
@@ -33,7 +35,7 @@
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR
 - [ ] GDB debugger
-- [ ] Model loading using Assimp
+- [ ] ModelGroup loading using Assimp
 - [ ] Depth of field
 - [ ] Vulkan integration
 - [ ] Ray-tracing

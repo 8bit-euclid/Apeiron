@@ -16,7 +16,7 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "Glyph.h"
+#include "TeXGlyph.h"
 
 #include <string>
 
@@ -26,23 +26,23 @@ namespace aprn::vis {
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
 template<CharIterator Iter>
-DArray<Glyph>
+DArray<TeXGlyph>
 ParseTeXString(Iter& current, const Iter last, const bool is_math_mode = false);
 
-Glyph ParseTeXChar(const char c);
+TeXGlyph ParseTeXChar(const char c);
 
 template<CharIterator Iter>
-Glyph ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode = false);
+TeXGlyph ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode = false);
 
 template<CharIterator Iter>
-Glyph ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode = false);
+TeXGlyph ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode = false);
 
 template<CharIterator Iter>
-DArray<Glyph>
+DArray<TeXGlyph>
 ParseTeXMath(Iter& current, const Iter last);
 
 template<CharIterator Iter>
-std::pair<DArray<Glyph>, std::string>
+std::pair<DArray<TeXGlyph>, std::string>
 ParseAllTeXScriptText(Iter& current, const Iter last);
 
 /***************************************************************************************************************************************************************
@@ -66,7 +66,7 @@ std::tuple<Iter, bool, bool>
 GetTeXCommandInfo(const Iter current, const Iter last);
 
 template<CharIterator Iter>
-DArray<Glyph>
+DArray<TeXGlyph>
 ParseTeXScriptText(Iter& current, const Iter last);
 
 template<CharIterator Iter>

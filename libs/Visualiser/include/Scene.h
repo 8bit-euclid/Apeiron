@@ -16,9 +16,11 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "Glyph.h"
+#include "TeXGlyph.h"
 #include "Light.h"
+#include "ModelObject.h"
 #include "Model.h"
+#include "ModelGroup.h"
 #include "Shader.h"
 #include "TeXBox.h"
 #include "Transition.h"
@@ -43,6 +45,8 @@ class Scene
 
    Scene& Add(Model& model, const std::string& name = "");
 
+   Scene& Add(ModelGroup& model_group, const std::string& name = "");
+
    Scene& Add(TeXBox& tex_box, const std::string& name = "");
 
    Scene& Add(DirectionalLight& light, const std::string& name = "");
@@ -52,6 +56,8 @@ class Scene
    Scene& Add(SpotLight& light, const std::string& name = "");
 
    Scene& Add(Model&& model, const std::string& name = "");
+
+   Scene& Add(ModelGroup&& model, const std::string& name = "");
 
    Scene& Add(TeXBox&& tex_box, const std::string& name = "");
 
@@ -79,24 +85,24 @@ class Scene
 
    void RenderModels(Shader& shader);
 
-   void RenderModel(SPtr<Model>& model, Shader& shader);
+   void RenderModel(SPtr<ModelGroup>& model, Shader& shader);
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   std::string            _Title;
-   UMap<SPtr<Model>>      _Models;
-   UMap<SPtr<TeXBox>>     _TeXBoxes;
-   UMap<DirectionalLight> _DLights;
-   UMap<PointLight>       _PLights;
-   UMap<SpotLight>        _SLights;
-   UMap<UMap<Texture&>>   _Textures;
-   Transition             _Transition{};
-   Scene*                 _PrevScene{nullptr};
-   Scene*                 _NextScene{nullptr};
-   Real                   _Duration;
-   Real                   _StartTime;
-   Real                   _EndTime;
-   bool                   _AdjustDuration{false};
-   inline static bool     _isSingleScene {true};
+   std::string             _Title;
+   UMap<SPtr<ModelObject>> _Models;
+   UMap<SPtr<TeXBox>>      _TeXBoxes;
+   UMap<DirectionalLight>  _DLights;
+   UMap<PointLight>        _PLights;
+   UMap<SpotLight>         _SLights;
+   UMap<UMap<Texture&>>    _Textures;
+   Transition              _Transition{};
+   Scene*                  _PrevScene{nullptr};
+   Scene*                  _NextScene{nullptr};
+   Real                    _Duration;
+   Real                    _StartTime;
+   Real                    _EndTime;
+   bool                    _AdjustDuration{false};
+   inline static bool      _isSingleScene {true};
 };
 
 }

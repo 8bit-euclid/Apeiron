@@ -23,7 +23,7 @@
 #include "GUI.h"
 #include "ModelFactory.h"
 #include "Light.h"
-#include "Model.h"
+#include "ModelGroup.h"
 #include "Material.h"
 #include "Scene.h"
 #include "PostProcessor.h"

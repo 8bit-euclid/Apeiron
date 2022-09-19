@@ -19,41 +19,43 @@
 #include "Colour.h"
 #include "Model.h"
 #include "GlyphSheet.h"
+#include "TeXObject.h"
 
 #include <optional>
 
 namespace aprn::vis {
 
-class Glyph final : public Model
+class TeXGlyph final : public TeXObject,
+                       public Model
 {
  public:
-   Glyph() = default;
+   TeXGlyph() = default;
 
-   explicit Glyph(const char tex_char);
+   explicit TeXGlyph(const char tex_char);
 
-   explicit Glyph(const std::string& tex_str);
+   explicit TeXGlyph(const std::string& tex_str);
 
-   Glyph& Set(const char tex_char);
+   TeXGlyph& Set(const char tex_char);
 
-   Glyph& Set(const std::string& tex_str);
+   TeXGlyph& Set(const std::string& tex_str);
 
-   Glyph& Set(Glyph&& glyph);
+   TeXGlyph& Set(TeXGlyph&& glyph);
 
-   Glyph& SetColour(const Colour& colour);
+   TeXGlyph& SetColour(const Colour& colour);
 
-   Glyph& SetItalic(const bool is_italic);
+   TeXGlyph& SetItalic(const bool is_italic);
 
-   Glyph& SetBold(const bool is_bold);
+   TeXGlyph& SetBold(const bool is_bold);
 
-   void Add(const Glyph& glyph);
+   void Add(const TeXGlyph& glyph);
 
-   void Add(const DArray<Glyph>& glyphs);
+   void Add(const DArray<TeXGlyph>& glyphs);
 
    void Add(const std::string& str);
 
-   void Add(Glyph&& glyph);
+   void Add(TeXGlyph&& glyph);
 
-   void Add(DArray<Glyph>&& glyphs);
+   void Add(DArray<TeXGlyph>&& glyphs);
 
    void Add(std::string&& str);
 
@@ -77,7 +79,7 @@ class Glyph final : public Model
    std::optional<Colour>  _Colour;
    std::optional<bool>    _isItalic;
    std::optional<bool>    _isBold;
-   DArray<SPtr<Glyph>>    _SubGlyphs;
+   DArray<SPtr<TeXGlyph>> _SubGlyphs;
    bool                   _Render{true};
    bool                   _isInit{false};
 
