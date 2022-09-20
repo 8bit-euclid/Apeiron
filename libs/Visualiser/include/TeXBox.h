@@ -18,7 +18,7 @@
 #include "DataContainer/include/Array.h"
 
 #include "TeXGlyph.h"
-#include "TeXObject.h"
+#include "TeXGlyphGroup.h"
 #include "ModelGroup.h"
 #include "Texture.h"
 
@@ -27,8 +27,7 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeXBox Class
 ***************************************************************************************************************************************************************/
-class TeXBox final : public TeXObject,
-                     public ModelGroup
+class TeXBox final : public TeXGlyphGroup
 {
  public:
    TeXBox() = default;
@@ -37,9 +36,9 @@ class TeXBox final : public TeXObject,
 
    TeXBox(const std::string& str);
 
-   TeXBox(const TeXGlyph& glyph);
+   TeXBox(const TeXGlyph& tex_glyph);
 
-   TeXBox(const DArray<TeXGlyph>& glyphs);
+   TeXBox(const DArray<TeXGlyph>& tex_glyphs);
 
    TeXBox(const TeXBox& tex_box);
 
@@ -49,13 +48,13 @@ class TeXBox final : public TeXObject,
 
    TeXBox& Add(const std::string& str);
 
-   TeXBox& Add(const TeXGlyph& glyph);
+   TeXBox& Add(const TeXGlyph& tex_glyph);
 
-   TeXBox& Add(const String& str);
+   TeXBox& Add(const TeXBox& tex_box);
 
-   TeXBox& Add(const DArray<TeXGlyph>& glyphs);
+   TeXBox& Add(const DArray<TeXGlyph>& tex_glyphs);
 
-   TeXBox& Add(const DArray<String>& strings);
+   TeXBox& Add(const DArray<TeXBox>& tex_boxes);
 
    TeXBox& SetPixelDensity(UInt density);
 
@@ -63,11 +62,13 @@ class TeXBox final : public TeXObject,
 
    TeXBox& SetFontSize(const UChar font_size);
 
-   TeXBox& SetColour(const Colour& colour);
+   TeXBox& SetColour(const SVectorR4& rgba_colour) override;
 
-   TeXBox& SetItalic(bool is_italic);
+   TeXBox& SetColour(const Colour& colour) override;
 
-   TeXBox& SetBold(bool is_bold);
+   TeXBox& SetItalic(bool is_italic) override;
+
+   TeXBox& SetBold(bool is_bold) override;
 
  private:
    friend class Scene;
@@ -83,8 +84,7 @@ class TeXBox final : public TeXObject,
 
    fm::Path ImagePath() const;
 
-   std::string             _Text;
-   DArray<SPtr<TeXObject>> _SubGlyphs;
+   DArray<SPtr<TeXObject>> _SubBoxes;
    GlyphSheet              _GlyphSheet;
    SVectorR2               _Dimensions{}; // [width, height] in world-space.
    SVectorR3               _Anchor{};     // Bottom-left corner.

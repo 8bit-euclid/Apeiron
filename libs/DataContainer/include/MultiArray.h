@@ -31,21 +31,21 @@ protected:
 public:
   /** Size and index range-checking. */
   constexpr void
-  MultiIndexBoundCheck(const std::convertible_to<size_t> auto... _multi_index) const;
+  MultiIndexBoundCheck(const std::convertible_to<size_t> auto... multi_index) const;
 
   /** Multi-dimensional subscript index toggling. */
   constexpr size_t
-  ComputeLinearIndex(const std::convertible_to<size_t> auto... _multi_index) const;
+  ComputeLinearIndex(const std::convertible_to<size_t> auto... multi_index) const;
 
   constexpr auto
   ComputeMultiIndex(size_t index) const;
 
   /** Operator overloads. */
   constexpr T&
-  operator()(std::convertible_to<size_t> auto... _multi_index);
+  operator()(std::convertible_to<size_t> auto... multi_index);
 
   constexpr const T&
-  operator()(const std::convertible_to<size_t> auto... _multi_index) const;
+  operator()(const std::convertible_to<size_t> auto... multi_index) const;
 
   constexpr derived&
   operator=(const std::initializer_list<T>& _value_array) noexcept;
@@ -57,13 +57,13 @@ public:
   constexpr auto
   begin() { return Derived().Entries.begin(); }
 
-  constexpr const auto
+  constexpr auto
   begin() const { return Derived().Entries.begin(); }
 
   constexpr auto
   end() { return Derived().Entries.end(); }
 
-  constexpr const auto
+  constexpr auto
   end() const { return Derived().Entries.end(); }
 
 private:

@@ -22,30 +22,43 @@
 
 namespace aprn::vis {
 
-class String final : public ModelGroup
+class TeXGlyphGroup : public TeXObject,
+                      public ModelGroup
 {
  public:
-   String() = default;
+   TeXGlyphGroup() = default;
 
-   explicit String(const char* str);
+   explicit TeXGlyphGroup(const char* str);
 
-   explicit String(const std::string& str);
+   explicit TeXGlyphGroup(const std::string& str);
 
-   explicit String(const TeXGlyph& glyph);
+   explicit TeXGlyphGroup(const TeXGlyph& glyph);
 
-   explicit String(const DArray<TeXGlyph>& glyphs);
+   explicit TeXGlyphGroup(const DArray<TeXGlyph>& glyphs);
 
-   String& Add(const std::string& str);
+   TeXGlyphGroup& Add(const std::string& str);
 
-   String& Add(const TeXGlyph& glyph);
+   TeXGlyphGroup& Add(const TeXGlyph& glyph);
 
-   String& Add(const DArray<TeXGlyph>& glyphs);
+   TeXGlyphGroup& Add(const DArray<TeXGlyph>& glyphs);
 
-   String& SetColour(const Colour& colour);
+   TeXGlyphGroup& SetColour(const SVectorR4& rgba_colour) override;
 
-   String& SetItalic(bool is_italic);
+   TeXGlyphGroup& SetColour(const Colour& colour) override;
 
-   String& SetBold(bool is_bold);
+   TeXGlyphGroup& SetItalic(bool is_italic) override;
+
+   TeXGlyphGroup& SetBold(bool is_bold) override;
+
+   /** Sub-TeXObject Addition
+   ************************************************************************************************************************************************************/
+   TeXGlyphGroup& Add(Model& model, const std::string& name);
+
+   TeXGlyphGroup& Add(ModelGroup& model_group, const std::string& name);
+
+   TeXGlyphGroup& Add(Model&& model, const std::string& name);
+
+   TeXGlyphGroup& Add(ModelGroup&& model_group, const std::string& name);
 
  private:
    friend class TeXBox;
@@ -58,8 +71,7 @@ class String final : public ModelGroup
 
    void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
 
-   std::string         _Text;
-   DArray<SPtr<TeXGlyph>> _Glyphs;
+   DArray<SPtr<TeXObject>> _SubTeXObjects;
 };
 
 }

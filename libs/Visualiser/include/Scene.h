@@ -47,6 +47,8 @@ class Scene
 
    Scene& Add(ModelGroup& model_group, const std::string& name = "");
 
+   Scene& Add(TeXGlyph& tex_glyph, const std::string& name = "");
+
    Scene& Add(TeXBox& tex_box, const std::string& name = "");
 
    Scene& Add(DirectionalLight& light, const std::string& name = "");
@@ -59,6 +61,8 @@ class Scene
 
    Scene& Add(ModelGroup&& model, const std::string& name = "");
 
+   Scene& Add(TeXGlyph&& tex_glyph, const std::string& name = "");
+
    Scene& Add(TeXBox&& tex_box, const std::string& name = "");
 
    Scene& Add(DirectionalLight&& light, const std::string& name = "");
@@ -67,7 +71,7 @@ class Scene
 
    Scene& Add(SpotLight&& light, const std::string& name = "");
 
-   inline bool isCurrent(Real current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
+   inline bool isCurrent(const Real current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
 
  private:
    friend class Visualiser;
@@ -96,8 +100,8 @@ class Scene
    UMap<SpotLight>         _SLights;
    UMap<UMap<Texture&>>    _Textures;
    Transition              _Transition{};
-   Scene*                  _PrevScene{nullptr};
-   Scene*                  _NextScene{nullptr};
+   Scene*                  _PrevScene{};
+   Scene*                  _NextScene{};
    Real                    _Duration;
    Real                    _StartTime;
    Real                    _EndTime;

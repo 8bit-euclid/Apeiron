@@ -80,8 +80,8 @@ class StaticArray : public std::array<T, N>,
    template<std::convertible_to<T> T2>
    constexpr StaticArray(const std::initializer_list<T2>& list);
 
-   template<class Iter>
-   constexpr StaticArray(Iter first, Iter last);
+   template<class It>
+   constexpr StaticArray(It first, It last);
 
    using Base::operator[];
    using Base::operator=;
@@ -106,8 +106,8 @@ class DynamicArray : public std::vector<T>,
    template<std::convertible_to<T> T2>
    DynamicArray(const std::initializer_list<T2>& list);
 
-   template<class Iter>
-   DynamicArray(Iter first, Iter last);
+   template<class It>
+   DynamicArray(It first, It last);
 
    void Append(const T& value);
 
@@ -117,8 +117,8 @@ class DynamicArray : public std::vector<T>,
 
    void Append(DynamicArray<T>&& other) noexcept;
 
-   template<class Iter>
-   void Append(Iter first, Iter last, const bool move_all = false);
+   template<class It>
+   void Append(It first, It last, const bool move_all = false);
 
    void Erase();
 

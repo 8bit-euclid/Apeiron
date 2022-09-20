@@ -50,6 +50,9 @@ Scene&
 Scene::Add(ModelGroup& model_group, const std::string& name) { return Add(std::move(model_group), name); }
 
 Scene&
+Scene::Add(TeXGlyph& tex_glyph, const std::string& name) { return Add(std::move(tex_glyph), name); }
+
+Scene&
 Scene::Add(TeXBox& tex_box, const std::string& name) { return Add(std::move(tex_box), name); }
 
 Scene&
@@ -75,6 +78,12 @@ Scene::Add(ModelGroup&& model, const std::string& name)
    const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
    _Models.emplace(id, std::make_shared<ModelGroup>(std::move(model)));
    return *this;
+}
+
+Scene&
+Scene::Add(TeXGlyph&& tex_glyph, const std::string& name)
+{
+   return <#initializer#>;
 }
 
 Scene&

@@ -22,7 +22,7 @@
 #include "Colour.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "ModelObject.h"
+#include "Model.h"
 
 #include <map>
 #include <memory>
@@ -52,41 +52,43 @@ class Model : public ModelObject
 
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   ModelObject& SetColour(const SVectorR4& rgba_colour) override;
+   Model& SetColour(const SVectorR4& rgba_colour) override;
 
-   ModelObject& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) override;
+   Model& SetColour(const Colour& colour) override;
 
-   ModelObject& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) override;
+   Model& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) override;
 
-   ModelObject& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale) override;
+   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) override;
+
+   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale) override;
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
-   ModelObject& OffsetPosition(const SVectorR3& displacement) override;
+   Model& OffsetPosition(const SVectorR3& displacement) override;
 
-   ModelObject& OffsetOrientation(Real angle, const SVectorR3& axis) override;
+   Model& OffsetOrientation(Real angle, const SVectorR3& axis) override;
 
-   ModelObject& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
-   ModelObject& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   Model& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
-   ModelObject& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
-                          const std::function<Real(Real)>& reparam = Linear) override;
+   Model& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
+                    const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
-                          const std::function<Real(Real)>& ramp = Identity) override;
+   Model& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
+                    const std::function<Real(Real)>& ramp = Identity) override;
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -103,13 +105,13 @@ class Model : public ModelObject
 
    void ComputeLifespan() override;
 
-   inline void Reset() override { _ModelMatrix = glm::mat4(1.0); }
+   inline void Reset() { _ModelMatrix = glm::mat4(1.0); }
 
-   inline void Scale(const glm::vec3& factors) override { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
+   inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
 
-   inline void Translate( const glm::vec3& displacement) override { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
+   inline void Translate( const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
 
-   inline void Rotate(const GLfloat angle, const glm::vec3& axis) override { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
+   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
 
  protected:
    using ATComp = ActionTypeComparator;

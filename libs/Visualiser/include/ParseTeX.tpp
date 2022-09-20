@@ -14,16 +14,19 @@
 
 #pragma once
 
+#include "../../../include/Global.h"
+#include "TeXGlyph.h"
+
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXString(Iter& current, const Iter last, const bool is_math_mode)
+template<CharIterator It>
+DArray<TeXGlyph>
+ParseTeXString(It& current, const It last, const bool is_math_mode)
 {
-   DArray<Glyph> glyphs;
+   DArray<TeXGlyph> glyphs;
    glyphs.reserve(std::distance(current, last));
 
    while(current < last)
@@ -43,19 +46,19 @@ ParseTeXString(Iter& current, const Iter last, const bool is_math_mode)
    return glyphs;
 }
 
-template<CharIterator Iter>
-Glyph
-ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode)
+template<CharIterator It>
+TeXGlyph
+ParseTeXGlyph(It& current, const It last, const bool is_math_mode)
 {
    if(!is_math_mode) return ParseTeXChar(*(current++));
    else
    {
       // Parse single character and check for trailing superscripts/subscripts.
-      Glyph glyph = ParseTeXChar(*(current++));
+      TeXGlyph glyph = ParseTeXChar(*(current++));
       if(glyph.isRendered() && *current == OneOf('_', '^'))
       {
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
-         glyph.Add(Glyph(glyph.Text())); // Need to add base glyph as a subglyph first.
+         glyph.Add(TeXGlyph(glyph.Text())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }
@@ -63,9 +66,9 @@ ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode)
    }
 }
 
-template<CharIterator Iter>
-Glyph
-ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
+template<CharIterator It>
+TeXGlyph
+ParseTeXCommand(It& current, const It last, const bool is_math_mode)
 {
    ASSERT(*current == '\\', "A TeX command must begin with a backslash character.")
 
@@ -73,7 +76,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
    const auto cmd = std::string(current, cmd_prefix_end);
    const auto trailing_char = cmd_prefix_end != last ? *cmd_prefix_end : '\0';
 
-   Glyph glyph;
+   TeXGlyph glyph;
    glyph.Set(cmd);
    if(!render) glyph.DoNotRender();
    current = cmd_prefix_end;
@@ -89,10 +92,10 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
          ASSERT(n_args == OneOf(1, 2), "Expected either one or two arguments for command ", cmd, ", but none were found.")
 
          // Parse enclosures and add all items as sub-glyphs.
-         FOR_EACH(encl, enclosures)
+         FOR_EACH(enclosure, enclosures)
          {
             std::string encl_str;
-            auto sub_glyphs = ParseTeXString(current = encl.first + 1, encl.second - 1, is_math_mode);
+            auto sub_glyphs = ParseTeXString(current = enclosure.first + 1, enclosure.second - 1, is_math_mode);
 
             // Add opening brace, subglyph text, and closing brace.
             encl_str += '{';
@@ -111,7 +114,7 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
 
          // Check for subscripts/superscripts. If there are any, add them as sub-glyphs of this glyph.
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
-         glyph.Add(Glyph(glyph.Text())); // Need to add base glyph as a subglyph first.
+         glyph.Add(TeXGlyph(glyph.Text())); // Need to add base glyph as a subglyph first.
          glyph.Add(std::move(sub_glyphs));
          glyph.Add(std::move(script_text));
       }
@@ -120,13 +123,13 @@ ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode)
    return glyph;
 }
 
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXMath(Iter& current, const Iter last)
+template<CharIterator It>
+DArray<TeXGlyph>
+ParseTeXMath(It& current, const It last)
 {
    ASSERT(*current == '$', "In math mode, the first character must point to the $ symbol.")
 
-   DArray<Glyph> glyphs;
+   DArray<TeXGlyph> glyphs;
    glyphs.reserve(std::distance(current, last));
 
    const auto brace_glyph = ParseTeXChar('$');
@@ -160,12 +163,12 @@ ParseTeXMath(Iter& current, const Iter last)
    return glyphs;
 }
 
-template<CharIterator Iter>
-std::pair<DArray<Glyph>, std::string>
-ParseAllTeXScriptText(Iter& current, const Iter last)
+template<CharIterator It>
+std::pair<DArray<TeXGlyph>, std::string>
+ParseAllTeXScriptText(It& current, const It last)
 {
    std::string script_str;
-   DArray<Glyph> glyphs;
+   DArray<TeXGlyph> glyphs;
    glyphs.reserve(2);
 
    FOR(i, 2)
@@ -193,9 +196,9 @@ ParseAllTeXScriptText(Iter& current, const Iter last)
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
-template<CharIterator Iter>
+template<CharIterator It>
 bool
-isTeXCommandEnd(const Iter current, const Iter last)
+isTeXCommandEnd(const It current, const It last)
 {
    if(current == last) return true;
    const auto c = *current;
@@ -203,9 +206,9 @@ isTeXCommandEnd(const Iter current, const Iter last)
           (!std::isalpha(*(current - 1)) && std::isalpha(c)); // Note: assumes base string has at least one char before current iterator.
 }
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXCharCommand(const Iter first, const Iter last)
+template<CharIterator It>
+std::pair<bool, It>
+isTeXCharCommand(const It first, const It last)
 {
    ASSERT(*first == '\\', "A TeX command must begin with a backslash character.")
 
@@ -216,9 +219,9 @@ isTeXCharCommand(const Iter first, const Iter last)
    return { is_char_cmd, end_iter };
 }
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXWordCommand(const Iter first, const Iter last)
+template<CharIterator It>
+std::pair<bool, It>
+isTeXWordCommand(const It first, const It last)
 {
    ASSERT(*first == '\\', "A TeX command must begin with a backslash character.")
 
@@ -229,15 +232,15 @@ isTeXWordCommand(const Iter first, const Iter last)
    return { is_word_cmd, end_iter };
 }
 
-template<CharIterator Iter>
-std::tuple<Iter, bool, bool>
-GetTeXCommandInfo(const Iter current, const Iter last)
+template<CharIterator It>
+std::tuple<It, bool, bool>
+GetTeXCommandInfo(const It current, const It last)
 {
    ASSERT(*current == '\\', "A TeX command must begin with a backslash character.")
    ASSERT(std::distance(current, last) > 1, "A TeX command must comprise at least two characters.")
 
    bool char_cmd{}, word_cmd{};
-   Iter cmd_prefix_end;
+   It cmd_prefix_end;
    std::tie(char_cmd, cmd_prefix_end)               = isTeXCharCommand(current, last);
    if(!char_cmd) std::tie(word_cmd, cmd_prefix_end) = isTeXWordCommand(current, last);
    ASSERT(char_cmd != word_cmd, "Expected either a command character or a command word, but got ", std::string(current, last), ".")
@@ -262,13 +265,13 @@ GetTeXCommandInfo(const Iter current, const Iter last)
    }
 }
 
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXScriptText(Iter& current, const Iter last)
+template<CharIterator It>
+DArray<TeXGlyph>
+ParseTeXScriptText(It& current, const It last)
 {
    ASSERT(*current == OneOf('_', '^'), "TeX superscript/subscript text must begin with either an underscore or a carat.")
 
-   DArray<Glyph> glyphs;
+   DArray<TeXGlyph> glyphs;
    glyphs.reserve(std::distance(current, last));
 
    const auto next = current + 1;
@@ -296,8 +299,8 @@ ParseTeXScriptText(Iter& current, const Iter last)
    return glyphs;
 }
 
-template<CharIterator Iter>
-Iter GetTeXCommandPrefixEnd(const Iter first, const Iter last, const bool is_char_cmd)
+template<CharIterator It>
+It GetTeXCommandPrefixEnd(const It first, const It last, const bool is_char_cmd)
 {
    DEBUG_ASSERT(*first == '\\', "A TeX command must begin with a backslash character.")
    return is_char_cmd ? first + 2 : std::find_if_not(first + 1, last, [](auto c){ return std::isalpha(c); });

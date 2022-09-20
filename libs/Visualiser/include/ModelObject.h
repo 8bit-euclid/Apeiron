@@ -39,6 +39,8 @@ class ModelObject
    ************************************************************************************************************************************************************/
    virtual ModelObject& SetColour(const SVectorR4& rgba_colour) = 0;
 
+   virtual ModelObject& SetColour(const Colour& colour) = 0;
+
    virtual ModelObject& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) = 0;
 
    virtual ModelObject& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) = 0;
@@ -88,14 +90,6 @@ class ModelObject
    virtual void Init() = 0;
 
    virtual void ComputeLifespan() = 0;
-
-   virtual void Reset() = 0;
-
-   virtual void Scale(const glm::vec3& factors) = 0;
-
-   virtual void Translate( const glm::vec3& displacement) = 0;
-
-   virtual void Rotate(const GLfloat angle, const glm::vec3& axis) = 0;
 
    Real         _EntryTime{Zero};
    Real         _ExitTime{InfFloat<>};
