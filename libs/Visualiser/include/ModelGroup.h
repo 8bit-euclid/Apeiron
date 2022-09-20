@@ -54,41 +54,43 @@ class ModelGroup : public ModelObject
 
    /** Set Model Group Attributes
    ************************************************************************************************************************************************************/
-   ModelObject& SetColour(const SVectorR4& rgba_colour) override;
+   ModelGroup& SetColour(const SVectorR4& rgba_colour) override;
 
-   ModelObject& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) override;
+   ModelGroup& SetColour(const Colour& colour) override;
 
-   ModelObject& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) override;
+   ModelGroup& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) override;
 
-   ModelObject& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale) override;
+   ModelGroup& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) override;
+
+   ModelGroup& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale) override;
 
    /** Set Model Group Actions
    ************************************************************************************************************************************************************/
-   ModelObject& OffsetPosition(const SVectorR3& displacement) override;
+   ModelGroup& OffsetPosition(const SVectorR3& displacement) override;
 
-   ModelObject& OffsetOrientation(Real angle, const SVectorR3& axis) override;
+   ModelGroup& OffsetOrientation(Real angle, const SVectorR3& axis) override;
 
-   ModelObject& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   ModelGroup& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   ModelGroup& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   ModelGroup& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   ModelGroup& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   ModelGroup& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
-   ModelObject& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>,
+   ModelGroup& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>,
                       const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   ModelGroup& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   ModelGroup& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
-   ModelObject& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
+   ModelGroup& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
                           const std::function<Real(Real)>& reparam = Linear) override;
 
-   ModelObject& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
+   ModelGroup& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
                           const std::function<Real(Real)>& ramp = Identity) override;
 
    /** Sub-model Addition
@@ -115,14 +117,6 @@ class ModelGroup : public ModelObject
    void Init() override;
 
    void ComputeLifespan() override;
-
-   inline void Reset() override;
-
-   inline void Scale(const glm::vec3& factors) override;
-
-   inline void Translate( const glm::vec3& displacement) override;
-
-   inline void Rotate(const GLfloat angle, const glm::vec3& axis) override;
 
    std::unordered_map<std::string, SPtr<ModelObject>> _SubModels;
 };

@@ -25,52 +25,52 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-template<CharIterator Iter>
+template<CharIterator It>
 DArray<TeXGlyph>
-ParseTeXString(Iter& current, const Iter last, const bool is_math_mode = false);
+ParseTeXString(It& current, const It last, const bool is_math_mode = false);
 
 TeXGlyph ParseTeXChar(const char c);
 
-template<CharIterator Iter>
-TeXGlyph ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode = false);
+template<CharIterator It>
+TeXGlyph ParseTeXGlyph(It& current, const It last, const bool is_math_mode = false);
 
-template<CharIterator Iter>
-TeXGlyph ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode = false);
+template<CharIterator It>
+TeXGlyph ParseTeXCommand(It& current, const It last, const bool is_math_mode = false);
 
-template<CharIterator Iter>
+template<CharIterator It>
 DArray<TeXGlyph>
-ParseTeXMath(Iter& current, const Iter last);
+ParseTeXMath(It& current, const It last);
 
-template<CharIterator Iter>
+template<CharIterator It>
 std::pair<DArray<TeXGlyph>, std::string>
-ParseAllTeXScriptText(Iter& current, const Iter last);
+ParseAllTeXScriptText(It& current, const It last);
 
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
 bool isGlyphString(const std::string_view& tex_str);
 
-template<CharIterator Iter>
-bool isTeXCommandEnd(const Iter current, const Iter last);
+template<CharIterator It>
+bool isTeXCommandEnd(const It current, const It last);
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXCharCommand(const Iter first, const Iter last);
+template<CharIterator It>
+std::pair<bool, It>
+isTeXCharCommand(const It first, const It last);
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXWordCommand(const Iter first, const Iter last);
+template<CharIterator It>
+std::pair<bool, It>
+isTeXWordCommand(const It first, const It last);
 
-template<CharIterator Iter>
-std::tuple<Iter, bool, bool>
-GetTeXCommandInfo(const Iter current, const Iter last);
+template<CharIterator It>
+std::tuple<It, bool, bool>
+GetTeXCommandInfo(const It current, const It last);
 
-template<CharIterator Iter>
+template<CharIterator It>
 DArray<TeXGlyph>
-ParseTeXScriptText(Iter& current, const Iter last);
+ParseTeXScriptText(It& current, const It last);
 
-template<CharIterator Iter>
-Iter GetTeXCommandPrefixEnd(const Iter first, const Iter last, const bool is_char_cmd);
+template<CharIterator It>
+It GetTeXCommandPrefixEnd(const It first, const It last, const bool is_char_cmd);
 
 }
 

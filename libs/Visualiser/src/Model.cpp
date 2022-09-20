@@ -74,28 +74,31 @@ Model::Delete()
 
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
-ModelObject&
-Model::SetColour(const SVectorR4& rgba_colour)
+Model&
+Model::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
+
+Model&
+Model::SetColour(const Colour& colour)
 {
-   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(rgba_colour);
+   FOR_EACH(vertex, _Mesh.Vertices) vertex.Colour = SArrayToGlmVec(colour.Values);
    return *this;
 }
 
-ModelObject&
+Model&
 Model::SetMaterial(const std::string& name, const Real specular_intensity, const Real smoothness)
 {
    _Material.emplace(name, specular_intensity, smoothness);
    return *this;
 }
 
-ModelObject&
+Model&
 Model::SetTexture(const std::string& material, const size_t index, const size_t resolution, const Real dispacement_scale)
 {
    SetTexture(material, "", index, resolution ,dispacement_scale);
    return *this;
 }
 
-ModelObject&
+Model&
 Model::SetTexture(const std::string& material, const std::string& item, const size_t index, const size_t resolution, const Real dispacement_scale)
 {
    _TextureInfo.emplace(std::make_pair(TextureName(material, item, index, resolution), dispacement_scale));
@@ -104,7 +107,7 @@ Model::SetTexture(const std::string& material, const std::string& item, const si
 
 /** Set Model Actions
 ***************************************************************************************************************************************************************/
-ModelObject&
+Model&
 Model::OffsetPosition(const SVectorR3& displacement)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetPosition>>(*this, SArrayToGlmVec(displacement));
@@ -112,7 +115,7 @@ Model::OffsetPosition(const SVectorR3& displacement)
    return *this;
 }
 
-ModelObject&
+Model&
 Model::OffsetOrientation(const Real angle, const SVectorR3& axis)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::OffsetOrientation>>(*this, angle, SArrayToGlmVec(axis));
@@ -120,14 +123,14 @@ Model::OffsetOrientation(const Real angle, const SVectorR3& axis)
    return *this;
 }
 
-ModelObject&
+Model&
 Model::Scale(const Real factor, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    Scale(SVectorR3(factor), start_time, end_time, reparam);
    return *this;
 }
 
-ModelObject&
+Model&
 Model::Scale(const SVectorR3& factors, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Scale>>(*this, SArrayToGlmVec(factors), start_time, end_time);
@@ -135,7 +138,7 @@ Model::Scale(const SVectorR3& factors, const Real start_time, const Real end_tim
    return *this;
 }
 
-ModelObject&
+Model&
 Model::MoveBy(const SVectorR3& displacement, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveBy>>(*this, SArrayToGlmVec(displacement), start_time, end_time);
@@ -143,7 +146,7 @@ Model::MoveBy(const SVectorR3& displacement, const Real start_time, const Real e
    return *this;
 }
 
-ModelObject&
+Model&
 Model::MoveTo(const SVectorR3& position, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::MoveTo>>(*this, SArrayToGlmVec(position), start_time, end_time);
@@ -151,14 +154,14 @@ Model::MoveTo(const SVectorR3& position, const Real start_time, const Real end_t
    return *this;
 }
 
-ModelObject&
+Model&
 Model::MoveAt(const SVectorR3& velocity, const Real start_time, const std::function<Real(Real)>& ramp)
 {
    EXIT("TODO")
    return *this;
 }
 
-ModelObject&
+Model&
 Model::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::Trace>>(*this, path, start_time, end_time);
@@ -166,7 +169,7 @@ Model::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const R
    return *this;
 }
 
-ModelObject&
+Model&
 Model::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateBy>>(*this, angle, SArrayToGlmVec(axis), start_time, end_time);
@@ -174,7 +177,7 @@ Model::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, 
    return *this;
 }
 
-ModelObject&
+Model&
 Model::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const std::function<Real(Real)>& ramp)
 {
    SPtr<ActionBase> ptr = std::make_shared<Action<ActionType::RotateAt>>(*this, SArrayToGlmVec(angular_velocity), start_time, ramp);
@@ -182,7 +185,7 @@ Model::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const 
    return *this;
 }
 
-ModelObject&
+Model&
 Model::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_point, const Real start_time, const Real end_time,
                  const std::function<Real(Real)>& reparam)
 {
@@ -192,7 +195,7 @@ Model::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_
    return *this;
 }
 
-ModelObject&
+Model&
 Model::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, const Real start_time, const std::function<Real(Real)>& ramp)
 {
    EXIT("TODO")

@@ -41,8 +41,8 @@ constexpr auto InitStaticArray(const std::initializer_list<T2>& list)
 }
 
 /** Initialise an std::array with a first and last iterator. */
-template<typename T, size_t N, class Iter>
-constexpr auto InitStaticArray(const Iter first, const Iter last)
+template<typename T, size_t N, class It>
+constexpr auto InitStaticArray(const It first, const It last)
 {
   std::array<T, N> initialised_array;
   std::copy(first, last, initialised_array.begin());

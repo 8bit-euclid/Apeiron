@@ -38,7 +38,24 @@ TeXGlyph::Set(const std::string& tex_str)
 }
 
 TeXGlyph&
-TeXGlyph::Set(TeXGlyph&& glyph) { return *this = std::move(glyph); }
+TeXGlyph::Add(const char tex_char) { return Add(std::string{tex_char}); }
+
+TeXGlyph&
+TeXGlyph::Add(const std::string& str)
+{
+   _Text.append(str);
+   return *this;
+}
+
+TeXGlyph&
+TeXGlyph::Add(std::string&& str)
+{
+   _Text.append(std::move(str));
+   return *this;
+}
+
+TeXGlyph&
+TeXGlyph::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
 
 TeXGlyph&
 TeXGlyph::SetColour(const Colour& colour)
@@ -60,27 +77,6 @@ TeXGlyph::SetBold(const bool is_bold)
    if(!_isBold.has_value()) _isBold = is_bold;
    return *this;
 }
-
-void
-TeXGlyph::Add(const TeXGlyph& glyph) { _SubGlyphs.emplace_back(std::make_shared<TeXGlyph>(glyph)); }
-
-void
-TeXGlyph::Add(const DArray<TeXGlyph>& glyphs) { FOR_EACH_CONST(glyph, glyphs) Add(glyph); }
-
-void
-TeXGlyph::Add(const std::string& str) { _Text.append(str); }
-
-void
-TeXGlyph::Add(TeXGlyph&& glyph) { _SubGlyphs.emplace_back(std::make_shared<TeXGlyph>(std::move(glyph))); }
-
-void
-TeXGlyph::Add(DArray<TeXGlyph>&& glyphs) { FOR_EACH(glyph, glyphs) Add(std::move(glyph)); }
-
-void
-TeXGlyph::Add(std::string&& str) { _Text.append(std::move(str)); }
-
-void
-TeXGlyph::DoNotRender() { !isCompound() ? _Render = false : throw std::logic_error("Attempting to set a compound glyph to no-render."); }
 
 /***************************************************************************************************************************************************************
 * Glyph Private Interface
@@ -130,7 +126,7 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
    OffsetPosition(ToVector<3>(anchor));
 
    // Initialise underlying model.
-   ModelGroup::Init();
+   Model::Init();
 }
 
 }

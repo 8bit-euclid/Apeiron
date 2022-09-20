@@ -16,22 +16,28 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "ActionBase.h"
 
-#include <functional>
-#include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <string>
 
 namespace aprn::vis {
 
 class TeXObject
 {
  public:
-   TeXObject& SetColour(const Colour& colour);
+   virtual ~TeXObject() = default;
 
-   TeXObject& SetItalic(bool is_italic);
+   virtual TeXObject& SetColour(const SVectorR4& rgba_colour) = 0;
 
-   TeXObject& SetBold(bool is_bold);
+   virtual TeXObject& SetColour(const Colour& colour) = 0;
+
+   virtual TeXObject& SetItalic(bool is_italic) = 0;
+
+   virtual TeXObject& SetBold(bool is_bold) = 0;
+
+   inline const std::string& Text() const { return _Text; }
+
+ protected:
+   std::string _Text;
 };
 
 }

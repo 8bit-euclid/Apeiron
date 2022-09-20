@@ -121,11 +121,11 @@ constexpr StaticArray<T, size>::StaticArray(const std::initializer_list<T2>& lis
 }
 
 template<typename T, size_t size>
-template<class Iter>
-constexpr StaticArray<T, size>::StaticArray(Iter first, Iter last)
+template<class It>
+constexpr StaticArray<T, size>::StaticArray(It first, It last)
   : std::array<T, size>(detail::InitStaticArray<T, size>(first, last))
 {
-  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<Iter>::value_type>()), "Mismatch in the iterator data type.")
+  STATIC_ASSERT((isTypeSame<T, typename std::iterator_traits<It>::value_type>()), "Mismatch in the iterator data type.")
   ASSERT(size == std::distance(first, last), "The number of iterators must equal the array size ", size, ".")
 }
 
@@ -146,8 +146,8 @@ template<std::convertible_to<T> T2>
 DynamicArray<T>::DynamicArray(const std::initializer_list<T2>& list) : std::vector<T>(list) {}
 
 template<typename T>
-template<class Iter>
-DynamicArray<T>::DynamicArray(Iter first, Iter last) : std::vector<T>(first, last) {}
+template<class It>
+DynamicArray<T>::DynamicArray(It first, It last) : std::vector<T>(first, last) {}
 
 template<typename T>
 void
@@ -166,9 +166,9 @@ void
 DynamicArray<T>::Append(DynamicArray<T>&& other) noexcept { Append(other.begin(), other.end(), true); }
 
 template<typename T>
-template<class Iter>
+template<class It>
 void
-DynamicArray<T>::Append(Iter first, Iter last, const bool move_all)
+DynamicArray<T>::Append(It first, It last, const bool move_all)
 {
    this->reserve(this->size() + std::distance(first, last));
    if(!move_all) this->insert(this->end(), first, last);

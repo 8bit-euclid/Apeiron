@@ -32,10 +32,10 @@ protected:
 public:
   /** Subscript operator overloads. */
   constexpr T&
-  operator()(std::convertible_to<size_t> auto... _multi_index);
+  operator()(std::convertible_to<size_t> auto... multi_index);
 
   constexpr const T&
-  operator()(const std::convertible_to<size_t> auto... _multi_index) const;
+  operator()(const std::convertible_to<size_t> auto... multi_index) const;
 
   /** Assignment operator overloads. */
   constexpr derived&
