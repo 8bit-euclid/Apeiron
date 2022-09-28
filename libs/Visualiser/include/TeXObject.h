@@ -34,10 +34,10 @@ class TeXObject
 
    virtual TeXObject& SetBold(bool is_bold) = 0;
 
-   inline const std::string& Text() const { return _Text; }
+   inline const std::string& Text() const { return Text_; }
 
  protected:
-   std::string _Text;
+   std::string Text_;
 };
 
 }

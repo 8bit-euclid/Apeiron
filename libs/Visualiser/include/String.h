@@ -22,43 +22,43 @@
 
 namespace aprn::vis {
 
-class TeXGlyphGroup : public TeXObject,
-                      public ModelGroup
+class String : public TeXObject,
+               public ModelGroup
 {
  public:
-   TeXGlyphGroup() = default;
+   String() = default;
 
-   explicit TeXGlyphGroup(const char* str);
+   explicit String(const char* str);
 
-   explicit TeXGlyphGroup(const std::string& str);
+   explicit String(const std::string& str);
 
-   explicit TeXGlyphGroup(const TeXGlyph& glyph);
+   explicit String(const TeXGlyph& glyph);
 
-   explicit TeXGlyphGroup(const DArray<TeXGlyph>& glyphs);
+   explicit String(const DArray<TeXGlyph>& glyphs);
 
-   TeXGlyphGroup& Add(const std::string& str);
+   String& Add(const std::string& str);
 
-   TeXGlyphGroup& Add(const TeXGlyph& glyph);
+   String& Add(const TeXGlyph& glyph);
 
-   TeXGlyphGroup& Add(const DArray<TeXGlyph>& glyphs);
+   String& Add(const DArray<TeXGlyph>& glyphs);
 
-   TeXGlyphGroup& SetColour(const SVectorR4& rgba_colour) override;
+   String& SetColour(const SVectorR4& rgba_colour) override;
 
-   TeXGlyphGroup& SetColour(const Colour& colour) override;
+   String& SetColour(const Colour& colour) override;
 
-   TeXGlyphGroup& SetItalic(bool is_italic) override;
+   String& SetItalic(bool is_italic) override;
 
-   TeXGlyphGroup& SetBold(bool is_bold) override;
+   String& SetBold(bool is_bold) override;
 
    /** Sub-TeXObject Addition
    ************************************************************************************************************************************************************/
-   TeXGlyphGroup& Add(Model& model, const std::string& name);
+   String& Add(Model& model, const std::string& name);
 
-   TeXGlyphGroup& Add(ModelGroup& model_group, const std::string& name);
+   String& Add(ModelGroup& model_group, const std::string& name);
 
-   TeXGlyphGroup& Add(Model&& model, const std::string& name);
+   String& Add(Model&& model, const std::string& name);
 
-   TeXGlyphGroup& Add(ModelGroup&& model_group, const std::string& name);
+   String& Add(ModelGroup&& model_group, const std::string& name);
 
  private:
    friend class TeXBox;
@@ -71,7 +71,7 @@ class TeXGlyphGroup : public TeXObject,
 
    void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
 
-   DArray<SPtr<TeXObject>> _SubTeXObjects;
+   DArray<SPtr<TeXObject>> SubTeXObjects_;
 };
 
 }

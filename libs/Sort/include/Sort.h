@@ -71,7 +71,7 @@ class Sort
     if(!_is_sort_in_ascending) std::reverse(SortObjects.begin(), SortObjects.end());
   }
 
-  inline size_t GetIndex(const size_t i) const { return SortObjects[i]._Index; }
+  inline size_t GetIndex(const size_t i) const { return SortObjects[i].Index_; }
 
   inline const StaticArray<T, N>& GetValues(const size_t i) const { return SortObjects[i].Values; }
 };

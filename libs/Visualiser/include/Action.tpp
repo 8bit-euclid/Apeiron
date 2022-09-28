@@ -87,7 +87,7 @@ Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Real start_tim
    switch(type)
    {
       case ActionType::MoveBy: this->Displacement = [&disp_or_posi](Real t){ return static_cast<float>(t) * disp_or_posi; }; break;
-      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Real t){ return static_cast<float>(t) * (disp_or_posi - model._Centroid); }; break;
+      case ActionType::MoveTo: this->Displacement = [&model, &disp_or_posi](Real t){ return static_cast<float>(t) * (disp_or_posi - model.Centroid_); }; break;
       default: throw std::invalid_argument("Unrecognised action type.");
    }
 }
@@ -106,7 +106,7 @@ requires Translation<type>
 Action<type>::Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time)
    : ActionBase(model, type, start_time, end_time, [](Real){return Zero;})
 {
-   if(type == ActionType::Trace) this->Displacement = [path](Real t){ return SArrayToGlmVec(path(t)); };
+   if(type == ActionType::Trace) this->Displacement = [path](Real t){ return SVectorToGlmVec(path(t)); };
    else throw std::invalid_argument("Unrecognised action type.");
 }
 
@@ -116,7 +116,7 @@ template<class D>
 Action<type>::Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, std::function<Real(Real)> reparam)
    : ActionBase(model, type, start_time, end_time, reparam)
 {
-   if(type == ActionType::Trace) this->Displacement = [centroid = model._Centroid, path](Real t){ return path.Point(t) - centroid; };
+   if(type == ActionType::Trace) this->Displacement = [centroid = model.Centroid_, path](Real t){ return path.Point(t) - centroid; };
    else throw std::invalid_argument("Unrecognised action type.");
 }
 

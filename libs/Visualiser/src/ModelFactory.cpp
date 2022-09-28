@@ -18,41 +18,41 @@ namespace aprn::vis {
 
 /** 1D models
 ***************************************************************************************************************************************************************/
-ModelGroup
+Model
 ModelFactory::Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1)
 {
-   return ModelGroup();
+   return Model();
 }
 
 template<class... svectors>
-ModelGroup
+Model
 ModelFactory::SegmentChain(const svectors&... vs)
 {
-   return ModelGroup();
+   return Model();
 }
 
 /** 2D models
 ***************************************************************************************************************************************************************/
-ModelGroup
-ModelFactory::Triangle(GLfloat length) { return Triangle(length, length * Sin(ThirdPi), Half); }
+Model
+ModelFactory::Triangle(const GLfloat length) { return Triangle(length, length * Sin(ThirdPi), Half); }
 
-ModelGroup
-ModelFactory::Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio)
+Model
+ModelFactory::Triangle(const GLfloat length, const GLfloat height, const GLfloat apex_ratio)
 {
    const GLfloat x = Half * static_cast<Real>(length);
    const GLfloat y = static_cast<Real>(height);
-   const GLfloat apex_x = x * (Two * _apex_ratio - One);
+   const GLfloat apex_x = x * (Two * apex_ratio - One);
 
    return Triangle(SVector3<GLfloat>{-x, 0.0f, 0.0f}, SVector3<GLfloat>{x, 0.0f, 0.0f}, SVector3<GLfloat>{apex_x, y, 0.0f});
 }
 
-ModelGroup
+Model
 ModelFactory::Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2) { return Polygon(v0, v1, v2); }
 
-ModelGroup
+Model
 ModelFactory::Square(const GLfloat length) { return Rectangle(length, length); }
 
-ModelGroup
+Model
 ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
 {
    const GLfloat x = Half * length;
@@ -64,40 +64,42 @@ ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
                         SVector3<GLfloat>{-x,  y, 0.0f});
 }
 
-ModelGroup
+Model
 ModelFactory::ScreenQuad() { return Square(Two); }
 
-ModelGroup
+Model
 ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
-   ModelGroup model = Polygon(v0, v1, v2, v3);
+   Model part = Polygon(v0, v1, v2, v3);
+
+   auto& mesh = part.Mesh_;
 
    // Set tangents
-   FOR_EACH(vertex, model._Mesh.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+   FOR_EACH(vertex, mesh.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 
    // Set texture coordinates
-   model._Mesh.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
-   model._Mesh.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
-   model._Mesh.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
-   model._Mesh.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
+   mesh.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
+   mesh.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
+   mesh.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
+   mesh.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
-   return model;
+   return part;
 }
 
 template<class... svectors>
-ModelGroup
+Model
 ModelFactory::Polygon(const svectors&... vs)
 {
-   ModelGroup model;
-   model._Mesh.Shading = ShadingType::Flat;
+   Model part;
+   part.Mesh_.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices  = model._Mesh.Indices;
+   auto& vertices = part.Mesh_.Vertices;
+   auto& indices  = part.Mesh_.Indices;
 
    constexpr size_t n_vertices = sizeof...(svectors);
    vertices.resize(n_vertices);
    size_t i = 0;
-   ((vertices[i++].Position = SArrayToGlmVec(vs)), ...);
+   ((vertices[i++].Position = SVectorToGlmVec(vs)), ...);
 
    // TODO - extend to non-convex polygons as well!
    indices.resize(3 * (n_vertices - 2));
@@ -107,34 +109,34 @@ ModelFactory::Polygon(const svectors&... vs)
       FOR(j, 1, 3) indices[j + 3 * i] = i + j;
    }
 
-   return model;
+   return part;
 }
 
-ModelGroup
+Model
 ModelFactory::Arc(const GLfloat radius, const GLfloat angle)
 {
-   return ModelGroup();
+   return Model();
 }
 
-ModelGroup
+Model
 ModelFactory::Sector(const GLfloat radius, const GLfloat angle)
 {
-   return ModelGroup();
+   return Model();
 }
 
-ModelGroup
+Model
 ModelFactory::Circle(const GLfloat radius)
 {
-   return ModelGroup();
+   return Model();
 }
 
-ModelGroup
+Model
 ModelFactory::Ellipse(const GLfloat radius_x, const GLfloat radius_y)
 {
-   return ModelGroup();
+   return Model();
 }
 
-ModelGroup
+Model
 ModelFactory::Tetrahedron(const GLfloat length)
 {
    const GLfloat width  = static_cast<Real>(length) * Sin(ThirdPi);
@@ -143,20 +145,20 @@ ModelFactory::Tetrahedron(const GLfloat length)
    return Tetrahedron({-0.5f * length, 0.0f, width / 3.0f}, {0.5f * length, 0.0f, width / 3.0f}, {0.0f, 0.0f, -2.0f * width / 3.0f}, {0.0f, height, 0.0f});
 }
 
-ModelGroup
+Model
 ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
-   ModelGroup model;
-   model._Mesh.Shading = ShadingType::Flat;
+   Model part;
+   part.Mesh_.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices  = model._Mesh.Indices;
+   auto& vertices = part.Mesh_.Vertices;
+   auto& indices  = part.Mesh_.Indices;
 
    vertices.resize(4);
-   vertices[0].Position = SArrayToGlmVec(v0);
-   vertices[1].Position = SArrayToGlmVec(v1);
-   vertices[2].Position = SArrayToGlmVec(v2);
-   vertices[3].Position = SArrayToGlmVec(v3);
+   vertices[0].Position = SVectorToGlmVec(v0);
+   vertices[1].Position = SVectorToGlmVec(v1);
+   vertices[2].Position = SVectorToGlmVec(v2);
+   vertices[3].Position = SVectorToGlmVec(v3);
 
    indices.resize(12);
    // Face 0
@@ -179,13 +181,13 @@ ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& 
    indices[10] = 2;
    indices[11] = 3;
 
-   return model;
+   return part;
 }
 
-ModelGroup
+Model
 ModelFactory::Cube(const GLfloat length) { return Cuboid(length, length, length); }
 
-ModelGroup
+Model
 ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat height)
 {
    const GLfloat x = Half * static_cast<Real>(length);
@@ -201,21 +203,21 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    SVector3<GLfloat> v6{-x,  y, -z};
    SVector3<GLfloat> v7{ x,  y, -z};
 
-   ModelGroup model;
-   model._Mesh.Shading = ShadingType::Flat;
+   Model part;
+   part.Mesh_.Shading = ShadingType::Flat;
 
-   auto& vertices = model._Mesh.Vertices;
-   auto& indices = model._Mesh.Indices;
+   auto& vertices = part.Mesh_.Vertices;
+   auto& indices  = part.Mesh_.Indices;
 
    vertices.resize(8);
-   vertices[0].Position = SArrayToGlmVec(v0);
-   vertices[1].Position = SArrayToGlmVec(v1);
-   vertices[2].Position = SArrayToGlmVec(v2);
-   vertices[3].Position = SArrayToGlmVec(v3);
-   vertices[4].Position = SArrayToGlmVec(v4);
-   vertices[5].Position = SArrayToGlmVec(v5);
-   vertices[6].Position = SArrayToGlmVec(v6);
-   vertices[7].Position = SArrayToGlmVec(v7);
+   vertices[0].Position = SVectorToGlmVec(v0);
+   vertices[1].Position = SVectorToGlmVec(v1);
+   vertices[2].Position = SVectorToGlmVec(v2);
+   vertices[3].Position = SVectorToGlmVec(v3);
+   vertices[4].Position = SVectorToGlmVec(v4);
+   vertices[5].Position = SVectorToGlmVec(v5);
+   vertices[6].Position = SVectorToGlmVec(v6);
+   vertices[7].Position = SVectorToGlmVec(v7);
 
    indices.resize(36);
    // Face 0
@@ -272,8 +274,7 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    indices[34] = 4;
    indices[35] = 6;
 
-   return model;
+   return part;
 }
 
 }
-

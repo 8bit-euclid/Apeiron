@@ -18,7 +18,7 @@
 #include "DataContainer/include/Array.h"
 
 #include "TeXGlyph.h"
-#include "TeXGlyphGroup.h"
+#include "String.h"
 #include "ModelGroup.h"
 #include "Texture.h"
 
@@ -27,22 +27,23 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeXBox Class
 ***************************************************************************************************************************************************************/
-class TeXBox final : public TeXGlyphGroup
+class TeXBox final : public TeXObject,
+                     public ModelGroup
 {
  public:
    TeXBox() = default;
 
-   TeXBox(const char* str);
+   explicit TeXBox(const char* str);
 
-   TeXBox(const std::string& str);
+   explicit TeXBox(const std::string& str);
 
-   TeXBox(const TeXGlyph& tex_glyph);
+   explicit TeXBox(const TeXGlyph& tex_glyph);
 
-   TeXBox(const DArray<TeXGlyph>& tex_glyphs);
+   explicit TeXBox(const TeXBox& tex_box);
 
-   TeXBox(const TeXBox& tex_box);
+   explicit TeXBox(const DArray<TeXGlyph>& tex_glyphs);
 
-   TeXBox(const DArray<TeXBox>& tex_boxes);
+   explicit TeXBox(const DArray<TeXBox>& tex_boxes);
 
    TeXBox& Add(const char* str);
 
@@ -84,11 +85,11 @@ class TeXBox final : public TeXGlyphGroup
 
    fm::Path ImagePath() const;
 
-   DArray<SPtr<TeXObject>> _SubBoxes;
-   GlyphSheet              _GlyphSheet;
-   SVectorR2               _Dimensions{}; // [width, height] in world-space.
-   SVectorR3               _Anchor{};     // Bottom-left corner.
-   UChar                   _FontSize{10}; // Defaults to a 10pt font.
+   DArray<SPtr<TeXObject>> SubBoxes_;
+   GlyphSheet              GlyphSheet_;
+   SVectorR2               Dimensions_{}; // [width, height] in world-space.
+   SVectorR3               Anchor_{};     // Bottom-left corner.
+   UChar                   FontSize_{10}; // Defaults to a 10pt font.
 };
 
 

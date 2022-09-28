@@ -21,7 +21,6 @@
 #include "Camera.h"
 #include "GlyphSheet.h"
 #include "GUI.h"
-#include "ModelFactory.h"
 #include "Light.h"
 #include "ModelGroup.h"
 #include "Material.h"

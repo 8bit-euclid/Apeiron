@@ -6,6 +6,7 @@ set(SOURCE_FILES
         include/Buffers.h
         include/Camera.h
         include/Colour.h
+        include/ModelFactory.h
         include/GLDebug.h
         include/GLTypes.h
         include/TeXGlyph.h
@@ -17,13 +18,12 @@ set(SOURCE_FILES
         include/Material.h
         include/Mesh.h
         include/ModelGroup.h
-        include/ModelFactory.h
         include/ModelObject.h
         include/Scene.h
         include/PostProcessor.h
         include/Shader.h
         include/Shadow.h
-        include/TeXGlyphGroup.h
+        include/String.h
         include/Model.h
         include/TeXBox.h
         include/Texture.h
@@ -35,6 +35,7 @@ set(SOURCE_FILES
         src/ActionBase.cpp
         src/Buffers.cpp
         src/Camera.cpp
+        src/ModelFactory.cpp
         src/TeXGlyph.cpp
         src/GlyphSheet.cpp
         src/GUI.cpp
@@ -42,12 +43,11 @@ set(SOURCE_FILES
         src/ParseTeX.cpp
         src/Mesh.cpp
         src/ModelGroup.cpp
-        src/ModelFactory.cpp
         src/Scene.cpp
         src/PostProcessor.cpp
         src/Shader.cpp
         src/Shadow.cpp
-        src/TeXGlyphGroup.cpp
+        src/String.cpp
         src/Model.cpp
         src/TeXBox.cpp
         src/Texture.cpp

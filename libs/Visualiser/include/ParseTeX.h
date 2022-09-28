@@ -25,11 +25,14 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
+TeXGlyph ParseTeXChar(const char c);
+
+DArray<TeXGlyph>
+ParseTeXString(const std::string& str);
+
 template<CharIterator It>
 DArray<TeXGlyph>
 ParseTeXString(It& current, const It last, const bool is_math_mode = false);
-
-TeXGlyph ParseTeXChar(const char c);
 
 template<CharIterator It>
 TeXGlyph ParseTeXGlyph(It& current, const It last, const bool is_math_mode = false);

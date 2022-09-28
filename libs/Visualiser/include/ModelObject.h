@@ -79,9 +79,9 @@ class ModelObject
    ************************************************************************************************************************************************************/
    virtual bool isInitialised() const = 0;
 
-   inline auto EntryTime() const { return _EntryTime; }
+   inline auto EntryTime() const { return EntryTime_; }
 
-   inline auto ExitTime() const { return _ExitTime; }
+   inline auto ExitTime() const { return ExitTime_; }
 
  protected:
    friend class Scene;
@@ -91,9 +91,9 @@ class ModelObject
 
    virtual void ComputeLifespan() = 0;
 
-   Real         _EntryTime{Zero};
-   Real         _ExitTime{InfFloat<>};
-   mutable bool _isInitialised{false};
+   Real         EntryTime_{Zero};
+   Real         ExitTime_{InfFloat<>};
+   mutable bool isInitialised_{false};
 };
 
 }

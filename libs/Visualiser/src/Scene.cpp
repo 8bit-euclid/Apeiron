@@ -83,7 +83,7 @@ Scene::Add(ModelGroup&& model, const std::string& name)
 Scene&
 Scene::Add(TeXGlyph&& tex_glyph, const std::string& name)
 {
-   return <#initializer#>;
+   return *this;
 }
 
 Scene&
@@ -258,7 +258,7 @@ Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
 {
    constexpr int slot_offset(3); // TODO - currently hard-coded.
 
-   if(model->_isInitialised)
+   if(model->isInitialised_)
    {
       if(model->_Material.has_value()) shader.UseMaterial(model->_Material.value());
       if(model->_TextureInfo.has_value())
@@ -291,7 +291,7 @@ Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
    }
 
    // Render sub-models recursively.
-   FOR_EACH(_, sub_model, model->_SubModels) RenderModel(sub_model, shader);
+   FOR_EACH(_, sub_model, model->SubModels_) RenderModel(sub_model, shader);
 }
 
 }
