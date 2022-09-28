@@ -65,7 +65,7 @@ class PostProcessor
    FrameImage                _ResolvedImage;
    UMap<FrameImage>          _BlurBuffers;
    UMap<Shader>              _Shaders;
-   ModelGroup                     _ScreenQuad;
+   Model                      _ScreenQuad;
    UInt                      _Width;
    UInt                      _Height;
    constexpr static UInt     _SampleCount{32}; // For MSAA

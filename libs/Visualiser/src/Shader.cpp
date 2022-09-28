@@ -41,7 +41,7 @@ Shader::Read(const std::string &file_path)
 }
 
 void
-Shader::UseModel(const ModelGroup& model) { SetUniformMatrix4f("u_model_matrix", model.ModelMatrix()); }
+Shader::UseModel(const Model& model) { SetUniformMatrix4f("u_model_matrix", model.ModelMatrix()); }
 
 void
 Shader::UseMaterial(const Material& material)

@@ -33,7 +33,7 @@ TeXGlyph&
 TeXGlyph::Set(const std::string& tex_str)
 {
    DEBUG_ASSERT(isGlyphString(tex_str), "The following string does not yet qualify as a glyph: ", tex_str)
-   _Text = tex_str;
+   Text_ = tex_str;
    return *this;
 }
 
@@ -43,14 +43,14 @@ TeXGlyph::Add(const char tex_char) { return Add(std::string{tex_char}); }
 TeXGlyph&
 TeXGlyph::Add(const std::string& str)
 {
-   _Text.append(str);
+   Text_.append(str);
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::Add(std::string&& str)
 {
-   _Text.append(std::move(str));
+   Text_.append(std::move(str));
    return *this;
 }
 
@@ -60,21 +60,21 @@ TeXGlyph::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba
 TeXGlyph&
 TeXGlyph::SetColour(const Colour& colour)
 {
-   if(!_Colour.has_value()) _Colour = colour;
+   if(!Colour_.has_value()) Colour_ = colour;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetItalic(const bool is_italic)
 {
-   if(!_isItalic.has_value()) _isItalic = is_italic;
+   if(!isItalic_.has_value()) isItalic_ = is_italic;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetBold(const bool is_bold)
 {
-   if(!_isBold.has_value()) _isBold = is_bold;
+   if(!isBold_.has_value()) isBold_ = is_bold;
    return *this;
 }
 
@@ -84,14 +84,14 @@ TeXGlyph::SetBold(const bool is_bold)
 void
 TeXGlyph::Init(GlyphSheet::IndexT& index_offset)
 {
-   ASSERT(!_isInit, "This glyph has already been initialised.")
+   ASSERT(!isInit_, "This glyph has already been initialised.")
 
    // Initialise subglyphs and assign glyph index.
    if(isCompound()) FOR_EACH(glyph, _SubGlyphs) glyph->Init(index_offset);
    else if(isRendered())
    {
-      _isInit = true;
-      _Index  = index_offset++;
+      isInit_ = true;
+      Index_  = index_offset++;
    }
 }
 
@@ -100,9 +100,9 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
 {
    if(!isRendered()) return;
 
-   ASSERT(_isInit, "The glyph must be initialise before its dimensions are computed.")
+   ASSERT(isInit_, "The glyph must be initialise before its dimensions are computed.")
 
-   const auto& glyph_info = glyph_sheet.GlyphInfo(_Index);
+   const auto& glyph_info = glyph_sheet.GlyphInfo(Index_);
    const auto  scale      = GlyphSheet::FontSizeScale(font_size);
    SVectorR2   dimensions; // Dimensions of the glyph in the xy-plane in world-space coordinates.
    SVectorR2   anchor;     // Bottom-left corner of the glyph in world-space coordinates.
@@ -112,8 +112,8 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
    anchor         = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
-   _Mesh = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).Geometry();
-   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { _Mesh.Vertices[i].TextureCoordinates =
+   Mesh_ = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).Geometry();
+   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { Mesh_.Vertices[i].TextureCoordinates =
                                                                      glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
    set_tex_coor(0, anchor);
    set_tex_coor(1, anchor + SVectorR2{ dimensions.x(), Zero });

@@ -57,7 +57,7 @@ GLTypeSize(const GLenum gl_type)
 /** Convert a GLM vector to a static vector. */
 template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
 consteval SVector<T, size>
-GlmVecToSArray(const glm::vec<size, T, qual>& in_vector)
+GlmVecToSVector(const glm::vec<size, T, qual>& in_vector)
 {
   SVector<T, size> out_vector;
   FOR(i, size) out_vector[i] = in_vector[i];
@@ -67,7 +67,7 @@ GlmVecToSArray(const glm::vec<size, T, qual>& in_vector)
 /** Convert a static vector to a GLM vector. */
 template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
 constexpr glm::vec<size, T, qual>
-SArrayToGlmVec(const SVector<T, size>& in_vector)
+SVectorToGlmVec(const SVector<T, size>& in_vector)
 {
   glm::vec<size, T, qual> out_vector;
   FOR(i, size) out_vector[i] = in_vector[i];

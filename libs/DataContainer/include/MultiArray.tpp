@@ -31,8 +31,8 @@ MultiArray<T, derived>::MultiIndexBoundCheck(const std::convertible_to<size_t> a
   ASSERT(areSizesEqual(sizeof...(multi_index), Derived().Dimensions.size()), "Multi-index size mismatch.")
 
   auto& dims = Derived().Dimensions;
-  const size_t multi_index[] = {static_cast<size_t>(multi_index)...};
-  FOR(i, dims.size()) ASSERT(multi_index[i] < dims[i], "Multi index component ", multi_index[i], " must be lesser than ", dims[i], ".")
+  const size_t indices[] = {static_cast<size_t>(multi_index)...};
+  FOR(i, dims.size()) ASSERT(indices[i] < dims[i], "Multi index component ", indices[i], " must be lesser than ", dims[i], ".")
 #endif
 }
 
@@ -44,12 +44,12 @@ MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<size_t> aut
   MultiIndexBoundCheck(multi_index...);
 
   auto& dims = Derived().Dimensions;
-  const size_t multi_index[] = {static_cast<size_t>(multi_index)...};
+  const size_t indices[] = {static_cast<size_t>(multi_index)...};
 
   size_t index(0), factor(1);
   FOR(i, dims.size())
   {
-    index += factor * multi_index[i];
+    index += factor * indices[i];
     factor *= dims[i];
   }
 //  this->IndexBoundCheck(index);

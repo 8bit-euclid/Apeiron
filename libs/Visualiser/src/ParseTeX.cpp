@@ -26,6 +26,13 @@ TeXGlyph ParseTeXChar(const char c)
    return glyph;
 }
 
+DArray<TeXGlyph>
+ParseTeXString(const std::string& str)
+{
+   auto current = str.begin();
+   return ParseTeXString(current, str.end());
+}
+
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/

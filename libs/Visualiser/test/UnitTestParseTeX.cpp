@@ -32,6 +32,23 @@ class ParseTeXTest : public testing::Test
 /***************************************************************************************************************************************************************
 * Test TeX Parsing Functions
 ***************************************************************************************************************************************************************/
+TEST_F(ParseTeXTest, ParseTeXChar)
+{
+   for(const auto c: {'.', ',', ';', ':', '`', '"', '(', '[', '{', '1', 'a', '?', '!'})
+   {
+      const auto glyph = ParseTeXChar(c);
+      EXPECT_EQ(glyph.Text_, std::string(1, c));
+      EXPECT_TRUE(glyph.Render_);
+   }
+   for(const auto c: {' ', '\t', '\n', '$'})
+   {
+      const auto glyph = ParseTeXChar(c);
+      EXPECT_EQ(glyph.Text_, std::string(1, c));
+      EXPECT_FALSE(glyph.Render_);
+   }
+   EXPECT_DEATH(ParseTeXChar('\\'), "");
+}
+
 TEST_F(ParseTeXTest, ParseTeXString)
 {
    for(const std::string tex_str: {R"(The final velocity at time $t$ is computed as $v = u + at$.)",
@@ -45,27 +62,10 @@ TEST_F(ParseTeXTest, ParseTeXString)
       const auto glyphs = ParseTeXString(iter, tex_str.end());
 
       std::string glyph_str;
-      FOR_EACH(glyph, glyphs) glyph_str.append(glyph._Text);
+      FOR_EACH(glyph, glyphs) glyph_str.append(glyph.Text_);
       EXPECT_EQ(glyph_str, tex_str);
       EXPECT_EQ(iter, tex_str.end());
    }
-}
-
-TEST_F(ParseTeXTest, ParseTeXChar)
-{
-   for(const auto c: {'.', ',', ';', ':', '`', '"', '(', '[', '{', '1', 'a', '?', '!'})
-   {
-      const auto glyph = ParseTeXChar(c);
-      EXPECT_EQ(glyph._Text, std::string(1, c));
-      EXPECT_TRUE(glyph._Render);
-   }
-   for(const auto c: {' ', '\t', '\n', '$'})
-   {
-      const auto glyph = ParseTeXChar(c);
-      EXPECT_EQ(glyph._Text, std::string(1, c));
-      EXPECT_FALSE(glyph._Render);
-   }
-   EXPECT_DEATH(ParseTeXChar('\\'), "");
 }
 
 TEST_F(ParseTeXTest, ParseTeXGlyph)
@@ -76,9 +76,9 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
       auto iter = g.begin();
       const auto glyph = ParseTeXGlyph(iter, g.end(), false);
 
-      EXPECT_EQ(glyph._Text, g);
+      EXPECT_EQ(glyph.Text_, g);
       EXPECT_EQ(iter, g.end());
-      EXPECT_TRUE(glyph._Render);
+      EXPECT_TRUE(glyph.Render_);
       EXPECT_TRUE(glyph._SubGlyphs.empty());
    }
    for(const std::string g : {" ", "\t", "\n", "$"})
@@ -86,9 +86,9 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
       auto iter = g.begin();
       const auto glyph = ParseTeXGlyph(iter, g.end(), false);
 
-      EXPECT_EQ(glyph._Text, g);
+      EXPECT_EQ(glyph.Text_, g);
       EXPECT_EQ(iter, g.end());
-      EXPECT_FALSE(glyph._Render);
+      EXPECT_FALSE(glyph.Render_);
       EXPECT_TRUE(glyph._SubGlyphs.empty());
    }
 
@@ -100,7 +100,7 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
       const auto script_count = std::count_if(g.begin(), g.end(), [](auto c){ return c == OneOf('_', '^'); });
 
       std::string str_check = g;
-      std::string str       = glyph._Text;
+      std::string str       = glyph.Text_;
       str_check = Remove("{", str_check);
       str_check = Remove("}", str_check);
       str       = Remove("{", str);
@@ -110,7 +110,7 @@ TEST_F(ParseTeXTest, ParseTeXGlyph)
       EXPECT_EQ(glyph._SubGlyphs.size(), script_count + static_cast<bool>(script_count));
       const auto iter_check = std::find_if(g.begin(), g.end(), [](auto c){ return c == OneOf(' ', ',', '.', ':'); });
       EXPECT_EQ(iter, iter_check);
-      EXPECT_TRUE(glyph._Render);
+      EXPECT_TRUE(glyph.Render_);
    }
 }
 
@@ -122,9 +122,9 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
       auto iter = cmd.begin();
       const auto glyph = ParseTeXCommand(iter, cmd.end(), false);
 
-      EXPECT_EQ(glyph._Text, cmd.substr(0, 2));
+      EXPECT_EQ(glyph.Text_, cmd.substr(0, 2));
       EXPECT_EQ(iter, cmd.begin() + 2);
-      EXPECT_TRUE(glyph._Render);
+      EXPECT_TRUE(glyph.Render_);
    }
 
    // Characters (spacing)
@@ -133,9 +133,9 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
       auto iter = cmd.begin();
       const auto glyph = ParseTeXCommand(iter, cmd.end(), false);
 
-      EXPECT_EQ(glyph._Text, cmd.substr(0, 2));
+      EXPECT_EQ(glyph.Text_, cmd.substr(0, 2));
       EXPECT_EQ(iter, cmd.begin() + 2);
-      EXPECT_FALSE(glyph._Render);
+      EXPECT_FALSE(glyph.Render_);
    }
 
    // Non-math mode words
@@ -147,9 +147,9 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
       const auto glyph = ParseTeXCommand(iter, cmd.end(), false);
       const auto iter_check = find_end(cmd);
 
-      EXPECT_EQ(glyph._Text, std::string(cmd.begin(), iter_check));
+      EXPECT_EQ(glyph.Text_, std::string(cmd.begin(), iter_check));
       EXPECT_EQ(iter, iter_check);
-      EXPECT_TRUE(glyph._Render);
+      EXPECT_TRUE(glyph.Render_);
    }
 
    // Non-math mode words (spacing)
@@ -161,9 +161,9 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
       const auto glyph = ParseTeXCommand(iter, cmd.end(), false);
       const auto iter_check = find_end(cmd);
 
-      EXPECT_EQ(glyph._Text, std::string(cmd.begin(), iter_check));
+      EXPECT_EQ(glyph.Text_, std::string(cmd.begin(), iter_check));
       EXPECT_EQ(iter, iter_check);
-      EXPECT_FALSE(glyph._Render);
+      EXPECT_FALSE(glyph.Render_);
    }
 
    // Math mode
@@ -175,9 +175,9 @@ TEST_F(ParseTeXTest, ParseTeXCommand)
       const auto iter_check_reverse = std::find_if(cmd.rbegin(), cmd.rend(), [](auto c){ return c == OneOf(' ', ',', '.', ':'); });
       const auto iter_check = (iter_check_reverse + 1).base();
 
-      EXPECT_EQ(glyph._Text, std::string(cmd.begin(), iter_check));
+      EXPECT_EQ(glyph.Text_, std::string(cmd.begin(), iter_check));
       EXPECT_EQ(iter, iter_check);
-      EXPECT_TRUE(glyph._Render);
+      EXPECT_TRUE(glyph.Render_);
    }
 
    // Death tests
@@ -202,7 +202,7 @@ TEST_F(ParseTeXTest, ParseTeXMath)
       const auto glyphs = ParseTeXMath(iter, tex_str.end());
 
       std::string glyph_str;
-      FOR_EACH(glyph, glyphs) glyph_str.append(glyph._Text);
+      FOR_EACH(glyph, glyphs) glyph_str.append(glyph.Text_);
       EXPECT_EQ(glyph_str, tex_str.substr(0, glyph_str.length()));
       auto iter_check = std::find_if(tex_str.rbegin(), tex_str.rend(), [](auto c){ return c == OneOf(' ', ',', '.', ';'); });
       EXPECT_EQ(iter, (iter_check + 1).base());
@@ -232,27 +232,27 @@ TEST_F(ParseTeXTest, ParseAllTeXScriptText)
       // First script text
       if(*(iter_start + 1) != '{') // Not braced
       {
-         EXPECT_EQ(glyphs[0]._Text, std::string(1, *(iter_start + 1)));
-         EXPECT_TRUE(glyphs[0]._Render);
+         EXPECT_EQ(glyphs[0].Text_, std::string(1, *(iter_start + 1)));
+         EXPECT_TRUE(glyphs[0].Render_);
       }
       else // Braced
       {
-         EXPECT_EQ(glyphs[0]._Text, std::string(1, *(iter_start + 2)));
-         EXPECT_TRUE(glyphs[0]._Render);
+         EXPECT_EQ(glyphs[0].Text_, std::string(1, *(iter_start + 2)));
+         EXPECT_TRUE(glyphs[0].Render_);
       }
 
       // Second script text
       iter_start = std::find_if(iter_start + 1, str.end(), [](auto c){return c == OneOf('_', '^');});
       if(*(iter_start + 1) != '{') // Not braced
       {
-         EXPECT_EQ(glyphs[1]._Text, std::string(1, *(iter_start + 1)));
-         EXPECT_TRUE(glyphs[1]._Render);
+         EXPECT_EQ(glyphs[1].Text_, std::string(1, *(iter_start + 1)));
+         EXPECT_TRUE(glyphs[1].Render_);
          EXPECT_EQ(iter, iter_start + 2);
       }
       else // Braced
       {
-         EXPECT_EQ(glyphs[1]._Text, std::string(1, *(iter_start + 2)));
-         EXPECT_TRUE(glyphs[1]._Render);
+         EXPECT_EQ(glyphs[1].Text_, std::string(1, *(iter_start + 2)));
+         EXPECT_TRUE(glyphs[1].Render_);
          EXPECT_EQ(iter, iter_start + 4);
       }
    }
@@ -408,14 +408,14 @@ TEST_F(ParseTeXTest, ParseTeXScriptText)
 
       if(*(iter_start + 1) != '{') // Not braced
       {
-         EXPECT_EQ(glyphs[0]._Text, std::string(1, *(iter_start + 1)));
-         EXPECT_TRUE(glyphs[0]._Render);
+         EXPECT_EQ(glyphs[0].Text_, std::string(1, *(iter_start + 1)));
+         EXPECT_TRUE(glyphs[0].Render_);
          EXPECT_EQ(iter, iter_start + 2);
       }
       else // Braced
       {
-         EXPECT_EQ(glyphs[0]._Text, std::string(1, *(iter_start + 2)));
-         EXPECT_TRUE(glyphs[0]._Render);
+         EXPECT_EQ(glyphs[0].Text_, std::string(1, *(iter_start + 2)));
+         EXPECT_TRUE(glyphs[0].Render_);
          EXPECT_EQ(iter, iter_start + 4);
       }
    }

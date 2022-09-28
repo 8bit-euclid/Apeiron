@@ -53,23 +53,23 @@ class TeXGlyph final : public TeXObject,
 
    TeXGlyph& SetBold(const bool is_bold) override;
 
-   inline void DoNotRender() { _Render = false; }
+   inline void DoNotRender() { Render_ = false; }
 
-   inline bool isRendered() const { return _Render; }
+   inline bool isRendered() const { return Render_; }
 
  private:
-   friend class TeXGlyphGroup;
+   friend class String;
 
    void Init(GlyphSheet::IndexT& index_offset);
 
    void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
 
-   GlyphSheet::IndexT     _Index{MaxInt<GlyphSheet::IndexT>};
-   std::optional<Colour>  _Colour;
-   std::optional<bool>    _isItalic;
-   std::optional<bool>    _isBold;
-   bool                   _Render{true};
-   bool                   _isInit{false};
+   GlyphSheet::IndexT    Index_{MaxInt<GlyphSheet::IndexT>};
+   std::optional<Colour> Colour_;
+   std::optional<bool>   isItalic_;
+   std::optional<bool>   isBold_;
+   bool                  Render_{true};
+   bool                  isInit_{false};
 
    /** Friend unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;

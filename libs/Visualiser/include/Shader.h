@@ -63,7 +63,7 @@ class Shader
 
    inline void SetWarnings(const bool _is_on) { _WarningsOn = _is_on; }
 
-   void UseModel(const ModelGroup& model);
+   void UseModel(const Model& model);
 
    void UseMaterial(const Material& material);
 

@@ -81,27 +81,27 @@ class ModelGroup : public ModelObject
    ModelGroup& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
    ModelGroup& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>,
-                      const std::function<Real(Real)>& reparam = Linear) override;
+                     const std::function<Real(Real)>& reparam = Linear) override;
 
    ModelGroup& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
    ModelGroup& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
    ModelGroup& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
-                          const std::function<Real(Real)>& reparam = Linear) override;
+                         const std::function<Real(Real)>& reparam = Linear) override;
 
    ModelGroup& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
-                          const std::function<Real(Real)>& ramp = Identity) override;
+                         const std::function<Real(Real)>& ramp = Identity) override;
 
-   /** Sub-model Addition
+   /** Part/sub-model Addition
    ************************************************************************************************************************************************************/
-   ModelGroup& Add(Model& model, const std::string& name);
+   ModelGroup& Add(Model& part, const std::string& name = "");
 
-   ModelGroup& Add(ModelGroup& model_group, const std::string& name);
+   ModelGroup& Add(Model&& part, const std::string& name = "");
 
-   ModelGroup& Add(Model&& model, const std::string& name);
+   ModelGroup& Add(ModelGroup& sub_model, const std::string& name = "");
 
-   ModelGroup& Add(ModelGroup&& model_group, const std::string& name);
+   ModelGroup& Add(ModelGroup&& sub_model, const std::string& name = "");
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -114,11 +114,13 @@ class ModelGroup : public ModelObject
    bool isInitialised() const override;
 
  protected:
+   friend class ModelGroupFactory;
+
    void Init() override;
 
    void ComputeLifespan() override;
 
-   std::unordered_map<std::string, SPtr<ModelObject>> _SubModels;
+   std::unordered_map<std::string, SPtr<ModelObject>> SubModels_;
 };
 
 }

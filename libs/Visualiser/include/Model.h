@@ -22,7 +22,7 @@
 #include "Colour.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Model.h"
+#include "ModelObject.h"
 
 #include <map>
 #include <memory>
@@ -78,7 +78,8 @@ class Model : public ModelObject
 
    Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
 
-   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>,
+                const std::function<Real(Real)>& reparam = Linear) override;
 
    Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
 
@@ -98,37 +99,43 @@ class Model : public ModelObject
 
    /** Other
    ************************************************************************************************************************************************************/
-   inline bool isInitialised() const override { return _isInitialised; }
+   inline bool isInitialised() const override { return isInitialised_; }
+
+   inline const auto& ModelMatrix() const { return ModelMatrix_; }
+
+   inline const auto& Geometry() const { return Mesh_; }
+//
+//   inline bool isMeshLoaded() const { return _Mesh.isLoaded(); }
 
  protected:
+   friend class ModelFactory;
+
    void Init() override;
 
    void ComputeLifespan() override;
 
-   inline void Reset() { _ModelMatrix = glm::mat4(1.0); }
+   inline void Reset() { ModelMatrix_ = glm::mat4(1.0); }
 
-   inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
+   inline void Scale(const glm::vec3& factors) { ModelMatrix_ = glm::scale(ModelMatrix_, factors); }
 
-   inline void Translate( const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
+   inline void Translate( const glm::vec3& displacement) { ModelMatrix_ = glm::translate(ModelMatrix_, displacement); }
 
-   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
+   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix_ = glm::rotate(ModelMatrix_, angle, axis); }
 
- protected:
    using ATComp = ActionTypeComparator;
-
-   Mesh                                           _Mesh;
-   VertexArray                                    _VAO;
-   VertexBuffer                                   _VBO;
-   IndexBuffer                                    _EBO;
-   std::optional<ShaderStorageBuffer>             _SSBO;
-   std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
-   std::optional<Pair<std::string, Real>>         _TextureInfo;
-   std::optional<Material>                        _Material;
-   Colour                                         _StrokeColour;
-   Colour                                         _FillColour;
-   glm::vec3                                      _Centroid;
-   glm::mat4                                      _ModelMatrix{1.0f};
-   glm::mat4                                      _PreviousActions{1.0f};
+   Mesh                                           Mesh_;
+   VertexArray                                    VAO_;
+   VertexBuffer                                   VBO_;
+   IndexBuffer                                    EBO_;
+   std::optional<ShaderStorageBuffer>             SSBO_;
+   std::map<ActionType, SPtr<ActionBase>, ATComp> Actions_;
+   std::optional<Pair<std::string, Real>>         TextureInfo_;
+   std::optional<Material>                        Material_;
+   Colour                                         StrokeColour_;
+   Colour                                         FillColour_;
+   glm::vec3                                      Centroid_;
+   glm::mat4                                      ModelMatrix_{1.0f};
+   glm::mat4                                      PreviousActions_{1.0f};
 };
 
 }
