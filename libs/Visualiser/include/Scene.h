@@ -71,7 +71,7 @@ class Scene
 
    Scene& Add(SpotLight&& light, const std::string& name = "");
 
-   inline bool isCurrent(const Real current_time) const { return _StartTime <= current_time && current_time < _EndTime; }
+   inline bool isCurrent(const Real current_time) const { return StartTime_ <= current_time && current_time < EndTime_; }
 
  private:
    friend class Visualiser;
@@ -92,21 +92,21 @@ class Scene
    void RenderModel(SPtr<ModelGroup>& model, Shader& shader);
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   std::string             _Title;
-   UMap<SPtr<ModelObject>> _Models;
-   UMap<SPtr<TeXBox>>      _TeXBoxes;
-   UMap<DirectionalLight>  _DLights;
-   UMap<PointLight>        _PLights;
-   UMap<SpotLight>         _SLights;
-   UMap<UMap<Texture&>>    _Textures;
-   Transition              _Transition{};
-   Scene*                  _PrevScene{};
-   Scene*                  _NextScene{};
-   Real                    _Duration;
-   Real                    _StartTime;
-   Real                    _EndTime;
-   bool                    _AdjustDuration{false};
-   inline static bool      _isSingleScene {true};
+   std::string             Title_;
+   UMap<SPtr<ModelObject>> Actors_;
+   UMap<SPtr<TeXBox>>      TeXBoxes_;
+   UMap<DirectionalLight>  DLights_;
+   UMap<PointLight>        PLights_;
+   UMap<SpotLight>         SLights_;
+   UMap<UMap<Texture&>>    Textures_;
+   Transition              Transition_{};
+   Scene*                  PrevScene_{};
+   Scene*                  NextScene_{};
+   Real                    Duration_;
+   Real                    StartTime_;
+   Real                    EndTime_;
+   bool                    AdjustDuration_{false};
+   inline static bool      SingleScene_{true};
 };
 
 }

@@ -73,7 +73,7 @@ class Action<type> final : public ActionBase
 
  private:
    glm::vec3 Position;
-   Real     Angle;
+   Real      Angle;
    glm::vec3 Axis;
 };
 
@@ -134,9 +134,9 @@ class Action<type> final : public ActionBase
 
  private:
    std::function<Real(Real)> Angle;
-   const glm::vec3             Axis;
-   const glm::vec3             Reference;
-   Real                       AngularSpeed;
+   const glm::vec3           Axis;
+   const glm::vec3           Reference;
+   Real                      AngularSpeed;
 };
 
 ///** Reflection

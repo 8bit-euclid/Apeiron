@@ -16,11 +16,9 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-
-#include "TeXGlyph.h"
-#include "String.h"
 #include "ModelGroup.h"
-#include "Texture.h"
+#include "TeXObject.h"
+#include "TeXGlyph.h"
 
 namespace aprn::vis {
 
@@ -72,16 +70,15 @@ class TeXBox final : public TeXObject,
    TeXBox& SetBold(bool is_bold) override;
 
  private:
-   friend class Scene;
    friend class Visualiser;
 
-   void Init(size_t id);
+   void InitTeXBox(size_t id);
 
-   void InitSubGlyphs();
+   void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void ComputeDimensions();
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
 
-   void LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info);
+   void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) override;
 
    fm::Path ImagePath() const;
 

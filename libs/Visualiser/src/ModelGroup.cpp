@@ -26,7 +26,7 @@ void
 ModelGroup::Update(const Real global_time) { FOR_EACH(_, sub_model, SubModels_) sub_model->Update(global_time); }
 
 void
-ModelGroup::Render() { FOR_EACH(_, sub_model, SubModels_) sub_model->Render(); }
+ModelGroup::Render(Shader& shader) { FOR_EACH(_, sub_model, SubModels_) sub_model->Render(shader); }
 
 void
 ModelGroup::Delete() { FOR_EACH(_, sub_model, SubModels_) sub_model->Delete(); }

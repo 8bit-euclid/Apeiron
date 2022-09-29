@@ -82,25 +82,24 @@ TeXGlyph::SetBold(const bool is_bold)
 * Glyph Private Interface
 ***************************************************************************************************************************************************************/
 void
-TeXGlyph::Init(GlyphSheet::IndexT& index_offset)
+TeXGlyph::InitTeXObject(GlyphSheet::IndexT& index_offset)
 {
-   ASSERT(!isInit_, "This glyph has already been initialised.")
+   ASSERT(!Init_, "This glyph has already been initialised.")
 
-   // Initialise subglyphs and assign glyph index.
-   if(isCompound()) FOR_EACH(glyph, _SubGlyphs) glyph->Init(index_offset);
-   else if(isRendered())
+   // Initialise glyph and assign glyph index if rendered.
+   if(Rendered())
    {
-      isInit_ = true;
-      Index_  = index_offset++;
+      Init_  = true;
+      Index_ = index_offset++;
    }
 }
 
 void
 TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
-   if(!isRendered()) return;
+   if(!Rendered()) return;
 
-   ASSERT(isInit_, "The glyph must be initialise before its dimensions are computed.")
+   ASSERT(Init_, "The glyph must be initialise before its dimensions are computed.")
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(Index_);
    const auto  scale      = GlyphSheet::FontSizeScale(font_size);
@@ -112,7 +111,7 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
    anchor         = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
-   Mesh_ = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).Geometry();
+   Mesh_ = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).ModelMesh();
    auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { Mesh_.Vertices[i].TextureCoordinates =
                                                                      glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
    set_tex_coor(0, anchor);

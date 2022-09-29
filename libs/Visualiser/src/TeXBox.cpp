@@ -35,38 +35,42 @@ TeXBox::TeXBox(const DArray<TeXGlyph>& tex_glyphs) { Add(tex_glyphs); }
 TeXBox::TeXBox(const DArray<TeXBox>& tex_boxes) { Add(tex_boxes); }
 
 TeXBox&
-TeXBox::Add(const char* str)
-{
-   return Add(std::string(str));
-}
+TeXBox::Add(const char* str) { return Add(std::string(str)); }
 
 TeXBox&
 TeXBox::Add(const std::string& str) { return Add(ParseTeXString(str)); }
 
 TeXBox&
-TeXBox::Add(const TeXGlyph& tex_glyph) { return Add(String(tex_glyph)); }
+TeXBox::Add(const TeXGlyph& tex_glyph)
+{
+   const std::string& glyph_id = "SubBox_" + ToString(SubBoxes_.size());
+   auto glyph = std::make_shared<TeXGlyph>(tex_glyph);
+   SubBoxes_.emplace_back(glyph);
+   SubModels_.emplace(glyph_id, glyph);
+   return *this;
+}
 
 TeXBox&
 TeXBox::Add(const TeXBox& tex_box)
 {
-   // Allocate new memory for the string, initialise it, and add it as a sub-model of this TeX-box.
-   const std::string& str_id = "String_" + ToString(SubBoxes_.size());
-   SubBoxes_.emplace_back(std::make_shared<String>(str));
-   SubModels_.emplace(str_id, SubBoxes_.back());
+   const std::string& box_id = "SubBox_" + ToString(SubBoxes_.size());
+   auto box = std::make_shared<TeXBox>(tex_box);
+   SubBoxes_.emplace_back(box);
+   SubModels_.emplace(box_id, box);
    return *this;
 }
 
 TeXBox&
 TeXBox::Add(const DArray<TeXGlyph>& tex_glyphs)
 {
-   Add(String(tex_glyphs));
+   FOR_EACH(tex_glyph, tex_glyphs) Add(tex_glyph);
    return *this;
 }
 
 TeXBox&
 TeXBox::Add(const DArray<TeXBox>& tex_boxes)
 {
-   FOR_EACH(str, strings) Add(str);
+   FOR_EACH(tex_box, tex_boxes) Add(tex_box);
    return *this;
 }
 
@@ -119,51 +123,51 @@ TeXBox::SetBold(const bool is_bold)
 * TeXBox Private Interface
 ***************************************************************************************************************************************************************/
 void
-TeXBox::Init(const size_t id)
+TeXBox::InitTeXBox(const size_t id)
 {
-   // Initialise sub-strings and accumulate text.
-   InitSubGlyphs();
+   // Initialise sub-boxes, assign glyph indices, and accumulate text.
+   GlyphSheet::IndexT glyph_index = 0;
+   InitTeXObject(glyph_index);
 
-   // Initialise glyph sheet and compute tex-box dimensions.
+   // Initialise glyph sheet.
    GlyphSheet_.Init(id, Text_);
-   ComputeDimensions();
+   ASSERT(GlyphSheet_.Width() && GlyphSheet_.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
+
+   // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
+   Dimensions_ = { GlyphSheet_.Width(), GlyphSheet_.Height() };
+   Dimensions_ *= GlyphSheet::FontSizeScale(FontSize_);
 
    // Compute the sub-glyph dimensions and their texture coordinates.
-   FOR_EACH(str, SubBoxes_) str->ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_);
+   ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_);
 }
 
 void
-TeXBox::InitSubGlyphs()
+TeXBox::InitTeXObject(GlyphSheet::IndexT& index_offset)
 {
    // Initialise sub-glyphs and add contributions from each sub-glyph to the TeX-box string.
-   GlyphSheet::IndexT glyph_index{};
    Text_.clear();
-   FOR_EACH(str, SubBoxes_)
+   FOR_EACH(sub_box, SubBoxes_)
    {
-      str->Init(glyph_index);
-      Text_ += str->Text_;
+      sub_box->InitTeXObject(index_offset);
+      Text_ += sub_box->Text();
    }
 }
 
 void
-TeXBox::ComputeDimensions()
+TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
-   ASSERT(GlyphSheet_.Width() && GlyphSheet_.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
-
-   // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
-   Dimensions_ = {GlyphSheet_.Width(), GlyphSheet_.Height() };
-   Dimensions_ *= GlyphSheet::FontSizeScale(FontSize_);
+   FOR_EACH(sub_box, SubBoxes_) sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
 }
 
 void
-TeXBox::LoadSubGlyphTextures(const Pair<std::string, Real>& texture_info) { FOR_EACH(str, SubBoxes_) str->LoadSubGlyphTextures(texture_info); }
+TeXBox::LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) { FOR_EACH(sub_box, SubBoxes_) sub_box->LoadTeXBoxTexture(texture_info); }
 
 fm::Path
 TeXBox::ImagePath() const
 {
-   const auto comp_dir = GlyphSheet_.CompileDirectory();
-   ASSERT(!comp_dir.empty(), "The compile directory has not yet been set for this TeXBox.")
-   return comp_dir / LaTeXTemplate().filename().replace_extension(".png");
+   const auto compile_dir = GlyphSheet_.CompileDirectory();
+   ASSERT(!compile_dir.empty(), "The compile directory has not yet been set for this TeXBox.")
+   return compile_dir / LaTeXTemplate().filename().replace_extension(".png");
 }
 
 }

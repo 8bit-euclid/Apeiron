@@ -16,7 +16,6 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-
 #include "ActionBase.h"
 #include "Buffers.h"
 #include "Colour.h"
@@ -48,7 +47,7 @@ class ModelGroup : public ModelObject
 
    void Update(Real global_time) override;
 
-   void Render() override;
+   void Render(Shader& shader) override;
 
    void Delete() override;
 

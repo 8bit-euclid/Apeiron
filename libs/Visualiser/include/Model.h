@@ -46,7 +46,7 @@ class Model : public ModelObject
 
    void Update(Real global_time) override;
 
-   void Render() override;
+   void Render(Shader& shader) override;
 
    void Delete() override;
 
@@ -103,9 +103,7 @@ class Model : public ModelObject
 
    inline const auto& ModelMatrix() const { return ModelMatrix_; }
 
-   inline const auto& Geometry() const { return Mesh_; }
-//
-//   inline bool isMeshLoaded() const { return _Mesh.isLoaded(); }
+   inline const auto& ModelMesh() const { return Mesh_; }
 
  protected:
    friend class ModelFactory;
@@ -129,7 +127,7 @@ class Model : public ModelObject
    IndexBuffer                                    EBO_;
    std::optional<ShaderStorageBuffer>             SSBO_;
    std::map<ActionType, SPtr<ActionBase>, ATComp> Actions_;
-   std::optional<Pair<std::string, Real>>         TextureInfo_;
+   std::optional<Pair<std::string, Real>>         TextureInfo_; // [texture name, displacement map scale]
    std::optional<Material>                        Material_;
    Colour                                         StrokeColour_;
    Colour                                         FillColour_;

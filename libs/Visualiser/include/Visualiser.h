@@ -92,17 +92,17 @@ class Visualiser
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
 
-   Window              _Window;
-   UMap<Scene>         _Scenes;
-   UMap<Camera>        _Cameras;
-   UMap<Shader>        _Shaders;
-   UMap<UMap<Texture>> _Textures;
-   PostProcessor       _PostProcessor;
-   Camera*             _ActiveCamera;
-   Scene*              _CurrentScene;
-   GUI                 _GUI;
-   bool                _wasViewPortModified{};
-   bool                _HideCursor{false};
+   Window              Window_;
+   UMap<Scene>         Scenes_;
+   UMap<Camera>        Cameras_;
+   UMap<Shader>        Shaders_;
+   UMap<UMap<Texture>> Textures_;
+   PostProcessor       PostProcessor_;
+   Camera*             ActiveCamera_;
+   Scene*              CurrentScene_;
+   GUI                 GUI_;
+   bool                wasViewPortModified_{};
+   bool                HideCursor_{false};
 };
 
 }
