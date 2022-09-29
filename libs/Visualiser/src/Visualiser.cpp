@@ -31,13 +31,13 @@ Visualiser::Visualiser()
    : Visualiser(1920, 1080) {}
 
 Visualiser::Visualiser(GLint window_width, GLint window_height)
-   : _Window(window_width, window_height), _Cameras{{"Main", Camera()}}, _ActiveCamera(&_Cameras["Main"]) {}
+   : Window_(window_width, window_height), Cameras_{{"Main", Camera()}}, ActiveCamera_(&Cameras_["Main"]) {}
 
 void
 Visualiser::Add(Scene& scene, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Scene_" + ToString(_Scenes.size()) : name;
-   _Scenes.emplace(id, std::move(scene));
+   const std::string& id = name.empty() ? "Scene_" + ToString(Scenes_.size()) : name;
+   Scenes_.emplace(id, std::move(scene));
 }
 
 void
@@ -46,8 +46,8 @@ Visualiser::Add(Camera& camera, const std::string& name) { Add(std::move(camera)
 void
 Visualiser::Add(Camera&& camera, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Camera_" + ToString(_Cameras.size()) : name;
-   _Cameras.emplace(id, std::move(camera));
+   const std::string& id = name.empty() ? "Camera_" + ToString(Cameras_.size()) : name;
+   Cameras_.emplace(id, std::move(camera));
 }
 
 void
@@ -57,7 +57,7 @@ Visualiser::Animate()
    Init();
 
    // Run main render loop.
-   while(_Window.isOpen())
+   while(Window_.isOpen())
    {
       BeginFrame();
       UpdateScene();
@@ -86,34 +86,34 @@ Visualiser::Init()
    InitCameras();
    InitShaders();
    InitPostProcessor();
-   _Window.InitTime();
+   Window_.InitTime();
 }
 
 void
 Visualiser::InitWindow()
 {
    // Open a window, set its title, and initialise OpenGL.
-   _Window.Open();
-   _Window.SetTitle("Apeiron");
-   _Window.InitOpenGL();
+   Window_.Open();
+   Window_.SetTitle("Apeiron");
+   Window_.InitOpenGL();
 }
 
 void
 Visualiser::InitGUI()
 {
 #ifdef DEBUG_MODE
-   _GUI.Init(_Window._GlfwWindow);
+   GUI_.Init(Window_._GlfwWindow);
 #endif
 }
 
 void
 Visualiser::InitScenes()
 {
-   auto first_scene_it = std::find_if(_Scenes.begin(), _Scenes.end(), [](const auto& entry){ return entry.second._PrevScene == nullptr; });
-   ASSERT(first_scene_it != _Scenes.end(), "Failed to locate the first scene.")
+   auto first_scene_it = std::find_if(Scenes_.begin(), Scenes_.end(), [](const auto& entry){ return entry.second.PrevScene_ == nullptr; });
+   ASSERT(first_scene_it != Scenes_.end(), "Failed to locate the first scene.")
 
-   _CurrentScene = &first_scene_it->second;
-   Scene* current_scene(_CurrentScene);
+   CurrentScene_ = &first_scene_it->second;
+   Scene* current_scene(CurrentScene_);
    size_t scene_count{};
    Real  start_time{};
 
@@ -124,25 +124,25 @@ Visualiser::InitScenes()
       if(scene_count)
       {
          // Sync the start-time of the next scene (or the transition to it) to the end-time of the current scene.
-         start_time = current_scene->_EndTime;
+         start_time = current_scene->EndTime_;
 
          // Initialise the scene transition if there is one, and re-update the start time of the next scene.
-         if(current_scene->_Transition._Type != TransitionType::None)
+         if(current_scene->Transition_._Type != TransitionType::None)
          {
-            auto& transition = current_scene->_Transition;
+            auto& transition = current_scene->Transition_;
             transition.Init(start_time);
             start_time = transition._EndTime;
          }
-         current_scene = current_scene->_NextScene; // Move over to the next scene
+         current_scene = current_scene->NextScene_; // Move over to the next scene
       }
 
       // Initialise current scene and update count
       current_scene->Init(start_time);
       ++scene_count;
    }
-   while(current_scene->_NextScene);
+   while(current_scene->NextScene_);
 
-   ASSERT(scene_count == _Scenes.size(), "There was a mismatch in the total number of scenes.")
+   ASSERT(scene_count == Scenes_.size(), "There was a mismatch in the total number of scenes.")
 }
 
 void
@@ -150,16 +150,16 @@ Visualiser::InitTeXBoxes()
 {
    // Linearise pointers to all TeX-boxes to allow for parallel initialisation.
    DArray<std::pair<size_t, TeXBox*>> tex_boxes;
-   tex_boxes.reserve(10 * _Scenes.size());
-   FOR_EACH(_, scene, _Scenes) FOR_EACH(_, tex_box, scene._TeXBoxes) tex_boxes.push_back({ tex_boxes.size(), tex_box.get() });
+   tex_boxes.reserve(10 * Scenes_.size());
+   FOR_EACH(_, scene, Scenes_) FOR_EACH(_, tex_box, scene.TeXBoxes_) tex_boxes.push_back({tex_boxes.size(), tex_box.get() });
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    InitTeXDirectory();
-   FOR(i, tex_boxes.size()) tex_boxes[i].second->Init(i);
+   FOR(i, tex_boxes.size()) tex_boxes[i].second->InitTeXBox(i);
 
    // Load tex-box model textures. Note: only diffuse texture required.
-   FOR_EACH(_, scene, _Scenes)
-      FOR_EACH_CONST(tex_box_name, tex_box, scene._TeXBoxes)
+   FOR_EACH(_, scene, Scenes_)
+      FOR_EACH_CONST(tex_box_name, tex_box, scene.TeXBoxes_)
       {
          const auto texture_name = tex_box_name + "_texture";
          const auto texture_type = TextureType::Diffuse;
@@ -168,15 +168,15 @@ Visualiser::InitTeXBoxes()
          // Load compiled tex-box image as a texture.
          UMap<Texture> texture_files;
          texture_files.emplace(type_string, Texture(texture_type, tex_box->ImagePath()));
-         _Textures.emplace(texture_name, std::move(texture_files));
+         Textures_.emplace(texture_name, std::move(texture_files));
 
          // Point to the textures from the scene.
          UMap<Texture&> texture_file_map;
-         FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-         scene._Textures.emplace(texture_name, texture_file_map);
+         FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+         scene.Textures_.emplace(texture_name, texture_file_map);
 
          // Point to the texture from the tex-box sub-glyph models.
-         tex_box->LoadSubGlyphTextures({ texture_name, Zero });
+         tex_box->LoadTeXBoxTexture({texture_name, Zero});
       }
 }
 
@@ -184,14 +184,14 @@ void
 Visualiser::InitTextures()
 {
    // Load model textures
-   FOR_EACH(_, scene, _Scenes)
-      FOR_EACH_CONST(_, model, scene._Models)
+   FOR_EACH(_, scene, Scenes_)
+      FOR_EACH_CONST(_, model, scene.Actors_)
          if(model->_TextureInfo.has_value())
          {
             const auto& texture_info = model->_TextureInfo;
             const auto& texture_name = texture_info.value().first;
 
-            if(!_Textures.contains(texture_name))
+            if(!Textures_.contains(texture_name))
             {
                // Add all files associated to the given texture
                const auto  texture_list = { TextureType::Diffuse,
@@ -214,12 +214,12 @@ Visualiser::InitTextures()
                }
 
                // Add texture files to the list of textures
-               _Textures.emplace(texture_name, std::move(texture_files));
+               Textures_.emplace(texture_name, std::move(texture_files));
 
                // Point to the textures from the scene
                UMap<Texture&> texture_file_map;
-               FOR_EACH(sub_texture_name, sub_texture, _Textures[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-               scene._Textures.emplace(texture_name, texture_file_map);
+               FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+               scene.Textures_.emplace(texture_name, texture_file_map);
             }
 
          }
@@ -229,23 +229,23 @@ void
 Visualiser::InitCameras()
 {
    // Set default settings of the current active camera.
-   ASSERT(_ActiveCamera, "The active camera pointer has not yet been set.")
-   _ActiveCamera->SetOrientation(glm::vec3(0.0f, 0.0f, 2.0f), 0.0, 0.0);
-   _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio(), 45.0, 1.0, -100.0);
+   ASSERT(ActiveCamera_, "The active camera pointer has not yet been set.")
+   ActiveCamera_->SetOrientation(glm::vec3(0.0f, 0.0f, 2.0f), 0.0, 0.0);
+   ActiveCamera_->SetViewFrustum(Window_.ViewportAspectRatio(), 45.0, 1.0, -100.0);
 }
 
 void
 Visualiser::InitShaders()
 {
    for(std::string shader : {"Default", "DirecShadow", "PointShadow", "Line"})
-      _Shaders.emplace(shader, Shader::Directory + shader + ".glsl");
+      Shaders_.emplace(shader, Shader::Directory + shader + ".glsl");
 }
 
 void
 Visualiser::InitPostProcessor()
 {
-   const auto [width, height] = _Window.ViewportDimensions(); // Note: must not use the window dimensions here.
-   _PostProcessor.Init(width, height);
+   const auto [width, height] = Window_.ViewportDimensions(); // Note: must not use the window dimensions here.
+   PostProcessor_.Init(width, height);
 }
 
 void
@@ -256,45 +256,45 @@ Visualiser::BeginFrame()
 
    // Set new GUI frame, if debugging.
 #ifdef DEBUG_MODE
-   _GUI.NewFrame();
+   GUI_.NewFrame();
 #endif
 
    // Update the current and previous times, compute delta time, compute and display frame-rate, and check if the viewport was modified.
-   _Window.ComputeDeltaTime();
-   _Window.ComputeFrameRate();
-   _wasViewPortModified = _Window.isViewportModified();
+   Window_.ComputeDeltaTime();
+   Window_.ComputeFrameRate();
+   wasViewPortModified_ = Window_.isViewportModified();
 }
 
 void
 Visualiser::UpdateScene()
 {
-   DEBUG_ASSERT(_CurrentScene, "The current scene pointer has not yet been set.")
+   DEBUG_ASSERT(CurrentScene_, "The current scene pointer has not yet been set.")
 
    // Determine if the current scene needs to be updated
-   const auto current_time = _Window.CurrentTime();
-   if(!_CurrentScene->isCurrent(current_time))
+   const auto current_time = Window_.CurrentTime();
+   if(!CurrentScene_->isCurrent(current_time))
    {
-      ASSERT(_CurrentScene->_NextScene, "TODO - need to properly handle final scene.")
-      _CurrentScene = _CurrentScene->_NextScene;
+      ASSERT(CurrentScene_->NextScene_, "TODO - need to properly handle final scene.")
+      CurrentScene_ = CurrentScene_->NextScene_;
    }
 
    // Update models in current scene
-   _CurrentScene->UpdateModels(current_time);
+   CurrentScene_->UpdateModels(current_time);
 }
 
 void
 Visualiser::HandleUserInputs()
 {
    // Handle cursor, key, and mouse wheel inputs.
-   if(_HideCursor) _ActiveCamera->CursorControl(_Window.CursorDisplacement());
-   _ActiveCamera->KeyControl(_Window._Keys, _Window.DeltaTime());
-   _ActiveCamera->WheelControl(_Window.WheelDisplacement());
+   if(HideCursor_) ActiveCamera_->CursorControl(Window_.CursorDisplacement());
+   ActiveCamera_->KeyControl(Window_._Keys, Window_.DeltaTime());
+   ActiveCamera_->WheelControl(Window_.WheelDisplacement());
 
    // If the viewport was modified, update the view frustum and adjust line shader resolution.
-   if(_wasViewPortModified)
+   if(wasViewPortModified_)
    {
-      _ActiveCamera->SetViewFrustum(_Window.ViewportAspectRatio());
-      _Shaders.at("Line").SetUniform2f("u_resolution", _Window._ViewportDimensions[0], _Window._ViewportDimensions[1]);
+      ActiveCamera_->SetViewFrustum(Window_.ViewportAspectRatio());
+      Shaders_.at("Line").SetUniform2f("u_resolution", Window_._ViewportDimensions[0], Window_._ViewportDimensions[1]);
    }
 }
 
@@ -302,36 +302,36 @@ void
 Visualiser::RenderScene()
 {
    // Render shadows from all directional and point light sources.
-   _CurrentScene->RenderDirecShadows(_Shaders.at("DirecShadow"));
-   _CurrentScene->RenderPointShadows(_Shaders.at("PointShadow"));
+   CurrentScene_->RenderDirecShadows(Shaders_.at("DirecShadow"));
+   CurrentScene_->RenderPointShadows(Shaders_.at("PointShadow"));
 
    // Point shadow rendering modifies the viewport, so need to reset it.
-   _Window.ResetViewport();
+   Window_.ResetViewport();
 
    // Write to off-screen frame buffer.
-   _PostProcessor.StartWrite();
+   PostProcessor_.StartWrite();
 
    // Render all elements of the current scene.
-   _CurrentScene->RenderScene(_Shaders.at("Default"), *_ActiveCamera);
+   CurrentScene_->RenderScene(Shaders_.at("Default"), *ActiveCamera_);
 
    // Finalise off-screen render.
-   _PostProcessor.StopWrite();
+   PostProcessor_.StopWrite();
 }
 
 void
-Visualiser::PostProcess() { _PostProcessor.Render(); }
+Visualiser::PostProcess() { PostProcessor_.Render(); }
 
 void
 Visualiser::RenderGUIWindow()
 {
 #ifdef DEBUG_MODE
    // Start a GUI window and add required elements to it.
-   _GUI.StartWindow();
+   GUI_.StartWindow();
    AddGUIElements();
-   _GUI.EndWindow();
+   GUI_.EndWindow();
 
    // Render the GUI elements in the window.
-   _GUI.Render();
+   GUI_.Render();
 #endif
 }
 
@@ -341,7 +341,7 @@ Visualiser::AddGUIElements()
 #ifdef DEBUG_MODE
    using namespace ImGui;
 
-   auto& scene = *_CurrentScene; // Only add current scene elements.
+   auto& scene = *CurrentScene_; // Only add current scene elements.
 
    if(CollapsingHeader("General"))
    {
@@ -368,7 +368,7 @@ Visualiser::AddGUIElements()
 
       if(TreeNode("Point lights"))
       {
-         FOR_EACH(name, light, scene._PLights)
+         FOR_EACH(name, light, scene.PLights_)
             if(TreeNode(name.c_str()))
             {
                light.AddGUIElements();
@@ -401,7 +401,7 @@ Visualiser::AddGUIElements()
 void
 Visualiser::EndFrame()
 {
-   _Window.SwapBuffers();
+   Window_.SwapBuffers();
    glfwPollEvents();
 }
 
@@ -410,9 +410,9 @@ Visualiser::Terminate()
 {
    // Terminate GUI, if debugging.
 #ifdef DEBUG_MODE
-   _GUI.Terminate();
+   GUI_.Terminate();
 #endif
-   _Window.Terminate();
+   Window_.Terminate();
 }
 
 }

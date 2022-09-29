@@ -49,29 +49,31 @@ class TeXGlyph final : public TeXObject,
 
    TeXGlyph& SetColour(const Colour& colour) override;
 
-   TeXGlyph& SetItalic(const bool is_italic) override;
+   TeXGlyph& SetItalic(bool is_italic) override;
 
-   TeXGlyph& SetBold(const bool is_bold) override;
+   TeXGlyph& SetBold(bool is_bold) override;
 
    inline void DoNotRender() { Render_ = false; }
 
-   inline bool isRendered() const { return Render_; }
+   inline bool Rendered() const { return Render_; }
 
  private:
-   friend class String;
+   friend class TeXBox;
 
-   void Init(GlyphSheet::IndexT& index_offset);
+   void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
+
+   inline void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) override { TextureInfo_ = texture_info; }
 
    GlyphSheet::IndexT    Index_{MaxInt<GlyphSheet::IndexT>};
    std::optional<Colour> Colour_;
    std::optional<bool>   isItalic_;
    std::optional<bool>   isBold_;
    bool                  Render_{true};
-   bool                  isInit_{false};
+   bool                  Init_{false};
 
-   /** Friend unit tests */
+   /** Friendly unit tests */
    friend class ParseTeXTest_ParseTeXChar_Test;
    friend class ParseTeXTest_ParseTeXMath_Test;
    friend class ParseTeXTest_ParseTeXGlyph_Test;

@@ -16,6 +16,8 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
+#include "Colour.h"
+#include "GlyphSheet.h"
 
 #include <string>
 
@@ -33,6 +35,12 @@ class TeXObject
    virtual TeXObject& SetItalic(bool is_italic) = 0;
 
    virtual TeXObject& SetBold(bool is_bold) = 0;
+
+   virtual void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) = 0;
+
+   virtual void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) = 0;
+
+   virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
 
    inline const std::string& Text() const { return Text_; }
 

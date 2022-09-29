@@ -55,7 +55,7 @@ ParseTeXGlyph(It& current, const It last, const bool is_math_mode)
    {
       // Parse single character and check for trailing superscripts/subscripts.
       TeXGlyph glyph = ParseTeXChar(*(current++));
-      if(glyph.isRendered() && *current == OneOf('_', '^'))
+      if(glyph.Rendered() && *current == OneOf('_', '^'))
       {
          auto [sub_glyphs, script_text] = ParseAllTeXScriptText(current, last);
          glyph.Add(TeXGlyph(glyph.Text())); // Need to add base glyph as a subglyph first.

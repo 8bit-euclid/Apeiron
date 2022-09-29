@@ -50,8 +50,10 @@ Model::Update(const Real global_time)
 }
 
 void
-Model::Render()
+Model::Render(Shader& shader)
 {
+   // TODO
+
    if(isInitialised_)
    {
       VAO_.Bind();
@@ -252,7 +254,7 @@ Model::operator=(Model&& model) noexcept
    model = Unmove(Model());
 
    // Tricky: when moving actions, need to re-assign the 'Actor' member of each action to the current model
-   FOR_EACH(_, action, Actions_) action->_Actor = this;
+   FOR_EACH(_, action, Actions_) action->Actor_ = this;
 
    return *this;
 }
@@ -294,8 +296,8 @@ Model::ComputeLifespan()
    // Compute lifespan of all model actions.
    FOR_EACH(_, action, Actions_)
    {
-      EntryTime_ = Min(EntryTime_, action->_StartTime);
-      ExitTime_  = Max(ExitTime_ , action->_EndTime);
+      EntryTime_ = Min(EntryTime_, action->StartTime_);
+      ExitTime_  = Max(ExitTime_ , action->EndTime_);
    }
 }
 

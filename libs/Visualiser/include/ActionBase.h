@@ -117,27 +117,25 @@ class ActionBase
 
    ActionBase(Model& model, ActionType action_type, Real start_time, std::function<Real(Real)> ramp = Identity);
 
-   virtual void
-   Do(const Real global_time) = 0;
+   virtual void Do(Real global_time) = 0;
 
-   inline auto Type() const { return _Type; }
+   inline auto Type() const { return Type_; }
 
-   inline bool isDone() const { return _isDone; }
+   inline bool Done() const { return Done_; }
 
  protected:
    friend class Model;
 
-   std::optional<Real>
-   ComputeParameter(const Real global_time);
+   std::optional<Real> ComputeParameter(Real global_time);
 
-   Model*                    _Actor;
-   ActionType                _Type;
-   const Real                _StartTime;
-   const Real                _EndTime;
-   Real                      _ParamNormaliser;
-   std::function<Real(Real)> _Reparametriser;
-   std::function<Real(Real)> _Ramp;
-   bool                      _isDone{false};
+   Model*                    Actor_;
+   ActionType                Type_;
+   const Real                StartTime_;
+   const Real                EndTime_;
+   Real                      ParamNormaliser_;
+   std::function<Real(Real)> Reparametriser_;
+   std::function<Real(Real)> Ramp_;
+   bool                      Done_{false};
 };
 
 }

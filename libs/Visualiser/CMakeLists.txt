@@ -23,7 +23,6 @@ set(SOURCE_FILES
         include/PostProcessor.h
         include/Shader.h
         include/Shadow.h
-        include/String.h
         include/Model.h
         include/TeXBox.h
         include/Texture.h
@@ -47,7 +46,6 @@ set(SOURCE_FILES
         src/PostProcessor.cpp
         src/Shader.cpp
         src/Shadow.cpp
-        src/String.cpp
         src/Model.cpp
         src/TeXBox.cpp
         src/Texture.cpp

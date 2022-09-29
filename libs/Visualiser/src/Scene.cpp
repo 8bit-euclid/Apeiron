@@ -23,24 +23,24 @@ Scene::Scene()
    : Scene(1000.0, true) {}
 
 Scene::Scene(Real duration, bool adjust_duration)
-   : _Duration(duration), _AdjustDuration(adjust_duration)
+   : Duration_(duration), AdjustDuration_(adjust_duration)
 {
    ASSERT(isPositive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
-   ASSERT(_isSingleScene, "This constructor should only be called for the first scene.")
+   ASSERT(SingleScene_, "This constructor should only be called for the first scene.")
 
-   _isSingleScene = false;
+   SingleScene_ = false;
 }
 
 Scene::Scene(Scene& prev_scene, Real duration, bool adjust_duration)
-   : _Duration(duration), _AdjustDuration(adjust_duration)
+   : Duration_(duration), AdjustDuration_(adjust_duration)
 {
    ASSERT(Zero < duration      , "Cannot have a negative duration for a scene.")
-   ASSERT(!_isSingleScene      , "This constructor should not be called for the first scene.")
-   ASSERT(_PrevScene           , "The current scene has already been assigned a previous scene.")
-   ASSERT(prev_scene._NextScene, "The previous scene has already been assigned a next scene.")
+   ASSERT(!SingleScene_      , "This constructor should not be called for the first scene.")
+   ASSERT(PrevScene_           , "The current scene has already been assigned a previous scene.")
+   ASSERT(prev_scene.NextScene_, "The previous scene has already been assigned a next scene.")
 
-   _PrevScene = &prev_scene;
-   prev_scene._NextScene = this;
+   PrevScene_ = &prev_scene;
+   prev_scene.NextScene_ = this;
 }
 
 Scene&
@@ -67,16 +67,16 @@ Scene::Add(SpotLight& light, const std::string& name) { return Add(std::move(lig
 Scene&
 Scene::Add(Model&& model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
-   _Models.emplace(id, std::make_shared<Model>(std::move(model)));
+   const std::string& id = name.empty() ? "Model_" + ToString(Actors_.size()) : name;
+   Actors_.emplace(id, std::make_shared<Model>(std::move(model)));
    return *this;
 }
 
 Scene&
 Scene::Add(ModelGroup&& model, const std::string& name)
 {
-   const std::string& id = name.empty() ? "Model_" + ToString(_Models.size()) : name;
-   _Models.emplace(id, std::make_shared<ModelGroup>(std::move(model)));
+   const std::string& id = name.empty() ? "Model_" + ToString(Actors_.size()) : name;
+   Actors_.emplace(id, std::make_shared<ModelGroup>(std::move(model)));
    return *this;
 }
 
@@ -89,34 +89,34 @@ Scene::Add(TeXGlyph&& tex_glyph, const std::string& name)
 Scene&
 Scene::Add(TeXBox&& tex_box, const std::string& name)
 {
-   const std::string& id = name.empty() ? "TeXBox_" + ToString(_TeXBoxes.size()) : name;
+   const std::string& id = name.empty() ? "TeXBox_" + ToString(TeXBoxes_.size()) : name;
    auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-   _Models.emplace(id, ptex_box);
-   _TeXBoxes.emplace(id, ptex_box);
+   Actors_.emplace(id, ptex_box);
+   TeXBoxes_.emplace(id, ptex_box);
    return *this;
 }
 
 Scene&
 Scene::Add(DirectionalLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "D-light_" + ToString(_DLights.size()) : name;
-   _DLights.emplace(id, std::move(light));
+   const std::string& id = name.empty() ? "D-light_" + ToString(DLights_.size()) : name;
+   DLights_.emplace(id, std::move(light));
    return *this;
 }
 
 Scene&
 Scene::Add(PointLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "P-light_" + ToString(_PLights.size()) : name;
-   _PLights.emplace(id, std::move(light));
+   const std::string& id = name.empty() ? "P-light_" + ToString(PLights_.size()) : name;
+   PLights_.emplace(id, std::move(light));
    return *this;
 }
 
 Scene&
 Scene::Add(SpotLight&& light, const std::string& name)
 {
-   const std::string& id = name.empty() ? "S-light_" + ToString(_SLights.size()) : name;
-   _SLights.emplace(id, std::move(light));
+   const std::string& id = name.empty() ? "S-light_" + ToString(SLights_.size()) : name;
+   SLights_.emplace(id, std::move(light));
    return *this;
 }
 
@@ -124,47 +124,47 @@ void
 Scene::Init(const Real start_time)
 {
    // Initialise all models and lights.
-   FOR_EACH(_, model , _Models)  model->Init();
-   FOR_EACH(_, dlight, _DLights) dlight.Init();
-   FOR_EACH(_, plight, _PLights) plight.Init();
-   FOR_EACH(_, slight, _SLights) slight.Init();
+   FOR_EACH(_, model , Actors_)  model->Init();
+   FOR_EACH(_, dlight, DLights_) dlight.Init();
+   FOR_EACH(_, plight, PLights_) plight.Init();
+   FOR_EACH(_, slight, SLights_) slight.Init();
 
    // Compute the start and end times of the scene.
    const auto max_duration(1.0e5);
-   if(_AdjustDuration)
+   if(AdjustDuration_)
    {
       Real duration = -One;
-      FOR_EACH_CONST(_, model, _Models) if(model->ExitTime() < max_duration) Maximise(duration, model->ExitTime());
-      _Duration = isPositive(duration) ? duration : _Duration;
-      ASSERT(isPositive(_Duration), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", _Title)
+      FOR_EACH_CONST(_, model, Actors_) if(model->ExitTime() < max_duration) Maximise(duration, model->ExitTime());
+      Duration_ = isPositive(duration) ? duration : Duration_;
+      ASSERT(isPositive(Duration_), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", Title_)
    }
    else
    {
-      FOR_EACH_CONST(_, model, _Models)
+      FOR_EACH_CONST(_, model, Actors_)
          if(model->ExitTime() < max_duration)
-            ASSERT(model->ExitTime() < _Duration, "This model's lifespan exceeds that of scene: ", _Title)
+            ASSERT(model->ExitTime() < Duration_, "This model's lifespan exceeds that of scene: ", Title_)
    }
 
-   _StartTime = start_time;
-   _EndTime   = _StartTime + _Duration;
+   StartTime_ = start_time;
+   EndTime_   = StartTime_ + Duration_;
 }
 
 /***************************************************************************************************************************************************************
 * Private Interface
 ***************************************************************************************************************************************************************/
 void
-Scene::UpdateModels(const Real current_time) { FOR_EACH(_, model, _Models) model->Update(current_time); }
+Scene::UpdateModels(const Real current_time) { FOR_EACH(_, model, Actors_) model->Update(current_time); }
 
 void
 Scene::RenderDirecShadows(Shader& shader)
 {
-   if(_DLights.empty()) return;
-   else ASSERT(_DLights.size() == 1, "Can currently only handle one directional light.")
+   if(DLights_.empty()) return;
+   else ASSERT(DLights_.size() == 1, "Can currently only handle one directional light.")
 
    shader.Bind();
-   shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
+   shader.SetDirectionalLightSpaceMatrix(DLights_["Sun"].LightSpaceMatrix());
 
-   auto& shadow_map = _DLights["Sun"].ShadowMap();
+   auto& shadow_map = DLights_["Sun"].ShadowMap();
    GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()))
 
 //  GLCall(glCullFace(GL_FRONT)); // Prevents peter-panning
@@ -181,12 +181,12 @@ Scene::RenderDirecShadows(Shader& shader)
 void
 Scene::RenderPointShadows(Shader& shader)
 {
-   if(_PLights.empty()) return;
-   else ASSERT(_PLights.size() < 5, "Can currently handle at most four point lights.")
+   if(PLights_.empty()) return;
+   else ASSERT(PLights_.size() < 5, "Can currently handle at most four point lights.")
 
    shader.Bind();
 
-   FOR_EACH(_, point_light, _PLights)
+   FOR_EACH(_, point_light, PLights_)
    {
       shader.SetPointLightSpaceMatrices(point_light.LightSpaceMatrices());
       shader.SetPointPosition(point_light.Position());
@@ -206,21 +206,21 @@ Scene::RenderPointShadows(Shader& shader)
 void
 Scene::RenderScene(Shader& shader, Camera& camera)
 {
-   ASSERT(_DLights.size() <= 1, "Can currently only handle at most one directional light.")
+   ASSERT(DLights_.size() <= 1, "Can currently only handle at most one directional light.")
 
    shader.Bind();
    shader.UseCamera(camera);
 
-   if(!_DLights.empty())
+   if(!DLights_.empty())
    {
-      shader.UseLight(_DLights["Sun"]);
-      shader.SetDirectionalLightSpaceMatrix(_DLights["Sun"].LightSpaceMatrix());
-      _DLights["Sun"].ShadowMap().StartRead(1);
+      shader.UseLight(DLights_["Sun"]);
+      shader.SetDirectionalLightSpaceMatrix(DLights_["Sun"].LightSpaceMatrix());
+      DLights_["Sun"].ShadowMap().StartRead(1);
       shader.SetDirectionalShadowMap(1);
    }
 
    size_t i = 0;
-   FOR_EACH(_, point_light, _PLights)
+   FOR_EACH(_, point_light, PLights_)
    {
       shader.UseLight(point_light);
       point_light.ShadowMap().StartRead(i + 2);
@@ -247,10 +247,10 @@ Scene::RenderModels(Shader& shader)
    shader.SetUniform1i("u_use_displacement_map", 0);
 
    // Render model and its sub-models.
-   FOR_EACH(_, model, _Models) RenderModel(model, shader);
+   FOR_EACH(_, actor, Actors_) RenderModel(actor, shader);
 
    // Unbind all textures
-   FOR_EACH(_, sub_textures, _Textures) FOR_EACH(_, texture, sub_textures) texture.Unbind();
+   FOR_EACH(_, sub_textures, Textures_) FOR_EACH(_, texture, sub_textures) texture.Unbind();
 }
 
 void
@@ -264,7 +264,7 @@ Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
       if(model->_TextureInfo.has_value())
       {
          size_t texture_index = 0;
-         FOR_EACH(type_string, texture, _Textures[model->_TextureInfo.value().first])
+         FOR_EACH(type_string, texture, Textures_[model->_TextureInfo.value().first])
          {
             // Configure respective texture uniform.
             const auto& uniform_name = TextureUniformString(type_string);
@@ -286,7 +286,7 @@ Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
 
       // Switch off texture maps
       if(model->_TextureInfo.has_value())
-         FOR_EACH(type_string, _, _Textures[model->_TextureInfo.value().first])
+         FOR_EACH(type_string, _, Textures_[model->_TextureInfo.value().first])
             shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
    }
 

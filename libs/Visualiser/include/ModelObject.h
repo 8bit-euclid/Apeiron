@@ -17,6 +17,7 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 #include "ActionBase.h"
+#include "Shader.h"
 
 #include <functional>
 #include <GL/glew.h>
@@ -31,7 +32,7 @@ class ModelObject
 
    virtual void Update(Real global_time) = 0;
 
-   virtual void Render() = 0;
+   virtual void Render(Shader& shader) = 0;
 
    virtual void Delete() = 0;
 
