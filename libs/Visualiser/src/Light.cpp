@@ -24,21 +24,21 @@ Light::Light()
   : Light(LightType::None, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f, 0.0f) {}
 
 Light::Light(Light&& light) noexcept
-  : _Colour(std::move(light._Colour)), _AmbientIntensity(std::move(light._AmbientIntensity)), _DiffuseIntensity(std::move(light._DiffuseIntensity)),
-    _ShadowMap(std::move(light._ShadowMap)), _Type(std::move(light._Type)) {}
+  : Colour_(std::move(light.Colour_)), AmbientIntensity_(std::move(light.AmbientIntensity_)), DiffuseIntensity_(std::move(light.DiffuseIntensity_)),
+    ShadowMap_(std::move(light.ShadowMap_)), Type_(std::move(light.Type_)) {}
 
 Light::Light(LightType type, const glm::vec4& rgba_colour, const GLfloat ambient_intensity, const GLfloat diffuse_intensity)
-  : _Colour(rgba_colour), _AmbientIntensity(ambient_intensity), _DiffuseIntensity(diffuse_intensity),
-    _ShadowMap(type == OneOf(LightType::Point, LightType::Spot)), _Type(type) {}
+  : Colour_(rgba_colour), AmbientIntensity_(ambient_intensity), DiffuseIntensity_(diffuse_intensity),
+    ShadowMap_(type == OneOf(LightType::Point, LightType::Spot)), Type_(type) {}
 
 Light&
 Light::operator=(Light&& light) noexcept
 {
-   _Colour           = std::move(light._Colour);
-   _AmbientIntensity = std::move(light._AmbientIntensity);
-   _DiffuseIntensity = std::move(light._DiffuseIntensity);
-   _ShadowMap        = std::move(light._ShadowMap);
-   _Type             = std::move(light._Type);
+   Colour_           = std::move(light.Colour_);
+   AmbientIntensity_ = std::move(light.AmbientIntensity_);
+   DiffuseIntensity_ = std::move(light.DiffuseIntensity_);
+   ShadowMap_        = std::move(light.ShadowMap_);
+   Type_             = std::move(light.Type_);
 
   return *this;
 }
@@ -46,9 +46,9 @@ Light::operator=(Light&& light) noexcept
 void
 Light::AddGUIElements()
 {
-   ImGui::ColorEdit4("Colour", &_Colour.r);
-   ImGui::SliderFloat("Ambient Intensity", &_AmbientIntensity, 0.0f, 20.0f);
-   ImGui::SliderFloat("Diffuse Intensity", &_DiffuseIntensity, 0.0f, 20.0f);
+   ImGui::ColorEdit4("Colour", &Colour_.r);
+   ImGui::SliderFloat("Ambient Intensity", &AmbientIntensity_, 0.0f, 20.0f);
+   ImGui::SliderFloat("Diffuse Intensity", &DiffuseIntensity_, 0.0f, 20.0f);
 }
 
 /***************************************************************************************************************************************************************
@@ -74,37 +74,37 @@ template<class derived>
 PointLightBase<derived>::PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour,
                                         GLfloat ambient_intensity, GLfloat diffuse_intensity,
                                         const SVector3<GLfloat>& attenuation_coefficients)
-  : Light(type, rgba_colour, ambient_intensity, diffuse_intensity), _Position(position), _AttenuationCoefficients(attenuation_coefficients)
+  : Light(type, rgba_colour, ambient_intensity, diffuse_intensity), Position_(position), AttenuationCoefficients_(attenuation_coefficients)
 {
-  const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, _FarPlane); // Note the aspect ratio of 1.0f
+  const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, FarPlane_); // Note the aspect ratio of 1.0f
 
-  _LightSpaceMatrices[0] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Right face of cube map
-  _LightSpaceMatrices[1] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(-1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Left face of cube map
-  _LightSpaceMatrices[2] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 1.0, 0.0), {0.0, 0.0, 1.0}); // Top face of cube map
-  _LightSpaceMatrices[3] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, -1.0, 0.0), {0.0, 0.0, -1.0}); // Bottom face of cube map
-  _LightSpaceMatrices[4] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, 1.0), {0.0, -1.0, 0.0}); // Near face of cube map
-  _LightSpaceMatrices[5] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, -1.0), {0.0, -1.0, 0.0}); // Far face of cube map
+  LightSpaceMatrices_[0] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Right face of cube map
+  LightSpaceMatrices_[1] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(-1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Left face of cube map
+  LightSpaceMatrices_[2] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(0.0, 1.0, 0.0), {0.0, 0.0, 1.0}); // Top face of cube map
+  LightSpaceMatrices_[3] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(0.0, -1.0, 0.0), {0.0, 0.0, -1.0}); // Bottom face of cube map
+  LightSpaceMatrices_[4] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(0.0, 0.0, 1.0), {0.0, -1.0, 0.0}); // Near face of cube map
+  LightSpaceMatrices_[5] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(0.0, 0.0, -1.0), {0.0, -1.0, 0.0}); // Far face of cube map
 
-  _iPointLight = _PointLightCount++;
+  iPointLight_ = PointLightCount_++;
 }
 
 template<class derived>
 PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcept
-   : Light(std::move(light)), _iPointLight(std::move(light._iPointLight)), _Position(std::move(light._Position)),
-     _AttenuationCoefficients(std::move(light._AttenuationCoefficients)), _LightSpaceMatrices(std::move(light._LightSpaceMatrices))
+   : Light(std::move(light)), iPointLight_(std::move(light.iPointLight_)), Position_(std::move(light.Position_)),
+     AttenuationCoefficients_(std::move(light.AttenuationCoefficients_)), LightSpaceMatrices_(std::move(light.LightSpaceMatrices_))
 {
-   _PointLightCount++; // Note: only incremented because the destructor of the 'moved' object will decrement.
+   PointLightCount_++; // Note: only incremented because the destructor of the 'moved' object will decrement.
 }
 
 template<class derived>
-PointLightBase<derived>::~PointLightBase() { _PointLightCount--; }
+PointLightBase<derived>::~PointLightBase() { PointLightCount_--; }
 
 template<class derived>
 void
 PointLightBase<derived>::AddGUIElements()
 {
-   ImGui::SliderFloat3("Position"   , &_Position.x, -10.0f, 10.0f);
-   ImGui::SliderFloat3("Attenuation", _AttenuationCoefficients.data(), 0.0f, 2.0f);
+   ImGui::SliderFloat3("Position"   , &Position_.x, -10.0f, 10.0f);
+   ImGui::SliderFloat3("Attenuation", AttenuationCoefficients_.data(), 0.0f, 2.0f);
    Light::AddGUIElements();
 }
 

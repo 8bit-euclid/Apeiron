@@ -151,7 +151,7 @@ void
 IndexBuffer::Load(const DynamicArray<GLuint>& indices)
 {
    _IndexCount = indices.size();
-   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW));
+   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW))
 }
 
 /***************************************************************************************************************************************************************
@@ -167,21 +167,21 @@ FrameBuffer::Init(bool is_multi_sampled)
 void
 FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0));
+   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0))
    Check();
 }
 
 void
 FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture_id, 0));
+   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture_id, 0))
    Check();
 }
 
 void
 FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) const
 {
-   GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id));
+   GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id))
    Check();
 }
 
@@ -191,7 +191,7 @@ FrameBuffer::Check() const
    auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
    if(fb_status != GL_FRAMEBUFFER_COMPLETE)
    {
-      std::string prefix = "Could not intialise frame buffer. Cause: ";
+      std::string prefix = "Could not intialise frame buffer. Reason: ";
       switch(fb_status) 
       {
          case GL_FRAMEBUFFER_UNDEFINED:                     EXIT(prefix, "The specified frame buffer is the default one, which does not yet exist.")
@@ -231,14 +231,8 @@ void
 RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei height)
 {
    Bind();
-   if(_isMultiSampled)
-   {
-      GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, _SampleCount, format, width, height));
-   }
-   else
-   {
-      GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
-   }
+   if(_isMultiSampled) GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, _SampleCount, format, width, height))
+   else                GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height))
    Unbind();
 }
 
@@ -255,12 +249,12 @@ ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
 }
 
 void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
+ShaderStorageBuffer::BindBase() const { GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID)) }
 
 void
 ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
 {
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW));
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW))
 }
 
 }

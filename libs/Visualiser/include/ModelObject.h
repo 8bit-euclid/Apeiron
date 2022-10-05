@@ -17,13 +17,15 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 #include "ActionBase.h"
-#include "Shader.h"
 
 #include <functional>
+#include <string>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
 namespace aprn::vis {
+
+class Shader;
 
 class ModelObject
 {
@@ -92,9 +94,10 @@ class ModelObject
 
    virtual void ComputeLifespan() = 0;
 
+   std::string  Name_;
    Real         EntryTime_{Zero};
    Real         ExitTime_{InfFloat<>};
-   mutable bool isInitialised_{false};
+   mutable bool Init_{false};
 };
 
 }

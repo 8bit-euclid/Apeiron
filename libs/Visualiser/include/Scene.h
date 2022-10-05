@@ -30,6 +30,9 @@
 
 namespace aprn::vis {
 
+/***************************************************************************************************************************************************************
+* Scene Class
+***************************************************************************************************************************************************************/
 class Scene
 {
  public:
@@ -39,43 +42,24 @@ class Scene
 
    Scene(Scene& prev_scene, Real duration = -One, bool adjust_duration = true);
 
-   Scene(const Scene& other) = default;
+   Scene(const Scene& other) = delete;
 
    Scene(Scene&& other) noexcept = default;
 
-   Scene& Add(Model& model, const std::string& name = "");
-
-   Scene& Add(ModelGroup& model_group, const std::string& name = "");
-
-   Scene& Add(TeXGlyph& tex_glyph, const std::string& name = "");
-
-   Scene& Add(TeXBox& tex_box, const std::string& name = "");
-
-   Scene& Add(DirectionalLight& light, const std::string& name = "");
-
-   Scene& Add(PointLight& light, const std::string& name = "");
-
-   Scene& Add(SpotLight& light, const std::string& name = "");
-
-   Scene& Add(Model&& model, const std::string& name = "");
-
-   Scene& Add(ModelGroup&& model, const std::string& name = "");
-
-   Scene& Add(TeXGlyph&& tex_glyph, const std::string& name = "");
-
-   Scene& Add(TeXBox&& tex_box, const std::string& name = "");
-
-   Scene& Add(DirectionalLight&& light, const std::string& name = "");
-
-   Scene& Add(PointLight&& light, const std::string& name = "");
-
-   Scene& Add(SpotLight&& light, const std::string& name = "");
+   template<class T>
+   Scene& Add(T&& object);
 
    inline bool isCurrent(const Real current_time) const { return StartTime_ <= current_time && current_time < EndTime_; }
 
  private:
    friend class Visualiser;
    friend class Transition;
+
+   template<class T>
+   void AddObject(const T& object);
+
+   template<class T>
+   void AddObject(T&& object);
 
    void Init(Real start_time);
 
@@ -92,21 +76,23 @@ class Scene
    void RenderModel(SPtr<ModelGroup>& model, Shader& shader);
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   std::string             Title_;
-   UMap<SPtr<ModelObject>> Actors_;
-   UMap<SPtr<TeXBox>>      TeXBoxes_;
-   UMap<DirectionalLight>  DLights_;
-   UMap<PointLight>        PLights_;
-   UMap<SpotLight>         SLights_;
-   UMap<UMap<Texture&>>    Textures_;
-   Transition              Transition_{};
-   Scene*                  PrevScene_{};
-   Scene*                  NextScene_{};
-   Real                    Duration_;
-   Real                    StartTime_;
-   Real                    EndTime_;
-   bool                    AdjustDuration_{false};
-   inline static bool      SingleScene_{true};
+   std::string               Title_;
+   DArray<SPtr<ModelObject>> Actors_;
+   DArray<SPtr<TeXBox>>      TeXBoxes_;
+   DArray<DirectionalLight>  DLights_;
+   DArray<PointLight>        PLights_;
+   DArray<SpotLight>         SLights_;
+   UMap<UMap<Texture&>>      Textures_;
+   Transition                Transition_{};
+   Scene*                    PrevScene_{};
+   Scene*                    NextScene_{};
+   Real                      Duration_;
+   Real                      StartTime_;
+   Real                      EndTime_;
+   bool                      AdjustDuration_{false};
+   inline static bool        SingleScene_{true};
 };
 
 }
+
+#include "Scene.tpp"

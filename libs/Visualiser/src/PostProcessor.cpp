@@ -35,7 +35,8 @@ PostProcessor::Init(const UInt width, const UInt height)
 
    // Create rectangular screen-filling quad (a square in normalised device coordinates) to draw each texture to.
    _ScreenQuad = ModelFactory::ScreenQuad();
-   _ScreenQuad.Init();
+   EXIT("Fix")
+//   _ScreenQuad.Init();
 }
 
 void
@@ -183,7 +184,8 @@ PostProcessor::Render()
 
       blur_shader.UseTexture(texture, "u_texture", 0);
       blur_shader.SetUniform1i("u_horizontal", horizontal);
-      _ScreenQuad.Render();
+      EXIT("Fix")
+//      _ScreenQuad.Render();
 
       texture.Unbind();
       ping->FBO.Unbind();
@@ -203,7 +205,8 @@ PostProcessor::Render()
    blend_shader.UseTexture(blur_texture, "u_blur_texture", 1);
    blend_shader.SetUniform1f("u_exposure", 1.0);
 
-   _ScreenQuad.Render();
+   EXIT("Fix")
+//   _ScreenQuad.Render();
 
    hdr_texture.Unbind();
    blur_texture.Unbind();

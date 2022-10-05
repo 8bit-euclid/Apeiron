@@ -14,33 +14,27 @@
 
 #include "../include/ModelGroup.h"
 #include "../include/Action.h"
-#include "include/Model.h"
-
+#include "../include/Model.h"
+#include "../include/Shader.h"
 
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
 * Model Public Interface
 ***************************************************************************************************************************************************************/
-Model::Model()
+Model::Model(const Model& other)
 {
-
+   ASSERT(!Init_, "Cannot yet copy construct a model if it has already been initialised.")
+   *this = other;
 }
 
-Model::Model(const Model& sub_model)
+Model::Model(Model&& other) noexcept
 {
-
+   ASSERT(!Init_, "Cannot yet move construct a model if it has already been initialised.")
+   *this = std::move(other);
 }
 
-Model::Model(Model&& sub_model) noexcept
-{
-
-}
-
-Model::~Model()
-{
-
-}
+Model::~Model() { Delete(); }
 
 void
 Model::Update(const Real global_time)
@@ -52,15 +46,13 @@ Model::Update(const Real global_time)
 void
 Model::Render(Shader& shader)
 {
-   // TODO
+   EXIT("Transfer code from Scene::Render.")
 
-   if(isInitialised_)
+   if(Init_)
    {
       VAO_.Bind();
       EBO_.Bind();
-
       GLCall(glDrawElements(GL_TRIANGLES, EBO_.IndexCount(), GL_UNSIGNED_INT, nullptr))
-
       EBO_.Unbind();
       VAO_.Unbind();
    }
@@ -72,6 +64,7 @@ Model::Delete()
    VBO_.Delete();
    VAO_.Delete();
    EBO_.Delete();
+   if(SSBO_.has_value()) SSBO_->Delete();
 }
 
 /** Set Model Attributes
@@ -209,22 +202,22 @@ Model::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point,
 Model&
 Model::operator=(const Model& model)
 {
-   ASSERT(!isInitialised_, "Cannot yet copy assign to a model if it has already been initialised.")
-   ASSERT(!model.isInitialised_, "Cannot yet copy assign from a model if it has already been initialised.")
+   ASSERT(!Init_,       "Cannot yet copy assign to a model if it has already been initialised.")
+   ASSERT(!model.Init_, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Mesh_            = model.Mesh_;
-   TextureInfo_     = model.TextureInfo_;
-   Material_        = model.Material_;
-   Actions_         = model.Actions_;
-   Centroid_        = model.Centroid_;
-   StrokeColour_    = model.StrokeColour_;
-   FillColour_      = model.FillColour_;
-   ModelMatrix_     = model.ModelMatrix_;
-   PreviousActions_ = model.PreviousActions_;
-   EntryTime_       = model.EntryTime_;
-   ExitTime_        = model.ExitTime_;
-   isInitialised_   = model.isInitialised_;
+   Mesh_         = model.Mesh_;
+   TextureInfo_  = model.TextureInfo_;
+   Material_     = model.Material_;
+   Actions_      = model.Actions_;
+   Centroid_     = model.Centroid_;
+   StrokeColour_ = model.StrokeColour_;
+   FillColour_   = model.FillColour_;
+   ModelMatrix_  = model.ModelMatrix_;
+   PastActions_  = model.PastActions_;
+   EntryTime_    = model.EntryTime_;
+   ExitTime_     = model.ExitTime_;
+   Init_         = model.Init_;
 
    return *this;
 }
@@ -232,22 +225,22 @@ Model::operator=(const Model& model)
 Model&
 Model::operator=(Model&& model) noexcept
 {
-   ASSERT(!isInitialised_, "Cannot yet move assign to a model if it has already been initialised.")
-   ASSERT(!model.isInitialised_, "Cannot yet move assign from a model if it has already been initialised.")
+   ASSERT(!Init_,       "Cannot yet move assign to a model if it has already been initialised.")
+   ASSERT(!model.Init_, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
-   Mesh_            = std::move(model.Mesh_);
-   TextureInfo_     = std::move(model.TextureInfo_);
-   Material_        = std::move(model.Material_);
-   Centroid_        = std::move(model.Centroid_);
-   StrokeColour_    = std::move(model.StrokeColour_);
-   FillColour_      = std::move(model.FillColour_);
-   ModelMatrix_     = std::move(model.ModelMatrix_);
-   PreviousActions_ = std::move(model.PreviousActions_);
-   EntryTime_       = std::move(model.EntryTime_);
-   ExitTime_        = std::move(model.ExitTime_);
-   isInitialised_   = std::move(model.isInitialised_);
-   Actions_         = std::move(model.Actions_);
+   Mesh_         = std::move(model.Mesh_);
+   TextureInfo_  = std::move(model.TextureInfo_);
+   Material_     = std::move(model.Material_);
+   Centroid_     = std::move(model.Centroid_);
+   StrokeColour_ = std::move(model.StrokeColour_);
+   FillColour_   = std::move(model.FillColour_);
+   ModelMatrix_  = std::move(model.ModelMatrix_);
+   PastActions_  = std::move(model.PastActions_);
+   EntryTime_    = std::move(model.EntryTime_);
+   ExitTime_     = std::move(model.ExitTime_);
+   Init_         = std::move(model.Init_);
+   Actions_      = std::move(model.Actions_);
 
    // Reset moved-from model as it is now in an undefined state. Note: to avoid an infinite regress, we need to specifically invoke the copy assigment operator
    // here, NOT the move assignment operator.
@@ -265,7 +258,7 @@ Model::operator=(Model&& model) noexcept
 void
 Model::Init()
 {
-   if(isInitialised_) return;
+   if(Init_) return;
    ASSERT(Mesh_.isLoaded(), "The model cannot be initialised without a mesh.")
 
    // Compute entry/exit times.
@@ -284,7 +277,7 @@ Model::Init()
    VAO_.AddBuffer(VBO_, Mesh_.GetVertexLayout());
    VAO_.Unbind();
 
-   isInitialised_ = true;
+   Init_ = true;
 }
 
 void

@@ -36,8 +36,9 @@ class Model;
 * Action Class Full Specialisations
 ***************************************************************************************************************************************************************/
 template<ActionType type>
-struct Action : public ActionBase
+class Action : public ActionBase
 {
+ public:
    Action(Model& model) : ActionBase(model, type, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
 
    void Do(const Real global_time) override {}

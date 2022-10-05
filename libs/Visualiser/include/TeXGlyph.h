@@ -72,15 +72,6 @@ class TeXGlyph final : public TeXObject,
    std::optional<bool>   isBold_;
    bool                  Render_{true};
    bool                  Init_{false};
-
-   /** Friendly unit tests */
-   friend class ParseTeXTest_ParseTeXChar_Test;
-   friend class ParseTeXTest_ParseTeXMath_Test;
-   friend class ParseTeXTest_ParseTeXGlyph_Test;
-   friend class ParseTeXTest_ParseTeXString_Test;
-   friend class ParseTeXTest_ParseTeXCommand_Test;
-   friend class ParseTeXTest_ParseTeXScriptText_Test;
-   friend class ParseTeXTest_ParseAllTeXScriptText_Test;
 };
 
 }

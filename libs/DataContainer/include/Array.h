@@ -94,7 +94,7 @@ template<typename T>
 class DynamicArray : public std::vector<T>,
                      public Array<T, DynamicArray<T>>
 {
-   using Base     = Array<T, DynamicArray<T>>;
+   using Base = Array<T, DynamicArray<T>>;
 
  public:
    DynamicArray();

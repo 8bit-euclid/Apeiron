@@ -17,6 +17,7 @@
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
 #include "TeXGlyph.h"
+#include "TeXObject.h"
 
 #include <string>
 
@@ -25,28 +26,24 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-TeXGlyph ParseTeXChar(const char c);
+SPtr<TeXGlyph> ParseTeXChar(const char c);
 
-DArray<TeXGlyph>
-ParseTeXString(const std::string& str);
-
-template<CharIterator It>
-DArray<TeXGlyph>
-ParseTeXString(It& current, const It last, const bool is_math_mode = false);
+DArray<SPtr<TeXObject>> ParseTeXString(const std::string& str);
 
 template<CharIterator It>
-TeXGlyph ParseTeXGlyph(It& current, const It last, const bool is_math_mode = false);
+DArray<SPtr<TeXObject>> ParseTeXString(It& current, const It last, const bool is_math_mode = false);
 
 template<CharIterator It>
-TeXGlyph ParseTeXCommand(It& current, const It last, const bool is_math_mode = false);
+SPtr<TeXObject> ParseTeXObject(It& current, const It last, const bool is_math_mode = false);
 
 template<CharIterator It>
-DArray<TeXGlyph>
-ParseTeXMath(It& current, const It last);
+SPtr<TeXObject> ParseTeXCommand(It& current, const It last, const bool is_math_mode = false);
 
 template<CharIterator It>
-std::pair<DArray<TeXGlyph>, std::string>
-ParseAllTeXScriptText(It& current, const It last);
+DArray<SPtr<TeXObject>> ParseTeXMath(It& current, const It last);
+
+template<CharIterator It>
+std::pair<DArray<SPtr<TeXObject>>, std::string> ParseAllTeXScriptText(It& current, const It last);
 
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
@@ -57,20 +54,16 @@ template<CharIterator It>
 bool isTeXCommandEnd(const It current, const It last);
 
 template<CharIterator It>
-std::pair<bool, It>
-isTeXCharCommand(const It first, const It last);
+std::pair<bool, It> isTeXCharCommand(const It first, const It last);
 
 template<CharIterator It>
-std::pair<bool, It>
-isTeXWordCommand(const It first, const It last);
+std::pair<bool, It> isTeXWordCommand(const It first, const It last);
 
 template<CharIterator It>
-std::tuple<It, bool, bool>
-GetTeXCommandInfo(const It current, const It last);
+std::tuple<It, bool, bool> GetTeXCommandInfo(const It current, const It last);
 
 template<CharIterator It>
-DArray<TeXGlyph>
-ParseTeXScriptText(It& current, const It last);
+DArray<SPtr<TeXObject>> ParseTeXScriptText(It& current, const It last);
 
 template<CharIterator It>
 It GetTeXCommandPrefixEnd(const It first, const It last, const bool is_char_cmd);
