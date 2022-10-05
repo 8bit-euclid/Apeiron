@@ -50,19 +50,23 @@ class Light
  public:
    Light(const Light& light) = delete;
 
-   ~Light() = default;
+   virtual ~Light() = default;
 
    virtual UInt Index() const = 0;
 
    virtual UInt LightCount() const = 0;
 
-   inline void Init() { _ShadowMap.Init(2048, 2048); }
+   inline void Init() { ShadowMap_.Init(2048, 2048); }
 
-   inline Shadow& ShadowMap() { return _ShadowMap; }
+   inline Shadow& ShadowMap() { return ShadowMap_; }
 
    Light& operator=(const Light& light) = delete;
 
    Light& operator=(Light&& light) noexcept;
+
+   inline void SetName(const std::string& name) { Name_ = name; }
+
+   inline auto Name() const { return Name_; }
 
  protected:
    friend class Visualiser;
@@ -70,11 +74,12 @@ class Light
 
    virtual void AddGUIElements();
 
-   glm::vec4 _Colour;
-   GLfloat   _AmbientIntensity;
-   GLfloat   _DiffuseIntensity;
-   Shadow    _ShadowMap;
-   LightType _Type;
+   std::string Name_;
+   glm::vec4   Colour_;
+   GLfloat     AmbientIntensity_;
+   GLfloat     DiffuseIntensity_;
+   Shadow      ShadowMap_;
+   LightType   Type_;
 };
 
 /***************************************************************************************************************************************************************
@@ -121,15 +126,15 @@ class PointLightBase : public Light
  public:
    ~PointLightBase();
 
-   UInt Index() const override { return _iPointLight; }
+   UInt Index() const override { return iPointLight_; }
 
-   UInt LightCount() const override { return _PointLightCount; }
+   UInt LightCount() const override { return PointLightCount_; }
 
-   constexpr static GLfloat FarPlane() { return _FarPlane; }
+   constexpr static GLfloat FarPlane() { return FarPlane_; }
 
-   inline const glm::vec3& Position() const { return _Position; }
+   inline const glm::vec3& Position() const { return Position_; }
 
-   inline const StaticArray<glm::mat4, 6>& LightSpaceMatrices() const { return _LightSpaceMatrices; }
+   inline const StaticArray<glm::mat4, 6>& LightSpaceMatrices() const { return LightSpaceMatrices_; }
 
    PointLightBase<derived>& operator=(const PointLightBase<derived>& _other) = delete;
 
@@ -138,13 +143,13 @@ class PointLightBase : public Light
  protected:
    void AddGUIElements() override;
 
-   constexpr static UInt     _MaxPointLights{4};
-   constexpr static GLfloat  _FarPlane{25.0f};
-   inline static UInt        _PointLightCount = 0;
-   UInt                      _iPointLight;
-   glm::vec3                 _Position;
-   StaticVector<GLfloat, 3>  _AttenuationCoefficients; // [0]: constant term, [1]: linear term, [2]: quadratic term
-   StaticArray<glm::mat4, 6> _LightSpaceMatrices;
+   constexpr static UInt    MaxPointLights_{4};
+   constexpr static GLfloat FarPlane_{25.0f};
+   inline static UInt       PointLightCount_ = 0;
+   UInt                     iPointLight_;
+   glm::vec3                Position_;
+   SVector<GLfloat, 3>      AttenuationCoefficients_; // [0]: constant term, [1]: linear term, [2]: quadratic term
+   SArray<glm::mat4, 6>     LightSpaceMatrices_;
 };
 
 }

@@ -12,6 +12,7 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
+#include "../include/Model.h"
 #include "../include/Shader.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -22,10 +23,10 @@ namespace aprn::vis {
 * Shader Public Interface
 ***************************************************************************************************************************************************************/
 Shader::Shader()
-  : _ID(0)
+  : ID_(0)
 {
-   GLCall(_ID = glCreateProgram());
-   ASSERT(_ID, "Could not create shader program.")
+   GLCall(ID_ = glCreateProgram());
+   ASSERT(ID_, "Could not create shader program.")
 }
 
 Shader::Shader(const std::string& file_path)
@@ -73,7 +74,7 @@ Shader::UseCamera(Camera& camera)
 void
 Shader::UseLight(const Light& light)
 {
-   const LightType type = light._Type;
+   const LightType type = light.Type_;
    const UInt id        = light.Index();
 
    std::string uniform_name   = type == LightType::Directional ? "u_directional_light" :
@@ -88,9 +89,9 @@ Shader::UseLight(const Light& light)
 
    std::string base_suffix    = type == LightType::Spot ? ".Point" : "\0";
 
-   SetUniform4f(uniform_name + base_suffix + ".Base.Colour", light._Colour.r, light._Colour.g, light._Colour.b, light._Colour.a);
-   SetUniform1f(uniform_name + base_suffix + ".Base.AmbientIntensity", light._AmbientIntensity);
-   SetUniform1f(uniform_name + base_suffix + ".Base.DiffuseIntensity", light._DiffuseIntensity);
+   SetUniform4f(uniform_name + base_suffix + ".Base.Colour", light.Colour_.r, light.Colour_.g, light.Colour_.b, light.Colour_.a);
+   SetUniform1f(uniform_name + base_suffix + ".Base.AmbientIntensity", light.AmbientIntensity_);
+   SetUniform1f(uniform_name + base_suffix + ".Base.DiffuseIntensity", light.DiffuseIntensity_);
 
    if(type == LightType::Directional)
    {
@@ -100,8 +101,8 @@ Shader::UseLight(const Light& light)
    else if(type == LightType::Point)
    {
       const PointLight& point_light = static_cast<const PointLight&>(light);
-      const auto& position          = point_light._Position;
-      const auto& att_coeffs        = point_light._AttenuationCoefficients;
+      const auto& position          = point_light.Position_;
+      const auto& att_coeffs        = point_light.AttenuationCoefficients_;
 
       SetUniform1i("u_point_light_count", light.LightCount());
       SetUniform3f(light_position, position.x, position.y, position.z);
@@ -110,8 +111,8 @@ Shader::UseLight(const Light& light)
    else if(type == LightType::Spot)
    {
       const SpotLight& spot_light = static_cast<const SpotLight&>(light);
-      const auto& position        = spot_light._Position;
-      const auto& att_coeffs      = spot_light._AttenuationCoefficients;
+      const auto& position        = spot_light.Position_;
+      const auto& att_coeffs      = spot_light.AttenuationCoefficients_;
       const auto& direction       = spot_light._Direction;
 
       SetUniform1i("u_spot_light_count", light.LightCount());
@@ -210,20 +211,20 @@ Shader::Create(const std::string& vertex_shader, const std::string& geometry_sha
    // Link shader program
    GLint result = 0;
    GLchar error_log[1024] = {0};
-   GLCall(glLinkProgram(_ID))
-   GLCall(glGetProgramiv(_ID, GL_LINK_STATUS, &result))
+   GLCall(glLinkProgram(ID_))
+   GLCall(glGetProgramiv(ID_, GL_LINK_STATUS, &result))
    if(!result)
    {
-     GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
+     GLCall(glGetProgramInfoLog(ID_, sizeof(error_log), nullptr, error_log))
      EXIT("Could not link shader program.")
    }
 
    // Validate shader program
-   GLCall(glValidateProgram(_ID));
-   GLCall(glGetProgramiv(_ID, GL_VALIDATE_STATUS, &result))
+   GLCall(glValidateProgram(ID_));
+   GLCall(glGetProgramiv(ID_, GL_VALIDATE_STATUS, &result))
    if(!result)
    {
-      GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
+      GLCall(glGetProgramInfoLog(ID_, sizeof(error_log), nullptr, error_log))
       EXIT("Could not validate shader program.")
    }
 
@@ -255,19 +256,19 @@ Shader::Compile(unsigned int type, const std::string& source)
    return shader_ID;
 }
 
-void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(_ID, shader)) }
+void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(ID_, shader)) }
 
 void Shader::Delete(GLuint shader) { GLCall(glDeleteShader(shader)) }
 
-void Shader::Delete() { GLCall(glDeleteProgram(_ID)) }
+void Shader::Delete() { GLCall(glDeleteProgram(ID_)) }
 
 int Shader::UniformLocation(const std::string& name)
 {
-   if(_UniformLocationCache.contains(name)) return _UniformLocationCache[name];
+   if(UniformLocationCache_.contains(name)) return UniformLocationCache_[name];
 
-   int location = glGetUniformLocation(_ID, name.c_str());
-   if(_WarningsOn && location < 0) WARN("Could not find the location for uniform ", name)
-   _UniformLocationCache[name] = location;
+   int location = glGetUniformLocation(ID_, name.c_str());
+   if(WarningsOn_ && location < 0) WARN("Could not find the location for uniform ", name)
+   UniformLocationCache_[name] = location;
 
    return location;
 }

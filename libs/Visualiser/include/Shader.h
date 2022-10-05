@@ -20,7 +20,6 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Material.h"
-#include "ModelGroup.h"
 #include "Texture.h"
 
 #include <fstream>
@@ -46,6 +45,8 @@ struct ShaderSourceCode
   std::string Fragment;
 };
 
+class Model;
+
 class Shader
 {
  public:
@@ -57,11 +58,11 @@ class Shader
 
    void Read(const std::string& file_path);
 
-   inline void Bind() const { GLCall(glUseProgram(_ID)); }
+   inline void Bind() const { GLCall(glUseProgram(ID_)); }
 
    inline void Unbind() const { GLCall(glUseProgram(0)); }
 
-   inline void SetWarnings(const bool _is_on) { _WarningsOn = _is_on; }
+   inline void SetWarnings(const bool is_on) { WarningsOn_ = is_on; }
 
    void UseModel(const Model& model);
 
@@ -97,7 +98,7 @@ class Shader
 
    void SetUniformMatrix4f(const std::string& name, const glm::mat4& proj_matrix);
 
-   inline GLuint ID() const { return _ID; }
+   inline GLuint ID() const { return ID_; }
 
    inline static std::string Directory = "./libs/Visualiser/resources/shaders/";
 
@@ -116,9 +117,9 @@ private:
 
    int UniformLocation(const std::string& name);
 
-   GLuint                               _ID;
-   std::unordered_map<std::string, int> _UniformLocationCache;
-   bool                                 _WarningsOn{false};
+   GLuint                               ID_;
+   std::unordered_map<std::string, int> UniformLocationCache_;
+   bool                                 WarningsOn_{false};
 };
 
 }

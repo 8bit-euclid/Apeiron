@@ -31,24 +31,19 @@ Visualiser::Visualiser()
    : Visualiser(1920, 1080) {}
 
 Visualiser::Visualiser(GLint window_width, GLint window_height)
-   : Window_(window_width, window_height), Cameras_{{"Main", Camera()}}, ActiveCamera_(&Cameras_["Main"]) {}
+   : Window_(window_width, window_height), Cameras_{Camera()}, ActiveCamera_(&Cameras_.front()) {}
 
 void
-Visualiser::Add(Scene& scene, const std::string& name)
-{
-   const std::string& id = name.empty() ? "Scene_" + ToString(Scenes_.size()) : name;
-   Scenes_.emplace(id, std::move(scene));
-}
+Visualiser::Add(Scene& scene) { Add(std::move(scene)); }
 
 void
-Visualiser::Add(Camera& camera, const std::string& name) { Add(std::move(camera), name); }
+Visualiser::Add(const Camera& camera) { Cameras_.push_back(camera); }
 
 void
-Visualiser::Add(Camera&& camera, const std::string& name)
-{
-   const std::string& id = name.empty() ? "Camera_" + ToString(Cameras_.size()) : name;
-   Cameras_.emplace(id, std::move(camera));
-}
+Visualiser::Add(Scene&& scene) { Scenes_.push_back(std::move(scene)); }
+
+void
+Visualiser::Add(Camera&& camera) { Cameras_.push_back(std::move(camera)); }
 
 void
 Visualiser::Animate()
@@ -109,10 +104,10 @@ Visualiser::InitGUI()
 void
 Visualiser::InitScenes()
 {
-   auto first_scene_it = std::find_if(Scenes_.begin(), Scenes_.end(), [](const auto& entry){ return entry.second.PrevScene_ == nullptr; });
+   auto first_scene_it = std::find_if(Scenes_.begin(), Scenes_.end(), [](const auto& scene){ return scene.PrevScene_ == nullptr; });
    ASSERT(first_scene_it != Scenes_.end(), "Failed to locate the first scene.")
 
-   CurrentScene_ = &first_scene_it->second;
+   CurrentScene_ = &(*first_scene_it);
    Scene* current_scene(CurrentScene_);
    size_t scene_count{};
    Real  start_time{};
@@ -151,17 +146,19 @@ Visualiser::InitTeXBoxes()
    // Linearise pointers to all TeX-boxes to allow for parallel initialisation.
    DArray<std::pair<size_t, TeXBox*>> tex_boxes;
    tex_boxes.reserve(10 * Scenes_.size());
-   FOR_EACH(_, scene, Scenes_) FOR_EACH(_, tex_box, scene.TeXBoxes_) tex_boxes.push_back({tex_boxes.size(), tex_box.get() });
+   FOR_EACH(scene, Scenes_) FOR_EACH(tex_box, scene.TeXBoxes_) tex_boxes.push_back({tex_boxes.size(), tex_box.get() });
 
    // Initialise LaTeX compilation directory, compile all LaTeX source code, generate glyph sheets, and initialise underlying tex-box Model.
    InitTeXDirectory();
    FOR(i, tex_boxes.size()) tex_boxes[i].second->InitTeXBox(i);
 
    // Load tex-box model textures. Note: only diffuse texture required.
-   FOR_EACH(_, scene, Scenes_)
-      FOR_EACH_CONST(tex_box_name, tex_box, scene.TeXBoxes_)
+   FOR_EACH(scene, Scenes_)
+      FOR_EACH_CONST(tex_box, scene.TeXBoxes_)
       {
-         const auto texture_name = tex_box_name + "_texture";
+         EXIT("Fix")
+//         const auto texture_name = tex_box_name + "_texture";
+         const std::string texture_name = "_texture";
          const auto texture_type = TextureType::Diffuse;
          const auto type_string  = TextureTypeString(texture_type);
 
@@ -183,46 +180,47 @@ Visualiser::InitTeXBoxes()
 void
 Visualiser::InitTextures()
 {
-   // Load model textures
-   FOR_EACH(_, scene, Scenes_)
-      FOR_EACH_CONST(_, model, scene.Actors_)
-         if(model->_TextureInfo.has_value())
-         {
-            const auto& texture_info = model->_TextureInfo;
-            const auto& texture_name = texture_info.value().first;
-
-            if(!Textures_.contains(texture_name))
-            {
-               // Add all files associated to the given texture
-               const auto  texture_list = { TextureType::Diffuse,
-                                            TextureType::Normal,
-                                            TextureType::Displacement }; // Add appropriate enums if more textures are to be read
-               UMap<Texture> texture_files;
-               FOR_EACH_CONST(texture_type, texture_list)
-               {
-                  const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
-                  if(path.has_value())
-                  {
-                     texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
-                     if(texture_type == TextureType::Displacement)
-                     {
-                        const auto& displacement_map_scale = texture_info.value().second;
-                        texture_files.at(TextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
-                     }
-                  }
-                  else EXIT("Could not locate the texture files of texture ", texture_name)
-               }
-
-               // Add texture files to the list of textures
-               Textures_.emplace(texture_name, std::move(texture_files));
-
-               // Point to the textures from the scene
-               UMap<Texture&> texture_file_map;
-               FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-               scene.Textures_.emplace(texture_name, texture_file_map);
-            }
-
-         }
+   EXIT("Fix")
+//   // Load model textures
+//   FOR_EACH(scene, Scenes_)
+//      FOR_EACH_CONST(model, scene.Actors_)
+//         if(model->_TextureInfo.has_value())
+//         {
+//            const auto& texture_info = model->_TextureInfo;
+//            const auto& texture_name = texture_info.value().first;
+//
+//            if(!Textures_.contains(texture_name))
+//            {
+//               // Add all files associated to the given texture
+//               const auto  texture_list = { TextureType::Diffuse,
+//                                            TextureType::Normal,
+//                                            TextureType::Displacement }; // Add appropriate enums if more textures are to be read
+//               UMap<Texture> texture_files;
+//               FOR_EACH_CONST(texture_type, texture_list)
+//               {
+//                  const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
+//                  if(path.has_value())
+//                  {
+//                     texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
+//                     if(texture_type == TextureType::Displacement)
+//                     {
+//                        const auto& displacement_map_scale = texture_info.value().second;
+//                        texture_files.at(TextureTypeString(texture_type)).SetMapScale(displacement_map_scale);
+//                     }
+//                  }
+//                  else EXIT("Could not locate the texture files of texture ", texture_name)
+//               }
+//
+//               // Add texture files to the list of textures
+//               Textures_.emplace(texture_name, std::move(texture_files));
+//
+//               // Point to the textures from the scene
+//               UMap<Texture&> texture_file_map;
+//               FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+//               scene.Textures_.emplace(texture_name, texture_file_map);
+//            }
+//
+//         }
 }
 
 void
@@ -368,8 +366,8 @@ Visualiser::AddGUIElements()
 
       if(TreeNode("Point lights"))
       {
-         FOR_EACH(name, light, scene.PLights_)
-            if(TreeNode(name.c_str()))
+         FOR_EACH(light, scene.PLights_)
+            if(TreeNode(light.Name().c_str()))
             {
                light.AddGUIElements();
                TreePop();

@@ -23,13 +23,13 @@ namespace aprn::vis {
 ModelGroup::~ModelGroup() { Delete(); }
 
 void
-ModelGroup::Update(const Real global_time) { FOR_EACH(_, sub_model, SubModels_) sub_model->Update(global_time); }
+ModelGroup::Update(const Real global_time) { FOR_EACH(sub_model, SubModels_) sub_model->Update(global_time); }
 
 void
-ModelGroup::Render(Shader& shader) { FOR_EACH(_, sub_model, SubModels_) sub_model->Render(shader); }
+ModelGroup::Render(Shader& shader) { FOR_EACH(sub_model, SubModels_) sub_model->Render(shader); }
 
 void
-ModelGroup::Delete() { FOR_EACH(_, sub_model, SubModels_) sub_model->Delete(); }
+ModelGroup::Delete() { FOR_EACH(sub_model, SubModels_) sub_model->Delete(); }
 
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
@@ -39,14 +39,14 @@ ModelGroup::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rg
 ModelGroup&
 ModelGroup::SetColour(const Colour& colour)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->SetColour(colour);
+   FOR_EACH(sub_model, SubModels_) sub_model->SetColour(colour);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::SetMaterial(const std::string& name, const Real specular_intensity, const Real smoothness)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->SetMaterial(name, specular_intensity, smoothness);
+   FOR_EACH(sub_model, SubModels_) sub_model->SetMaterial(name, specular_intensity, smoothness);
    return *this;
 }
 
@@ -60,7 +60,7 @@ ModelGroup::SetTexture(const std::string& material, size_t index, size_t resolut
 ModelGroup&
 ModelGroup::SetTexture(const std::string& material, const std::string& item, const size_t index, const size_t resolution, const Real dispacement_scale)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->SetTexture(material, item, index, resolution, dispacement_scale);
+   FOR_EACH(sub_model, SubModels_) sub_model->SetTexture(material, item, index, resolution, dispacement_scale);
    return *this;
 }
 
@@ -69,14 +69,14 @@ ModelGroup::SetTexture(const std::string& material, const std::string& item, con
 ModelGroup&
 ModelGroup::OffsetPosition(const SVectorR3& displacement)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->OffsetPosition(displacement);
+   FOR_EACH(sub_model, SubModels_) sub_model->OffsetPosition(displacement);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::OffsetOrientation(const Real angle, const SVectorR3& axis)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->OffsetOrientation(angle, axis);
+   FOR_EACH(sub_model, SubModels_) sub_model->OffsetOrientation(angle, axis);
    return *this;
 }
 
@@ -90,49 +90,49 @@ ModelGroup::Scale(const Real factor, const Real start_time, Real end_time, const
 ModelGroup&
 ModelGroup::Scale(const SVectorR3& factors, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->Scale(factors, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->Scale(factors, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::MoveBy(const SVectorR3& displacement, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->MoveBy(displacement, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->MoveBy(displacement, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::MoveTo(const SVectorR3& position, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->MoveTo(position, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->MoveTo(position, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::MoveAt(const SVectorR3& velocity, Real start_time, const std::function<Real(Real)>& ramp)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->MoveAt(velocity, start_time, ramp);
+   FOR_EACH(sub_model, SubModels_) sub_model->MoveAt(velocity, start_time, ramp);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->Trace(path, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->Trace(path, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->RotateBy(angle, axis, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->RotateBy(angle, axis, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const std::function<Real(Real)>& ramp)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->RotateAt(angular_velocity, start_time, ramp);
+   FOR_EACH(sub_model, SubModels_) sub_model->RotateAt(angular_velocity, start_time, ramp);
    return *this;
 }
 
@@ -140,38 +140,44 @@ ModelGroup&
 ModelGroup::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_point, const Real start_time, const Real end_time,
                       const std::function<Real(Real)>& reparam)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->RevolveBy(angle, axis, refe_point, start_time, end_time, reparam);
+   FOR_EACH(sub_model, SubModels_) sub_model->RevolveBy(angle, axis, refe_point, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
 ModelGroup::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time, const std::function<Real(Real)>& ramp)
 {
-   FOR_EACH(_, sub_model, SubModels_) sub_model->RevolveAt(angular_velocity, refe_point, start_time, ramp);
+   FOR_EACH(sub_model, SubModels_) sub_model->RevolveAt(angular_velocity, refe_point, start_time, ramp);
    return *this;
 }
 
 /** Part/sub-model Addition
 ***************************************************************************************************************************************************************/
 ModelGroup&
-ModelGroup::Add(Model& part, const std::string& name) { return Add(std::move(part), name); }
-
-ModelGroup&
-ModelGroup::Add(Model&& part, const std::string& name)
+ModelGroup::Add(const Model& model)
 {
-   const std::string& id = name.empty() ? "SubModel_" + ToString(SubModels_.size()) : name;
-   SubModels_[id] = std::make_shared<Model>(std::move(part));
+   SubModels_.emplace_back(std::make_shared<Model>(model));
    return *this;
 }
 
 ModelGroup&
-ModelGroup::Add(ModelGroup& sub_model, const std::string& name) { return Add(std::move(sub_model), name); }
+ModelGroup::Add(const ModelGroup& model_group)
+{
+   SubModels_.emplace_back(std::make_shared<ModelGroup>(model_group));
+   return *this;
+}
 
 ModelGroup&
-ModelGroup::Add(ModelGroup&& sub_model, const std::string& name)
+ModelGroup::Add(Model&& model)
 {
-   const std::string& id = name.empty() ? "SubModel_" + ToString(SubModels_.size()) : name;
-   SubModels_[id] = std::make_shared<ModelGroup>(std::move(sub_model));
+   SubModels_.emplace_back(std::make_shared<Model>(std::move(model)));
+   return *this;
+}
+
+ModelGroup&
+ModelGroup::Add(ModelGroup&& model_group)
+{
+   SubModels_.emplace_back(std::make_shared<ModelGroup>(std::move(model_group)));
    return *this;
 }
 
@@ -181,12 +187,12 @@ ModelGroup::Add(ModelGroup&& sub_model, const std::string& name)
 bool
 ModelGroup::isInitialised() const
 {
-   if(!isInitialised_) isInitialised_ = std::all_of(SubModels_.begin(), SubModels_.end(), [](auto& model){ return model.second->isInitialised(); });
-   return isInitialised_;
+   if(!Init_) Init_ = std::all_of(SubModels_.begin(), SubModels_.end(), [](auto& model){ return model->isInitialised(); });
+   return Init_;
 }
 
 void
-ModelGroup::Init() { FOR_EACH(_, sub_model, SubModels_) sub_model->Init(); }
+ModelGroup::Init() { FOR_EACH(sub_model, SubModels_) sub_model->Init(); }
 
 void
 ModelGroup::ComputeLifespan()
@@ -195,7 +201,7 @@ ModelGroup::ComputeLifespan()
    ExitTime_  = LowestFloat<>;
 
    // Compute lifespan of all sub-models and add contributions to parent model.
-   FOR_EACH(_, sub_model, SubModels_)
+   FOR_EACH(sub_model, SubModels_)
    {
       sub_model->ComputeLifespan();
       EntryTime_ = Min(EntryTime_, sub_model->EntryTime());

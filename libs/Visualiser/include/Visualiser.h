@@ -45,11 +45,13 @@ class Visualiser
 
    Visualiser(GLint window_width, GLint window_height);
 
-   void Add(Scene& scene, const std::string& name = "");
+   void Add(Scene& scene);
 
-   void Add(Camera& camera, const std::string& name = "");
+   void Add(const Camera& camera);
 
-   void Add(Camera&& camera, const std::string& name = "");
+   void Add(Scene&& scene);
+
+   void Add(Camera&& camera);
 
    void Animate();
 
@@ -93,8 +95,8 @@ class Visualiser
    template<class type> using UMap = std::unordered_map<std::string, type>;
 
    Window              Window_;
-   UMap<Scene>         Scenes_;
-   UMap<Camera>        Cameras_;
+   DArray<Scene>       Scenes_;
+   DArray<Camera>      Cameras_;
    UMap<Shader>        Shaders_;
    UMap<UMap<Texture>> Textures_;
    PostProcessor       PostProcessor_;

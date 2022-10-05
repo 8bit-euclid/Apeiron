@@ -31,19 +31,15 @@ class TeXBox final : public TeXObject,
  public:
    TeXBox() = default;
 
-   explicit TeXBox(const char* str);
-
    explicit TeXBox(const std::string& str);
-
-   explicit TeXBox(const TeXGlyph& tex_glyph);
-
-   explicit TeXBox(const TeXBox& tex_box);
 
    explicit TeXBox(const DArray<TeXGlyph>& tex_glyphs);
 
    explicit TeXBox(const DArray<TeXBox>& tex_boxes);
 
-   TeXBox& Add(const char* str);
+   explicit TeXBox(DArray<TeXGlyph>&& tex_glyphs);
+
+   explicit TeXBox(DArray<TeXBox>&& tex_boxes);
 
    TeXBox& Add(const std::string& str);
 
@@ -51,11 +47,23 @@ class TeXBox final : public TeXObject,
 
    TeXBox& Add(const TeXBox& tex_box);
 
+   TeXBox& Add(const SPtr<TeXObject>& tex_object);
+
    TeXBox& Add(const DArray<TeXGlyph>& tex_glyphs);
 
    TeXBox& Add(const DArray<TeXBox>& tex_boxes);
 
-   TeXBox& SetPixelDensity(UInt density);
+   TeXBox& Add(const DArray<SPtr<TeXObject>>& tex_boxes);
+
+   TeXBox& Add(TeXGlyph&& tex_glyph);
+
+   TeXBox& Add(TeXBox&& tex_box);
+
+   TeXBox& Add(DArray<TeXGlyph>&& tex_glyphs);
+
+   TeXBox& Add(DArray<TeXBox>&& tex_boxes);
+
+   TeXBox& SetPixelDensity(UInt value);
 
    TeXBox& SetAnchor(const SVectorR3& anchor);
 
@@ -85,8 +93,11 @@ class TeXBox final : public TeXObject,
    DArray<SPtr<TeXObject>> SubBoxes_;
    GlyphSheet              GlyphSheet_;
    SVectorR2               Dimensions_{}; // [width, height] in world-space.
-   SVectorR3               Anchor_{};     // Bottom-left corner.
+   SVectorR3               Anchor_{};     // Bottom-left corner in world-space.
    UChar                   FontSize_{10}; // Defaults to a 10pt font.
+
+   /** Friendly unit tests */
+   friend class ParseTeXTest_ParseTeXObject_Test;
 };
 
 

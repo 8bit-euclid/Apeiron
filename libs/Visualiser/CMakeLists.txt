@@ -20,6 +20,7 @@ set(SOURCE_FILES
         include/ModelGroup.h
         include/ModelObject.h
         include/Scene.h
+        include/Scene.tpp
         include/PostProcessor.h
         include/Shader.h
         include/Shadow.h

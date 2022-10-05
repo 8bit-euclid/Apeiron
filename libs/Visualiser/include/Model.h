@@ -36,11 +36,11 @@ namespace aprn::vis {
 class Model : public ModelObject
 {
  public:
-   Model();
+   Model() = default;
 
    Model(const Model& sub_model);
 
-   Model(Model&& sub_model) noexcept;
+   Model(Model&& other) noexcept;
 
    ~Model();
 
@@ -99,7 +99,7 @@ class Model : public ModelObject
 
    /** Other
    ************************************************************************************************************************************************************/
-   inline bool isInitialised() const override { return isInitialised_; }
+   inline bool isInitialised() const override { return Init_; }
 
    inline const auto& ModelMatrix() const { return ModelMatrix_; }
 
@@ -107,6 +107,7 @@ class Model : public ModelObject
 
  protected:
    friend class ModelFactory;
+   template<ActionType type> friend class Action;
 
    void Init() override;
 
@@ -133,7 +134,7 @@ class Model : public ModelObject
    Colour                                         FillColour_;
    glm::vec3                                      Centroid_;
    glm::mat4                                      ModelMatrix_{1.0f};
-   glm::mat4                                      PreviousActions_{1.0f};
+   glm::mat4                                      PastActions_{1.0f};
 };
 
 }

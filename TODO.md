@@ -22,6 +22,7 @@
 - [ ] Background texture embedding onto text
 - [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Resurrect line shader
+- [ ] Enable copy constructors of all buffer objects
 - [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] RenderDoc debugger

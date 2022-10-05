@@ -25,14 +25,14 @@
 #include "Model.h"
 #include "Texture.h"
 
-#include <map>
-#include <memory>
 #include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace aprn::vis {
+
+class Shader;
 
 class ModelGroup : public ModelObject
 {
@@ -94,13 +94,13 @@ class ModelGroup : public ModelObject
 
    /** Part/sub-model Addition
    ************************************************************************************************************************************************************/
-   ModelGroup& Add(Model& part, const std::string& name = "");
+   ModelGroup& Add(const Model& model);
 
-   ModelGroup& Add(Model&& part, const std::string& name = "");
+   ModelGroup& Add(const ModelGroup& model_group);
 
-   ModelGroup& Add(ModelGroup& sub_model, const std::string& name = "");
+   ModelGroup& Add(Model&& model);
 
-   ModelGroup& Add(ModelGroup&& sub_model, const std::string& name = "");
+   ModelGroup& Add(ModelGroup&& model_group);
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -113,13 +113,11 @@ class ModelGroup : public ModelObject
    bool isInitialised() const override;
 
  protected:
-   friend class ModelGroupFactory;
-
    void Init() override;
 
    void ComputeLifespan() override;
 
-   std::unordered_map<std::string, SPtr<ModelObject>> SubModels_;
+   DArray<SPtr<ModelObject>> SubModels_;
 };
 
 }

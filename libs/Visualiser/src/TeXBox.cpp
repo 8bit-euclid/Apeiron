@@ -22,20 +22,15 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeXBox Public Interface
 ***************************************************************************************************************************************************************/
-TeXBox::TeXBox(const char* str) { Add(str); }
-
 TeXBox::TeXBox(const std::string& str) { Add(str); }
-
-TeXBox::TeXBox(const TeXGlyph& tex_glyph) { Add(tex_glyph); }
-
-TeXBox::TeXBox(const TeXBox& tex_box) { Add(tex_box); }
 
 TeXBox::TeXBox(const DArray<TeXGlyph>& tex_glyphs) { Add(tex_glyphs); }
 
 TeXBox::TeXBox(const DArray<TeXBox>& tex_boxes) { Add(tex_boxes); }
 
-TeXBox&
-TeXBox::Add(const char* str) { return Add(std::string(str)); }
+TeXBox::TeXBox(DArray<TeXGlyph>&& tex_glyphs) { Add(std::move(tex_glyphs)); }
+
+TeXBox::TeXBox(DArray<TeXBox>&& tex_boxes) { Add(std::move(tex_boxes)); }
 
 TeXBox&
 TeXBox::Add(const std::string& str) { return Add(ParseTeXString(str)); }
@@ -43,20 +38,35 @@ TeXBox::Add(const std::string& str) { return Add(ParseTeXString(str)); }
 TeXBox&
 TeXBox::Add(const TeXGlyph& tex_glyph)
 {
-   const std::string& glyph_id = "SubBox_" + ToString(SubBoxes_.size());
    auto glyph = std::make_shared<TeXGlyph>(tex_glyph);
-   SubBoxes_.emplace_back(glyph);
-   SubModels_.emplace(glyph_id, glyph);
+   SubBoxes_.push_back(glyph);
+   SubModels_.push_back(glyph);
    return *this;
 }
 
 TeXBox&
 TeXBox::Add(const TeXBox& tex_box)
 {
-   const std::string& box_id = "SubBox_" + ToString(SubBoxes_.size());
    auto box = std::make_shared<TeXBox>(tex_box);
-   SubBoxes_.emplace_back(box);
-   SubModels_.emplace(box_id, box);
+   SubBoxes_.push_back(box);
+   SubModels_.push_back(box);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(const SPtr<TeXObject>& tex_object)
+{
+   // Add as a sub-box.
+   SubBoxes_.push_back(tex_object);
+
+   // Down-cast to either a TeXBox or a TeXGlyph.
+   auto tex_box   = std::dynamic_pointer_cast<TeXBox>(tex_object);
+   auto tex_glyph = std::dynamic_pointer_cast<TeXGlyph>(tex_object);
+   ASSERT(tex_box || tex_glyph, "Failed to down-cast to either a TeXBox or a TeXGlyph.")
+
+   // Add down-casted object as a sub-model.
+   if(tex_box) SubModels_.push_back(tex_box);
+   else        SubModels_.push_back(tex_glyph);
    return *this;
 }
 
@@ -75,9 +85,48 @@ TeXBox::Add(const DArray<TeXBox>& tex_boxes)
 }
 
 TeXBox&
-TeXBox::SetPixelDensity(const UInt density)
+TeXBox::Add(const DArray<SPtr<TeXObject>>& tex_boxes)
 {
-   GlyphSheet_.SetPixelDensity(density);
+   FOR_EACH(tex_box, tex_boxes) Add(tex_box);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(TeXGlyph&& tex_glyph)
+{
+   auto glyph = std::make_shared<TeXGlyph>(std::move(tex_glyph));
+   SubBoxes_.push_back(glyph);
+   SubModels_.push_back(glyph);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(TeXBox&& tex_box)
+{
+   auto box = std::make_shared<TeXBox>(std::move(tex_box));
+   SubBoxes_.push_back(box);
+   SubModels_.push_back(box);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(DArray<TeXGlyph>&& tex_glyphs)
+{
+   FOR_EACH(tex_glyph, tex_glyphs) Add(std::move(tex_glyph));
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(DArray<TeXBox>&& tex_boxes)
+{
+   FOR_EACH(tex_box, tex_boxes) Add(std::move(tex_box));
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetPixelDensity(const UInt value)
+{
+   GlyphSheet_.SetPixelDensity(value);
    return *this;
 }
 
@@ -144,19 +193,20 @@ TeXBox::InitTeXBox(const size_t id)
 void
 TeXBox::InitTeXObject(GlyphSheet::IndexT& index_offset)
 {
-   // Initialise sub-glyphs and add contributions from each sub-glyph to the TeX-box string.
-   Text_.clear();
+   // Initialise sub-boxes and add contributions to the TeX-box string, if it has not already been set.
+   auto set_text = Text_.empty();
    FOR_EACH(sub_box, SubBoxes_)
    {
       sub_box->InitTeXObject(index_offset);
-      Text_ += sub_box->Text();
+      if(set_text) Text_ += sub_box->Text();
    }
 }
 
 void
 TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
 {
-   FOR_EACH(sub_box, SubBoxes_) sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
+   FOR_EACH(sub_box, SubBoxes_)
+      sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
 }
 
 void

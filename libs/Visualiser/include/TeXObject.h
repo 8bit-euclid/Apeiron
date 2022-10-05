@@ -42,6 +42,10 @@ class TeXObject
 
    virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
 
+   inline void SetText(const std::string& text) { Text_ = text; }
+
+   inline void AddText(const std::string& text) { Text_ += text; }
+
    inline const std::string& Text() const { return Text_; }
 
  protected:

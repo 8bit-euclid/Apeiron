@@ -41,7 +41,7 @@ inline void RotatingCube()
    model.SetColour({1.0, 1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
         .Trace([](Real t){ return SVectorR3{Three * std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
-   scene.Add(model, "Cube");
+   scene.Add(model);
 
    // Floor
    const Real height_scale = 0.08;
@@ -64,8 +64,12 @@ inline void RotatingCube()
    model.SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   scene.Add(model)
-        .Add(PointLight(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5}), "Sun");
+   scene.Add(model);
+
+   // Lighting
+   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+   point_light.SetName("Lamp");
+   scene.Add(point_light);
 
    visualiser.Add(scene);
    visualiser.Animate();
@@ -90,7 +94,9 @@ inline void EuclidsElementsEp1()
    scene.Add(model);
 
    // Lighting
-   scene.Add(PointLight(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5}), "Lamp");
+   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
+   point_light.SetName("Lamp");
+   scene.Add(point_light);
 
    visualiser.Add(scene);
    visualiser.Animate();

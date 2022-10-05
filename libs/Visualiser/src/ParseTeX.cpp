@@ -19,14 +19,14 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-TeXGlyph ParseTeXChar(const char c)
+SPtr<TeXGlyph> ParseTeXChar(const char c)
 {
-   TeXGlyph glyph(c);
-   if(c == OneOf(' ', '\t', '\n', '$')) glyph.DoNotRender();
+   auto glyph = std::make_shared<TeXGlyph>(c);
+   if(c == OneOf(' ', '\t', '\n', '$')) glyph->DoNotRender();
    return glyph;
 }
 
-DArray<TeXGlyph>
+DArray<SPtr<TeXObject>>
 ParseTeXString(const std::string& str)
 {
    auto current = str.begin();
