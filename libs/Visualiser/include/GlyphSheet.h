@@ -59,24 +59,24 @@ class GlyphSheet
 
    const GlyphBox& GlyphInfo(const IndexT glyph_index) const;
 
-   inline auto Width() const { return _Width; }
+   inline auto Width() const { return Width_; }
 
-   inline auto Height() const { return _Height; }
+   inline auto Height() const { return Height_; }
 
-   inline auto CompileDirectory() const { return _CompileDirectory; }
+   inline auto CompileDirectory() const { return CompileDirectory_; }
 
-   inline void SetPixelDensity(const UInt density) { _PixelDensity = density; }
+   inline void SetPixelDensity(const UInt density) { PixelDensity_ = density; }
 
-   inline static Real FontSizeScale(const UChar font_size) { return _FontSize10Scale * static_cast<Real>(font_size) / Ten; }
+   inline static Real FontSizeScale(const UChar font_size) { return FontSize10Scale_ * static_cast<Real>(font_size) / Ten; }
 
  private:
-   DArray<GlyphBox>      _Boxes;
-   fm::Path              _CompileDirectory;
-   fm::Path              _TeXFile;
-   Int64                 _Width{};
-   Int64                 _Height{};
-   UInt16                _PixelDensity{2000}; // Measured in DPI.
-   constexpr static Real _FontSize10Scale = 0.5 / 655360.0; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
+   DArray<GlyphBox>      Boxes_;
+   fm::Path              CompileDirectory_;
+   fm::Path              TeXFile_;
+   Int64                 Width_{};
+   Int64                 Height_{};
+   UInt16                PixelDensity_{2000};               // Measured in DPI.
+   constexpr static Real FontSize10Scale_ = 0.5 / 655360.0; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
 };
 
 /***************************************************************************************************************************************************************

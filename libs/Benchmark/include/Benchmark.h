@@ -112,10 +112,10 @@ class Benchmark
    std::unordered_map<std::string, StopWatch> StopWatchMap;
 
    /** Finalise time metrics for the current lap. */
-   inline void Finalise(const std::string& _timer_name)
+   inline void Finalise(const std::string& timer_name)
    {
-      DEBUG_ASSERT(StopWatchMap.count(_timer_name), "The timer for ", _timer_name, " has not yet been created.")
-      StopWatchMap[_timer_name].FinaliseLap();
+      DEBUG_ASSERT(StopWatchMap.count(timer_name), "The timer for ", timer_name, " has not yet been created.")
+      StopWatchMap[timer_name].FinaliseLap();
    }
 };
 

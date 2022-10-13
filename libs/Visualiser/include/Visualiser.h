@@ -92,7 +92,7 @@ class Visualiser
 
    void Terminate();
 
-   template<class type> using UMap = std::unordered_map<std::string, type>;
+   template<class T> using UMap = std::unordered_map<std::string, T>;
 
    Window              Window_;
    DArray<Scene>       Scenes_;
@@ -103,7 +103,7 @@ class Visualiser
    Camera*             ActiveCamera_;
    Scene*              CurrentScene_;
    GUI                 GUI_;
-   bool                wasViewPortModified_{};
+   bool                ViewPortModified_{};
    bool                HideCursor_{false};
 };
 

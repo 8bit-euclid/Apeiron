@@ -26,15 +26,15 @@ namespace Test {
 /***************************************************************************************************************************************************************
 * NumericContainer Test Classes
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-class NumericContainer : public detail::NumericContainer<T, derived>
+template<typename T, class D>
+class NumericContainer : public detail::NumericContainer<T, D>
 {
 protected:
   constexpr NumericContainer() = default;
 
 public:
-  constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
-  constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
+  constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
+  constexpr const D& Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 template<typename T, size_t N>

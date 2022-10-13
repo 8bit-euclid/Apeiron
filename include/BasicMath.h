@@ -75,28 +75,28 @@ constexpr void
 Clip(T& value, const T& min, const T& max) { value = Clipped(value, min, max); }
 
 /** Min value, given a first and last iterator. */
-template<class iter>
-constexpr IterType<iter>
-MinEntry(const iter first, const iter last) { return *std::min_element(first, last); }
+template<class It>
+constexpr IterType<It>
+MinEntry(const It first, const It last) { return *std::min_element(first, last); }
 
 /** Max value, given a first and last iterator. */
-template<class iter>
-constexpr IterType<iter>
-MaxEntry(const iter first, const iter last) { return *std::max_element(first, last); }
+template<class It>
+constexpr IterType<It>
+MaxEntry(const It first, const It last) { return *std::max_element(first, last); }
 
 /** Minmax values in a pair, given a first and last iterator. */
-template<class iter>
-constexpr Pair<IterType<iter>>
-MinMaxEntries(const iter first, const iter last)
+template<class It>
+constexpr Pair<IterType<It>>
+MinMaxEntries(const It first, const It last)
 {
   auto [min_iter, max_iter] = std::minmax_element(first, last);
   return { *min_iter, *max_iter };
 }
 
 /** Clipped values from a first to a last iterator between a minimum and a maximum. */
-template<class iter, typename T>
+template<class It, typename T>
 constexpr void
-BoundEntries(iter first, iter last, const T& min, const T& max) { FOR_ITER(it, first, last) Clip(*it, min, max); }
+BoundEntries(It first, It last, const T& min, const T& max) { FOR_ITER(it, first, last) Clip(*it, min, max); }
 
 /***************************************************************************************************************************************************************
 * Signum and Absolute Value Functions
@@ -115,7 +115,7 @@ Sgn(const T& value, const int zero_sign = 1)
   }
 }
 
-/** Open if a value is positive. */
+/** Check if a value is positive. */
 template<typename T>
 constexpr bool
 isPositive(const T& value, const int zero_sign = 1)
@@ -123,7 +123,7 @@ isPositive(const T& value, const int zero_sign = 1)
    return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
 
-/** Open if a value is negative. */
+/** Check if a value is negative. */
 template<typename T>
 constexpr bool
 isNegative(const T& value, const int zero_sign = 1)

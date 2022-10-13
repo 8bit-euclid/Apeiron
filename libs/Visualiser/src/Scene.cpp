@@ -35,7 +35,7 @@ Scene::Scene(Scene& prev_scene, Real duration, bool adjust_duration)
    : Duration_(duration), AdjustDuration_(adjust_duration)
 {
    ASSERT(Zero < duration      , "Cannot have a negative duration for a scene.")
-   ASSERT(!SingleScene_      , "This constructor should not be called for the first scene.")
+   ASSERT(!SingleScene_        , "This constructor should not be called for the first scene.")
    ASSERT(PrevScene_           , "The current scene has already been assigned a previous scene.")
    ASSERT(prev_scene.NextScene_, "The previous scene has already been assigned a next scene.")
 
@@ -46,8 +46,10 @@ Scene::Scene(Scene& prev_scene, Real duration, bool adjust_duration)
 void
 Scene::Init(const Real start_time)
 {
-   // Initialise all models and lights.
-   FOR_EACH(model , Actors_)  model->Init();
+   // Initialise all actorss except for those associated to TeXBoxes.
+   FOR_EACH(actor, Actors_) if(!std::dynamic_pointer_cast<TeXBox>(actor)) actor->Init();
+
+   // Initialise all lights.
    FOR_EACH(dlight, DLights_) dlight.Init();
    FOR_EACH(plight, PLights_) plight.Init();
    FOR_EACH(slight, SLights_) slight.Init();
@@ -70,6 +72,58 @@ Scene::Init(const Real start_time)
 
    StartTime_ = start_time;
    EndTime_   = StartTime_ + Duration_;
+}
+
+Scene&
+Scene::Add(Model& model, const std::string& name) { return Add(std::move(model), name); }
+
+Scene&
+Scene::Add(TeXBox& tex_box, const std::string& name) { return Add(std::move(tex_box), name); }
+
+Scene&
+Scene::Add(DirectLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(PointLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(SpotLight& light, const std::string& name) { return Add(std::move(light), name); }
+
+Scene&
+Scene::Add(Model&& model, const std::string& name)
+{
+   Actors_.emplace_back(std::make_shared<Model>(std::move(model)));
+   return *this;
+}
+
+Scene&
+Scene::Add(TeXBox&& tex_box, const std::string& name)
+{
+   auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
+   Actors_.emplace_back(ptex_box);
+   TeXBoxes_.emplace_back(ptex_box);
+   return *this;
+}
+
+Scene&
+Scene::Add(DirectLight&& light, const std::string& name)
+{
+   DLights_.emplace_back(std::move(light));
+   return *this;
+}
+
+Scene&
+Scene::Add(PointLight&& light, const std::string& name)
+{
+   PLights_.emplace_back(std::move(light));
+   return *this;
+}
+
+Scene&
+Scene::Add(SpotLight&& light, const std::string& name)
+{
+   SLights_.emplace_back(std::move(light));
+   return *this;
 }
 
 /***************************************************************************************************************************************************************
@@ -170,51 +224,7 @@ Scene::RenderModels(Shader& shader)
    shader.SetUniform1i("u_use_displacement_map", 0);
 
    // Render model and its sub-models.
-//   FOR_EACH(actor, Actors_) RenderModel(actor, shader);
-
-   // Unbind all textures
-   FOR_EACH(_, sub_textures, Textures_) FOR_EACH(_, texture, sub_textures) texture.Unbind();
-}
-
-void
-Scene::RenderModel(SPtr<ModelGroup>& model, Shader& shader)
-{
-//   constexpr int slot_offset(3); // TODO - currently hard-coded.
-//
-//   if(model->isInitialised_)
-//   {
-//      if(model->_Material.has_value()) shader.UseMaterial(model->_Material.value());
-//      if(model->_TextureInfo.has_value())
-//      {
-//         size_t texture_index = 0;
-//         FOR_EACH(type_string, texture, Textures_[model->_TextureInfo.value().first])
-//         {
-//            // Configure respective texture uniform.
-//            const auto& uniform_name = TextureUniformString(type_string);
-//            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
-//            shader.SetUniform1i("u_use_" + uniform_name, 1);
-//
-//            // Set scale if this is a displacement map.
-//            if(GetTextureType(type_string) == TextureType::Displacement)
-//            {
-//               const auto& scale = texture.MapScale();
-//               ASSERT(scale.has_value(), "The displacement map scale has not been set.")
-//               shader.SetUniform1f("u_" + uniform_name + "_scale", scale.value());
-//            }
-//         }
-//      }
-//
-//      shader.UseModel(*model);
-//      model->Render();
-//
-//      // Switch off texture maps
-//      if(model->_TextureInfo.has_value())
-//         FOR_EACH(type_string, _, Textures_[model->_TextureInfo.value().first])
-//            shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
-//   }
-//
-//   // Render sub-models recursively.
-//   FOR_EACH(sub_model, model->SubModels_) RenderModel(sub_model, shader);
+   FOR_EACH(actor, Actors_) actor->Render(shader);
 }
 
 }

@@ -199,7 +199,7 @@ struct Texture          { sampler2D SpecularIntensity; float Smoothness; };
 // Light/Material Uniforms
 uniform int              u_point_light_count;
 uniform int              u_spot_light_count;
-uniform DirectionalLight u_directional_light;
+uniform DirectionalLight u_direct_light;
 uniform PointLight       u_point_lights[Max_Point_Lights];
 uniform SpotLight        u_spot_lights[Max_Spot_Lights];
 uniform Material         u_material;
@@ -229,13 +229,13 @@ float CalculateDirectionalLightShadow(const vec2 texture_coordinate)
    float shadow = 0.0f;
    if(actual_depth <= 1.0f)
    {
-      vec2 texel_size = 1.0f / textureSize(u_directional_light.Shadow, 0);
+      vec2 texel_size = 1.0f / textureSize(u_direct_light.Shadow, 0);
 
-      const float bias = max(0.05 * (1.0 - dot(normal, normalize(u_directional_light.Direction))), 0.005);
+      const float bias = max(0.05 * (1.0 - dot(normal, normalize(u_direct_light.Direction))), 0.005);
       for(int x = -1; x <= 1; x++)
          for(int y = -1; y <= 1; y++)
          {
-            float pcf_depth = bias + texture(u_directional_light.Shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
+            float pcf_depth = bias + texture(u_direct_light.Shadow, projected_coordinates.xy + vec2(x, y) * texel_size).r;
             shadow += actual_depth > pcf_depth ? 1.0f : 0.0f;
          }
       shadow /= 9.0f;
@@ -309,7 +309,7 @@ vec4 CalculateSpotLight(const SpotLight spot_light, const vec3 light_position, c
 
 vec4 CalculateDirectionalLight(const vec2 texture_coordinate)
 {
-   return CalculateLightByDirection(u_directional_light.Base, u_directional_light.Direction, CalculateDirectionalLightShadow(texture_coordinate), texture_coordinate);
+   return CalculateLightByDirection(u_direct_light.Base, u_direct_light.Direction, CalculateDirectionalLightShadow(texture_coordinate), texture_coordinate);
 }
 
 vec4 CalculatePointLights(const vec2 texture_coordinate)

@@ -209,9 +209,6 @@ TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, 
       sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
 }
 
-void
-TeXBox::LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) { FOR_EACH(sub_box, SubBoxes_) sub_box->LoadTeXBoxTexture(texture_info); }
-
 fm::Path
 TeXBox::ImagePath() const
 {

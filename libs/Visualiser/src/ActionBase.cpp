@@ -34,10 +34,10 @@ ActionBase::ActionBase(Model& model, const ActionType action_type)
    ASSERT(action_type == ActionType::OffsetOrientation || action_type == ActionType::OffsetPosition, "This contructor only accepts static actions.")
 }
 
-ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Real end_time, const std::function<Real(Real)> reparam)
+ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Real end_time, const Reparametriser reparam)
    : Actor_(&model), Type_(action_type), StartTime_(start_time), EndTime_(end_time), ParamNormaliser_(One / (EndTime_ - StartTime_)), Reparametriser_(reparam) {}
 
-ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const std::function<Real(Real)> ramp)
+ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Reparametriser ramp)
    : Actor_(&model), Type_(action_type), StartTime_(start_time), EndTime_(InfFloat<>), Ramp_(ramp) {}
 
 std::optional<Real>

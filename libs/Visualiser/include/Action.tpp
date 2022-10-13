@@ -59,12 +59,12 @@ Action<type>::Do(const Real global_time)
 ***************************************************************************************************************************************************************/
 template<ActionType type>
 requires Scale<type>
-Action<type>::Action(Model& model, Real scale, Real start_time, Real end_time, std::function<Real(Real)> reparam)
+Action<type>::Action(Model& model, Real scale, Real start_time, Real end_time, Reparametriser reparam)
    : ActionBase(model, type, start_time, end_time, reparam), Scales(scale) {}
 
 template<ActionType type>
 requires Scale<type>
-Action<type>::Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, std::function<Real(Real)> reparam)
+Action<type>::Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, Reparametriser reparam)
    : ActionBase(model, type, start_time, end_time, reparam), Scales(scales) {}
 
 template<ActionType type>
@@ -81,7 +81,7 @@ Action<type>::Do(const Real global_time)
 ***************************************************************************************************************************************************************/
 template<ActionType type>
 requires Translation<type>
-Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, std::function<Real(Real)> reparam)
+Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, Reparametriser reparam)
    : ActionBase(model, type, start_time, end_time, reparam)
 {
    switch(type)
@@ -94,7 +94,7 @@ Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Real start_tim
 
 template<ActionType type>
 requires Translation<type>
-Action<type>::Action(Model& model, StaticArray<std::function<Real(Real)>, 3> path, Real start_time, Real end_time)
+Action<type>::Action(Model& model, StaticArray<Reparametriser, 3> path, Real start_time, Real end_time)
    : ActionBase(model, type, start_time, end_time, [](Real){return Zero;})
 {
    if(type == ActionType::Trace) this->Displacement = [path](Real t){ return glm::vec3(path[0](t), path[1](t), path[2](t)); };
@@ -113,7 +113,7 @@ Action<type>::Action(Model& model, std::function<SVectorR3(Real)> path, Real sta
 template<ActionType type>
 requires Translation<type>
 template<class D>
-Action<type>::Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, std::function<Real(Real)> reparam)
+Action<type>::Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, Reparametriser reparam)
    : ActionBase(model, type, start_time, end_time, reparam)
 {
    if(type == ActionType::Trace) this->Displacement = [centroid = model.Centroid_, path](Real t){ return path.Point(t) - centroid; };
@@ -134,13 +134,13 @@ Action<type>::Do(const Real global_time)
 ***************************************************************************************************************************************************************/
 template<ActionType type>
 requires Rotation<type>
-Action<type>::Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, std::function<Real(Real)> reparam)
+Action<type>::Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, Reparametriser reparam)
    : Action<type>::Action(model, angle, axis, {0.0, 0.0, 0.0}, start_time, end_time, reparam) {}
 
 template<ActionType type>
 requires Rotation<type>
 Action<type>::Action(Model& model, Real angle, const glm::vec3& axis, const glm::vec3& ref_point, Real start_time, Real end_time,
-                     std::function<Real(Real)> reparam)
+                     Reparametriser reparam)
    : ActionBase(model, type, start_time, end_time, reparam), Axis(axis), Reference(ref_point)
 {
    this->Angle = [angle](Real t){ return t * angle; };
@@ -148,7 +148,7 @@ Action<type>::Action(Model& model, Real angle, const glm::vec3& axis, const glm:
 
 template<ActionType type>
 requires Rotation<type>
-Action<type>::Action(Model& model, const glm::vec3& angular_velocity, Real start_time, std::function<Real(Real)> ramp)
+Action<type>::Action(Model& model, const glm::vec3& angular_velocity, Real start_time, Reparametriser ramp)
    : ActionBase(model, type, start_time, ramp), Axis(glm::normalize(angular_velocity)), Reference({0.0, 0.0, 0.0}),
      AngularSpeed(glm::length(angular_velocity))
 {
@@ -176,7 +176,7 @@ Action<type>::Do(const Real global_time)
 //template<ActionType type>
 //requires Reflect<type>
 //Action<type>::Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time,
-//                     std::function<Real(Real)> reparam)
+//                     Reparametriser reparam)
 //   : ActionBase(model, type, start_time, end_time, reparam), Normal(_normal), ReferencePoint(ref_point)
 //{
 //
@@ -195,7 +195,7 @@ Action<type>::Do(const Real global_time)
 //template<ActionType type>
 //requires Morph<type>
 //Action<type>::Action(Model& model, const Model& _other_actor, Real start_time, Real end_time, std::function<Real()> global_time,
-//                     std::function<Real(Real)> reparam)
+//                     Reparametriser reparam)
 //   : ActionBase(model, start_time, end_time, global_time, reparam)
 //{
 //
@@ -213,7 +213,7 @@ Action<type>::Do(const Real global_time)
 //template<ActionType type>
 //requires SetColour<type>
 //Action<type>::Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real()> global_time,
-//                     std::function<Real(Real)> reparam)
+//                     Reparametriser reparam)
 //   : ActionBase(model, start_time, end_time, global_time, reparam)
 //{
 //

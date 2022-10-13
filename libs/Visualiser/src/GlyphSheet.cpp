@@ -23,7 +23,7 @@ GlyphSheet::Init(size_t id, const std::string& text)
    ASSERT(!text.empty(), "The TeXBox being compiled has no text.")
 
    // Set the compile directory for this glyph sheet.
-   _CompileDirectory = LaTeXDirectory() / ("texbox" + ToString(id));
+   CompileDirectory_ = LaTeXDirectory() / ("texbox" + ToString(id));
 
    // Compile LaTeX and generate image.
    CompileLaTeXSource(text);
@@ -38,7 +38,7 @@ GlyphSheet::Init(size_t id, const std::string& text)
 void
 GlyphSheet::CompileLaTeXSource(const std::string& text)
 {
-   const auto& comp_dir = _CompileDirectory;
+   const auto& comp_dir = CompileDirectory_;
 
    // Initialise the LaTeX compile directory for this TeX-box and copy over the LaTeX template.
    fm::CreateDirectory(comp_dir);
@@ -47,29 +47,29 @@ GlyphSheet::CompileLaTeXSource(const std::string& text)
    fm::CopyFile(LuaTeXTemplate(), comp_dir);
 
    // Transfer TeX-box text to the .tex file.
-   _TeXFile = comp_dir / LaTeXTemplate().filename();
-   fm::File file(_TeXFile, fm::Mode::Append);
+   TeXFile_ = comp_dir / LaTeXTemplate().filename();
+   fm::File file(TeXFile_, fm::Mode::Append);
    file.Write("\n", text, "\n\\end{document}");
    file.Close();
 
    // Compile LaTeX source code.
-   fm::CompileTeXFile("lualatex", _TeXFile);
+   fm::CompileTeXFile("lualatex", TeXFile_);
 }
 
 void
-GlyphSheet::CreateGlyphSheetImage() { fm::ConvertPDFtoPNG(_TeXFile.replace_extension(".pdf"), _PixelDensity); }
+GlyphSheet::CreateGlyphSheetImage() { fm::ConvertPDFtoPNG(TeXFile_.replace_extension(".pdf"), PixelDensity_); }
 
 void
 GlyphSheet::ReadGlyphBoxPositions()
 {
-   fm::File file(_CompileDirectory / "positions.txt", fm::Mode::Read);
+   fm::File file(CompileDirectory_ / "positions.txt", fm::Mode::Read);
    IndexT glyph_index{};
 
    while(!file.isEnd())
    {
-      _Boxes.emplace_back();
-      auto& x = _Boxes[glyph_index].Position.x();
-      auto& y = _Boxes[glyph_index].Position.y();
+      Boxes_.emplace_back();
+      auto& x = Boxes_[glyph_index].Position.x();
+      auto& y = Boxes_[glyph_index].Position.y();
 
       file.Read(x, y);
       if(x < 0)
@@ -87,37 +87,37 @@ GlyphSheet::ReadGlyphBoxAttributes()
 {
    // Read glyph box attributes. Note: need to read with a wide file, as the glyph characters must be read in as wchar_t.
    fm::WFile wfile;
-   wfile.Open(_CompileDirectory / "attributes.txt", fm::Mode::Read);
+   wfile.Open(CompileDirectory_ / "attributes.txt", fm::Mode::Read);
    IndexT glyph_index{};
 
    while(wfile.isValid())
    {
-      DEBUG_ASSERT(glyph_index < _Boxes.size(), "The glyph index ", glyph_index, " exceeds the total number of glyphs.")
+      DEBUG_ASSERT(glyph_index < Boxes_.size(), "The glyph index ", glyph_index, " exceeds the total number of glyphs.")
 
-      auto& c = _Boxes[glyph_index].Char;
-      auto& w = _Boxes[glyph_index].Width;
-      auto& h = _Boxes[glyph_index].Height;
-      auto& d = _Boxes[glyph_index].Depth;
+      auto& c = Boxes_[glyph_index].Char;
+      auto& w = Boxes_[glyph_index].Width;
+      auto& h = Boxes_[glyph_index].Height;
+      auto& d = Boxes_[glyph_index].Depth;
 
       wfile.Read(c, w, h, d);
       ++glyph_index;
    }
 
    wfile.Close();
-   ASSERT(glyph_index == _Boxes.size(), "The number of glyph attributes does not match the number of positions read in.")
+   ASSERT(glyph_index == Boxes_.size(), "The number of glyph attributes does not match the number of positions read in.")
 }
 
 void
 GlyphSheet::ComputeDimensions()
 {
-   using int_T  = decltype(_Width);
+   using int_T  = decltype(Width_);
    using coor_T = SVector2<int_T>;
 
    // Calculate glyph sheet dimensions (min/max bounds of all glyph boxes).
    coor_T min_pos(MaxInt<int_T>);
    coor_T max_pos(MinInt<int_T>);
 
-   FOR_EACH_CONST(glyph, _Boxes)
+   FOR_EACH_CONST(glyph, Boxes_)
    {
       const coor_T bott_left = { glyph.Position.x()              , glyph.Position.y() - glyph.Depth  };
       const coor_T top_right = { glyph.Position.x() + glyph.Width, glyph.Position.y() + glyph.Height };
@@ -128,15 +128,15 @@ GlyphSheet::ComputeDimensions()
          max_pos[i] = Max(max_pos[i], top_right[i]);
       }
    }
-   _Width  = max_pos.x() - min_pos.x();
-   _Height = max_pos.y() - min_pos.y();
+   Width_  = max_pos.x() - min_pos.x();
+   Height_ = max_pos.y() - min_pos.y();
 }
 
 const GlyphBox&
 GlyphSheet::GlyphInfo(const GlyphSheet::IndexT glyph_index) const
 {
-   ASSERT(glyph_index < _Boxes.size(), "The glyph index ", glyph_index," is out of bounds.")
-   return _Boxes[glyph_index];
+   ASSERT(glyph_index < Boxes_.size(), "The glyph index ", glyph_index, " is out of bounds.")
+   return Boxes_[glyph_index];
 }
 
 }

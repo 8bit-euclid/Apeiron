@@ -23,8 +23,8 @@ namespace aprn{
 /***************************************************************************************************************************************************************
 * Tensor Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-class Tensor : public detail::NumericContainer<T, Tensor<T, derived>>
+template<typename T, class D>
+class Tensor : public detail::NumericContainer<T, Tensor<T, D>>
 {
 protected:
   constexpr Tensor();
@@ -38,10 +38,10 @@ public:
   operator()(const std::convertible_to<size_t> auto... multi_index) const;
 
   /** Assignment operator overloads. */
-  constexpr derived&
+  constexpr D&
   operator=(const std::initializer_list<T>& _value_array) noexcept;
 
-  constexpr derived&
+  constexpr D&
   operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept;
 
   /** Iterators */
@@ -61,11 +61,11 @@ private:
   std::pair<size_t, size_t> Type;
 
   /** Derived class access. */
-  constexpr derived&
-  Derived() noexcept { return static_cast<derived&>(*this); }
+  constexpr D&
+  Derived() noexcept { return static_cast<D&>(*this); }
 
-  constexpr const derived&
-  Derived() const noexcept { return static_cast<const derived&>(*this); }
+  constexpr const D&
+  Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 /***************************************************************************************************************************************************************

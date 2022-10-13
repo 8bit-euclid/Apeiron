@@ -86,8 +86,6 @@ class TeXBox final : public TeXObject,
 
    void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
 
-   void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) override;
-
    fm::Path ImagePath() const;
 
    DArray<SPtr<TeXObject>> SubBoxes_;

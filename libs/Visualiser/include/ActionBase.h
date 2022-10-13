@@ -30,6 +30,8 @@ namespace aprn::vis {
 
 /** Reparametriser/Ramp Functors
 ***************************************************************************************************************************************************************/
+using Reparametriser = std::function<Real(Real)>;
+
 constexpr auto Identity = [](Real t){ return One; };
 constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 
@@ -86,6 +88,7 @@ bool isTimeParametrised(ActionType type);
 /** Action Concepts
 ***************************************************************************************************************************************************************/
 typedef ActionType AT;
+
 template<AT type> concept Ramp        = isEnumSame<type, AT::RampUp>() ||
                                         isEnumSame<type, AT::RampDown>();
 template<AT type> concept Scale       = isEnumSame<type, AT::Scale>();
@@ -113,9 +116,9 @@ class ActionBase
  public:
    ActionBase(Model& model, ActionType action_type);
 
-   ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   ActionBase(Model& model, ActionType action_type, Real start_time, std::function<Real(Real)> ramp = Identity);
+   ActionBase(Model& model, ActionType action_type, Real start_time, Reparametriser ramp = Identity);
 
    virtual void Do(Real global_time) = 0;
 

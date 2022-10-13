@@ -23,12 +23,15 @@
 #include <string>
 #include <string_view>
 
+using namespace aprn;
 using namespace aprn::test;
 
 int main(void)
 {
+   Triangle();
+//   Cube();
 //   RotatingCube();
-   EuclidsElementsEp1();
+//   EuclidsElementsEp1();
 
    return 0;
 }

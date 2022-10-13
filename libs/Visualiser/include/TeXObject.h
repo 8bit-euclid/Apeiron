@@ -38,15 +38,13 @@ class TeXObject
 
    virtual void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) = 0;
 
-   virtual void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) = 0;
-
    virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
 
    inline void SetText(const std::string& text) { Text_ = text; }
 
    inline void AddText(const std::string& text) { Text_ += text; }
 
-   inline const std::string& Text() const { return Text_; }
+   inline const auto& Text() const { return Text_; }
 
  protected:
    std::string Text_;

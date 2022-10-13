@@ -22,7 +22,7 @@
 namespace aprn {
 
 constexpr Real RelativeTolerance = Small;
-constexpr Real ZeroTolerance = Small;
+constexpr Real ZeroTolerance     = Small;
 
 /** Floating-point toleranced/exact equality check. */
 template<bool exact_precision = false>

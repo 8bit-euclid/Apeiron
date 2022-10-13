@@ -24,6 +24,54 @@ using namespace aprn::vis;
 
 namespace aprn::test {
 
+inline void Triangle()
+{
+   Visualiser visualiser;
+   Scene scene;
+   Model model;
+
+   // Triangle
+   model = ModelFactory::Triangle(1.0);
+   model.SetColour({1.0, 1.0, 1.0, 1.0});
+   scene.Add(model);
+
+   // Lighting
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
+
+//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+//   point_light.SetName("Light");
+//   scene.Add(point_light);
+
+   visualiser.Add(scene);
+   visualiser.Animate();
+}
+
+inline void Cube()
+{
+   Visualiser visualiser;
+   Scene scene;
+   Model model;
+
+   // Cube
+   model = ModelFactory::Cube(1.0);
+   model.SetColour({1.0, 1.0, 1.0, 1.0});
+   scene.Add(model);
+
+   // Lighting
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
+
+//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+//   point_light.SetName("Light");
+//   scene.Add(point_light);
+
+   visualiser.Add(scene);
+   visualiser.Animate();
+}
+
 inline void RotatingCube()
 {
    Visualiser visualiser;
@@ -67,9 +115,13 @@ inline void RotatingCube()
    scene.Add(model);
 
    // Lighting
-   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
-   point_light.SetName("Lamp");
-   scene.Add(point_light);
+//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+//   point_light.SetName("Lamp");
+//   scene.Add(point_light);
+
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();
@@ -94,9 +146,13 @@ inline void EuclidsElementsEp1()
    scene.Add(model);
 
    // Lighting
-   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
-   point_light.SetName("Lamp");
-   scene.Add(point_light);
+//   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
+//   point_light.SetName("Lamp");
+//   scene.Add(point_light);
+
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();

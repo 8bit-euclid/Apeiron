@@ -90,11 +90,11 @@ constexpr auto
 Sum(const T... values) { return (values + ... + 0); }
 
 /** Sum the terms of a sequence between two iterators. */
-template<class iter>
+template<class It>
 constexpr auto
-Sum(const iter first, const iter last)
+Sum(const It first, const It last)
 {
-  typedef typename std::iterator_traits<iter>::value_type data_type;
+  typedef typename std::iterator_traits<It>::value_type data_type;
   return std::accumulate(first, last, static_cast<data_type>(0));
 }
 
@@ -104,11 +104,11 @@ constexpr auto
 Product(const T... values) { return (values * ... * 1); }
 
 /** Product the terms of a sequence between two iterators. */
-template<class iter>
+template<class It>
 constexpr auto
-Product(const iter first, const iter last)
+Product(const It first, const It last)
 {
-  typedef typename std::iterator_traits<iter>::value_type data_type;
+  typedef typename std::iterator_traits<It>::value_type data_type;
   return std::accumulate(first, last, static_cast<data_type>(1), std::multiplies<data_type>());
 }
 

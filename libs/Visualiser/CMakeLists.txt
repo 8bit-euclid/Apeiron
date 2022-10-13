@@ -18,7 +18,7 @@ set(SOURCE_FILES
         include/Material.h
         include/Mesh.h
         include/ModelGroup.h
-        include/ModelObject.h
+        include/RenderObject.h
         include/Scene.h
         include/Scene.tpp
         include/PostProcessor.h

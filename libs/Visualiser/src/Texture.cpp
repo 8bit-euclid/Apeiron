@@ -24,16 +24,15 @@ namespace aprn::vis {
 * Texture Class Implementation
 ***************************************************************************************************************************************************************/
 Texture::Texture(const TextureType type, const std::string& file_path)
-   : Texture(type, false) { Read(file_path, GL_CLAMP_TO_EDGE); }
+   : Texture(type, false)
+{
+   Read(file_path, GL_CLAMP_TO_EDGE);
+}
 
 Texture::Texture(const TextureType type, const bool is_fbo_attachment)
-  : _ID(0), _Width(0), _Height(0), _ChannelCount(0), _LocalBuffer(nullptr), _Type(type), _isFBOAttachment(is_fbo_attachment) {}
+  : ID_(0), Type_(type), LocalBuffer_(nullptr), Width_(0), Height_(0), ChannelCount_(0), FBOAttachment_(is_fbo_attachment) {}
 
-Texture::Texture(Texture&& texture) noexcept
-   : _ID(texture._ID), _Width(std::move(texture._Width)), _Height(std::move(texture._Height)), _ChannelCount(std::move(texture._ChannelCount)),
-     _LocalBuffer(std::move(texture._LocalBuffer)), _MapScale(std::move(texture._MapScale)), _Type(std::move(texture._Type)),
-     _SampleCount(std::move(texture._SampleCount)), _isMultiSampled(std::move(texture._isMultiSampled)),
-     _isFBOAttachment(std::move(texture._isFBOAttachment)) { texture._ID = 0; }
+Texture::Texture(Texture&& texture) noexcept { *this = std::move(texture); }
 
 Texture::~Texture() { Delete(); }
 
@@ -43,18 +42,18 @@ Texture::Read(const std::string& file_path, const GLint wrap_type)
    // Load texture image with stbi.
    int width, height;
    stbi_set_flip_vertically_on_load(true);
-   _LocalBuffer.reset(stbi_load(file_path.c_str(), &width, &height, &_ChannelCount, 0));
-   ASSERT(_LocalBuffer, "Could not load file \"", file_path, "\" to texture.")
+   LocalBuffer_.reset(stbi_load(file_path.c_str(), &width, &height, &ChannelCount_, 0));
+   ASSERT(LocalBuffer_, "Could not load file \"", file_path, "\" to texture.")
 
    // Initialise texture.
-   std::pair<GLint, GLenum> format = _ChannelCount == 2 ? std::make_pair(GL_SRGB, GL_RG) :
-                                     _ChannelCount == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
-                                     _ChannelCount == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
-                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToString(_ChannelCount) + ".";
+   std::pair<GLint, GLenum> format = ChannelCount_ == 2 ? std::make_pair(GL_SRGB, GL_RG) :
+                                     ChannelCount_ == 3 ? std::make_pair(GL_SRGB, GL_RGB) :
+                                     ChannelCount_ == 4 ? std::make_pair(GL_SRGB_ALPHA, GL_RGBA) :
+                                     throw "Currently only 2, 3, or 4 bits per pixel are supported. Got " + ToString(ChannelCount_) + ".";
    Init(width, height, format.first, format.second, GL_UNSIGNED_BYTE, wrap_type);
 
    // Free stbi-loaded image buffer.
-   stbi_image_free(_LocalBuffer.get());
+   stbi_image_free(LocalBuffer_.get());
 }
 
 void
@@ -64,18 +63,18 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
    ASSERT(glfwGetCurrentContext(), "Cannot intialise a texture without an OpenGL context.")
    ASSERT(n_samples > 0, "The sample count for each texture must be at least one.")
 
-   GLCall(glGenTextures(1, &_ID))
+   GLCall(glGenTextures(1, &ID_))
 
-   _Width          = width;
-   _Height         = height;
-   _SampleCount    = n_samples;
-   _isMultiSampled = n_samples > 1;
-   const auto gl_type = OpenGLType();
+   Width_        = width;
+   Height_       = height;
+   SampleCount_  = n_samples;
+   MultiSampled_ = n_samples > 1;
 
    Bind();
 
    // Common settings
-   if(!_isMultiSampled)
+   const auto gl_type = OpenGLType();
+   if(!MultiSampled_)
    {
       GLCall(glTexParameteri(gl_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR))
       GLCall(glTexParameteri(gl_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR))
@@ -90,9 +89,9 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
      {
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type))
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
-        GLCall(glTexImage2D(gl_type, 0, internal_format, _Width, _Height, 0, format, data_type, _LocalBuffer.get()));
+        GLCall(glTexImage2D(gl_type, 0, internal_format, Width_, Height_, 0, format, data_type, LocalBuffer_.get()));
      }
-     else GLCall(glTexImage2DMultisample(gl_type, _SampleCount, internal_format, _Width, _Height, GL_TRUE));
+     else GLCall(glTexImage2DMultisample(gl_type, SampleCount_, internal_format, Width_, Height_, GL_TRUE));
    }
    else if(gl_type == GL_TEXTURE_CUBE_MAP)
    {
@@ -102,10 +101,10 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
      GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
      GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_R, wrap_type))
 
-     FOR(i, 6) GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, _Width, _Height, 0, format, data_type, nullptr))
+     FOR(i, 6) GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internal_format, Width_, Height_, 0, format, data_type, nullptr))
    }
 
-   if(!_isFBOAttachment) GLCall(glGenerateMipmap(gl_type))
+   if(!FBOAttachment_) GLCall(glGenerateMipmap(gl_type))
 
    Unbind();
 }
@@ -114,7 +113,7 @@ void
 Texture::Bind(const UInt slot) const
 {
    GLCall(glActiveTexture(GL_TEXTURE0 + slot))
-   GLCall(glBindTexture(OpenGLType(), _ID))
+   GLCall(glBindTexture(OpenGLType(), ID_))
 }
 
 void
@@ -123,25 +122,27 @@ Texture::Unbind() const { GLCall(glBindTexture(OpenGLType(), 0)) }
 void
 Texture::Delete()
 {
-   GLCall(glDeleteTextures(1, &_ID))
-   _ID = 0;
+   GLCall(glDeleteTextures(1, &ID_))
+   ID_ = 0;
 }
 
 Texture&
 Texture::operator=(Texture&& texture) noexcept
 {
-   _ID = texture._ID;
-   texture._ID = 0;
+   // Move all memebers.
+   ID_            = std::move(texture.ID_);
+   Type_          = std::move(texture.Type_);
+   LocalBuffer_   = std::move(texture.LocalBuffer_);
+   Width_         = std::move(texture.Width_);
+   Height_        = std::move(texture.Height_);
+   ChannelCount_  = std::move(texture.ChannelCount_);
+   MapScale_      = std::move(texture.MapScale_);
+   SampleCount_   = std::move(texture.SampleCount_);
+   MultiSampled_  = std::move(texture.MultiSampled_);
+   FBOAttachment_ = std::move(texture.FBOAttachment_);
 
-   _Width           = std::move(texture._Width);
-   _Height          = std::move(texture._Height);
-   _ChannelCount    = std::move(texture._ChannelCount);
-   _LocalBuffer     = std::move(texture._LocalBuffer);
-   _MapScale        = std::move(texture._MapScale);
-   _Type            = std::move(texture._Type);
-   _SampleCount     = std::move(texture._SampleCount);
-   _isMultiSampled  = std::move(texture._isMultiSampled);
-   _isFBOAttachment = std::move(texture._isFBOAttachment);
+   // Nullify ID of moved texture.
+   texture.ID_ = 0;
 
    return *this;
 }
@@ -150,8 +151,8 @@ GLint
 Texture::OpenGLType() const
 {
    typedef TextureType TT;
-   if(_Type == OneOf(TT::Diffuse, TT::Normal, TT::Displacement, TT::DirectionalDepth)) return _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-   else if(_Type == TT::PointDepth) return GL_TEXTURE_CUBE_MAP;
+   if(Type_ == OneOf(TT::Diffuse, TT::Normal, TT::Displacement, TT::DirectionalDepth)) return MultiSampled_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+   else if(Type_ == TT::PointDepth) return GL_TEXTURE_CUBE_MAP;
    else EXIT("Unrecongnised texture type.")
 }
 
@@ -166,7 +167,7 @@ TextureName(const std::string& material, const std::string& item, const size_t i
 }
 
 std::string
-TextureTypeString(TextureType type)
+TextureTypeString(const TextureType type)
 {
    switch(type)
    {
@@ -184,7 +185,7 @@ TextureTypeString(TextureType type)
 TextureType
 GetTextureType(const std::string& type_string)
 {
-   if(type_string == "Diffuse")               return TextureType::Diffuse;
+   if     (type_string == "Diffuse")          return TextureType::Diffuse;
    else if(type_string == "Normal")           return TextureType::Normal;
    else if(type_string == "Displacement")     return TextureType::Displacement;
    else if(type_string == "Roughness")        return TextureType::Roughness;
@@ -213,7 +214,7 @@ std::string
 TextureDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
 
 std::optional<std::string>
-TexturePath(const std::string& file_directory, TextureType type)
+TexturePath(const std::string& file_directory, const TextureType type)
 {
    const auto& texture_str = TextureTypeString(type);
    std::string file_path = file_directory + texture_str;
