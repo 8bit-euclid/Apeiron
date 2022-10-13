@@ -23,8 +23,8 @@ namespace aprn {
 /***************************************************************************************************************************************************************
 * Vector Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-class Vector : public detail::NumericContainer<T, derived>
+template<typename T, class D>
+class Vector : public detail::NumericContainer<T, D>
 {
  public:
    /** Subscript Operators */
@@ -41,9 +41,9 @@ class Vector : public detail::NumericContainer<T, derived>
    constexpr const T& z() const { return Derived()[2]; }
 
    /** Derived Class Access */
-   constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
+   constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
 
-   constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
+   constexpr const D& Derived() const noexcept { return static_cast<const D&>(*this); }
 
  protected:
    constexpr Vector() = default;
@@ -71,8 +71,8 @@ class StaticVector final : public StaticArray<T, N>,
    constexpr StaticVector(const std::initializer_list<T2>& list)
      : BaseArray(list) {}
 
-   template<class iter>
-   constexpr StaticVector(const iter first, const iter last)
+   template<class It>
+   constexpr StaticVector(const It first, const It last)
      : BaseArray(first, last) {}
 
    /** Operators */
@@ -105,8 +105,8 @@ class DynamicVector final : public DynamicArray<T>,
    DynamicVector(const std::initializer_list<T2>& list)
      : BaseArray(list) {}
 
-   template<class iter>
-   DynamicVector(const iter first, const iter last)
+   template<class It>
+   DynamicVector(const It first, const It last)
      : BaseArray(first, last) {}
 
    /** Operators */

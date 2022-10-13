@@ -112,7 +112,7 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
    Mesh_ = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).ModelMesh();
-   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { Mesh_.Vertices[i].TextureCoordinates =
+   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { Mesh_.Vertices_[i].TextureCoordinates =
                                                                      glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
    set_tex_coor(0, anchor);
    set_tex_coor(1, anchor + SVectorR2{ dimensions.x(), Zero });

@@ -24,7 +24,7 @@ namespace aprn::mnfld {
 /***************************************************************************************************************************************************************
 * Manifold Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<class derived, size_t manifold_dim, size_t ambient_dim = 3>
+template<class D, size_t manifold_dim, size_t ambient_dim = 3>
 class Manifold
 {
    static_assert(manifold_dim <= ambient_dim, "The dimension of a manifold cannot be larger than that of the ambient space in which it is embedded.");
@@ -66,11 +66,11 @@ class Manifold
    ParamCountCheck(const std::convertible_to<Real> auto... _params) const;
 
    /** Derived Class Access */
-   constexpr derived&
-   Derived() noexcept { return static_cast<derived&>(*this); }
+   constexpr D&
+   Derived() noexcept { return static_cast<D&>(*this); }
 
-   constexpr const derived&
-   Derived() const noexcept { return static_cast<const derived&>(*this); }
+   constexpr const D&
+   Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 }

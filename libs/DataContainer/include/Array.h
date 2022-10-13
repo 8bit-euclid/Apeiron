@@ -25,7 +25,7 @@ namespace aprn {
 /***************************************************************************************************************************************************************
 * Array Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
+template<typename T, class D>
 class Array
 {
  protected:
@@ -43,20 +43,20 @@ class Array
    constexpr const T& operator[](const size_t index) const;
 
    /** Assignment Operator Overloads */
-   constexpr derived& operator=(const std::convertible_to<T> auto value) noexcept;
+   constexpr D& operator=(const std::convertible_to<T> auto value) noexcept;
 
    template<std::convertible_to<T> T2>
-   constexpr derived& operator=(const std::initializer_list<T2>& value_list) noexcept;
+   constexpr D& operator=(const std::initializer_list<T2>& value_list) noexcept;
 
    /** Comparison Operator Overloads */
-   constexpr bool operator==(const Array<T, derived>& _other) noexcept;
+   constexpr bool operator==(const Array<T, D>& _other) noexcept;
 
-   constexpr bool operator!=(const Array<T, derived>& _other) noexcept;
+   constexpr bool operator!=(const Array<T, D>& _other) noexcept;
 
    /** Derived Class Access */
-   constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
+   constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
 
-   constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
+   constexpr const D& Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 /** Non-member functions */

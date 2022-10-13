@@ -61,15 +61,15 @@ class PostProcessor
    friend class Visualiser;
 
    template<class type> using UMap = std::unordered_map<std::string, type>;
-   FrameImage                _MultiSampledImage;
-   FrameImage                _ResolvedImage;
-   UMap<FrameImage>          _BlurBuffers;
-   UMap<Shader>              _Shaders;
-   Model                      _ScreenQuad;
-   UInt                      _Width;
-   UInt                      _Height;
-   constexpr static UInt     _SampleCount{32}; // For MSAA
-   inline static std::string _Default = "Default";
+   FrameImage                MultiSampledImage_;
+   FrameImage                ResolvedImage_;
+   UMap<FrameImage>          BlurBuffers_;
+   UMap<Shader>              Shaders_;
+   Model                     ScreenQuad_;
+   UInt                      Width_;
+   UInt                      Height_;
+   constexpr static UInt     SampleCount_{32}; // For MSAA
+   inline static std::string Default_ = "Default";
 };
 
 }

@@ -24,15 +24,15 @@ namespace aprn::ptope {
 /***************************************************************************************************************************************************************
 * Polytope Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<class derived, PolytopeCategory cat, size_t dim>
+template<class D, PolytopeCategory cat, size_t dim>
 struct Polytope
 {
    constexpr virtual ~Polytope() = 0;
 
    /** Vertices/Faces Access */
-   constexpr auto& Vertices() { return Derived().Vertices; }
+   constexpr auto& Vertices() { return Derived().Vertices_; }
 
-   constexpr const auto& Vertices() const { return Derived().Vertices; }
+   constexpr const auto& Vertices() const { return Derived().Vertices_; }
 
    constexpr auto& Faces() { return Derived().Faces; }
 
@@ -40,9 +40,9 @@ struct Polytope
 
  private:
    /** Derived Class Access */
-   constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
+   constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
 
-   constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
+   constexpr const D& Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 /***************************************************************************************************************************************************************

@@ -26,7 +26,7 @@ namespace aprn {
 /** Convert to a string. */
 template<typename T>
 inline std::string
-ToString(const T& number, UChar decimals = 0)
+ToString(const T& number, const UChar decimals = 0)
 {
    std::stringstream str_buffer;
    if(decimals) str_buffer << std::fixed << std::setprecision(decimals);
@@ -43,7 +43,7 @@ template<typename T = int>
 inline T
 ToNumber(const std::string& str)
 {
-   if constexpr(isTypeSame<T, int>())              return std::stoi(str);
+   if constexpr     (isTypeSame<T, int>())         return std::stoi(str);
    else if constexpr(isTypeSame<T, long>())        return std::stol(str);
    else if constexpr(isTypeSame<T, long long>())   return std::stoll(str);
    else if constexpr(isTypeSame<T, float>())       return std::stof(str);
@@ -60,7 +60,7 @@ PeekAt(unsigned position, const It first, const It last)
    else return { last, false };
 }
 
-/** Open if the first string is a substring of the second. */
+/** Check if the first string is a substring of the second. */
 inline bool
 isSubstring(const std::string_view& substr, const std::string_view& str) { return str.find(substr) != std::string::npos; }
 

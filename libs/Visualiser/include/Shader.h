@@ -38,7 +38,7 @@ enum class ShaderType
   nTypes
 };
 
-struct ShaderSourceCode
+struct ShaderSource
 {
   std::string Vertex;
   std::string Geometry;
@@ -58,9 +58,9 @@ class Shader
 
    void Read(const std::string& file_path);
 
-   inline void Bind() const { GLCall(glUseProgram(ID_)); }
+   inline void Bind() const { GLCall(glUseProgram(ID_)) }
 
-   inline void Unbind() const { GLCall(glUseProgram(0)); }
+   inline void Unbind() const { GLCall(glUseProgram(0)) }
 
    inline void SetWarnings(const bool is_on) { WarningsOn_ = is_on; }
 
@@ -103,7 +103,7 @@ class Shader
    inline static std::string Directory = "./libs/Visualiser/resources/shaders/";
 
 private:
-   ShaderSourceCode Parse(const std::string& file_path);
+   ShaderSource Parse(const std::string& file_path);
 
    void Create(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader);
 

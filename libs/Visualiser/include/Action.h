@@ -35,20 +35,20 @@ class Model;
 /***************************************************************************************************************************************************************
 * Action Class Full Specialisations
 ***************************************************************************************************************************************************************/
-template<ActionType type>
+template<ActionType T>
 class Action : public ActionBase
 {
  public:
-   Action(Model& model) : ActionBase(model, type, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
+   Action(Model& model) : ActionBase(model, T, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
 
    void Do(const Real global_time) override {}
 };
 
 ///** Ramp
 //***************************************************************************************************************************************************************/
-//template<ActionType type>
-//requires Ramp<type>
-//class Action<type> final : public ActionBase
+//template<ActionType T>
+//requires Ramp<T>
+//class Action<T> final : public ActionBase
 //{
 // public:
 //   Action(Model& model, RampType _ramp_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
@@ -61,9 +61,9 @@ class Action : public ActionBase
 
 /** Offset
 ***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Offset<type>
-class Action<type> final : public ActionBase
+template<ActionType T>
+requires Offset<T>
+class Action<T> final : public ActionBase
 {
  public:
    Action(Model& model, const glm::vec3& position_offset);
@@ -80,14 +80,14 @@ class Action<type> final : public ActionBase
 
 /** Scale
 ***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Scale<type>
-class Action<type> final : public ActionBase
+template<ActionType T>
+requires Scale<T>
+class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, Real scale, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   Action(Model& model, Real scale, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
    void Do(const Real global_time) override;
 
@@ -97,19 +97,19 @@ class Action<type> final : public ActionBase
 
 /** Translation
 ***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Translation<type>
-class Action<type> final : public ActionBase
+template<ActionType T>
+requires Translation<T>
+class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, StaticArray<std::function<Real(Real)>, 3> path, Real start_time, Real end_time);
+   Action(Model& model, StaticArray<Reparametriser, 3> path, Real start_time, Real end_time);
 
    Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time);
 
    template<class D>
-   Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
    void Do(const Real global_time) override;
 
@@ -119,17 +119,17 @@ class Action<type> final : public ActionBase
 
 /** Rotation
 ***************************************************************************************************************************************************************/
-template<ActionType type>
-requires Rotation<type>
-class Action<type> final : public ActionBase
+template<ActionType T>
+requires Rotation<T>
+class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+   Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
    Action(Model& model, Real angle, const glm::vec3& axis, const glm::vec3& ref_point, Real start_time, Real end_time,
-          std::function<Real(Real)> reparam = Linear);
+          Reparametriser reparam = Linear);
 
-   Action(Model& model, const glm::vec3& angular_velocity, Real start_time = Zero, std::function<Real(Real)> ramp = Identity);
+   Action(Model& model, const glm::vec3& angular_velocity, Real start_time = Zero, Reparametriser ramp = Identity);
 
    void Do(const Real global_time) override;
 
@@ -142,9 +142,9 @@ class Action<type> final : public ActionBase
 
 ///** Reflection
 //***************************************************************************************************************************************************************/
-//template<ActionType type>
-//requires Reflection<type>
-//class Action<type> final : public ActionBase
+//template<ActionType T>
+//requires Reflection<T>
+//class Action<T> final : public ActionBase
 //{
 // public:
 //   Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
@@ -161,9 +161,9 @@ class Action<type> final : public ActionBase
 
 ///** Morph
 //***************************************************************************************************************************************************************/
-//template<ActionType type>
-//requires Morph<type>
-//class Action<type> final : public ActionBase
+//template<ActionType T>
+//requires Morph<T>
+//class Action<T> final : public ActionBase
 //{
 // public:
 //   Action(Model& model, const Model& _other_actor, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
@@ -179,9 +179,9 @@ class Action<type> final : public ActionBase
 
 ///** Set Stroke/Fill Colour
 //***************************************************************************************************************************************************************/
-//template<ActionType type>
-//requires SetColour<type>
-//class Action<type> final : public ActionBase
+//template<ActionType T>
+//requires SetColour<T>
+//class Action<T> final : public ActionBase
 //{
 // public:
 //   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
@@ -196,9 +196,9 @@ class Action<type> final : public ActionBase
 
 ///** Glow/Blink
 //***************************************************************************************************************************************************************/
-//template<ActionType type>
-//requires SetColour<type>
-//class Action<type> final : public ActionBase
+//template<ActionType T>
+//requires SetColour<T>
+//class Action<T> final : public ActionBase
 //{
 // public:
 //   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);

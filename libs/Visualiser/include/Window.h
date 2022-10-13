@@ -44,7 +44,7 @@ class Window
 
    void Terminate();
 
-   bool isViewportModified();
+   bool ViewportModified();
 
    void ResetViewport() const;
 
@@ -85,28 +85,28 @@ class Window
    static void
    HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
-   std::string            _Title;
-   Real                  _CurrentTime{};
-   Real                  _PreviousTime{};
-   Real                  _DeltaTime{};
-   SVectorR2              _PreviousCursorPosition;
-   SVectorR2              _CursorDisplacement;
-   SVectorR2              _WheelDisplacement;
-   SVector2<GLint>        _WindowDimensions;
-   SVector2<GLint>        _ViewportDimensions;
-   constexpr static GLint _KeyCount{1024};
-   SArrayB<_KeyCount>     _Keys;
-   GLFWwindow*            _GlfwWindow;
-   Real                  _PreviousFrameTime{};
-   size_t                 _FrameCounter;
-   bool                   _isFirstCursorMotion;
+   std::string           Title_;
+   Real                  CurrentTime_{};
+   Real                  PreviousTime_{};
+   Real                  DeltaTime_{};
+   SVectorR2             PreviousCursorPosition_;
+   SVectorR2             CursorDisplacement_;
+   SVectorR2             WheelDisplacement_;
+   SVector2<GLint>       WindowDimensions_;
+   SVector2<GLint>       ViewportDimensions_;
+   constexpr static UInt KeyCount_{1024};
+   SArrayB<KeyCount_>    Keys_;
+   GLFWwindow*           GLFWWindow_;
+   Real                  PreviousFrameTime_{};
+   size_t                FrameCounter_;
+   bool                  FirstCursorMotion_;
 };
 
 inline void ClearFrameBuffer()
 {
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f))
    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
-   GLCall(glEnable(GL_DEPTH_TEST));
+   GLCall(glEnable(GL_DEPTH_TEST))
 }
 
 }

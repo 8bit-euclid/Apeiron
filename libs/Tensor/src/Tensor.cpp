@@ -22,36 +22,36 @@ namespace aprn{
 /***************************************************************************************************************************************************************
 * Tensor Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-constexpr Tensor<T, derived>::Tensor()
+template<typename T, class D>
+constexpr Tensor<T, D>::Tensor()
 {
 
 }
 
-template<typename T, class derived>
+template<typename T, class D>
 constexpr T&
-Tensor<T, derived>::operator()(std::convertible_to<size_t> auto... multi_index)
+Tensor<T, D>::operator()(std::convertible_to<size_t> auto... multi_index)
 {
   return Derived().Entries(multi_index...);
 }
 
-template<typename T, class derived>
+template<typename T, class D>
 constexpr const T&
-Tensor<T, derived>::operator()(const std::convertible_to<size_t> auto... multi_index) const
+Tensor<T, D>::operator()(const std::convertible_to<size_t> auto... multi_index) const
 {
   return Derived().Entries(multi_index...);
 }
 
-template<typename T, class derived>
-constexpr derived&
-Tensor<T, derived>::operator=(const std::initializer_list<T>& _value_array) noexcept
+template<typename T, class D>
+constexpr D&
+Tensor<T, D>::operator=(const std::initializer_list<T>& _value_array) noexcept
 {
   Derived().Entries = _value_array;
 }
 
-template<typename T, class derived>
-constexpr derived&
-Tensor<T, derived>::operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept
+template<typename T, class D>
+constexpr D&
+Tensor<T, D>::operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept
 {
   Derived().Entries = _value_matrix;
 }

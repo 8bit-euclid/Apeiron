@@ -81,56 +81,56 @@ ModelGroup::OffsetOrientation(const Real angle, const SVectorR3& axis)
 }
 
 ModelGroup&
-ModelGroup::Scale(const Real factor, const Real start_time, Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::Scale(const Real factor, const Real start_time, Real end_time, Reparametriser reparam)
 {
    Scale(SVectorR3(factor), start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::Scale(const SVectorR3& factors, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::Scale(const SVectorR3& factors, const Real start_time, const Real end_time, Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->Scale(factors, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::MoveBy(const SVectorR3& displacement, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::MoveBy(const SVectorR3& displacement, const Real start_time, const Real end_time, Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->MoveBy(displacement, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::MoveTo(const SVectorR3& position, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::MoveTo(const SVectorR3& position, const Real start_time, const Real end_time, Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->MoveTo(position, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::MoveAt(const SVectorR3& velocity, Real start_time, const std::function<Real(Real)>& ramp)
+ModelGroup::MoveAt(const SVectorR3& velocity, Real start_time, Reparametriser ramp)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->MoveAt(velocity, start_time, ramp);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::Trace(std::function<SVectorR3(Real)> path, const Real start_time, const Real end_time, Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->Trace(path, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, const std::function<Real(Real)>& reparam)
+ModelGroup::RotateBy(const Real angle, const SVectorR3& axis, const Real start_time, const Real end_time, Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->RotateBy(angle, axis, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::RotateAt(const SVectorR3& angular_velocity, const Real start_time, const std::function<Real(Real)>& ramp)
+ModelGroup::RotateAt(const SVectorR3& angular_velocity, const Real start_time, Reparametriser ramp)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->RotateAt(angular_velocity, start_time, ramp);
    return *this;
@@ -138,14 +138,14 @@ ModelGroup::RotateAt(const SVectorR3& angular_velocity, const Real start_time, c
 
 ModelGroup&
 ModelGroup::RevolveBy(const Real angle, const SVectorR3& axis, const SVectorR3& refe_point, const Real start_time, const Real end_time,
-                      const std::function<Real(Real)>& reparam)
+                      Reparametriser reparam)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->RevolveBy(angle, axis, refe_point, start_time, end_time, reparam);
    return *this;
 }
 
 ModelGroup&
-ModelGroup::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time, const std::function<Real(Real)>& ramp)
+ModelGroup::RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time, Reparametriser ramp)
 {
    FOR_EACH(sub_model, SubModels_) sub_model->RevolveAt(angular_velocity, refe_point, start_time, ramp);
    return *this;
@@ -185,9 +185,9 @@ ModelGroup::Add(ModelGroup&& model_group)
 * Model Protected Interface
 ***************************************************************************************************************************************************************/
 bool
-ModelGroup::isInitialised() const
+ModelGroup::Initialised() const
 {
-   if(!Init_) Init_ = std::all_of(SubModels_.begin(), SubModels_.end(), [](auto& model){ return model->isInitialised(); });
+   if(!Init_) Init_ = std::all_of(SubModels_.begin(), SubModels_.end(), [](auto& model){ return model->Initialised(); });
    return Init_;
 }
 
@@ -207,6 +207,12 @@ ModelGroup::ComputeLifespan()
       EntryTime_ = Min(EntryTime_, sub_model->EntryTime());
       ExitTime_  = Max(ExitTime_ , sub_model->ExitTime());
    }
+}
+
+void
+ModelGroup::LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map)
+{
+   FOR_EACH(sub_model, SubModels_) sub_model->LoadTextureMap(texture_map);
 }
 
 }

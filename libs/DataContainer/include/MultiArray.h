@@ -22,7 +22,7 @@ namespace aprn{
 /***************************************************************************************************************************************************************
 * Multi-dimensional Array Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
+template<typename T, class D>
 class MultiArray
 {
 protected:
@@ -47,10 +47,10 @@ public:
   constexpr const T&
   operator()(const std::convertible_to<size_t> auto... multi_index) const;
 
-  constexpr derived&
+  constexpr D&
   operator=(const std::initializer_list<T>& _value_array) noexcept;
 
-  constexpr derived&
+  constexpr D&
   operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept;
 
   /** Iterators */
@@ -68,11 +68,11 @@ public:
 
 private:
   /** Derived class access. */
-  constexpr derived&
-  Derived() noexcept { return static_cast<derived&>(*this); }
+  constexpr D&
+  Derived() noexcept { return static_cast<D&>(*this); }
 
-  constexpr const derived&
-  Derived() const noexcept { return static_cast<const derived&>(*this); }
+  constexpr const D&
+  Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 /***************************************************************************************************************************************************************

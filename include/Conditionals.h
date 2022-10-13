@@ -73,7 +73,7 @@ constexpr bool isContainer_v = decltype(isContainer<T>(0))::value;
 * Conditionals
 ***************************************************************************************************************************************************************/
 
-/** Open for equality with 'any of' the entries in a list of arguments or entries in an STL container. */
+/** Check for equality with 'any of' the entries in a list of arguments or entries in an STL container. */
 template<typename ...Ts>
 [[nodiscard]] constexpr auto
 OneOf(Ts&&... values)

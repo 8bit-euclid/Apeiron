@@ -75,13 +75,13 @@ ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>
    auto& mesh = part.Mesh_;
 
    // Set tangents
-   FOR_EACH(vertex, mesh.Vertices) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+   FOR_EACH(vertex, mesh.Vertices_) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
 
    // Set texture coordinates
-   mesh.Vertices[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
-   mesh.Vertices[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
-   mesh.Vertices[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
-   mesh.Vertices[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
+   mesh.Vertices_[0].TextureCoordinates = glm::vec2(0.0f, 0.0f);
+   mesh.Vertices_[1].TextureCoordinates = glm::vec2(1.0f, 0.0f);
+   mesh.Vertices_[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
+   mesh.Vertices_[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
    return part;
 }
@@ -91,10 +91,10 @@ Model
 ModelFactory::Polygon(const svectors&... vs)
 {
    Model part;
-   part.Mesh_.Shading = ShadingType::Flat;
+   part.Mesh_.Shading_ = ShadingType::Flat;
 
-   auto& vertices = part.Mesh_.Vertices;
-   auto& indices  = part.Mesh_.Indices;
+   auto& vertices = part.Mesh_.Vertices_;
+   auto& indices  = part.Mesh_.Indices_;
 
    constexpr size_t n_vertices = sizeof...(svectors);
    vertices.resize(n_vertices);
@@ -149,10 +149,10 @@ Model
 ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
 {
    Model part;
-   part.Mesh_.Shading = ShadingType::Flat;
+   part.Mesh_.Shading_ = ShadingType::Flat;
 
-   auto& vertices = part.Mesh_.Vertices;
-   auto& indices  = part.Mesh_.Indices;
+   auto& vertices = part.Mesh_.Vertices_;
+   auto& indices  = part.Mesh_.Indices_;
 
    vertices.resize(4);
    vertices[0].Position = SVectorToGlmVec(v0);
@@ -204,10 +204,10 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    SVector3<GLfloat> v7{ x,  y, -z};
 
    Model part;
-   part.Mesh_.Shading = ShadingType::Flat;
+   part.Mesh_.Shading_ = ShadingType::Flat;
 
-   auto& vertices = part.Mesh_.Vertices;
-   auto& indices  = part.Mesh_.Indices;
+   auto& vertices = part.Mesh_.Vertices_;
+   auto& indices  = part.Mesh_.Indices_;
 
    vertices.resize(8);
    vertices[0].Position = SVectorToGlmVec(v0);

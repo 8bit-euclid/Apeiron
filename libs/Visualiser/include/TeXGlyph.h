@@ -64,8 +64,6 @@ class TeXGlyph final : public TeXObject,
 
    void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
 
-   inline void LoadTeXBoxTexture(const Pair<std::string, Real>& texture_info) override { TextureInfo_ = texture_info; }
-
    GlyphSheet::IndexT    Index_{MaxInt<GlyphSheet::IndexT>};
    std::optional<Colour> Colour_;
    std::optional<bool>   isItalic_;

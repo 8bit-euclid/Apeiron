@@ -17,25 +17,25 @@
 namespace aprn::vis {
 
 Shadow::Shadow(const bool is_point_source)
-   : _FBO(), _DepthMap(is_point_source ? TextureType::PointDepth : TextureType::DirectionalDepth, true), _isPointSource(is_point_source) {}
+   : FBO_(), DepthMap_(is_point_source ? TextureType::PointDepth : TextureType::DirectionalDepth, true), PointSource_(is_point_source) {}
 
 void Shadow::Init(const GLsizei width, const GLsizei height)
 {
-   _DepthMap.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, _isPointSource ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+   DepthMap_.Init(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, PointSource_ ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
 
-   _FBO.Init();
-   _FBO.Bind();
-   _isPointSource ? _FBO.AttachTexture(GL_DEPTH_ATTACHMENT, _DepthMap.ID()) :
-                    _FBO.AttachTexture2D(GL_DEPTH_ATTACHMENT, _DepthMap.ID());
-   _FBO.Draw(GL_NONE);
-   _FBO.Read(GL_NONE);
-   _FBO.Check();
-   _FBO.Unbind();
+   FBO_.Init();
+   FBO_.Bind();
+   PointSource_ ? FBO_.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap_.ID()) :
+   FBO_.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap_.ID());
+   FBO_.Draw(GL_NONE);
+   FBO_.Read(GL_NONE);
+   FBO_.Check();
+   FBO_.Unbind();
 }
 
 void Shadow::StartWrite() const
 {
-   _FBO.Bind();
+   FBO_.Bind();
    GLCall(glClear(GL_DEPTH_BUFFER_BIT))
 }
 

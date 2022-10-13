@@ -22,10 +22,10 @@
 #include "Colour.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "ModelObject.h"
+#include "RenderObject.h"
+#include "Texture.h"
 
-#include <map>
-#include <memory>
+#include <unordered_map>
 #include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -33,7 +33,7 @@
 
 namespace aprn::vis {
 
-class Model : public ModelObject
+class Model : public RenderObject
 {
  public:
    Model() = default;
@@ -68,28 +68,25 @@ class Model : public ModelObject
 
    Model& OffsetOrientation(Real angle, const SVectorR3& axis) override;
 
-   Model& Scale(Real factor, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Scale(Real factor, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& Scale(const SVectorR3& factors, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Scale(const SVectorR3& factors, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveTo(const SVectorR3& position, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& MoveTo(const SVectorR3& position, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
-   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>,
-                const std::function<Real(Real)>& reparam = Linear) override;
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>, Reparametriser reparam = Linear) override;
 
-   Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, const std::function<Real(Real)>& reparam = Linear) override;
+   Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, const std::function<Real(Real)>& ramp = Identity) override;
+   Model& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
-   Model& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time,
-                    const std::function<Real(Real)>& reparam = Linear) override;
+   Model& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero,
-                    const std::function<Real(Real)>& ramp = Identity) override;
+   Model& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -99,19 +96,28 @@ class Model : public ModelObject
 
    /** Other
    ************************************************************************************************************************************************************/
-   inline bool isInitialised() const override { return Init_; }
+   inline bool Initialised() const override { return Init_; }
 
    inline const auto& ModelMatrix() const { return ModelMatrix_; }
 
    inline const auto& ModelMesh() const { return Mesh_; }
 
+   inline const auto& TextureRequest() const { return TextureRequest_; }
+
  protected:
+   template<ActionType type>
+   friend class Action;
    friend class ModelFactory;
-   template<ActionType type> friend class Action;
+   friend class PostProcessor;
+   friend class Visualiser;
 
    void Init() override;
 
    void ComputeLifespan() override;
+
+   void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) override;
+
+   void DrawElements() const;
 
    inline void Reset() { ModelMatrix_ = glm::mat4(1.0); }
 
@@ -121,14 +127,17 @@ class Model : public ModelObject
 
    inline void Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix_ = glm::rotate(ModelMatrix_, angle, axis); }
 
+   template<class T> using UMap = std::unordered_map<std::string, T>;
    using ATComp = ActionTypeComparator;
+
    Mesh                                           Mesh_;
    VertexArray                                    VAO_;
    VertexBuffer                                   VBO_;
    IndexBuffer                                    EBO_;
    std::optional<ShaderStorageBuffer>             SSBO_;
    std::map<ActionType, SPtr<ActionBase>, ATComp> Actions_;
-   std::optional<Pair<std::string, Real>>         TextureInfo_; // [texture name, displacement map scale]
+   std::optional<Pair<std::string, Real>>         TextureRequest_; // [texture name, displacement map scale]
+   UMap<Texture&>                                 Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
    std::optional<Material>                        Material_;
    Colour                                         StrokeColour_;
    Colour                                         FillColour_;

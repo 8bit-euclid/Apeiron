@@ -50,35 +50,35 @@ class Camera
 
    void UpdateProjMatrix();
 
-   inline const glm::vec3& Position() const { return _Position; }
+   inline const auto& Position() const { return Position_; }
 
-   inline const glm::mat4& ViewMatrix() const { return _ViewMatrix; }
+   inline const auto& ViewMatrix() const { return ViewMatrix_; }
 
-   inline const glm::mat4& ProjMatrix() const { return _ProjMatrix; }
+   inline const auto& ProjMatrix() const { return ProjMatrix_; }
 
  private:
    friend class Visualiser;
 
-   void ClipPitch() { Clip(_Pitch, -89.0f, 89.0f); }
+   void ClipPitch() { Clip(Pitch_, -89.0f, 89.0f); }
 
-   glm::mat4 _ViewMatrix{1.0};
-   glm::mat4 _ProjMatrix{1.0};
-   glm::vec3 _Position;
-   glm::vec3 _Front;
-   glm::vec3 _Up;
-   glm::vec3 _Right;
-   GLfloat   _Pitch;
-   GLfloat   _Yaw;
-   GLfloat   _AspectRatio;
-   GLfloat   _FieldOfView;
-   GLfloat   _NearPlane;
-   GLfloat   _FarPlane;
+   glm::mat4 ViewMatrix_{1.0};
+   glm::mat4 ProjMatrix_{1.0};
+   glm::vec3 Position_;
+   glm::vec3 Front_;
+   glm::vec3 Up_;
+   glm::vec3 Right_;
+   GLfloat   Pitch_;
+   GLfloat   Yaw_;
+   GLfloat   AspectRatio_;
+   GLfloat   FieldOfView_;
+   GLfloat   NearPlane_;
+   GLfloat   FarPlane_;
 
-   constexpr static glm::vec3 _WorldUp    {0.0f, 1.0f, 0.0f};
-   constexpr static GLfloat   _MotionSensitivity      {6.0f};
-   constexpr static GLfloat   _RotationSensitivity    {7.5f};
-   constexpr static GLfloat   _MouseCursorSensitivity {0.4f};
-   constexpr static GLfloat   _MouseWheelSensitivity  {1.0f};
+   constexpr static glm::vec3 WorldUp_ {0.0f, 1.0f, 0.0f};
+   constexpr static GLfloat   MotionSensitivity_   {6.0f};
+   constexpr static GLfloat   RotationSensitivity_ {7.5f};
+   constexpr static GLfloat   CursorSensitivity_   {0.4f};
+   constexpr static GLfloat   WheelSensitivity_    {1.0f};
 };
 
 }

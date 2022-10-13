@@ -32,7 +32,7 @@ namespace aprn::vis {
 ***************************************************************************************************************************************************************/
 enum class LightType
 {
-   Directional,
+   Direct,
    Point,
    Spot,
    None
@@ -85,24 +85,24 @@ class Light
 /***************************************************************************************************************************************************************
 * Directional Light Class
 ***************************************************************************************************************************************************************/
-class DirectionalLight : public Light
+class DirectLight : public Light
 {
  public:
-   DirectionalLight();
+   DirectLight();
 
-   DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
+   DirectLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
    UInt Index() const override { return 0; }
 
    UInt LightCount() const override { return 1; }
 
-   inline const glm::mat4& LightSpaceMatrix() const { return _LightSpaceMatrix; }
+   inline const glm::mat4& LightSpaceMatrix() const { return LightSpaceMatrix_; }
 
  private:
    friend class Shader;
 
-   glm::vec3 _Direction;
-   glm::mat4 _LightSpaceMatrix;
+   glm::vec3 Direction_;
+   glm::mat4 LightSpaceMatrix_;
 };
 
 /***************************************************************************************************************************************************************
@@ -110,7 +110,7 @@ class DirectionalLight : public Light
 ***************************************************************************************************************************************************************/
 namespace detail {
 
-template<class derived>
+template<class D>
 class PointLightBase : public Light
 {
  protected:
@@ -119,9 +119,9 @@ class PointLightBase : public Light
    PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
                   const SVector3<GLfloat>& attenuation_coefficients);
 
-   PointLightBase(const PointLightBase<derived>& light) = delete;
+   PointLightBase(const PointLightBase<D>& light) = delete;
 
-   PointLightBase(PointLightBase<derived>&& light) noexcept;
+   PointLightBase(PointLightBase<D>&& light) noexcept;
 
  public:
    ~PointLightBase();
@@ -136,9 +136,9 @@ class PointLightBase : public Light
 
    inline const StaticArray<glm::mat4, 6>& LightSpaceMatrices() const { return LightSpaceMatrices_; }
 
-   PointLightBase<derived>& operator=(const PointLightBase<derived>& _other) = delete;
+   PointLightBase<D>& operator=(const PointLightBase<D>& _other) = delete;
 
-   PointLightBase<derived>& operator=(PointLightBase<derived>&& _other) = default;
+   PointLightBase<D>& operator=(PointLightBase<D>&& _other) = default;
 
  protected:
    void AddGUIElements() override;
@@ -182,9 +182,9 @@ class SpotLight : public detail::PointLightBase<SpotLight>
  private:
    friend class Shader;
 
-   glm::vec3 _Direction;
-   GLfloat   _ConeAngle;
-   GLfloat   _CosConeAngle;
+   glm::vec3 Direction_;
+   GLfloat   ConeAngle_;
+   GLfloat   CosConeAngle_;
 };
 
 }

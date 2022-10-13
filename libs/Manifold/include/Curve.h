@@ -20,8 +20,8 @@
 namespace aprn::mnfld {
 
 /** Curve Alias Template */
-template<class derived, size_t ambient_dim>
-using Curve = Manifold<derived, 1, ambient_dim>;
+template<class D, size_t ambient_dim>
+using Curve = Manifold<D, 1, ambient_dim>;
 
 /***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Curves
