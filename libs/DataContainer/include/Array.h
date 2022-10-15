@@ -49,9 +49,9 @@ class Array
    constexpr D& operator=(const std::initializer_list<T2>& value_list) noexcept;
 
    /** Comparison Operator Overloads */
-   constexpr bool operator==(const Array<T, D>& _other) noexcept;
+   constexpr bool operator==(const Array<T, D>& other) noexcept;
 
-   constexpr bool operator!=(const Array<T, D>& _other) noexcept;
+   constexpr bool operator!=(const Array<T, D>& other) noexcept;
 
    /** Derived Class Access */
    constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
@@ -135,6 +135,8 @@ template<typename T> using SArray1 = SArray<T, 1>;
 template<typename T> using SArray2 = SArray<T, 2>;
 template<typename T> using SArray3 = SArray<T, 3>;
 template<typename T> using SArray4 = SArray<T, 4>;
+template<typename T> using SArray5 = SArray<T, 5>;
+template<typename T> using SArray6 = SArray<T, 6>;
 
 template<size_t N> using SArrayB = SArray<Bool, N>;
 template<size_t N> using SArrayU = SArray<size_t, N>;

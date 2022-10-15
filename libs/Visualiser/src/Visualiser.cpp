@@ -59,7 +59,7 @@ Visualiser::Animate()
       HandleUserInputs();
       RenderScene();
       PostProcess();
-//      RenderGUIWindow();
+      RenderGUIWindow();
       EndFrame();
    }
 
@@ -110,7 +110,7 @@ Visualiser::InitScenes()
    CurrentScene_ = &(*first_scene_it);
    Scene* current_scene(CurrentScene_);
    size_t scene_count{};
-   Real  start_time{};
+   Real   start_time{};
 
    // Loop through scenes
    do
@@ -211,11 +211,12 @@ Visualiser::InitTextures()
                   // Add texture files to the list of textures
                   Textures_.emplace(texture_name, std::move(texture_files));
 
-                  // Point to the textures from the model.
-                  UMap<Texture&> texture_file_map;
-                  FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
-                  model->LoadTextureMap(texture_file_map);
                }
+
+               // Point to the textures from the model.
+               UMap<Texture&> texture_file_map;
+               FOR_EACH(sub_texture_name, sub_texture, Textures_[texture_name]) texture_file_map.emplace(sub_texture_name, sub_texture);
+               model->LoadTextureMap(texture_file_map);
             }
 }
 
@@ -236,11 +237,7 @@ Visualiser::InitShaders()
 }
 
 void
-Visualiser::InitPostProcessor()
-{
-   const auto [width, height] = Window_.ViewportDimensions(); // Note: must not use the window dimensions here.
-   PostProcessor_.Init(width, height);
-}
+Visualiser::InitPostProcessor() { PostProcessor_.Init(Window_.ViewportDimensions()); }
 
 void
 Visualiser::BeginFrame()
@@ -264,7 +261,7 @@ Visualiser::UpdateScene()
 {
    DEBUG_ASSERT(CurrentScene_, "The current scene pointer has not yet been set.")
 
-   // Determine if the current scene needs to be updated
+   // Check if the current scene needs to be updated to the next.
    const auto current_time = Window_.CurrentTime();
    if(!CurrentScene_->isCurrent(current_time))
    {
@@ -296,8 +293,8 @@ void
 Visualiser::RenderScene()
 {
    // Render shadows from all directional and point light sources.
-//   CurrentScene_->RenderDirecShadows(Shaders_.at("DirecShadow"));
-//   CurrentScene_->RenderPointShadows(Shaders_.at("PointShadow"));
+   CurrentScene_->RenderDirecShadows(Shaders_.at("DirecShadow"));
+   CurrentScene_->RenderPointShadows(Shaders_.at("PointShadow"));
 
    // Point shadow rendering modifies the viewport, so need to reset it.
    Window_.ResetViewport();

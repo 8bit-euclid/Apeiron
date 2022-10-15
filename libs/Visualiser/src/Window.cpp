@@ -22,7 +22,7 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : WindowDimensions_{width, height} {  }
+   : WindowDimensions_{width, height} {}
 
 Window::~Window() { Terminate(); }
 
@@ -170,9 +170,10 @@ void
 Window::ComputeFrameRate()
 {
    CurrentTime_  = glfwGetTime();
-   const auto delta_time = CurrentTime_ - PreviousFrameTime_;
+   const auto delta_time = CurrentTime_ - PreviousFpsTime_;
    ++FrameCounter_;
 
+   // Re-compute FPS.
    if(delta_time > Tenth)
    {
       const auto fps = static_cast<Real>(FrameCounter_) / delta_time;
@@ -180,7 +181,7 @@ Window::ComputeFrameRate()
       const std::string title_suffix = "  |  " + ToString(fps, 2) + " fps  |  " + ToString(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
 
-      PreviousFrameTime_ = CurrentTime_;
+      PreviousFpsTime_ = CurrentTime_;
       FrameCounter_ = 0;
    }
 }
@@ -243,7 +244,7 @@ Window::HandleKeys(GLFWwindow* p_window, const GLint key, [[maybe_unused]] const
    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(p_window, GL_TRUE);
 
    // Check for press/release of all other keys.
-   if(isBounded(key, static_cast<GLint>(0), static_cast<GLint>(KeyCount_)))
+   if(isBounded(key, static_cast<GLint>(0), static_cast<GLint>(nKeys)))
    {
       if     (action == GLFW_PRESS)   window->Keys_[key] = true;
       else if(action == GLFW_RELEASE) window->Keys_[key] = false;

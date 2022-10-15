@@ -12,7 +12,6 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
-#include "../include/ModelGroup.h"
 #include "../include/Action.h"
 #include "../include/Model.h"
 #include "../include/Shader.h"

@@ -43,12 +43,12 @@ class Light
  protected:
    Light();
 
-   Light(Light&& light) noexcept;
-
    Light(LightType type, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity);
 
  public:
    Light(const Light& light) = delete;
+
+   Light(Light&& light) noexcept = default;
 
    virtual ~Light() = default;
 
@@ -58,11 +58,11 @@ class Light
 
    inline void Init() { ShadowMap_.Init(2048, 2048); }
 
-   inline Shadow& ShadowMap() { return ShadowMap_; }
+   inline auto& ShadowMap() { return ShadowMap_; }
 
    Light& operator=(const Light& light) = delete;
 
-   Light& operator=(Light&& light) noexcept;
+   Light& operator=(Light&& light) noexcept = default;
 
    inline void SetName(const std::string& name) { Name_ = name; }
 
@@ -96,7 +96,7 @@ class DirectLight : public Light
 
    UInt LightCount() const override { return 1; }
 
-   inline const glm::mat4& LightSpaceMatrix() const { return LightSpaceMatrix_; }
+   inline const auto& LightSpaceMatrix() const { return LightSpaceMatrix_; }
 
  private:
    friend class Shader;
@@ -119,37 +119,37 @@ class PointLightBase : public Light
    PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity,
                   const SVector3<GLfloat>& attenuation_coefficients);
 
+ public:
    PointLightBase(const PointLightBase<D>& light) = delete;
 
-   PointLightBase(PointLightBase<D>&& light) noexcept;
+   PointLightBase(PointLightBase<D>&& light) noexcept = default;
 
- public:
    ~PointLightBase();
 
-   UInt Index() const override { return iPointLight_; }
+   UInt Index() const override { return Index_; }
 
    UInt LightCount() const override { return PointLightCount_; }
 
-   constexpr static GLfloat FarPlane() { return FarPlane_; }
+   constexpr static auto FarPlane() { return FarPlane_; }
 
-   inline const glm::vec3& Position() const { return Position_; }
+   inline const auto& Position() const { return Position_; }
 
-   inline const StaticArray<glm::mat4, 6>& LightSpaceMatrices() const { return LightSpaceMatrices_; }
+   inline const auto& LightSpaceMatrices() const { return LightSpaceMatrices_; }
 
-   PointLightBase<D>& operator=(const PointLightBase<D>& _other) = delete;
+   PointLightBase<D>& operator=(const PointLightBase<D>& other) = delete;
 
-   PointLightBase<D>& operator=(PointLightBase<D>&& _other) = default;
+   PointLightBase<D>& operator=(PointLightBase<D>&& other) = default;
 
  protected:
    void AddGUIElements() override;
 
    constexpr static UInt    MaxPointLights_{4};
    constexpr static GLfloat FarPlane_{25.0f};
-   inline static UInt       PointLightCount_ = 0;
-   UInt                     iPointLight_;
+   inline static UInt       PointLightCount_{0};
+   UInt                     Index_;
    glm::vec3                Position_;
-   SVector<GLfloat, 3>      AttenuationCoefficients_; // [0]: constant term, [1]: linear term, [2]: quadratic term
-   SArray<glm::mat4, 6>     LightSpaceMatrices_;
+   SVector3<GLfloat>        AttenuationCoefficients_; // [0]: constant term, [1]: linear term, [2]: quadratic term
+   SArray6<glm::mat4>       LightSpaceMatrices_;
 };
 
 }

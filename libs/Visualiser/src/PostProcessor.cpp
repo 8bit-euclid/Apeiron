@@ -19,14 +19,13 @@
 namespace aprn::vis {
 
 void
-PostProcessor::Init(const UInt width, const UInt height)
+PostProcessor::Init(Pair<GLint> dimensions)
 {
    // Set member variables.
-   Width_  = width;
-   Height_ = height;
+   std::tie(Width_, Height_) = dimensions;
 
    // Load required post-processing shaders.
-   for(std::string shader : {"HDR", "Blur", "Blend"}) Shaders_.emplace(shader, Shader::Directory + shader + ".glsl");
+   for(std::string shader : { "HDR", "Blur", "Blend" }) Shaders_.emplace(shader, Shader::Directory + shader + ".glsl");
 
    // Initialise required post-processing buffers.
    InitMultiSampledBuffers();

@@ -26,7 +26,7 @@ void Shadow::Init(const GLsizei width, const GLsizei height)
    FBO_.Init();
    FBO_.Bind();
    PointSource_ ? FBO_.AttachTexture(GL_DEPTH_ATTACHMENT, DepthMap_.ID()) :
-   FBO_.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap_.ID());
+                  FBO_.AttachTexture2D(GL_DEPTH_ATTACHMENT, DepthMap_.ID());
    FBO_.Draw(GL_NONE);
    FBO_.Read(GL_NONE);
    FBO_.Check();

@@ -50,11 +50,11 @@ class Camera
 
    void UpdateProjMatrix();
 
-   inline const auto& Position() const { return Position_; }
+   inline const glm::vec3& Position() const { return Position_; }
 
-   inline const auto& ViewMatrix() const { return ViewMatrix_; }
+   inline const glm::mat4& ViewMatrix() const { return ViewMatrix_; }
 
-   inline const auto& ProjMatrix() const { return ProjMatrix_; }
+   inline const glm::mat4& ProjMatrix() const { return ProjMatrix_; }
 
  private:
    friend class Visualiser;
