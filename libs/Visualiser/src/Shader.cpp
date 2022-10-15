@@ -100,9 +100,9 @@ Shader::UseLight(const Light& light)
    }
    else if(type == LightType::Point)
    {
-      const PointLight& point_light = static_cast<const PointLight&>(light);
-      const auto& position          = point_light.Position_;
-      const auto& att_coeffs        = point_light.AttenuationCoefficients_;
+      const auto& point_light = static_cast<const PointLight&>(light);
+      const auto& position    = point_light.Position_;
+      const auto& att_coeffs  = point_light.AttenuationCoefficients_;
 
       SetUniform1i("u_point_light_count", light.LightCount());
       SetUniform3f(light_position, position.x, position.y, position.z);
@@ -110,10 +110,10 @@ Shader::UseLight(const Light& light)
    }
    else if(type == LightType::Spot)
    {
-      const SpotLight& spot_light = static_cast<const SpotLight&>(light);
-      const auto& position        = spot_light.Position_;
-      const auto& att_coeffs      = spot_light.AttenuationCoefficients_;
-      const auto& direction       = spot_light.Direction_;
+      const auto& spot_light = static_cast<const SpotLight&>(light);
+      const auto& position   = spot_light.Position_;
+      const auto& att_coeffs = spot_light.AttenuationCoefficients_;
+      const auto& direction  = spot_light.Direction_;
 
       SetUniform1i("u_spot_light_count", light.LightCount());
       SetUniform3f(light_position, position.x, position.y, position.z);

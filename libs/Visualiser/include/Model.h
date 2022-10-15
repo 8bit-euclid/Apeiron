@@ -16,7 +16,6 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-
 #include "ActionBase.h"
 #include "Buffers.h"
 #include "Colour.h"
@@ -25,11 +24,11 @@
 #include "RenderObject.h"
 #include "Texture.h"
 
-#include <unordered_map>
-#include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <optional>
+#include <unordered_map>
 
 namespace aprn::vis {
 
@@ -38,7 +37,7 @@ class Model : public RenderObject
  public:
    Model() = default;
 
-   Model(const Model& sub_model);
+   Model(const Model& other);
 
    Model(Model&& other) noexcept;
 

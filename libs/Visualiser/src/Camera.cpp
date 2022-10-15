@@ -52,7 +52,7 @@ void Camera::SetViewFrustum(const GLfloat& aspect_ratio, const GLfloat& field_of
 
 void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& delta_time)
 {
-   GLfloat displacement = MotionSensitivity_ * delta_time;
+   const auto displacement = MotionSensitivity_ * delta_time;
 
    // Position control
    if(keys[GLFW_KEY_W]) Position_ += displacement * Front_;
@@ -75,7 +75,7 @@ void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& 
    }
 
    // Yaw control
-   if(keys[GLFW_KEY_LEFT]) Yaw_ -= RotationSensitivity_ * displacement;
+   if(keys[GLFW_KEY_LEFT])  Yaw_ -= RotationSensitivity_ * displacement;
    if(keys[GLFW_KEY_RIGHT]) Yaw_ += RotationSensitivity_ * displacement;
 
    // Update camera orientation

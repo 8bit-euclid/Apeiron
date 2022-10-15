@@ -18,26 +18,26 @@
 
 namespace aprn::vis {
 
-//template<class T>
-//Scene&
-//Scene::Add(T&& object)
-//{
-//   using type = RemoveConstRef<T>;
-//
-//   // Note: move both lvalue and rvalue objects.
-//   if      constexpr(isTypeSame<type, Model>())       Actors_.push_back(std::make_shared<Model>(std::move(object)));
-//   else if constexpr(isTypeSame<type, ModelGroup>())  Actors_.push_back(std::make_shared<ModelGroup>(std::move(object)));
-//   else if constexpr(isTypeSame<type, DirectLight>()) DLights_.push_back(std::move(object));
-//   else if constexpr(isTypeSame<type, PointLight>())  PLights_.push_back(std::move(object));
-//   else if constexpr(isTypeSame<type, SpotLight>())   SLights_.push_back(std::move(object));
-//   else if constexpr(isTypeSame<type, TeXBox>())
-//   {
-//      TeXBoxes_.push_back(std::make_shared<TeXBox>(std::move(object)));
-//      Actors_.push_back(TeXBoxes_.back());
-//   }
-//   else EXIT("Currently cannot add the following object type: ", typeid(type).name())
-//
-//   return *this;
-//}
+template<class T>
+Scene&
+Scene::Add(T&& object)
+{
+   using type = RemoveConstRef<T>;
+
+   // Note: move both lvalue and rvalue objects.
+   if      constexpr(isTypeSame<type, Model>())       Actors_.push_back(std::make_shared<Model>(std::move(object)));
+   else if constexpr(isTypeSame<type, ModelGroup>())  Actors_.push_back(std::make_shared<ModelGroup>(std::move(object)));
+   else if constexpr(isTypeSame<type, DirectLight>()) DLights_.push_back(std::move(object));
+   else if constexpr(isTypeSame<type, PointLight>())  PLights_.push_back(std::move(object));
+   else if constexpr(isTypeSame<type, SpotLight>())   SLights_.push_back(std::move(object));
+   else if constexpr(isTypeSame<type, TeXBox>())
+   {
+      TeXBoxes_.push_back(std::make_shared<TeXBox>(std::move(object)));
+      Actors_.push_back(TeXBoxes_.back());
+   }
+   else EXIT("Currently cannot add the following object type: ", typeid(type).name())
+
+   return *this;
+}
 
 }

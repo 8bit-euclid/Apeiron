@@ -77,12 +77,12 @@ inline void RotatingCube()
    Visualiser visualiser;
    Scene scene;
    Model model;
-   TeXBox tex_box;
+//   TeXBox tex_box;
 
-   tex_box.Add(R"(This is a test: $e = mc^2$.)")
-          .SetPixelDensity(2000)
-          .OffsetPosition({0.0f, 2.0f, 2.0f});
-   scene.Add(tex_box);
+//   tex_box.Add(R"(This is a test: $e = mc^2$.)")
+//          .SetPixelDensity(2000)
+//          .OffsetPosition({0.0f, 2.0f, 2.0f});
+//   scene.Add(tex_box);
 
    // Cube
    model = ModelFactory::Cube(1.0);
@@ -115,13 +115,13 @@ inline void RotatingCube()
    scene.Add(model);
 
    // Lighting
-//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
-//   point_light.SetName("Lamp");
-//   scene.Add(point_light);
+   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+   point_light.SetName("Lamp");
+   scene.Add(point_light);
 
-   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
-   sun.SetName("Sun");
-   scene.Add(sun);
+//   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+//   sun.SetName("Sun");
+//   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();

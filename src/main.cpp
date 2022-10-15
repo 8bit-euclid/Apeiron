@@ -28,9 +28,9 @@ using namespace aprn::test;
 
 int main(void)
 {
-   Triangle();
+//   Triangle();
 //   Cube();
-//   RotatingCube();
+   RotatingCube();
 //   EuclidsElementsEp1();
 
    return 0;

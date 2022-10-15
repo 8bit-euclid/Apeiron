@@ -46,28 +46,8 @@ class Scene
 
    Scene(Scene&& other) noexcept = default;
 
-//   template<class T>
-//   Scene& Add(T&& object);
-
-   Scene& Add(Model& model, const std::string& name = "");
-
-   Scene& Add(TeXBox& tex_box, const std::string& name = "");
-
-   Scene& Add(DirectLight& light, const std::string& name = "");
-
-   Scene& Add(PointLight& light, const std::string& name = "");
-
-   Scene& Add(SpotLight& light, const std::string& name = "");
-
-   Scene& Add(Model&& model, const std::string& name = "");
-
-   Scene& Add(TeXBox&& tex_box, const std::string& name = "");
-
-   Scene& Add(DirectLight&& light, const std::string& name = "");
-
-   Scene& Add(PointLight&& light, const std::string& name = "");
-
-   Scene& Add(SpotLight&& light, const std::string& name = "");
+   template<class T>
+   Scene& Add(T&& object);
 
    inline bool isCurrent(const Real current_time) const { return StartTime_ <= current_time && current_time < EndTime_; }
 

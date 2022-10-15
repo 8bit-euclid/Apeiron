@@ -85,21 +85,22 @@ class Window
    static void
    HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
-   std::string           Title_;
-   Real                  CurrentTime_{};
-   Real                  PreviousTime_{};
-   Real                  DeltaTime_{};
-   SVectorR2             PreviousCursorPosition_;
-   SVectorR2             CursorDisplacement_;
-   SVectorR2             WheelDisplacement_;
-   SVector2<GLint>       WindowDimensions_;
-   SVector2<GLint>       ViewportDimensions_;
-   constexpr static UInt KeyCount_{1024};
-   SArrayB<KeyCount_>    Keys_;
-   GLFWwindow*           GLFWWindow_;
-   Real                  PreviousFrameTime_{};
-   size_t                FrameCounter_;
-   bool                  FirstCursorMotion_;
+   constexpr static UInt nKeys {1024};
+
+   std::string     Title_;
+   Real            CurrentTime_{};
+   Real            PreviousTime_{};
+   Real            PreviousFpsTime_{};
+   Real            DeltaTime_{};
+   SVectorR2       PreviousCursorPosition_;
+   SVectorR2       CursorDisplacement_;
+   SVectorR2       WheelDisplacement_;
+   SVector2<GLint> WindowDimensions_;
+   SVector2<GLint> ViewportDimensions_;
+   SArrayB<nKeys>  Keys_;
+   GLFWwindow*     GLFWWindow_;
+   UInt8           FrameCounter_;
+   bool            FirstCursorMotion_;
 };
 
 inline void ClearFrameBuffer()

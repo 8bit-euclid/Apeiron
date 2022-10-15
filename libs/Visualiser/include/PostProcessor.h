@@ -15,7 +15,7 @@
 #pragma once
 
 #include "Buffers.h"
-#include "ModelGroup.h"
+#include "Model.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -41,7 +41,7 @@ struct FrameImage
 class PostProcessor
 {
  public:
-   void Init(UInt width, UInt height);
+   void Init(Pair<GLint> dimensions);
 
    void InitMultiSampledBuffers();
 

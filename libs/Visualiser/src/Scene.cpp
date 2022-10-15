@@ -22,7 +22,7 @@ namespace aprn::vis {
 Scene::Scene()
    : Scene(1000.0, true) {}
 
-Scene::Scene(Real duration, bool adjust_duration)
+Scene::Scene(const Real duration, const bool adjust_duration)
    : Duration_(duration), AdjustDuration_(adjust_duration)
 {
    ASSERT(isPositive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
@@ -31,7 +31,7 @@ Scene::Scene(Real duration, bool adjust_duration)
    SingleScene_ = false;
 }
 
-Scene::Scene(Scene& prev_scene, Real duration, bool adjust_duration)
+Scene::Scene(Scene& prev_scene, const Real duration, const bool adjust_duration)
    : Duration_(duration), AdjustDuration_(adjust_duration)
 {
    ASSERT(Zero < duration      , "Cannot have a negative duration for a scene.")
@@ -72,58 +72,6 @@ Scene::Init(const Real start_time)
 
    StartTime_ = start_time;
    EndTime_   = StartTime_ + Duration_;
-}
-
-Scene&
-Scene::Add(Model& model, const std::string& name) { return Add(std::move(model), name); }
-
-Scene&
-Scene::Add(TeXBox& tex_box, const std::string& name) { return Add(std::move(tex_box), name); }
-
-Scene&
-Scene::Add(DirectLight& light, const std::string& name) { return Add(std::move(light), name); }
-
-Scene&
-Scene::Add(PointLight& light, const std::string& name) { return Add(std::move(light), name); }
-
-Scene&
-Scene::Add(SpotLight& light, const std::string& name) { return Add(std::move(light), name); }
-
-Scene&
-Scene::Add(Model&& model, const std::string& name)
-{
-   Actors_.emplace_back(std::make_shared<Model>(std::move(model)));
-   return *this;
-}
-
-Scene&
-Scene::Add(TeXBox&& tex_box, const std::string& name)
-{
-   auto ptex_box = std::make_shared<TeXBox>(std::move(tex_box));
-   Actors_.emplace_back(ptex_box);
-   TeXBoxes_.emplace_back(ptex_box);
-   return *this;
-}
-
-Scene&
-Scene::Add(DirectLight&& light, const std::string& name)
-{
-   DLights_.emplace_back(std::move(light));
-   return *this;
-}
-
-Scene&
-Scene::Add(PointLight&& light, const std::string& name)
-{
-   PLights_.emplace_back(std::move(light));
-   return *this;
-}
-
-Scene&
-Scene::Add(SpotLight&& light, const std::string& name)
-{
-   SLights_.emplace_back(std::move(light));
-   return *this;
 }
 
 /***************************************************************************************************************************************************************
@@ -170,7 +118,7 @@ Scene::RenderPointShadows(Shader& shader)
       shader.SetPointFarPlane(PointLight::FarPlane());
 
       auto& shadow_map = point_light.ShadowMap();
-      GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()));
+      GLCall(glViewport(0, 0, shadow_map.DepthMap().Width(), shadow_map.DepthMap().Height()))
 
       shadow_map.StartWrite();
       RenderModels(shader);

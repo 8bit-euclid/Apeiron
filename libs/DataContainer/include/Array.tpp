@@ -77,15 +77,15 @@ Array<T, D>::operator=(const std::initializer_list<T2>& value_list) noexcept
 
 /** Comparison Operator Overloads */
 template<typename T, class D>
-constexpr bool Array<T, D>::operator==(const Array<T, D>& _other) noexcept
+constexpr bool Array<T, D>::operator==(const Array<T, D>& other) noexcept
 {
-   if(_other.Derived().size() != Derived().size()) return false;
-   FOR(i, _other.Derived().size()) if(Derived()[i] != _other[i]) return false;
+   if(other.Derived().size() != Derived().size()) return false;
+   FOR(i, other.Derived().size()) if(Derived()[i] != other[i]) return false;
    return true;
 }
 
 template<typename T, class D>
-constexpr bool Array<T, D>::operator!=(const Array<T, D>& _other) noexcept { return !(Derived() == _other); }
+constexpr bool Array<T, D>::operator!=(const Array<T, D>& other) noexcept { return !(Derived() == other); }
 
 /** Non-member functions */
 template<typename T, class D>
