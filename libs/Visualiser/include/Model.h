@@ -16,85 +16,73 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "DataContainer/include/List.h"
-
 #include "ActionBase.h"
 #include "Buffers.h"
 #include "Colour.h"
-#include "Mesh.h"
 #include "Material.h"
+#include "Mesh.h"
+#include "RenderObject.h"
 #include "Texture.h"
 
-#include <map>
-#include <memory>
-#include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <optional>
+#include <unordered_map>
+#include <map>
 
 namespace aprn::vis {
 
-class Model
+class Model : public RenderObject
 {
  public:
-   Model();
+   Model() = default;
 
-   Model(const Model& model);
+   Model(const Model& other);
 
-   Model(Model&& model) noexcept;
+   Model(Model&& other) noexcept;
 
    ~Model();
 
-   void Update(Float global_time);
-
-   void Render();
-
-   void Delete();
-
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
-   Model& SetColour(const SVectorF4& rgb_colour);
+   Model& SetName(const std::string& name) override;
 
-   Model& SetMaterial(const std::string& name, Float specular_intensity, Float smoothness);
+   Model& SetColour(const SVectorR4& rgba_colour) override;
 
-   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Float dispacement_scale);
+   Model& SetColour(const Colour& colour) override;
 
-   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Float dispacement_scale);
+   Model& SetMaterial(const std::string& name, Real specular_intensity, Real smoothness) override;
 
-   Model& Add(Model& sub_model, const std::string& name);
+   Model& SetTexture(const std::string& material, size_t index, size_t resolution, Real dispacement_scale) override;
 
-   Model& Add(Model&& sub_model, const std::string& name);
+   Model& SetTexture(const std::string& material, const std::string& item, size_t index, size_t resolution, Real dispacement_scale) override;
 
    /** Set Model Actions
    ************************************************************************************************************************************************************/
-   Model& OffsetPosition(const SVectorF3& displacement);
+   Model& OffsetPosition(const SVectorR3& displacement) override;
 
-   Model& OffsetOrientation(Float angle, const SVectorF3& axis);
+   Model& OffsetOrientation(Real angle, const SVectorR3& axis) override;
 
-   Model& Scale(Float factor, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& Scale(Real factor, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& Scale(const SVectorF3& factors, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& Scale(const SVectorR3& factors, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveBy(const SVectorF3& displacement, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& MoveBy(const SVectorR3& displacement, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveTo(const SVectorF3& position, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& MoveTo(const SVectorR3& position, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& MoveAt(const SVectorF3& velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
+   Model& MoveAt(const SVectorR3& velocity, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
-   Model& Trace(std::function<SVectorF3(Float)> path, Float start_time, Float end_time = InfFloat<>);
+   Model& Trace(std::function<SVectorR3(Real)> path, Real start_time, Real end_time = InfFloat<>, Reparametriser reparam = Linear) override;
 
-   template<class D>
-   Model& Trace(const mnfld::Curve<D, 3>& path, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& RotateBy(Real angle, const SVectorR3& axis, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& RotateBy(Float angle, const SVectorF3& axis, Float start_time, Float end_time, const std::function<Float(Float)>& reparam = Linear);
+   Model& RotateAt(const SVectorR3& angular_velocity, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
-   Model& RotateAt(const SVectorF3& angular_velocity, Float start_time = Zero, const std::function<Float(Float)>& ramp = Identity);
+   Model& RevolveBy(Real angle, const SVectorR3& axis, const SVectorR3& refe_point, Real start_time, Real end_time, Reparametriser reparam = Linear) override;
 
-   Model& RevolveBy(Float angle, const SVectorF3& axis, const SVectorF3& refe_point, Float start_time, Float end_time,
-                    const std::function<Float(Float)>& reparam = Linear);
-
-   Model& RevolveAt(const SVectorF3& angular_velocity, const SVectorF3& refe_point, Float start_time = Zero,
-                    const std::function<Float(Float)>& ramp = Identity);
+   Model& RevolveAt(const SVectorR3& angular_velocity, const SVectorR3& refe_point, Real start_time = Zero, Reparametriser ramp = Identity) override;
 
    /** Assignment Operators
    ************************************************************************************************************************************************************/
@@ -102,59 +90,62 @@ class Model
 
    Model& operator=(Model&& model) noexcept;
 
-   /** Members Accessors
+   /** Other
    ************************************************************************************************************************************************************/
-   inline const glm::mat4& ModelMatrix() const { return _ModelMatrix; }
+   inline bool Initialised() const override { return Init_; }
 
-   inline const Mesh& Geometry() const { return _Geometry; }
+   inline const auto& ModelMatrix() const { return ModelMatrix_; }
+
+   inline const auto& ModelMesh() const { return Mesh_; }
+
+   inline const auto& TextureRequest() const { return TextureRequest_; }
 
  protected:
-   friend class Visualiser;
-   friend class Scene;
-   friend class PostProcessor;
+   template<ActionType type>
+   friend class Action;
    friend class ModelFactory;
-   friend class ActionBase;
-   template<ActionType type> friend class Action;
+   friend class Visualiser;
+   friend class PostProcessor;
 
-   void Init();
+   void Init() override;
 
-   void ComputeLifespan();
+   void ComputeLifespan() override;
 
-   void SetTeXBoxTexture();
+   void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) override;
 
-   inline void Reset() { _ModelMatrix = glm::mat4(1.0); }
+   void Update(Real global_time) override;
 
-   inline void Scale(const glm::vec3& factors) { _ModelMatrix = glm::scale(_ModelMatrix, factors); }
+   void Render(Shader& shader) override;
 
-   inline void Translate( const glm::vec3& displacement) { _ModelMatrix = glm::translate(_ModelMatrix, displacement); }
+   void DrawElements() const;
 
-   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { _ModelMatrix = glm::rotate(_ModelMatrix, angle, axis); }
+   void Delete() override;
 
-   /** Model Attributes
-   ************************************************************************************************************************************************************/
-   template<class T> using Map = std::unordered_map<std::string, T>;
-   using ATComp                = ActionTypeComparator;
+   inline void Reset() { ModelMatrix_ = glm::mat4(1.0); }
 
-   Mesh                                           _Geometry;
-   Map<SPtr<Model>>                               _SubModels;
-   std::map<ActionType, SPtr<ActionBase>, ATComp> _Actions;
-   std::optional<Pair<std::string, Float>>        _TextureInfo;
-   std::optional<Material>                        _Material;
-   Colour                                         _StrokeColour;
-   Colour                                         _FillColour;
-   glm::vec3                                      _Centroid;
-   glm::mat4                                      _ModelMatrix{1.0f};
-   glm::mat4                                      _PreviousActions{1.0f};
-   Float                                          _EntryTime{Zero};
-   Float                                          _ExitTime{InfFloat<>};
-   bool                                           _isInitialised{false};
+   inline void Scale(const glm::vec3& factors) { ModelMatrix_ = glm::scale(ModelMatrix_, factors); }
 
-   /** Data Buffers
-   ************************************************************************************************************************************************************/
-   VertexArray                                    _VAO;
-   VertexBuffer                                   _VBO;
-   IndexBuffer                                    _EBO;
-   std::optional<ShaderStorageBuffer>             _SSBO;
+   inline void Translate( const glm::vec3& displacement) { ModelMatrix_ = glm::translate(ModelMatrix_, displacement); }
+
+   inline void Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix_ = glm::rotate(ModelMatrix_, angle, axis); }
+
+   template<class T> using UMap = std::unordered_map<std::string, T>;
+   using ActionMap = std::multimap<ActionType, SPtr<ActionBase>, ActionTypeComparator>;
+
+   Mesh                                   Mesh_;
+   VertexArray                            VAO_;
+   VertexBuffer                           VBO_;
+   IndexBuffer                            EBO_;
+   std::optional<ShaderStorageBuffer>     SSBO_;
+   ActionMap                              Actions_;
+   std::optional<Pair<std::string, Real>> TextureRequest_; // [texture name, displacement map scale]
+   UMap<Texture&>                         Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
+   std::optional<Material>                Material_;
+   Colour                                 StrokeColour_;
+   Colour                                 FillColour_;
+   glm::vec3                              Centroid_;
+   glm::mat4                              ModelMatrix_{1.0f};
+   glm::mat4                              PastActions_{1.0f};
 };
 
 }

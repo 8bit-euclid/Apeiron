@@ -23,17 +23,17 @@ namespace aprn {
 /***************************************************************************************************************************************************************
 * Matrix Abstract Base Class
 ***************************************************************************************************************************************************************/
-template<typename T, class derived>
-class Matrix : detail::NumericContainer<T, Matrix<T, derived>>
+template<typename T, class D>
+class Matrix : detail::NumericContainer<T, Matrix<T, D>>
 {
 protected:
   constexpr Matrix() = default;
 
 private:
   /** Derived Class Access */
-  constexpr derived& Derived() noexcept { return static_cast<derived&>(*this); }
+  constexpr D& Derived() noexcept { return static_cast<D&>(*this); }
 
-  constexpr const derived& Derived() const noexcept { return static_cast<const derived&>(*this); }
+  constexpr const D& Derived() const noexcept { return static_cast<const D&>(*this); }
 };
 
 /***************************************************************************************************************************************************************
@@ -56,8 +56,8 @@ public:
   explicit constexpr StaticMatrix(const std::initializer_list<T>& list)
     : BaseMultiArray(list) {}
 
-  template<class iter>
-  constexpr StaticMatrix(const iter first, const iter last)
+  template<class It>
+  constexpr StaticMatrix(const It first, const It last)
     : BaseMultiArray(first, last) {}
 
 private:
@@ -87,8 +87,8 @@ public:
   explicit DynamicMatrix(const std::initializer_list<T>& list)
     : BaseMultiArray(list) {}
 
-  template<class iter>
-  DynamicMatrix(const iter first, const iter last)
+  template<class It>
+  DynamicMatrix(const It first, const It last)
     : BaseMultiArray(first, last) {}
 
 private:

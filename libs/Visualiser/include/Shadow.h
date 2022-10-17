@@ -38,11 +38,11 @@ class Shadow
 
    void StartWrite() const;
 
-   inline void StopWrite() const { _FBO.Unbind(); }
+   inline void StopWrite() const { FBO_.Unbind(); }
 
-   inline void StartRead(const UInt slot) const { _DepthMap.Bind(slot); }
+   inline void StartRead(const UInt slot) const { DepthMap_.Bind(slot); }
 
-   inline const Texture& DepthMap() const { return _DepthMap; }
+   inline const Texture& DepthMap() const { return DepthMap_; }
 
    Shadow& operator=(const Shadow& shadow) = delete;
 
@@ -51,9 +51,9 @@ class Shadow
  protected:
    friend class Light;
 
-   FrameBuffer _FBO;
-   Texture     _DepthMap;
-   bool        _isPointSource;
+   FrameBuffer FBO_;
+   Texture     DepthMap_;
+   bool        PointSource_;
 };
 
 }

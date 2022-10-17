@@ -6,9 +6,10 @@ set(SOURCE_FILES
         include/Buffers.h
         include/Camera.h
         include/Colour.h
+        include/ModelFactory.h
         include/GLDebug.h
         include/GLTypes.h
-        include/Glyph.h
+        include/TeXGlyph.h
         include/GlyphSheet.h
         include/GUI.h
         include/Light.h
@@ -16,42 +17,43 @@ set(SOURCE_FILES
         include/ParseTeX.tpp
         include/Material.h
         include/Mesh.h
-        include/Model.h
-        include/ModelFactory.h
+        include/ModelGroup.h
+        include/RenderObject.h
         include/Scene.h
+        include/Scene.tpp
         include/PostProcessor.h
         include/Shader.h
         include/Shadow.h
-        include/String.h
+        include/Model.h
         include/TeXBox.h
-        include/TeXBoxFactory.h
         include/Texture.h
         include/Transition.h
         include/Visualiser.h
         include/Window.h
-        ../../dependencies/stb_image/stb_image.h
+        ../../external/stb_image/stb_image.h
         include/Action.tpp
         src/ActionBase.cpp
         src/Buffers.cpp
         src/Camera.cpp
-        src/Glyph.cpp
+        src/ModelFactory.cpp
+        src/TeXGlyph.cpp
+        src/GlyphSheet.cpp
         src/GUI.cpp
         src/Light.cpp
         src/ParseTeX.cpp
         src/Mesh.cpp
-        src/Model.cpp
-        src/ModelFactory.cpp
+        src/ModelGroup.cpp
         src/Scene.cpp
         src/PostProcessor.cpp
         src/Shader.cpp
         src/Shadow.cpp
-        src/String.cpp
+        src/Model.cpp
         src/TeXBox.cpp
         src/Texture.cpp
         src/Transition.cpp
         src/Visualiser.cpp
         src/Window.cpp
-        ../../dependencies/stb_image/stb_image.cpp)
+        ../../external/stb_image/stb_image.cpp)
 
 set(LINK_LIBRARIES
         ${OPENGL_LIBRARIES}
@@ -64,5 +66,5 @@ set(LINK_LIBRARIES
         ImGui)
 
 add_library(VisualiserLibrary ${SOURCE_FILES})
-target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../dependencies/stb_image)
+target_include_directories(VisualiserLibrary SYSTEM PRIVATE ../../external/stb_image)
 target_link_libraries(VisualiserLibrary ${LINK_LIBRARIES})

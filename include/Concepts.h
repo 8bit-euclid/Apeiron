@@ -32,6 +32,12 @@ template<typename T> concept Arithmetic    = isArithmetic<T>();
 template<typename T> concept StringLiteral = isStringLiteral<T>();
 
 /***************************************************************************************************************************************************************
+* Value Category Concepts
+***************************************************************************************************************************************************************/
+template<typename T> concept LValue        = isLValueReference<T>();
+template<typename T> concept RValue        = isRValueReference<T>();
+
+/***************************************************************************************************************************************************************
 * Iterator Concepts
 ***************************************************************************************************************************************************************/
 template<typename T> concept CharIterator  = isTypeSame<typename std::iterator_traits<T>::value_type, char>();

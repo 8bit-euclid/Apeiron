@@ -50,8 +50,8 @@ struct VertexAttributeLayout
    template<typename T>
    void AddAttribute(GLuint n_values);
 
-   DynamicArray<VertexAttribute> Attributes;
-   GLuint                        Stride;
+   DArray<VertexAttribute> Attributes;
+   GLuint                  Stride;
 };
 
 class Mesh
@@ -61,18 +61,19 @@ class Mesh
 
    void ComputeVertexNormals();
 
-   inline bool isInitialised() const { return !Vertices.empty(); }
+   inline bool Loaded() const { return !Vertices_.empty(); }
 
-   inline const VertexAttributeLayout& GetVertexLayout() const { return VertexLayout; }
+   inline const auto& GetVertexLayout() const { return VertexLayout_; }
 
  private:
    friend class Model;
    friend class ModelFactory;
+   friend class TeXGlyph;
 
-   VertexAttributeLayout VertexLayout;
-   DynamicArray<Vertex>  Vertices;
-   DynamicArray<GLuint>  Indices;
-   ShadingType           Shading{ShadingType::Flat};
+   VertexAttributeLayout VertexLayout_;
+   DArray<Vertex>        Vertices_;
+   DArray<GLuint>        Indices_;
+   ShadingType           Shading_{ShadingType::Flat};
 };
 
 }

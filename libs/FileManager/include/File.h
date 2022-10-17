@@ -64,13 +64,13 @@ class BaseFile
    template<char sep = '\0', typename T, typename... Ts>
    void Write(const T& data, const Ts&... trailing_data);
 
-   inline bool isOpen() const { return _Stream.is_open(); }
+   inline bool isOpen() const { return Stream_.is_open(); }
 
-   inline bool isValid() const { return _Stream.good(); }
+   inline bool isValid() const { return Stream_.good(); }
 
-   inline bool isEnd() const { return _Stream.eof(); }
+   inline bool isEnd() const { return Stream_.eof(); }
 
-   inline void SetPrecision(const unsigned n) { _Stream << std::setprecision(n); }
+   inline void SetPrecision(const unsigned n) { Stream_ << std::setprecision(n); }
 
  private:
    void Init(const Path& file_path);
@@ -80,11 +80,11 @@ class BaseFile
    bool isWritable() const;
 
    using FileStream = std::basic_fstream<ConditionalType<char, wchar_t>>;
-   Path                        _Path;
-   FileStream                  _Stream;
-   DArray<Mode>                _Modes;
-   mutable std::optional<bool> _isReadable;
-   mutable std::optional<bool> _isWritable;
+   Path                        Path_;
+   FileStream                  Stream_;
+   DArray<Mode>                Modes_;
+   mutable std::optional<bool> Readable_;
+   mutable std::optional<bool> Writable_;
 };
 
 typedef BaseFile<false> File;

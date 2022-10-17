@@ -40,8 +40,8 @@ class GUI
    void Terminate();
 
  private:
-   ImGuiIO* _ImGuiIO;
-   bool     _isInitialised{};
+   ImGuiIO* ImGuiIO_;
+   bool     isInitialised_{};
 };
 
 }

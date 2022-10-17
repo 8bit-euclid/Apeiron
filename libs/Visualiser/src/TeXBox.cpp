@@ -12,8 +12,8 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
+#include "../include/ParseTeX.h"
 #include "../include/TeXBox.h"
-#include "../include/ModelFactory.h"
 #include "../include/Texture.h"
 #include "FileManager/include/File.h"
 
@@ -22,123 +22,156 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeXBox Public Interface
 ***************************************************************************************************************************************************************/
-TeXBox::TeXBox(const char* str, const std::string& label)
-   : TeXBox(std::string(str), label) {}
+TeXBox::TeXBox(const std::string& str) { Add(str); }
 
-TeXBox::TeXBox(const std::string& str, const std::string& label)
-   : TeXBox(String(str, label + "_String_0"), label) {}
+TeXBox::TeXBox(const DArray<TeXGlyph>& tex_glyphs) { Add(tex_glyphs); }
 
-TeXBox::TeXBox(const Glyph& glyph, const std::string& label)
-   : TeXBox(String(glyph, label + "_String_0"), label) {}
+TeXBox::TeXBox(const DArray<TeXBox>& tex_boxes) { Add(tex_boxes); }
 
-TeXBox::TeXBox(const DArray<Glyph>& glyphs, const std::string& label)
-   : TeXBox(String(glyphs, label + "_String_0"), label) {}
+TeXBox::TeXBox(DArray<TeXGlyph>&& tex_glyphs) { Add(std::move(tex_glyphs)); }
 
-TeXBox::TeXBox(const String& str, const std::string& label)
-   : TeXBox(DArray<String>{str}, label) {}
-
-TeXBox::TeXBox(const DArray<String>& strings, const std::string& label)
-   : _Label(label) { Add(strings); }
+TeXBox::TeXBox(DArray<TeXBox>&& tex_boxes) { Add(std::move(tex_boxes)); }
 
 TeXBox&
-TeXBox::Add(const std::string& str) { return Add(String(str, _Label + "_String_" + ToString(_Strings.size()))); }
+TeXBox::Add(const std::string& str) { return Add(ParseTeXString(str)); }
 
 TeXBox&
-TeXBox::Add(const Glyph& glyph) { return Add(String(glyph, _Label + "_String_" + ToString(_Strings.size()))); }
-
-TeXBox&
-TeXBox::Add(const String& str)
+TeXBox::Add(const TeXGlyph& tex_glyph)
 {
-   // Allocate new memory for the string, initialise it, and add it as a sub-model of this TeX-box.
-   const std::string& str_id = !str._Label.empty() ? str._Label : "String_" + ToString(_Strings.size());
-   _Strings.emplace_back(std::make_shared<String>(str));
-   _SubModels.emplace(str_id, _Strings.back());
+   auto glyph = std::make_shared<TeXGlyph>(tex_glyph);
+   SubBoxes_.push_back(glyph);
+   SubModels_.push_back(glyph);
    return *this;
 }
 
 TeXBox&
-TeXBox::Add(const DArray<Glyph>& glyphs)
+TeXBox::Add(const TeXBox& tex_box)
 {
-   Add(String(glyphs, _Label + "_String_" + ToString(_Strings.size())));
+   auto box = std::make_shared<TeXBox>(tex_box);
+   SubBoxes_.push_back(box);
+   SubModels_.push_back(box);
    return *this;
 }
 
 TeXBox&
-TeXBox::Add(const DArray<String>& strings)
+TeXBox::Add(const SPtr<TeXObject>& tex_object)
 {
-   FOR_EACH(str, strings) Add(str);
+   // Add as a sub-box.
+   SubBoxes_.push_back(tex_object);
+
+   // Down-cast to either a TeXBox or a TeXGlyph.
+   auto tex_box   = std::dynamic_pointer_cast<TeXBox>(tex_object);
+   auto tex_glyph = std::dynamic_pointer_cast<TeXGlyph>(tex_object);
+   ASSERT(tex_box || tex_glyph, "Failed to down-cast to either a TeXBox or a TeXGlyph.")
+
+   // Add down-casted object as a sub-model.
+   if(tex_box) SubModels_.push_back(tex_box);
+   else        SubModels_.push_back(tex_glyph);
    return *this;
 }
 
 TeXBox&
-TeXBox::SetLabel(const std::string& label)
+TeXBox::Add(const DArray<TeXGlyph>& tex_glyphs)
 {
-   ASSERT(_Label.empty(), "The label for this TeX box has already been set.")
-   _Label = label;
+   FOR_EACH(tex_glyph, tex_glyphs) Add(tex_glyph);
    return *this;
 }
 
 TeXBox&
-TeXBox::SetAnchor(const SVectorF3& anchor)
+TeXBox::Add(const DArray<TeXBox>& tex_boxes)
 {
-   _Anchor = anchor;
-   FOR_EACH(str, _Strings) str->SetAnchor(&_Anchor);
+   FOR_EACH(tex_box, tex_boxes) Add(tex_box);
    return *this;
 }
 
 TeXBox&
-TeXBox::SetFontSize(const char font_size)
+TeXBox::Add(const DArray<SPtr<TeXObject>>& tex_boxes)
 {
-   FOR_EACH(str, _Strings) str->SetFontSize(font_size);
+   FOR_EACH(tex_box, tex_boxes) Add(tex_box);
    return *this;
 }
+
+TeXBox&
+TeXBox::Add(TeXGlyph&& tex_glyph)
+{
+   auto glyph = std::make_shared<TeXGlyph>(std::move(tex_glyph));
+   SubBoxes_.push_back(glyph);
+   SubModels_.push_back(glyph);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(TeXBox&& tex_box)
+{
+   auto box = std::make_shared<TeXBox>(std::move(tex_box));
+   SubBoxes_.push_back(box);
+   SubModels_.push_back(box);
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(DArray<TeXGlyph>&& tex_glyphs)
+{
+   FOR_EACH(tex_glyph, tex_glyphs) Add(std::move(tex_glyph));
+   return *this;
+}
+
+TeXBox&
+TeXBox::Add(DArray<TeXBox>&& tex_boxes)
+{
+   FOR_EACH(tex_box, tex_boxes) Add(std::move(tex_box));
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetPixelDensity(const UInt value)
+{
+   GlyphSheet_.SetPixelDensity(value);
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetAnchor(const SVectorR3& anchor)
+{
+   Anchor_ = anchor;
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetFontSize(const UChar font_size)
+{
+   FontSize_ = font_size;
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetName(const std::string& name)
+{
+   ModelGroup::SetName(name);
+   return *this;
+}
+
+TeXBox&
+TeXBox::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
 
 TeXBox&
 TeXBox::SetColour(const Colour& colour)
 {
-   FOR_EACH(str, _Strings) str->SetColour(colour);
-   return *this;
-}
-
-TeXBox&
-TeXBox::SetDimensions(const Float width, const std::optional<Float> height)
-{
-   ASSERT(!_Scale.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
-
-   _Dimensions = { width, height.has_value() ? height.value() : -One };
-   return *this;
-}
-
-TeXBox&
-TeXBox::SetScale(const Float width_scale, const std::optional<Float> height_scale)
-{
-   ASSERT(!_Dimensions.has_value(), "Cannot set both the scale and dimensions of the TeX-box.")
-
-   _Scale = { width_scale, height_scale.has_value() ? height_scale.value() : width_scale };
-   ASSERT(_Scale->x() > Zero && _Scale->y() > Zero, "Can only scale by positive numbers.")
-
-   FOR_EACH(str, _Strings) str->SetScale(width_scale, height_scale);
+   FOR_EACH(str, SubBoxes_) str->SetColour(colour);
    return *this;
 }
 
 TeXBox&
 TeXBox::SetItalic(const bool is_italic)
 {
-   FOR_EACH(str, _Strings) str->SetItalic(is_italic);
+   FOR_EACH(str, SubBoxes_) str->SetItalic(is_italic);
    return *this;
 }
 
 TeXBox&
 TeXBox::SetBold(const bool is_bold)
 {
-   FOR_EACH(str, _Strings) str->SetBold(is_bold);
-   return *this;
-}
-
-TeXBox&
-TeXBox::SetPixelDensity(const UInt density)
-{
-   _PixelDensity = density;
+   FOR_EACH(str, SubBoxes_) str->SetBold(is_bold);
    return *this;
 }
 
@@ -146,164 +179,52 @@ TeXBox::SetPixelDensity(const UInt density)
 * TeXBox Private Interface
 ***************************************************************************************************************************************************************/
 void
-TeXBox::Init(const size_t id)
+TeXBox::InitTeXBox(const size_t id)
 {
-   AddStringText();
-   SetCompileDirectory(id);
-   CompileLaTeXSource();
-   CreateTeXBoxImage();
-   CreateGlyphSheet();
-   ComputeTeXBoxDimensions();
-   Model::Init();
-}
+   // Propagate name (if already set) to sub-glyphs.
+   if(!Name_.empty()) ModelGroup::SetName(Name_);
 
-void
-TeXBox::AddStringText()
-{
-   // Add contributions from each sub-string to the TeX-box string.
-   UInt16 glyph_index{};
-   _Text.clear();
-   FOR_EACH(str, _Strings)
-   {
-      str->Init(glyph_index);
-      _Text += str->_Text;
-   }
-}
+   // Initialise sub-boxes, assign glyph indices, and accumulate text.
+   GlyphSheet::IndexT glyph_index = 0;
+   InitTeXObject(glyph_index);
 
-void
-TeXBox::CompileLaTeXSource()
-{
-   const auto& comp_dir = _CompileDirectory;
-
-   // Initialise the LaTeX compile directory for this TeX-box and copy over the LaTeX template.
-   fm::CreateDirectory(comp_dir);
-   fm::ClearDirectory(comp_dir);
-   fm::CopyFile(LaTeXTemplate() , comp_dir);
-   fm::CopyFile(LuaTeXTemplate(), comp_dir);
-
-   // Transfer TeX-box text to the .tex file.
-   _TeXFile = comp_dir / LaTeXTemplate().filename();
-   fm::File file(_TeXFile, fm::Mode::Append);
-   file.Write("\n", _Text, "\n\\end{document}");
-   file.Close();
-
-   // Compile LaTeX source code.
-   fm::CompileTeXFile("lualatex", _TeXFile);
-}
-
-void
-TeXBox::CreateTeXBoxImage() { fm::ConvertPDFtoPNG(_TeXFile.replace_extension(".pdf"), _PixelDensity); }
-
-void
-TeXBox::CreateGlyphSheet()
-{
-   ReadGlyphBoxPositions();
-   ReadGlyphBoxAttributes();
-   ComputeGlyphSheetDimensions();
-   LinkGlyphSheet();
-}
-
-void
-TeXBox::ReadGlyphBoxPositions()
-{
-   fm::File file(_CompileDirectory / "positions.txt", fm::Mode::Read);
-   UInt16 glyph_index{};
-
-   while(!file.isEnd())
-   {
-      auto& x = _GlyphSheet.Boxes[glyph_index].Position.x(); // Note: emplacement occurs here.
-      auto& y = _GlyphSheet.Boxes[glyph_index].Position.y();
-
-      file.Read(x, y);
-      if(x < 0)
-      {
-         DEBUG_ASSERT(x == -1, "Read in an x-coordinate which is not -1: ", x)
-         x = 0;
-      }
-      ++glyph_index;
-   }
-   file.Close();
-}
-
-void
-TeXBox::ReadGlyphBoxAttributes()
-{
-   // Read glyph box attributes. Note: need to read with a wide file, as the glyph characters must be read in as wchar_t.
-   fm::WFile wfile;
-   wfile.Open(_CompileDirectory / "attributes.txt", fm::Mode::Read);
-   UInt16 glyph_index{};
-
-   while(wfile.isValid())
-   {
-      DEBUG_ASSERT(_GlyphSheet.Boxes.find(glyph_index) != _GlyphSheet.Boxes.end(), "The glyph index ", glyph_index, " was not previously populated.")
-
-      auto& c = _GlyphSheet.Boxes[glyph_index].Char;
-      auto& w = _GlyphSheet.Boxes[glyph_index].Width;
-      auto& h = _GlyphSheet.Boxes[glyph_index].Height;
-      auto& d = _GlyphSheet.Boxes[glyph_index].Depth;
-
-      wfile.Read(c, w, h, d);
-      ++glyph_index;
-   }
-
-   wfile.Close();
-   ASSERT(glyph_index == _GlyphSheet.Boxes.size(), "The number of glyph attributes does not match the number of positions read in.")
-}
-
-void
-TeXBox::ComputeGlyphSheetDimensions()
-{
-   using int_T  = decltype(_GlyphSheet.Width);
-   using coor_T = SVector2<int_T>;
-
-   // Calculate glyph sheet dimensions (min/max bounds of all glyph boxes).
-   coor_T min_pos(MaxInt<int_T>);
-   coor_T max_pos(MinInt<int_T>);
-
-   FOR_EACH_CONST(_, glyph, _GlyphSheet.Boxes)
-   {
-      const coor_T bott_left = { glyph.Position.x()              , glyph.Position.y() - glyph.Depth  };
-      const coor_T top_right = { glyph.Position.x() + glyph.Width, glyph.Position.y() + glyph.Height };
-
-      FOR(i, 2)
-      {
-         min_pos[i] = Min(min_pos[i], bott_left[i]);
-         max_pos[i] = Max(max_pos[i], top_right[i]);
-      }
-   }
-   _GlyphSheet.Width  = max_pos.x() - min_pos.x();
-   _GlyphSheet.Height = max_pos.y() - min_pos.y();
-}
-
-void
-TeXBox::LinkGlyphSheet() { FOR_EACH(str, _Strings) str->LinkGlyphSheet(&_GlyphSheet); }
-
-void
-TeXBox::ComputeTeXBoxDimensions()
-{
-   ASSERT(_GlyphSheet.Width && _GlyphSheet.Height, "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
-   if(_Dimensions.has_value()) return;
+   // Initialise glyph sheet.
+   GlyphSheet_.Init(id, Text_);
+   ASSERT(GlyphSheet_.Width() && GlyphSheet_.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
 
    // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
-   const Float scale_factor = _UnitLength / static_cast<Float>(_FontSize10);
-   _Dimensions = { static_cast<Float>(_GlyphSheet.Width), static_cast<Float>(_GlyphSheet.Height) };
-   _Dimensions.value() *= scale_factor;
+   Dimensions_ = { GlyphSheet_.Width(), GlyphSheet_.Height() };
+   Dimensions_ *= GlyphSheet::FontSizeScale(FontSize_);
 
-   // If a custom scaling has been prescribed, scale the dimensions.
-   if(_Scale.has_value()) _Dimensions.value() *= _Scale.value();
-
-   // Set model mesh.
-   _Geometry = ModelFactory::Rectangle(_Dimensions->x(), _Dimensions->y()).Geometry();
+   // Compute the sub-glyph dimensions and their texture coordinates.
+   ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_);
 }
 
 void
-TeXBox::SetCompileDirectory(const size_t id) { _CompileDirectory = LaTeXDirectory() / ("texbox" + ToString(id)); }
+TeXBox::InitTeXObject(GlyphSheet::IndexT& index_offset)
+{
+   // Initialise sub-boxes and add contributions to the TeX-box string, if it has not already been set.
+   auto set_text = Text_.empty();
+   FOR_EACH(sub_box, SubBoxes_)
+   {
+      sub_box->InitTeXObject(index_offset);
+      if(set_text) Text_ += sub_box->Text();
+   }
+}
+
+void
+TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
+{
+   FOR_EACH(sub_box, SubBoxes_)
+      sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
+}
 
 fm::Path
 TeXBox::ImagePath() const
 {
-   ASSERT(!_CompileDirectory.empty(), "The compile directory has not yet been set for this TeXBox.")
-   return _CompileDirectory / LaTeXTemplate().filename().replace_extension(".png");
+   const auto compile_dir = GlyphSheet_.CompileDirectory();
+   ASSERT(!compile_dir.empty(), "The compile directory has not yet been set for this TeXBox.")
+   return compile_dir / LaTeXTemplate().filename().replace_extension(".png");
 }
 
 }

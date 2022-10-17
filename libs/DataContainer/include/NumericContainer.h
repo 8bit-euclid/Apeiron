@@ -24,7 +24,7 @@ namespace detail {
 /***************************************************************************************************************************************************************
 * Numeric Data Container Class and Arithmetic Operations
 ***************************************************************************************************************************************************************/
-template<Arithmetic T, class derived>
+template<Arithmetic T, class D>
 class NumericContainer
 {
 protected:
@@ -32,49 +32,49 @@ protected:
 
 public:
   /** Scalar arithmetic operator overloads. */
-  constexpr derived operator+(const std::convertible_to<T> auto scalar) const;
+  constexpr D operator+(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator-(const std::convertible_to<T> auto scalar) const;
+  constexpr D operator-(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator*(const std::convertible_to<T> auto scalar) const;
+  constexpr D operator*(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived operator/(const std::convertible_to<T> auto scalar) const;
+  constexpr D operator/(const std::convertible_to<T> auto scalar) const;
 
-  constexpr derived& operator+=(const std::convertible_to<T> auto scalar);
+  constexpr D& operator+=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator-=(const std::convertible_to<T> auto scalar);
+  constexpr D& operator-=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator*=(const std::convertible_to<T> auto scalar);
+  constexpr D& operator*=(const std::convertible_to<T> auto scalar);
 
-  constexpr derived& operator/=(const std::convertible_to<T> auto scalar);
+  constexpr D& operator/=(const std::convertible_to<T> auto scalar);
 
   /** Entry-wise binary arithmetic operator overloads. */
-  template<class D>
-  constexpr derived operator+(const NumericContainer<T, D>& _container) const;
+  template<class D2>
+  constexpr D operator+(const NumericContainer<T, D2>& container) const;
 
-  template<class D>
-  constexpr derived operator-(const NumericContainer<T, D>& _container) const;
+  template<class D2>
+  constexpr D operator-(const NumericContainer<T, D2>& container) const;
 
-  template<class D>
-  constexpr derived operator*(const NumericContainer<T, D>& _container) const;
+  template<class D2>
+  constexpr D operator*(const NumericContainer<T, D2>& container) const;
 
-  template<class D>
-  constexpr derived operator/(const NumericContainer<T, D>& _container) const;
+  template<class D2>
+  constexpr D operator/(const NumericContainer<T, D2>& container) const;
 
-  template<class D>
-  constexpr derived& operator+=(const NumericContainer<T, D>& _container);
+  template<class D2>
+  constexpr D& operator+=(const NumericContainer<T, D2>& container);
 
-  template<class D>
-  constexpr derived& operator-=(const NumericContainer<T, D>& _container);
+  template<class D2>
+  constexpr D& operator-=(const NumericContainer<T, D2>& container);
 
-  template<class D>
-  constexpr derived& operator*=(const NumericContainer<T, D>& _container);
+  template<class D2>
+  constexpr D& operator*=(const NumericContainer<T, D2>& container);
 
-  template<class D>
-  constexpr derived& operator/=(const NumericContainer<T, D>& _container);
+  template<class D2>
+  constexpr D& operator/=(const NumericContainer<T, D2>& container);
 
   /** Entry-wise unary operator overloads. */
-  constexpr derived operator-() const;
+  constexpr D operator-() const;
 
   /** Entry randomisation. */
   void Randomise();
@@ -82,11 +82,11 @@ public:
   static void ResetRandomiser(const T min, const T max);
 
   /** Derived class access. */
-  constexpr derived&
-  Derived() noexcept { return static_cast<derived&>(*this); }
+  constexpr D&
+  Derived() noexcept { return static_cast<D&>(*this); }
 
-  constexpr const derived&
-  Derived() const noexcept { return static_cast<const derived&>(*this); }
+  constexpr const D&
+  Derived() const noexcept { return static_cast<const D&>(*this); }
 
 private:
   inline static Random<T> Randomiser = Random<T>();
@@ -95,8 +95,8 @@ private:
 }//detail
 
 /** Stand-alone Operator overloads. */
-template<Arithmetic T, class derived>
-constexpr derived operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container);
+template<Arithmetic T, class D>
+constexpr D operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, D>& container);
 
 }//aprn
 

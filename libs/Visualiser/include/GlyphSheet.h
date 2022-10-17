@@ -16,30 +16,78 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
+#include "FileManager/include/FileSystem.h"
 #include "Visualiser/include/Texture.h"
 
 #include <unordered_map>
 
 namespace aprn::vis {
 
-template<typename T = Int64>
+namespace fm = flmgr;
+
+/***************************************************************************************************************************************************************
+* Glyph Box Struct
+***************************************************************************************************************************************************************/
 struct GlyphBox
 {
-   wchar_t     Char{};
-   T           Width{};
-   T           Height{};
-   T           Depth{};
-   SVector2<T> Position{};
+   wchar_t         Char{};
+   Int64           Width{};
+   Int64           Height{};
+   Int64           Depth{};
+   SVector2<Int64> Position{};
 };
 
-struct GlyphSheet
+/***************************************************************************************************************************************************************
+* Glyph Sheet Class
+***************************************************************************************************************************************************************/
+class GlyphSheet
 {
+ public:
    typedef UInt16 IndexT;
-   template<class type> using UMap = std::unordered_map<IndexT, type>;
 
-   UMap<GlyphBox<Int64>> Boxes{};
-   Int64                 Width{};
-   Int64                 Height{};
+   void Init(size_t id, const std::string& text);
+
+   void CompileLaTeXSource(const std::string& text);
+
+   void CreateGlyphSheetImage();
+
+   void ReadGlyphBoxPositions();
+
+   void ReadGlyphBoxAttributes();
+
+   void ComputeDimensions();
+
+   const GlyphBox& GlyphInfo(const IndexT glyph_index) const;
+
+   inline auto Width() const { return Width_; }
+
+   inline auto Height() const { return Height_; }
+
+   inline auto CompileDirectory() const { return CompileDirectory_; }
+
+   inline void SetPixelDensity(const UInt density) { PixelDensity_ = density; }
+
+   inline static Real FontSizeScale(const UChar font_size) { return FontSize10Scale_ * static_cast<Real>(font_size) / Ten; }
+
+ private:
+   DArray<GlyphBox>      Boxes_;
+   fm::Path              CompileDirectory_;
+   fm::Path              TeXFile_;
+   Int64                 Width_{};
+   Int64                 Height_{};
+   UInt16                PixelDensity_{2000};               // Measured in DPI.
+   constexpr static Real FontSize10Scale_ = 0.5 / 655360.0; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
 };
+
+/***************************************************************************************************************************************************************
+* Stand-alone Functions
+***************************************************************************************************************************************************************/
+inline fm::Path LaTeXDirectory() { return "./libs/Visualiser/data/latex"; }
+
+inline fm::Path LaTeXTemplate() { return "./libs/Visualiser/resources/latex/texbox.tex"; }
+
+inline fm::Path LuaTeXTemplate() { return "./libs/Visualiser/resources/latex/write_boxes.lua"; }
+
+inline void InitTeXDirectory() { fm::CreateDirectory(LaTeXDirectory(), true); }
 
 }

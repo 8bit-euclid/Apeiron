@@ -26,7 +26,7 @@ namespace aprn {
 /** Convert to a string. */
 template<typename T>
 inline std::string
-ToString(const T& number, unsigned char decimals = 0)
+ToString(const T& number, const UChar decimals = 0)
 {
    std::stringstream str_buffer;
    if(decimals) str_buffer << std::fixed << std::setprecision(decimals);
@@ -43,7 +43,7 @@ template<typename T = int>
 inline T
 ToNumber(const std::string& str)
 {
-   if constexpr(isTypeSame<T, int>())              return std::stoi(str);
+   if constexpr     (isTypeSame<T, int>())         return std::stoi(str);
    else if constexpr(isTypeSame<T, long>())        return std::stol(str);
    else if constexpr(isTypeSame<T, long long>())   return std::stoll(str);
    else if constexpr(isTypeSame<T, float>())       return std::stof(str);
@@ -52,15 +52,15 @@ ToNumber(const std::string& str)
 }
 
 /** Peek at the character at the given position, if it lies within the bounds of the string interators. */
-template<CharIterator Iter>
-inline std::pair<Iter, bool>
-PeekAt(unsigned position, const Iter first, const Iter last)
+template<CharIterator It>
+inline std::pair<It, bool>
+PeekAt(unsigned position, const It first, const It last)
 {
    if(position < std::distance(first, last)) return { first + position, true };
    else return { last, false };
 }
 
-/** Open if the first string is a substring of the second. */
+/** Check if the first string is a substring of the second. */
 inline bool
 isSubstring(const std::string_view& substr, const std::string_view& str) { return str.find(substr) != std::string::npos; }
 
@@ -112,9 +112,9 @@ Split(std::string input, const std::string_view& delimiter = "")
 }
 
 /** Get the bounding iterators of the first substring enclosed between the given opening and closing symbols. */
-template<CharIterator Iter>
-inline std::pair<Pair<Iter>, bool>
-GetFirstEnclosure(const Iter first, const Iter last, const char opening_brace, const char closing_brace, const bool include_braces = false)
+template<CharIterator It>
+inline std::pair<Pair<It>, bool>
+GetFirstEnclosure(const It first, const It last, const char opening_brace, const char closing_brace, const bool include_braces = false)
 {
    // Find the iterator of the opening symbol.
    const auto open_it = std::find(first, last, opening_brace);
@@ -140,7 +140,7 @@ GetFirstEnclosure(const Iter first, const Iter last, const char opening_brace, c
    ASSERT(close_it != open_it, "The closing symbol is at the same location as the opening symbol.")
    ASSERT(close_it != last, "Could not find the closing symbol in the input string.")
 
-   return { include_braces ? Pair<Iter>{ open_it, close_it + 1 } : Pair<Iter>{ open_it + 1, close_it }, true };
+   return { include_braces ? Pair<It>{ open_it, close_it + 1 } : Pair<It>{ open_it + 1, close_it }, true };
 }
 
 /** Get the first substring enclosed between the given opening and closing symbols. */
@@ -152,11 +152,11 @@ GetFirstEnclosure(const std::string& input, const char opening_brace, const char
 }
 
 /** Get the bounding iterators of all substrings enclosed between the given opening and closing symbols, that are also chained together. */
-template<CharIterator Iter>
-inline std::vector<Pair<Iter>>
-GetFirstEnclosureChain(Iter first, const Iter last, const char opening_brace, const char closing_brace, const bool include_braces = false)
+template<CharIterator It>
+inline std::vector<Pair<It>>
+GetFirstEnclosureChain(It first, const It last, const char opening_brace, const char closing_brace, const bool include_braces = false)
 {
-   std::vector<Pair<Iter>> enclosure_chain;
+   std::vector<Pair<It>> enclosure_chain;
    enclosure_chain.reserve(std::distance(first, last));
 
    bool find_next;
@@ -197,18 +197,18 @@ GetFirstEnclosureChain(const std::string& input, const char opening_brace, const
 }
 
 /** Get the bounding iterators of all substrings enclosed between the given opening and closing symbols, in the order in which they appear. */
-template<CharIterator Iter>
-inline std::vector<Pair<Iter>>
-GetAllEnclosures(Iter first, const Iter last, const char opening_brace, const char closing_brace, const bool include_braces = false)
+template<CharIterator It>
+inline std::vector<Pair<It>>
+GetAllEnclosures(It first, const It last, const char opening_brace, const char closing_brace, const bool include_braces = false)
 {
-   std::vector<Pair<Iter>> enclosures;
+   std::vector<Pair<It>> enclosures;
    enclosures.reserve(std::distance(first, last));
    bool found_enclosure;
 
    do
    {
       // Find next enclosure iterators. If found, push onto list of enclosure iterators and update the first iterator.
-      Pair<Iter> bounds;
+      Pair<It> bounds;
       std::tie(bounds, found_enclosure) = GetFirstEnclosure(first, last, opening_brace, closing_brace, include_braces);
       if(found_enclosure)
       {

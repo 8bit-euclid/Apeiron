@@ -23,46 +23,30 @@ namespace aprn::vis {
 Light::Light()
   : Light(LightType::None, {1.0f, 1.0f, 1.0f, 1.0f}, 1.0f, 0.0f) {}
 
-Light::Light(Light&& light) noexcept
-  : _Colour(std::move(light._Colour)), _AmbientIntensity(std::move(light._AmbientIntensity)), _DiffuseIntensity(std::move(light._DiffuseIntensity)),
-    _ShadowMap(std::move(light._ShadowMap)), _Type(std::move(light._Type)) {}
-
 Light::Light(LightType type, const glm::vec4& rgba_colour, const GLfloat ambient_intensity, const GLfloat diffuse_intensity)
-  : _Colour(rgba_colour), _AmbientIntensity(ambient_intensity), _DiffuseIntensity(diffuse_intensity),
-    _ShadowMap(type == OneOf(LightType::Point, LightType::Spot)), _Type(type) {}
-
-Light&
-Light::operator=(Light&& light) noexcept
-{
-   _Colour           = std::move(light._Colour);
-   _AmbientIntensity = std::move(light._AmbientIntensity);
-   _DiffuseIntensity = std::move(light._DiffuseIntensity);
-   _ShadowMap        = std::move(light._ShadowMap);
-   _Type             = std::move(light._Type);
-
-  return *this;
-}
+  : Colour_(rgba_colour), AmbientIntensity_(ambient_intensity), DiffuseIntensity_(diffuse_intensity),
+    ShadowMap_(type == OneOf(LightType::Point, LightType::Spot)), Type_(type) {}
 
 void
 Light::AddGUIElements()
 {
-   ImGui::ColorEdit4("Colour", &_Colour.r);
-   ImGui::SliderFloat("Ambient Intensity", &_AmbientIntensity, 0.0f, 20.0f);
-   ImGui::SliderFloat("Diffuse Intensity", &_DiffuseIntensity, 0.0f, 20.0f);
+   ImGui::ColorEdit4("Colour", &Colour_.r);
+   ImGui::SliderFloat("Ambient Intensity", &AmbientIntensity_, 0.0f, 20.0f);
+   ImGui::SliderFloat("Diffuse Intensity", &DiffuseIntensity_, 0.0f, 20.0f);
 }
 
 /***************************************************************************************************************************************************************
 * Directional Light Class
 ***************************************************************************************************************************************************************/
-DirectionalLight::DirectionalLight()
-  : Light(), _Direction(glm::vec3(0.0, -1.0, 0.0)) {}
+DirectLight::DirectLight()
+  : Light(), Direction_(glm::vec3(0.0, -1.0, 0.0)) {}
 
-DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
-  : Light(LightType::Directional, rgba_colour, ambient_intensity, diffuse_intensity), _Direction(direction)
+DirectLight::DirectLight(glm::vec3 direction, glm::vec4 rgba_colour, GLfloat ambient_intensity, GLfloat diffuse_intensity)
+  : Light(LightType::Direct, rgba_colour, ambient_intensity, diffuse_intensity), Direction_(direction)
 {
   const glm::mat4&& proj_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 1.0f, 20.0f);
-  const glm::mat4&& view_matrix = glm::lookAt(-10.0f * _Direction, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
-   _LightSpaceMatrix = proj_matrix * view_matrix;
+  const glm::mat4&& view_matrix = glm::lookAt(-10.0f * Direction_, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
+   LightSpaceMatrix_ = proj_matrix * view_matrix;
 }
 
 /***************************************************************************************************************************************************************
@@ -70,41 +54,34 @@ DirectionalLight::DirectionalLight(glm::vec3 direction, glm::vec4 rgba_colour, G
 ***************************************************************************************************************************************************************/
 namespace detail {
 
-template<class derived>
-PointLightBase<derived>::PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour,
+template<class D>
+PointLightBase<D>::PointLightBase(LightType type, const glm::vec3& position, const glm::vec4& rgba_colour,
                                         GLfloat ambient_intensity, GLfloat diffuse_intensity,
                                         const SVector3<GLfloat>& attenuation_coefficients)
-  : Light(type, rgba_colour, ambient_intensity, diffuse_intensity), _Position(position), _AttenuationCoefficients(attenuation_coefficients)
+  : Light(type, rgba_colour, ambient_intensity, diffuse_intensity), Position_(position), AttenuationCoefficients_(attenuation_coefficients)
 {
-  const glm::mat4&& proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, _FarPlane); // Note the aspect ratio of 1.0f
+  const auto proj_matrix = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, FarPlane_); // Note the aspect ratio of 1.0f
 
-  _LightSpaceMatrices[0] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Right face of cube map
-  _LightSpaceMatrices[1] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(-1.0, 0.0, 0.0), {0.0, -1.0, 0.0}); // Left face of cube map
-  _LightSpaceMatrices[2] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 1.0, 0.0), {0.0, 0.0, 1.0}); // Top face of cube map
-  _LightSpaceMatrices[3] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, -1.0, 0.0), {0.0, 0.0, -1.0}); // Bottom face of cube map
-  _LightSpaceMatrices[4] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, 1.0), {0.0, -1.0, 0.0}); // Near face of cube map
-  _LightSpaceMatrices[5] = proj_matrix * glm::lookAt(_Position, _Position + glm::vec3(0.0, 0.0, -1.0), {0.0, -1.0, 0.0}); // Far face of cube map
+  // Create light space matrices for each cube map face.
+  LightSpaceMatrices_[0] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3( 1.0, 0.0, 0.0), {0.0,-1.0, 0.0}); // Right face
+  LightSpaceMatrices_[1] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3(-1.0, 0.0, 0.0), {0.0,-1.0, 0.0}); // Left face
+  LightSpaceMatrices_[2] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3( 0.0, 1.0, 0.0), {0.0, 0.0, 1.0}); // Top face
+  LightSpaceMatrices_[3] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3( 0.0,-1.0, 0.0), {0.0, 0.0,-1.0}); // Bottom face
+  LightSpaceMatrices_[4] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3( 0.0, 0.0, 1.0), {0.0,-1.0, 0.0}); // Near face
+  LightSpaceMatrices_[5] = proj_matrix * glm::lookAt(Position_, Position_ + glm::vec3( 0.0, 0.0,-1.0), {0.0,-1.0, 0.0}); // Far face
 
-  _iPointLight = _PointLightCount++;
+  Index_ = PointLightCount_++;
 }
 
-template<class derived>
-PointLightBase<derived>::PointLightBase(PointLightBase<derived>&& light) noexcept
-   : Light(std::move(light)), _iPointLight(std::move(light._iPointLight)), _Position(std::move(light._Position)),
-     _AttenuationCoefficients(std::move(light._AttenuationCoefficients)), _LightSpaceMatrices(std::move(light._LightSpaceMatrices))
-{
-   _PointLightCount++; // Note: only incremented because the destructor of the 'moved' object will decrement.
-}
+template<class D>
+PointLightBase<D>::~PointLightBase() { PointLightCount_--; }
 
-template<class derived>
-PointLightBase<derived>::~PointLightBase() { _PointLightCount--; }
-
-template<class derived>
+template<class D>
 void
-PointLightBase<derived>::AddGUIElements()
+PointLightBase<D>::AddGUIElements()
 {
-   ImGui::SliderFloat3("Position"   , &_Position.x, -10.0f, 10.0f);
-   ImGui::SliderFloat3("Attenuation", _AttenuationCoefficients.data(), 0.0f, 2.0f);
+   ImGui::SliderFloat3("Position"   , &Position_.x, -10.0f, 10.0f);
+   ImGui::SliderFloat3("Attenuation", AttenuationCoefficients_.data(), 0.0f, 2.0f);
    Light::AddGUIElements();
 }
 
@@ -129,7 +106,7 @@ PointLight::AddGUIElements() { PointLightBase::AddGUIElements(); }
 SpotLight::SpotLight(const glm::vec3& position, const glm::vec3& direction, const glm::vec4& rgba_colour, GLfloat cone_angle, GLfloat ambient_intensity,
                      GLfloat diffuse_intensity, const SVector3<GLfloat>& attenuation_coefficients)
   : PointLightBase(LightType::Spot, position, rgba_colour, ambient_intensity, diffuse_intensity, attenuation_coefficients),
-    _Direction(glm::normalize(direction)), _ConeAngle(cone_angle), _CosConeAngle(std::cos(DegToRad(cone_angle))) {}
+    Direction_(glm::normalize(direction)), ConeAngle_(cone_angle), CosConeAngle_(std::cos(DegToRad(cone_angle))) {}
 
 void
 SpotLight::AddGUIElements()

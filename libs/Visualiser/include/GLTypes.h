@@ -24,7 +24,7 @@ namespace aprn::vis {
 
 template<typename T>
 consteval GLenum
-GLTypeEnum(const T& value = T())
+GLTypeEnum([[maybe_unused]] const T& value = T())
 {
   if constexpr     (isTypeSame<T, GLbyte>())   return GL_BYTE;
   else if constexpr(isTypeSame<T, GLubyte>())  return GL_UNSIGNED_BYTE;
@@ -55,23 +55,23 @@ GLTypeSize(const GLenum gl_type)
 }
 
 /** Convert a GLM vector to a static vector. */
-template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
-consteval SVector<T, size>
-GlmVecToSArray(const glm::vec<size, T, qual>& in_vector)
+template<typename T, size_t N, glm::qualifier Q = glm::defaultp>
+consteval SVector<T, N>
+GlmVecToSVector(const glm::vec<N, T, Q>& in)
 {
-  SVector<T, size> out_vector;
-  FOR(i, size) out_vector[i] = in_vector[i];
-  return out_vector;
+  SVector<T, N> out;
+  FOR(i, N) out[i] = in[i];
+  return out;
 }
 
 /** Convert a static vector to a GLM vector. */
-template<size_t size, typename T, glm::qualifier qual = glm::defaultp>
-constexpr glm::vec<size, T, qual>
-SArrayToGlmVec(const SVector<T, size>& in_vector)
+template<typename T, size_t N, glm::qualifier Q = glm::defaultp>
+constexpr glm::vec<N, T, Q>
+SVectorToGlmVec(const SVector<T, N>& in)
 {
-  glm::vec<size, T, qual> out_vector;
-  FOR(i, size) out_vector[i] = in_vector[i];
-  return out_vector;
+  glm::vec<N, T, Q> out;
+  FOR(i, N) out[i] = in[i];
+  return out;
 }
 
 }

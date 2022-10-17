@@ -18,70 +18,70 @@ namespace aprn {
 namespace detail {
 
 /** Scalar arithmetic operator overloads. */
-template<Arithmetic T, class derived>
-constexpr derived
-NumericContainer<T, derived>::operator+(const std::convertible_to<T> auto scalar) const
+template<Arithmetic T, class D>
+constexpr D
+NumericContainer<T, D>::operator+(const std::convertible_to<T> auto scalar) const
 {
-  derived out(Derived());
+  D out(Derived());
   FOR_EACH(entry, out) entry += scalar;
   return out;
 }
 
-template<Arithmetic T, class derived>
-constexpr derived
-NumericContainer<T, derived>::operator-(const std::convertible_to<T> auto scalar) const
+template<Arithmetic T, class D>
+constexpr D
+NumericContainer<T, D>::operator-(const std::convertible_to<T> auto scalar) const
 {
-  derived out(Derived());
+  D out(Derived());
   FOR_EACH(entry, out) entry -= scalar;
   return out;
 }
 
-template<Arithmetic T, class derived>
-constexpr derived
-NumericContainer<T, derived>::operator*(const std::convertible_to<T> auto scalar) const
+template<Arithmetic T, class D>
+constexpr D
+NumericContainer<T, D>::operator*(const std::convertible_to<T> auto scalar) const
 {
-  derived out(Derived());
+  D out(Derived());
   FOR_EACH(entry, out) entry *= scalar;
   return out;
 }
 
-template<Arithmetic T, class derived>
-constexpr derived
-NumericContainer<T, derived>::operator/(const std::convertible_to<T> auto scalar) const
+template<Arithmetic T, class D>
+constexpr D
+NumericContainer<T, D>::operator/(const std::convertible_to<T> auto scalar) const
 {
   DEBUG_ASSERT(!isEqual(scalar, Zero), "Cannot divide by zero.")
-  derived out(Derived());
+  D out(Derived());
   FOR_EACH(entry, out) entry /= scalar;
   return out;
 }
 
-template<Arithmetic T, class derived>
-constexpr derived&
-NumericContainer<T, derived>::operator+=(const std::convertible_to<T> auto scalar)
+template<Arithmetic T, class D>
+constexpr D&
+NumericContainer<T, D>::operator+=(const std::convertible_to<T> auto scalar)
 {
   FOR_EACH(entry, Derived()) entry += scalar;
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-constexpr derived&
-NumericContainer<T, derived>::operator-=(const std::convertible_to<T> auto scalar)
+template<Arithmetic T, class D>
+constexpr D&
+NumericContainer<T, D>::operator-=(const std::convertible_to<T> auto scalar)
 {
   FOR_EACH(entry, Derived()) entry -= scalar;
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-constexpr derived&
-NumericContainer<T, derived>::operator*=(const std::convertible_to<T> auto scalar)
+template<Arithmetic T, class D>
+constexpr D&
+NumericContainer<T, D>::operator*=(const std::convertible_to<T> auto scalar)
 {
   FOR_EACH(entry, Derived()) entry *= scalar;
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-constexpr derived&
-NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto scalar)
+template<Arithmetic T, class D>
+constexpr D&
+NumericContainer<T, D>::operator/=(const std::convertible_to<T> auto scalar)
 {
   DEBUG_ASSERT(!isEqual(scalar, Zero), "Cannot divide by zero.")
   FOR_EACH(entry, Derived()) entry /= scalar;
@@ -89,108 +89,108 @@ NumericContainer<T, derived>::operator/=(const std::convertible_to<T> auto scala
 }
 
 /** Entry-wise binary arithmetic operator overloads. */
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived
-NumericContainer<T, derived>::operator+(const NumericContainer<T, D>& _container) const
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D
+NumericContainer<T, D>::operator+(const NumericContainer<T, D2>& container) const
 {
-  derived out(Derived());
-  FOR(i, out.size()) out[i] += _container.Derived()[i];
+  D out(Derived());
+  FOR(i, out.size()) out[i] += container.Derived()[i];
   return out;
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived
-NumericContainer<T, derived>::operator-(const NumericContainer<T, D>& _container) const
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D
+NumericContainer<T, D>::operator-(const NumericContainer<T, D2>& container) const
 {
-  derived out(Derived());
-  FOR(i, out.size()) out[i] -= _container.Derived()[i];
+  D out(Derived());
+  FOR(i, out.size()) out[i] -= container.Derived()[i];
   return out;
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived
-NumericContainer<T, derived>::operator*(const NumericContainer<T, D>& _container) const
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D
+NumericContainer<T, D>::operator*(const NumericContainer<T, D2>& container) const
 {
-  derived out(Derived());
-  FOR(i, out.size()) out[i] *= _container.Derived()[i];
+  D out(Derived());
+  FOR(i, out.size()) out[i] *= container.Derived()[i];
   return out;
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived
-NumericContainer<T, derived>::operator/(const NumericContainer<T, D>& _container) const
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D
+NumericContainer<T, D>::operator/(const NumericContainer<T, D2>& container) const
 {
-  derived out(Derived());
+  D out(Derived());
 
   FOR(i, out.size())
   {
-    DEBUG_ASSERT(!isEqual(_container.Derived()[i], Zero), "Cannot divide by zero.")
-    out[i] /= _container.Derived()[i];
+    DEBUG_ASSERT(!isEqual(container.Derived()[i], Zero), "Cannot divide by zero.")
+    out[i] /= container.Derived()[i];
   }
   return out;
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived&
-NumericContainer<T, derived>::operator+=(const NumericContainer<T, D>& _container)
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D&
+NumericContainer<T, D>::operator+=(const NumericContainer<T, D2>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] += _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] += container.Derived()[i];
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived&
-NumericContainer<T, derived>::operator-=(const NumericContainer<T, D>& _container)
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D&
+NumericContainer<T, D>::operator-=(const NumericContainer<T, D2>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] -= _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] -= container.Derived()[i];
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived&
-NumericContainer<T, derived>::operator*=(const NumericContainer<T, D>& _container)
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D&
+NumericContainer<T, D>::operator*=(const NumericContainer<T, D2>& container)
 {
-  FOR(i, Derived().size()) Derived()[i] *= _container.Derived()[i];
+  FOR(i, Derived().size()) Derived()[i] *= container.Derived()[i];
   return Derived();
 }
 
-template<Arithmetic T, class derived>
-template<class D>
-constexpr derived&
-NumericContainer<T, derived>::operator/=(const NumericContainer<T, D>& _container)
+template<Arithmetic T, class D>
+template<class D2>
+constexpr D&
+NumericContainer<T, D>::operator/=(const NumericContainer<T, D2>& container)
 {
   FOR(i, Derived().size())
   {
-    DEBUG_ASSERT(!isEqual(_container.Derived()[i], Zero), "Cannot divide by zero.")
-    Derived()[i] /= _container.Derived()[i];
+    DEBUG_ASSERT(!isEqual(container.Derived()[i], Zero), "Cannot divide by zero.")
+    Derived()[i] /= container.Derived()[i];
   }
   return Derived();
 }
 
 /** Entry-wise unary operator overloads. */
-template<Arithmetic T, class derived>
-constexpr derived
-NumericContainer<T, derived>::operator-() const { return -1 * Derived(); }
+template<Arithmetic T, class D>
+constexpr D
+NumericContainer<T, D>::operator-() const { return -1 * Derived(); }
 
 /** Entry randomisation. */
-template<Arithmetic T, class derived>
-void NumericContainer<T, derived>::Randomise() { FOR_EACH(entry, Derived()) entry = Randomiser(); }
+template<Arithmetic T, class D>
+void NumericContainer<T, D>::Randomise() { FOR_EACH(entry, Derived()) entry = Randomiser(); }
 
-template<Arithmetic T, class derived>
-void NumericContainer<T, derived>::ResetRandomiser(const T min, const T max) { Randomiser.Reset(min, max); }
+template<Arithmetic T, class D>
+void NumericContainer<T, D>::ResetRandomiser(const T min, const T max) { Randomiser.Reset(min, max); }
 
 }//Detail
 
 /** Stand-alone Operator overloads. */
-template<Arithmetic T, class derived>
-constexpr derived
-operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, derived>& _container) { return _container.Derived() * scalar; }
+template<Arithmetic T, class D>
+constexpr D
+operator*(const std::convertible_to<T> auto scalar, const detail::NumericContainer<T, D>& container) { return container.Derived() * scalar; }
 
 }//aprn
