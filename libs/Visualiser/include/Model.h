@@ -29,6 +29,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <optional>
 #include <unordered_map>
+#include <map>
 
 namespace aprn::vis {
 
@@ -103,8 +104,8 @@ class Model : public RenderObject
    template<ActionType type>
    friend class Action;
    friend class ModelFactory;
-   friend class PostProcessor;
    friend class Visualiser;
+   friend class PostProcessor;
 
    void Init() override;
 
@@ -129,22 +130,22 @@ class Model : public RenderObject
    inline void Rotate(const GLfloat angle, const glm::vec3& axis) { ModelMatrix_ = glm::rotate(ModelMatrix_, angle, axis); }
 
    template<class T> using UMap = std::unordered_map<std::string, T>;
-   using ATComp = ActionTypeComparator;
+   using ActionMap = std::multimap<ActionType, SPtr<ActionBase>, ActionTypeComparator>;
 
-   Mesh                                           Mesh_;
-   VertexArray                                    VAO_;
-   VertexBuffer                                   VBO_;
-   IndexBuffer                                    EBO_;
-   std::optional<ShaderStorageBuffer>             SSBO_;
-   std::map<ActionType, SPtr<ActionBase>, ATComp> Actions_;
-   std::optional<Pair<std::string, Real>>         TextureRequest_; // [texture name, displacement map scale]
-   UMap<Texture&>                                 Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
-   std::optional<Material>                        Material_;
-   Colour                                         StrokeColour_;
-   Colour                                         FillColour_;
-   glm::vec3                                      Centroid_;
-   glm::mat4                                      ModelMatrix_{1.0f};
-   glm::mat4                                      PastActions_{1.0f};
+   Mesh                                   Mesh_;
+   VertexArray                            VAO_;
+   VertexBuffer                           VBO_;
+   IndexBuffer                            EBO_;
+   std::optional<ShaderStorageBuffer>     SSBO_;
+   ActionMap                              Actions_;
+   std::optional<Pair<std::string, Real>> TextureRequest_; // [texture name, displacement map scale]
+   UMap<Texture&>                         Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
+   std::optional<Material>                Material_;
+   Colour                                 StrokeColour_;
+   Colour                                 FillColour_;
+   glm::vec3                              Centroid_;
+   glm::mat4                              ModelMatrix_{1.0f};
+   glm::mat4                              PastActions_{1.0f};
 };
 
 }

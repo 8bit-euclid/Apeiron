@@ -274,8 +274,8 @@ Model::ComputeLifespan()
 void
 Model::LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map)
 {
-   Textures_       = texture_map;
-   TextureRequest_ = std::nullopt; // Can nullify as it is no longer required.
+   Textures_ = texture_map;
+   TextureRequest_.reset(); // Can nullify as the request is no longer required.
 }
 
 void

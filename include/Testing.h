@@ -83,7 +83,8 @@ inline void RotatingCube()
    tex_box.SetName("TeX-box")
           .Add(R"(This is a test: $e = mc^2$.)")
           .SetPixelDensity(2000)
-          .OffsetPosition({0.0f, 2.0f, 2.0f});
+          .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
+          .OffsetPosition({-2.0f, 2.0f, 2.0f});
    scene.Add(tex_box);
 
    // Cube

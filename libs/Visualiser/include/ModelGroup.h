@@ -45,12 +45,6 @@ class ModelGroup : public RenderObject
 
    ~ModelGroup();
 
-   void Update(Real global_time) override;
-
-   void Render(Shader& shader) override;
-
-   void Delete() override;
-
    /** Set Model Group Attributes
    ************************************************************************************************************************************************************/
    ModelGroup& SetName(const std::string& name) override;
@@ -119,6 +113,12 @@ class ModelGroup : public RenderObject
    void ComputeLifespan() override;
 
    void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) override;
+
+   void Update(Real global_time) override;
+
+   void Render(Shader& shader) override;
+
+   void Delete() override;
 
    DArray<SPtr<RenderObject>> SubModels_;
 };
