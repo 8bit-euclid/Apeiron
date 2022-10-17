@@ -181,6 +181,9 @@ TeXBox::SetBold(const bool is_bold)
 void
 TeXBox::InitTeXBox(const size_t id)
 {
+   // Propagate name (if already set) to sub-glyphs.
+   if(!Name_.empty()) ModelGroup::SetName(Name_);
+
    // Initialise sub-boxes, assign glyph indices, and accumulate text.
    GlyphSheet::IndexT glyph_index = 0;
    InitTeXObject(glyph_index);

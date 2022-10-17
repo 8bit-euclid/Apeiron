@@ -18,18 +18,9 @@
 namespace aprn::vis {
 
 /***************************************************************************************************************************************************************
-* Model Public Interface
+* ModelGroup Public Interface
 ***************************************************************************************************************************************************************/
 ModelGroup::~ModelGroup() { Delete(); }
-
-void
-ModelGroup::Update(const Real global_time) { FOR_EACH(sub_model, SubModels_) sub_model->Update(global_time); }
-
-void
-ModelGroup::Render(Shader& shader) { FOR_EACH(sub_model, SubModels_) sub_model->Render(shader); }
-
-void
-ModelGroup::Delete() { FOR_EACH(sub_model, SubModels_) sub_model->Delete(); }
 
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
@@ -194,7 +185,7 @@ ModelGroup::Add(ModelGroup&& model_group)
 }
 
 /***************************************************************************************************************************************************************
-* Model Protected Interface
+* ModelGroup Protected Interface
 ***************************************************************************************************************************************************************/
 bool
 ModelGroup::Initialised() const
@@ -226,6 +217,15 @@ ModelGroup::LoadTextureMap(const std::unordered_map<std::string, Texture&>& text
 {
    FOR_EACH(sub_model, SubModels_) sub_model->LoadTextureMap(texture_map);
 }
+
+void
+ModelGroup::Update(const Real global_time) { FOR_EACH(sub_model, SubModels_) sub_model->Update(global_time); }
+
+void
+ModelGroup::Render(Shader& shader) { FOR_EACH(sub_model, SubModels_) sub_model->Render(shader); }
+
+void
+ModelGroup::Delete() { FOR_EACH(sub_model, SubModels_) sub_model->Delete(); }
 
 }
 

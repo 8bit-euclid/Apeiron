@@ -77,6 +77,38 @@ enum class ActionType // NOTE: The order here is important - higher-up actions m
    Blink
 };
 
+inline std::string
+ActionTypeString(const ActionType type)
+{
+   using AT = ActionType;
+   switch(type)
+   {
+      case AT::RampUp:                     return "RampUp";
+      case ActionType::RampDown:           return "RampDown";
+      case ActionType::Scale:              return "Scale";
+      case ActionType::OffsetOrientation:  return "OffsetOrientation";
+      case ActionType::RotateBy:           return "RotateBy";
+      case ActionType::RotateAt:           return "RotateAt";
+      case ActionType::OffsetPosition:     return "OffsetPosition";
+      case ActionType::Reflect:            return "Reflect";
+      case ActionType::RevolveBy:          return "RevolveBy";
+      case ActionType::RevolveAt:          return "RevolveAt";
+      case ActionType::MoveBy:             return "MoveBy";
+      case ActionType::MoveTo:             return "MoveTo";
+      case ActionType::MoveAt:             return "MoveAt";
+      case ActionType::Trace:              return "Trace";
+      case ActionType::TrackPositionOf:    return "TrackPositionOf";
+      case ActionType::TrackOrientationOf: return "TrackOrientationOf";
+      case ActionType::MorphTo:            return "MorphTo";
+      case ActionType::MorphFrom:          return "MorphFrom";
+      case ActionType::SetStrokeColour:    return "SetStrokeColour";
+      case ActionType::SetFillColour:      return "SetFillColour";
+      case ActionType::Glow:               return "Glow";
+      case ActionType::Blink:              return "Blink";
+      default:                             throw "Unrecognised action type.";
+   }
+}
+
 enum class RampType { Trace, Scale, Fade, Blur };
 enum class BlinkType { Sine, Triangle, Square };
 
