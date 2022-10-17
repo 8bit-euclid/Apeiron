@@ -16,114 +16,88 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "FileManager/include/FileSystem.h"
-
-#include "Glyph.h"
-#include "Model.h"
-#include "String.h"
-#include "Texture.h"
+#include "ModelGroup.h"
+#include "TeXObject.h"
+#include "TeXGlyph.h"
 
 namespace aprn::vis {
-
-namespace fm = flmgr;
 
 /***************************************************************************************************************************************************************
 * TeXBox Class
 ***************************************************************************************************************************************************************/
-class TeXBox final : public Model
+class TeXBox final : public TeXObject,
+                     public ModelGroup
 {
  public:
    TeXBox() = default;
 
-   TeXBox(const char* str, const std::string& label);
+   explicit TeXBox(const std::string& str);
 
-   TeXBox(const std::string& str, const std::string& label);
+   explicit TeXBox(const DArray<TeXGlyph>& tex_glyphs);
 
-   TeXBox(const Glyph& glyph, const std::string& label);
+   explicit TeXBox(const DArray<TeXBox>& tex_boxes);
 
-   TeXBox(const DArray<Glyph>& glyphs, const std::string& label);
+   explicit TeXBox(DArray<TeXGlyph>&& tex_glyphs);
 
-   TeXBox(const String& str, const std::string& label);
-
-   TeXBox(const DArray<String>& strings, const std::string& label);
+   explicit TeXBox(DArray<TeXBox>&& tex_boxes);
 
    TeXBox& Add(const std::string& str);
 
-   TeXBox& Add(const Glyph& glyph);
+   TeXBox& Add(const TeXGlyph& tex_glyph);
 
-   TeXBox& Add(const String& str);
+   TeXBox& Add(const TeXBox& tex_box);
 
-   TeXBox& Add(const DArray<Glyph>& glyphs);
+   TeXBox& Add(const SPtr<TeXObject>& tex_object);
 
-   TeXBox& Add(const DArray<String>& strings);
+   TeXBox& Add(const DArray<TeXGlyph>& tex_glyphs);
 
-   TeXBox& SetLabel(const std::string& label);
+   TeXBox& Add(const DArray<TeXBox>& tex_boxes);
 
-   TeXBox& SetAnchor(const SVectorF3& anchor);
+   TeXBox& Add(const DArray<SPtr<TeXObject>>& tex_boxes);
 
-   TeXBox& SetFontSize(char font_size);
+   TeXBox& Add(TeXGlyph&& tex_glyph);
 
-   TeXBox& SetColour(const Colour& colour);
+   TeXBox& Add(TeXBox&& tex_box);
 
-   TeXBox& SetDimensions(Float width, std::optional<Float> height = std::nullopt);
+   TeXBox& Add(DArray<TeXGlyph>&& tex_glyphs);
 
-   TeXBox& SetScale(Float width_scale, std::optional<Float> height_scale = std::nullopt);
+   TeXBox& Add(DArray<TeXBox>&& tex_boxes);
 
-   TeXBox& SetItalic(bool is_italic);
+   TeXBox& SetPixelDensity(UInt value);
 
-   TeXBox& SetBold(bool is_bold);
+   TeXBox& SetAnchor(const SVectorR3& anchor);
 
-   TeXBox& SetPixelDensity(UInt density);
+   TeXBox& SetFontSize(const UChar font_size);
+
+   TeXBox& SetName(const std::string& name) override;
+
+   TeXBox& SetColour(const SVectorR4& rgba_colour) override;
+
+   TeXBox& SetColour(const Colour& colour) override;
+
+   TeXBox& SetItalic(bool is_italic) override;
+
+   TeXBox& SetBold(bool is_bold) override;
 
  private:
-   friend class Scene;
    friend class Visualiser;
 
-   void Init(size_t id);
+   void InitTeXBox(size_t id);
 
-   void AddStringText();
+   void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void CompileLaTeXSource();
-
-   void CreateTeXBoxImage();
-
-   void CreateGlyphSheet();
-
-   void ReadGlyphBoxPositions();
-
-   void ReadGlyphBoxAttributes();
-
-   void ComputeGlyphSheetDimensions();
-
-   void LinkGlyphSheet();
-
-   void ComputeTeXBoxDimensions();
-
-   void SetCompileDirectory(size_t id);
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
 
    fm::Path ImagePath() const;
 
-   static void InitTeXDirectory() { fm::CreateDirectory(LaTeXDirectory(), true); }
+   DArray<SPtr<TeXObject>> SubBoxes_;
+   GlyphSheet              GlyphSheet_;
+   SVectorR2               Dimensions_{}; // [width, height] in world-space.
+   SVectorR3               Anchor_{};     // Bottom-left corner in world-space.
+   UChar                   FontSize_{10}; // Defaults to a 10pt font.
 
-   static fm::Path LaTeXDirectory() { return "./libs/Visualiser/data/latex"; }
-
-   static fm::Path LaTeXTemplate() { return "./libs/Visualiser/resources/latex/texbox.tex"; }
-
-   static fm::Path LuaTeXTemplate() { return "./libs/Visualiser/resources/latex/write_boxes.lua"; }
-
-   std::string              _Label;
-   std::string              _Text;
-   DArray<SPtr<String>>     _Strings;
-   SVectorF3                _Anchor;             // Bottom-left corner.
-   char                     _FontSize{10};       // Defaults to a 10pt font.
-   std::optional<SVectorF2> _Dimensions;         // [width, height] in world-space coordinates
-   std::optional<SVectorF2> _Scale;
-   GlyphSheet               _GlyphSheet;
-   fm::Path                 _CompileDirectory;
-   fm::Path                 _TeXFile;
-   UInt                     _PixelDensity{2000}; // Dots per inch
-   constexpr static UInt32  _FontSize10{655360}; // Height of a 10pt font size expressed in LaTeX scaled points (1pt = 65536sp).
-   constexpr static Float   _UnitLength{1.0};    // Unit of length in world space equivalent to a 10pt font size.
+   /** Friendly unit tests */
+   friend class ParseTeXTest_ParseTeXObject_Test;
 };
 
 

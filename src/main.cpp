@@ -23,16 +23,15 @@
 #include <string>
 #include <string_view>
 
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-
+using namespace aprn;
 using namespace aprn::test;
 
 int main(void)
 {
-//   RotatingCube();
-   EuclidsElementsEp1();
+//   Triangle();
+//   Cube();
+   RotatingCube();
+//   EuclidsElementsEp1();
 
    return 0;
 }

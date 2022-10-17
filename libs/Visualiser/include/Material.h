@@ -27,14 +27,14 @@ class Material
       : Material("none", 0.0, 0.0) {}
 
    Material(const std::string_view& name, const GLfloat specular_intensity, const GLfloat smoothness)
-      : Name(name), SpecularIntensity(specular_intensity), Smoothness(smoothness) {}
+      : Name_(name), SpecularIntensity_(specular_intensity), Smoothness_(smoothness) {}
 
  private:
    friend class Shader;
 
-   std::string_view Name;
-   GLfloat SpecularIntensity;
-   GLfloat Smoothness;
+   std::string_view Name_;
+   GLfloat          SpecularIntensity_;
+   GLfloat          Smoothness_;
 };
 
 }

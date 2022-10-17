@@ -22,12 +22,12 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Window::Window(GLint width, GLint height)
-   : _WindowDimensions{width, height} {  }
+   : WindowDimensions_{width, height} {}
 
 Window::~Window() { Terminate(); }
 
 void
-Window::Open() { Open(_WindowDimensions.x(), _WindowDimensions.y()); }
+Window::Open() { Open(WindowDimensions_.x(), WindowDimensions_.y()); }
 
 void
 Window::Open(const GLint width, const GLint height)
@@ -49,24 +49,24 @@ Window::Open(const GLint width, const GLint height)
 #endif
 
    // Create a window and its OpenGL context.
-   _WindowDimensions = { width, height };
-   _GlfwWindow = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
-   if(!_GlfwWindow)
+   WindowDimensions_ = {width, height };
+   GLFWWindow_ = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);
+   if(!GLFWWindow_)
    {
       glfwTerminate();
       EXIT("Could not create an OpenGL window.")
    }
 
    // Set context for GLEW to use
-   glfwMakeContextCurrent(_GlfwWindow);
+   glfwMakeContextCurrent(GLFWWindow_);
    glfwSwapInterval(1);
 
    // Set viewport dimensions
-   std::tie(_ViewportDimensions[0], _ViewportDimensions[1]) = ViewportDimensions();
+   std::tie(ViewportDimensions_[0], ViewportDimensions_[1]) = ViewportDimensions();
 
    // Handle key mouse inputs
    CreateCallBacks();
-   glfwSetInputMode(_GlfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // Show cursor in window.
+   glfwSetInputMode(GLFWWindow_, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // Show cursor in window.
 
    // Allow modern extension features
    glewExperimental = GL_TRUE;
@@ -79,33 +79,59 @@ Window::Open(const GLint width, const GLint height)
    }
    else Print("\nRunning OpenGL Version:", glGetString(GL_VERSION));
 
-   glfwSetWindowUserPointer(_GlfwWindow, this);
+   glfwSetWindowUserPointer(GLFWWindow_, this);
+}
+
+void
+Window::InitOpenGL()
+{
+   // Initialise OpenGL debug output
+#ifdef DEBUG_MODE
+   int flags;
+   GLCall(glGetIntegerv(GL_CONTEXT_FLAGS, &flags))
+   if(flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+   {
+      GLCall(glEnable(GL_DEBUG_OUTPUT))
+      GLCall(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS))
+      GLCall(glDebugMessageCallback(GLDebugOutput, nullptr))
+      GLCall(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE))
+   }
+#endif
+
+   GLCall(glEnable(GL_DEPTH_TEST))
+   GLCall(glEnable(GL_MULTISAMPLE))
+//   GLCall(glEnable(GL_CULL_FACE))
+//   GLCall(glCullFace(GL_FRONT))
+//   GLCall(glFrontFace(GL_CCW))
+   GLCall(glEnable(GL_BLEND))
+   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+//   GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE))
 }
 
 bool
-Window::isOpen() const { return !glfwWindowShouldClose(_GlfwWindow); }
+Window::isOpen() const { return !glfwWindowShouldClose(GLFWWindow_); }
 
 void
-Window::Close() { glfwSetWindowShouldClose(_GlfwWindow, GL_TRUE); }
+Window::Close() { glfwSetWindowShouldClose(GLFWWindow_, GL_TRUE); }
 
 void
 Window::Terminate()
 {
-   glfwDestroyWindow(_GlfwWindow);
+   glfwDestroyWindow(GLFWWindow_);
    glfwTerminate();
 }
 
 bool
-Window::isViewportModified()
+Window::ViewportModified()
 {
    DEBUG_ASSERT(isOpen(), "The OpenGL window is not open.")
 
    // Adjust viewport, if necessary
    auto [width, height] = ViewportDimensions();
-   if(width != _ViewportDimensions[0] || height != _ViewportDimensions[1])
+   if(width != ViewportDimensions_[0] || height != ViewportDimensions_[1])
    {
-      _ViewportDimensions[0] = width;
-      _ViewportDimensions[1] = height;
+      ViewportDimensions_[0] = width;
+      ViewportDimensions_[1] = height;
       GLCall(glViewport(0, 0, width, height));
       return true;
    }
@@ -113,21 +139,21 @@ Window::isViewportModified()
 }
 
 void
-Window::ResetViewport() const { GLCall(glViewport(0, 0, _ViewportDimensions[0], _ViewportDimensions[1])); }
+Window::ResetViewport() const { GLCall(glViewport(0, 0, ViewportDimensions_[0], ViewportDimensions_[1])); }
 
 void
 Window::SetTitle(const std::string& title, const bool append)
 {
-   if(append) glfwSetWindowTitle(_GlfwWindow, (_Title + title).c_str());
+   if(append) glfwSetWindowTitle(GLFWWindow_, (Title_ + title).c_str());
    else
    {
-      _Title = title;
-      glfwSetWindowTitle(_GlfwWindow, _Title.c_str());
+      Title_ = title;
+      glfwSetWindowTitle(GLFWWindow_, Title_.c_str());
    }
 }
 
 void
-Window::SwapBuffers() { glfwSwapBuffers(_GlfwWindow); }
+Window::SwapBuffers() { glfwSwapBuffers(GLFWWindow_); }
 
 void
 Window::InitTime() const { glfwSetTime(Zero); }
@@ -135,56 +161,57 @@ Window::InitTime() const { glfwSetTime(Zero); }
 void
 Window::ComputeDeltaTime()
 {
-   _CurrentTime  = glfwGetTime();
-   _DeltaTime    = _CurrentTime - _PreviousTime;
-   _PreviousTime = _CurrentTime;
+   CurrentTime_  = glfwGetTime();
+   DeltaTime_    = CurrentTime_ - PreviousTime_;
+   PreviousTime_ = CurrentTime_;
 }
 
 void
 Window::ComputeFrameRate()
 {
-   _CurrentTime  = glfwGetTime();
-   const auto delta_time = _CurrentTime - _PreviousFrameTime;
-   ++_FrameCounter;
+   CurrentTime_  = glfwGetTime();
+   const auto delta_time = CurrentTime_ - PreviousFpsTime_;
+   ++FrameCounter_;
 
+   // Re-compute FPS.
    if(delta_time > Tenth)
    {
-      const auto fps = static_cast<Float>(_FrameCounter) / delta_time;
+      const auto fps = static_cast<Real>(FrameCounter_) / delta_time;
       const auto frame_duration = 1.0e3 / fps; // in milliseconds
       const std::string title_suffix = "  |  " + ToString(fps, 2) + " fps  |  " + ToString(frame_duration, 2) + " ms";
       SetTitle(title_suffix, true);
 
-      _PreviousFrameTime = _CurrentTime;
-      _FrameCounter = 0;
+      PreviousFpsTime_ = CurrentTime_;
+      FrameCounter_ = 0;
    }
 }
 
-Float
-Window::CurrentTime() const { return _CurrentTime; }
+Real
+Window::CurrentTime() const { return CurrentTime_; }
 
-Float
-Window::DeltaTime() const { return _DeltaTime; }
+Real
+Window::DeltaTime() const { return DeltaTime_; }
 
 GLfloat
-Window::ViewportAspectRatio() const { return static_cast<GLfloat>(_ViewportDimensions[0]) / static_cast<GLfloat>(_ViewportDimensions[1]); }
+Window::ViewportAspectRatio() const { return static_cast<GLfloat>(ViewportDimensions_[0]) / static_cast<GLfloat>(ViewportDimensions_[1]); }
 
-SVectorF2
+SVectorR2
 Window::CursorDisplacement()
 {
-   const auto x_disp = _CursorDisplacement[0];
-   const auto y_disp = _CursorDisplacement[1];
-   _CursorDisplacement[0] = Zero;
-   _CursorDisplacement[1] = Zero;
+   const auto x_disp = CursorDisplacement_[0];
+   const auto y_disp = CursorDisplacement_[1];
+   CursorDisplacement_[0] = Zero;
+   CursorDisplacement_[1] = Zero;
    return { x_disp, y_disp };
 }
 
-SVectorF2
+SVectorR2
 Window::WheelDisplacement()
 {
-   const auto x_disp = _WheelDisplacement[0];
-   const auto y_disp = _WheelDisplacement[1];
-   _WheelDisplacement[0] = Zero;
-   _WheelDisplacement[1] = Zero;
+   const auto x_disp = WheelDisplacement_[0];
+   const auto y_disp = WheelDisplacement_[1];
+   WheelDisplacement_[0] = Zero;
+   WheelDisplacement_[1] = Zero;
    return { x_disp, y_disp };
 }
 
@@ -195,16 +222,16 @@ Pair<GLint>
 Window::ViewportDimensions() const
 {
    GLint width, height;
-   glfwGetFramebufferSize(_GlfwWindow, &width, &height);
+   glfwGetFramebufferSize(GLFWWindow_, &width, &height);
    return { width, height };
 }
 
 void
 Window::CreateCallBacks() const
 {
-   glfwSetKeyCallback(_GlfwWindow, HandleKeys);
-   glfwSetCursorPosCallback(_GlfwWindow, HandleMousePosition);
-   glfwSetScrollCallback(_GlfwWindow, HandleMouseWheel);
+   glfwSetKeyCallback(GLFWWindow_, HandleKeys);
+   glfwSetCursorPosCallback(GLFWWindow_, HandleMousePosition);
+   glfwSetScrollCallback(GLFWWindow_, HandleMouseWheel);
 }
 
 void
@@ -217,10 +244,10 @@ Window::HandleKeys(GLFWwindow* p_window, const GLint key, [[maybe_unused]] const
    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) glfwSetWindowShouldClose(p_window, GL_TRUE);
 
    // Check for press/release of all other keys.
-   if(isBounded(key, static_cast<GLint>(0), _KeyCount))
+   if(isBounded(key, static_cast<GLint>(0), static_cast<GLint>(nKeys)))
    {
-      if     (action == GLFW_PRESS)   window->_Keys[key] = true;
-      else if(action == GLFW_RELEASE) window->_Keys[key] = false;
+      if     (action == GLFW_PRESS)   window->Keys_[key] = true;
+      else if(action == GLFW_RELEASE) window->Keys_[key] = false;
    }
 }
 
@@ -229,21 +256,21 @@ Window::HandleMousePosition(GLFWwindow* p_window, const GLdouble x_coord, const 
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
 
-   if(window->_isFirstCursorMotion)
+   if(window->FirstCursorMotion_)
    {
-      window->_PreviousCursorPosition = {x_coord, y_coord };
-      window->_isFirstCursorMotion = false;
+      window->PreviousCursorPosition_ = {x_coord, y_coord };
+      window->FirstCursorMotion_ = false;
    }
 
-   window->_CursorDisplacement    = { x_coord - window->_PreviousCursorPosition[0], y_coord - window->_PreviousCursorPosition[1] };
-   window->_PreviousCursorPosition = {x_coord, y_coord };
+   window->CursorDisplacement_     = {x_coord - window->PreviousCursorPosition_[0], y_coord - window->PreviousCursorPosition_[1] };
+   window->PreviousCursorPosition_ = {x_coord, y_coord };
 }
 
 void
 Window::HandleMouseWheel(GLFWwindow* p_window, [[maybe_unused]] const GLdouble x_offset, const GLdouble y_offset)
 {
    Window* window = static_cast<Window*>(glfwGetWindowUserPointer(p_window));
-   window->_WheelDisplacement = {0.0, y_offset };
+   window->WheelDisplacement_ = {0.0, y_offset };
 }
 
 }

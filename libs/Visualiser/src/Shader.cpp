@@ -12,6 +12,7 @@
 * If not, see <https://www.gnu.org/licenses/>.
 ***************************************************************************************************************************************************************/
 
+#include "../include/Model.h"
 #include "../include/Shader.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -22,10 +23,10 @@ namespace aprn::vis {
 * Shader Public Interface
 ***************************************************************************************************************************************************************/
 Shader::Shader()
-  : _ID(0)
+  : ID_(0)
 {
-   GLCall(_ID = glCreateProgram());
-   ASSERT(_ID, "Could not create shader program.")
+   GLCall(ID_ = glCreateProgram())
+   ASSERT(ID_, "Could not create shader program.")
 }
 
 Shader::Shader(const std::string& file_path)
@@ -46,8 +47,8 @@ Shader::UseModel(const Model& model) { SetUniformMatrix4f("u_model_matrix", mode
 void
 Shader::UseMaterial(const Material& material)
 {
-   SetUniform1f("u_material.SpecularIntensity", material.SpecularIntensity);
-   SetUniform1f("u_material.Smoothness"       , material.Smoothness);
+   SetUniform1f("u_material.SpecularIntensity", material.SpecularIntensity_);
+   SetUniform1f("u_material.Smoothness"       , material.Smoothness_);
 }
 
 void
@@ -73,35 +74,35 @@ Shader::UseCamera(Camera& camera)
 void
 Shader::UseLight(const Light& light)
 {
-   const LightType type = light._Type;
+   const LightType type = light.Type_;
    const UInt id        = light.Index();
 
-   std::string uniform_name   = type == LightType::Directional ? "u_directional_light" :
-                                type == LightType::Point ? "u_point_lights[" + ToString(id) + "]" :
-                                type == LightType::Spot ? "u_spot_lights[" + ToString(id) + "]" :
+   std::string uniform_name   = type == LightType::Direct ? "u_direct_light" :
+                                type == LightType::Point  ? "u_point_lights[" + ToString(id) + "]" :
+                                type == LightType::Spot   ? "u_spot_lights[" + ToString(id) + "]" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
 
-   std::string light_position = type == LightType::Point ? "u_point_light_positions[" + ToString(id) + "]" :
-                                type == LightType::Spot ? "u_spot_light_positions[" + ToString(id) + "]" :
-                                type == LightType::Directional ? "\0" :
+   std::string light_position = type == LightType::Point  ? "u_point_light_positions[" + ToString(id) + "]" :
+                                type == LightType::Spot   ? "u_spot_light_positions[" + ToString(id) + "]" :
+                                type == LightType::Direct ? "\0" :
                                 throw std::invalid_argument("The lighting type was either not recognised or not specified.");
 
    std::string base_suffix    = type == LightType::Spot ? ".Point" : "\0";
 
-   SetUniform4f(uniform_name + base_suffix + ".Base.Colour", light._Colour.r, light._Colour.g, light._Colour.b, light._Colour.a);
-   SetUniform1f(uniform_name + base_suffix + ".Base.AmbientIntensity", light._AmbientIntensity);
-   SetUniform1f(uniform_name + base_suffix + ".Base.DiffuseIntensity", light._DiffuseIntensity);
+   SetUniform4f(uniform_name + base_suffix + ".Base.Colour", light.Colour_.r, light.Colour_.g, light.Colour_.b, light.Colour_.a);
+   SetUniform1f(uniform_name + base_suffix + ".Base.AmbientIntensity", light.AmbientIntensity_);
+   SetUniform1f(uniform_name + base_suffix + ".Base.DiffuseIntensity", light.DiffuseIntensity_);
 
-   if(type == LightType::Directional)
+   if(type == LightType::Direct)
    {
-      const glm::vec3& direction = static_cast<const DirectionalLight&>(light)._Direction;
+      const glm::vec3& direction = static_cast<const DirectLight&>(light).Direction_;
       SetUniform3f(uniform_name + ".Direction", direction.x, direction.y, direction.z);
    }
    else if(type == LightType::Point)
    {
-      const PointLight& point_light = static_cast<const PointLight&>(light);
-      const auto& position          = point_light._Position;
-      const auto& att_coeffs        = point_light._AttenuationCoefficients;
+      const auto& point_light = static_cast<const PointLight&>(light);
+      const auto& position    = point_light.Position_;
+      const auto& att_coeffs  = point_light.AttenuationCoefficients_;
 
       SetUniform1i("u_point_light_count", light.LightCount());
       SetUniform3f(light_position, position.x, position.y, position.z);
@@ -109,21 +110,21 @@ Shader::UseLight(const Light& light)
    }
    else if(type == LightType::Spot)
    {
-      const SpotLight& spot_light = static_cast<const SpotLight&>(light);
-      const auto& position        = spot_light._Position;
-      const auto& att_coeffs      = spot_light._AttenuationCoefficients;
-      const auto& direction       = spot_light._Direction;
+      const auto& spot_light = static_cast<const SpotLight&>(light);
+      const auto& position   = spot_light.Position_;
+      const auto& att_coeffs = spot_light.AttenuationCoefficients_;
+      const auto& direction  = spot_light.Direction_;
 
       SetUniform1i("u_spot_light_count", light.LightCount());
       SetUniform3f(light_position, position.x, position.y, position.z);
       SetUniform3f(uniform_name + ".Point.AttenuationCoefficients", att_coeffs[0], att_coeffs[1], att_coeffs[2]);
       SetUniform3f(uniform_name + ".Direction", direction.x, direction.y, direction.z);
-      SetUniform1f(uniform_name + ".CosConeAngle", spot_light._CosConeAngle);
+      SetUniform1f(uniform_name + ".CosConeAngle", spot_light.CosConeAngle_);
    }
    else EXIT("Cannot yet handle the given light type.")
 }
 
-void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_directional_light.Shadow", slot); }
+void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_direct_light.Shadow", slot); }
 
 void Shader::SetPointShadowMap(const size_t i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToString(i_point_light) + "].Shadow", slot); }
 
@@ -141,31 +142,31 @@ void Shader::SetPointLightSpaceMatrices(const StaticArray<glm::mat4, 6>& light_s
 /***************************************************************************************************************************************************************
 * Setting Shader Uniforms
 ***************************************************************************************************************************************************************/
-void Shader::SetUniform1i(const std::string& name, const GLint value) { GLCall(glUniform1i(UniformLocation(name), value)); }
+void Shader::SetUniform1i(const std::string& name, const GLint value) { GLCall(glUniform1i(UniformLocation(name), value)) }
 
-void Shader::SetUniform1f(const std::string& name, const GLfloat value) { GLCall(glUniform1f(UniformLocation(name), value)); }
+void Shader::SetUniform1f(const std::string& name, const GLfloat value) { GLCall(glUniform1f(UniformLocation(name), value)) }
 
-void Shader::SetUniform2f(const std::string& name, const GLfloat value0, const GLfloat value1) { GLCall(glUniform2f(UniformLocation(name), value0, value1)); }
+void Shader::SetUniform2f(const std::string& name, const GLfloat value0, const GLfloat value1) { GLCall(glUniform2f(UniformLocation(name), value0, value1)) }
 
 void Shader::SetUniform3f(const std::string& name, const GLfloat value0, const GLfloat value1, const GLfloat value2)
 {
-   GLCall(glUniform3f(UniformLocation(name), value0, value1, value2));
+   GLCall(glUniform3f(UniformLocation(name), value0, value1, value2))
 }
 
 void Shader::SetUniform4f(const std::string& name, const GLfloat value0, const GLfloat value1, const GLfloat value2, const GLfloat value3)
 {
-   GLCall(glUniform4f(UniformLocation(name), value0, value1, value2, value3));
+   GLCall(glUniform4f(UniformLocation(name), value0, value1, value2, value3))
 }
 
 void Shader::SetUniformMatrix4f(const std::string& name, const glm::mat4& proj_matrix)
 {
-   GLCall(glUniformMatrix4fv(UniformLocation(name), 1, GL_FALSE, glm::value_ptr(proj_matrix)));
+   GLCall(glUniformMatrix4fv(UniformLocation(name), 1, GL_FALSE, glm::value_ptr(proj_matrix)))
 }
 
 /***************************************************************************************************************************************************************
 * Shader Private Interface
 ***************************************************************************************************************************************************************/
-ShaderSourceCode
+ShaderSource
 Shader::Parse(const std::string& file_path)
 {
 
@@ -210,20 +211,20 @@ Shader::Create(const std::string& vertex_shader, const std::string& geometry_sha
    // Link shader program
    GLint result = 0;
    GLchar error_log[1024] = {0};
-   GLCall(glLinkProgram(_ID))
-   GLCall(glGetProgramiv(_ID, GL_LINK_STATUS, &result))
+   GLCall(glLinkProgram(ID_))
+   GLCall(glGetProgramiv(ID_, GL_LINK_STATUS, &result))
    if(!result)
    {
-     GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
+     GLCall(glGetProgramInfoLog(ID_, sizeof(error_log), nullptr, error_log))
      EXIT("Could not link shader program.")
    }
 
    // Validate shader program
-   GLCall(glValidateProgram(_ID));
-   GLCall(glGetProgramiv(_ID, GL_VALIDATE_STATUS, &result))
+   GLCall(glValidateProgram(ID_))
+   GLCall(glGetProgramiv(ID_, GL_VALIDATE_STATUS, &result))
    if(!result)
    {
-      GLCall(glGetProgramInfoLog(_ID, sizeof(error_log), nullptr, error_log))
+      GLCall(glGetProgramInfoLog(ID_, sizeof(error_log), nullptr, error_log))
       EXIT("Could not validate shader program.")
    }
 
@@ -255,19 +256,19 @@ Shader::Compile(unsigned int type, const std::string& source)
    return shader_ID;
 }
 
-void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(_ID, shader)) }
+void Shader::Attach(const GLuint shader) { GLCall(glAttachShader(ID_, shader)) }
 
-void Shader::Delete(GLuint shader) { GLCall(glDeleteShader(shader)) }
+void Shader::Delete(const GLuint shader) { GLCall(glDeleteShader(shader)) }
 
-void Shader::Delete() { GLCall(glDeleteProgram(_ID)) }
+void Shader::Delete() { GLCall(glDeleteProgram(ID_)) }
 
 int Shader::UniformLocation(const std::string& name)
 {
-   if(_UniformLocationCache.contains(name)) return _UniformLocationCache[name];
+   if(UniformLocationCache_.contains(name)) return UniformLocationCache_[name];
 
-   int location = glGetUniformLocation(_ID, name.c_str());
-   if(_WarningsOn && location < 0) WARN("Could not find the location for uniform ", name)
-   _UniformLocationCache[name] = location;
+   int location = glGetUniformLocation(ID_, name.c_str());
+   if(WarningsOn_ && location < 0) WARN("Could not find the location for uniform ", name)
+   UniformLocationCache_[name] = location;
 
    return location;
 }

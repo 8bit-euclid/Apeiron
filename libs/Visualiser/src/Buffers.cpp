@@ -34,16 +34,16 @@ Buffer<T>::Init()
 {
    ASSERT(glfwGetCurrentContext(), "Cannot intialise buffer without an OpenGL context.")
 
-   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &_ID)) }
-   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &_ID)) }
-   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &_ID)) }
-   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &_ID)) }
+   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &ID_)) }
+   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &ID_)) }
+   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &ID_)) }
+   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &ID_)) }
    else throw "Cannot initialise buffer - unrecognised buffer type.";
 }
 
 template<BufferType T>
 void
-Buffer<T>::Bind() const { Bind(_ID); }
+Buffer<T>::Bind() const { Bind(ID_); }
 
 template<BufferType T>
 void
@@ -53,14 +53,14 @@ template<BufferType T>
 void
 Buffer<T>::Delete()
 {
-   if(_ID != 0)
+   if(ID_ != 0)
    {
-      if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glDeleteBuffers(1, &_ID)) }
-      else if(T == BT::VAO) { GLCall(glDeleteVertexArrays(1, &_ID)) }
-      else if(T == BT::FBO) { GLCall(glDeleteFramebuffers(1, &_ID)) }
-      else if(T == BT::RBO) { GLCall(glDeleteRenderbuffers(1, &_ID)) }
+      if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) GLCall(glDeleteBuffers(1, &ID_))
+      else if constexpr(T == BT::VAO)                      GLCall(glDeleteVertexArrays(1, &ID_))
+      else if constexpr(T == BT::FBO)                      GLCall(glDeleteFramebuffers(1, &ID_))
+      else if constexpr(T == BT::RBO)                      GLCall(glDeleteRenderbuffers(1, &ID_))
       else throw "Cannot delete buffer - unrecognised buffer type.";
-      _ID = 0;
+      ID_ = 0;
    }
 }
 
@@ -69,8 +69,8 @@ Buffer<T>&
 Buffer<T>::operator=(Buffer<T>&& buffer) noexcept
 {
    Delete();
-   _ID = buffer._ID;
-   buffer._ID = 0; // Note: must not call buffer.Delete() here!
+   ID_ = buffer.ID_;
+   buffer.ID_ = 0; // Note: must not call buffer.Delete() here!
    return *this;
 }
 
@@ -78,12 +78,12 @@ template<BufferType T>
 void
 Buffer<T>::Bind(const GLuint id) const
 {
-   if constexpr(T == BT::VBO)  { GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id)) }
-   else if     (T == BT::EBO)  { GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id)) }
-   else if     (T == BT::SSBO) { GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id)) }
-   else if     (T == BT::FBO)  { GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id)) }
-   else if     (T == BT::RBO)  { GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id)) }
-   else if     (T == BT::VAO)  { GLCall(glBindVertexArray(id)) }
+   if constexpr(T == BT::VBO)       GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id))
+   else if constexpr(T == BT::EBO)  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id))
+   else if constexpr(T == BT::SSBO) GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id))
+   else if constexpr(T == BT::FBO)  GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id))
+   else if constexpr(T == BT::RBO)  GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id))
+   else if constexpr(T == BT::VAO)  GLCall(glBindVertexArray(id))
    else throw "Cannot bind/unbind buffer - unrecognised buffer type.";
 }
 
@@ -100,7 +100,7 @@ template class Buffer<BufferType::SSBO>;
 * Vertex Buffer Class
 ***************************************************************************************************************************************************************/
 void
-VertexBuffer::Init(const DynamicArray<Vertex>& vertices)
+VertexBuffer::Init(const DArray<Vertex>& vertices)
 {
    Buffer::Init();
    Bind();
@@ -109,7 +109,7 @@ VertexBuffer::Init(const DynamicArray<Vertex>& vertices)
 }
 
 void
-VertexBuffer::Load(const DynamicArray<Vertex>& vertices) const
+VertexBuffer::Load(const DArray<Vertex>& vertices) const
 {
    GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW))
 }
@@ -139,7 +139,7 @@ VertexArray::AddBuffer(const VertexBuffer& vertex_buffer, const VertexAttributeL
 * Index Buffer Class
 ***************************************************************************************************************************************************************/
 void
-IndexBuffer::Init(const DynamicArray<GLuint>& indices)
+IndexBuffer::Init(const DArray<GLuint>& indices)
 {
    Buffer::Init();
    Bind();
@@ -148,40 +148,40 @@ IndexBuffer::Init(const DynamicArray<GLuint>& indices)
 }
 
 void
-IndexBuffer::Load(const DynamicArray<GLuint>& indices)
+IndexBuffer::Load(const DArray<GLuint>& indices)
 {
-   _IndexCount = indices.size();
-   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _IndexCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW));
+   IndexCount_ = indices.size();
+   GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, IndexCount_ * sizeof(GLuint), indices.data(), GL_STATIC_DRAW))
 }
 
 /***************************************************************************************************************************************************************
 * Frame Buffer Class
 ***************************************************************************************************************************************************************/
 void
-FrameBuffer::Init(bool is_multi_sampled)
+FrameBuffer::Init(bool multi_sampled)
 {
-   _isMultiSampled = is_multi_sampled;
+   MultiSampled_ = multi_sampled;
    Buffer::Init();
 }
 
 void
 FrameBuffer::AttachTexture(const GLenum attachement, const GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0));
+   GLCall(glFramebufferTexture(GL_FRAMEBUFFER, attachement, texture_id, 0))
    Check();
 }
 
 void
 FrameBuffer::AttachTexture2D(const GLenum attachement, const GLuint texture_id) const
 {
-   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, _isMultiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture_id, 0));
+   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, attachement, MultiSampled_ ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, texture_id, 0))
    Check();
 }
 
 void
 FrameBuffer::AttachRenderBuffer(const GLenum attachement, const GLuint rbo_id) const
 {
-   GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id));
+   GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachement, GL_RENDERBUFFER, rbo_id))
    Check();
 }
 
@@ -191,7 +191,7 @@ FrameBuffer::Check() const
    auto fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
    if(fb_status != GL_FRAMEBUFFER_COMPLETE)
    {
-      std::string prefix = "Could not intialise frame buffer. Cause: ";
+      std::string prefix = "Could not intialise frame buffer. Reason: ";
       switch(fb_status) 
       {
          case GL_FRAMEBUFFER_UNDEFINED:                     EXIT(prefix, "The specified frame buffer is the default one, which does not yet exist.")
@@ -207,13 +207,13 @@ FrameBuffer::Check() const
 }
 
 void
-FrameBuffer::Draw(const GLenum attachment) const { GLCall(glNamedFramebufferDrawBuffer(_ID, attachment)) }
+FrameBuffer::Draw(const GLenum attachment) const { GLCall(glNamedFramebufferDrawBuffer(ID_, attachment)) }
 
 void
-FrameBuffer::Draw(const DArray<GLenum>& attachments) const { GLCall(glNamedFramebufferDrawBuffers(_ID, attachments.size(), attachments.data())) }
+FrameBuffer::Draw(const DArray<GLenum>& attachments) const { GLCall(glNamedFramebufferDrawBuffers(ID_, attachments.size(), attachments.data())) }
 
 void
-FrameBuffer::Read(const GLenum attachment) const { GLCall(glNamedFramebufferReadBuffer(_ID, attachment)) }
+FrameBuffer::Read(const GLenum attachment) const { GLCall(glNamedFramebufferReadBuffer(ID_, attachment)) }
 
 /***************************************************************************************************************************************************************
 * Animate Buffer Class
@@ -222,8 +222,8 @@ void
 RenderBuffer::Init(const size_t n_samples)
 {
    ASSERT(n_samples > 0, "The sample count for each render buffer must be at least one.")
-   _SampleCount    = n_samples;
-   _isMultiSampled = n_samples > 1;
+   SampleCount_  = n_samples;
+   MultiSampled_ = n_samples > 1;
    Buffer::Init();
 }
 
@@ -231,14 +231,8 @@ void
 RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei height)
 {
    Bind();
-   if(_isMultiSampled)
-   {
-      GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, _SampleCount, format, width, height));
-   }
-   else
-   {
-      GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height));
-   }
+   if(MultiSampled_) GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, SampleCount_, format, width, height))
+   else              GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height))
    Unbind();
 }
 
@@ -246,7 +240,7 @@ RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei h
 * Shader Storage Buffer Class
 ***************************************************************************************************************************************************************/
 void
-ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
+ShaderStorageBuffer::Init(DArray<glm::vec4>& data)
 {
    Buffer::Init();
    Bind();
@@ -255,12 +249,12 @@ ShaderStorageBuffer::Init(DynamicArray<glm::vec4>& data)
 }
 
 void
-ShaderStorageBuffer::BindBase() const { glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, _ID); }
+ShaderStorageBuffer::BindBase() const { GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ID_)) }
 
 void
-ShaderStorageBuffer::Load(DynamicArray<glm::vec4>& data) const
+ShaderStorageBuffer::Load(DArray<glm::vec4>& data) const
 {
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW));
+   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW))
 }
 
 }

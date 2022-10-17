@@ -75,28 +75,28 @@ constexpr void
 Clip(T& value, const T& min, const T& max) { value = Clipped(value, min, max); }
 
 /** Min value, given a first and last iterator. */
-template<class iter>
-constexpr IterType<iter>
-MinEntry(const iter first, const iter last) { return *std::min_element(first, last); }
+template<class It>
+constexpr IterType<It>
+MinEntry(const It first, const It last) { return *std::min_element(first, last); }
 
 /** Max value, given a first and last iterator. */
-template<class iter>
-constexpr IterType<iter>
-MaxEntry(const iter first, const iter last) { return *std::max_element(first, last); }
+template<class It>
+constexpr IterType<It>
+MaxEntry(const It first, const It last) { return *std::max_element(first, last); }
 
 /** Minmax values in a pair, given a first and last iterator. */
-template<class iter>
-constexpr Pair<IterType<iter>>
-MinMaxEntries(const iter first, const iter last)
+template<class It>
+constexpr Pair<IterType<It>>
+MinMaxEntries(const It first, const It last)
 {
   auto [min_iter, max_iter] = std::minmax_element(first, last);
   return { *min_iter, *max_iter };
 }
 
 /** Clipped values from a first to a last iterator between a minimum and a maximum. */
-template<class iter, typename T>
+template<class It, typename T>
 constexpr void
-BoundEntries(iter first, iter last, const T& min, const T& max) { FOR_ITER(it, first, last) Clip(*it, min, max); }
+BoundEntries(It first, It last, const T& min, const T& max) { FOR_ITER(it, first, last) Clip(*it, min, max); }
 
 /***************************************************************************************************************************************************************
 * Signum and Absolute Value Functions
@@ -115,7 +115,7 @@ Sgn(const T& value, const int zero_sign = 1)
   }
 }
 
-/** Open if a value is positive. */
+/** Check if a value is positive. */
 template<typename T>
 constexpr bool
 isPositive(const T& value, const int zero_sign = 1)
@@ -123,7 +123,7 @@ isPositive(const T& value, const int zero_sign = 1)
    return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
 
-/** Open if a value is negative. */
+/** Check if a value is negative. */
 template<typename T>
 constexpr bool
 isNegative(const T& value, const int zero_sign = 1)
@@ -141,28 +141,28 @@ Abs(const T& value) { return value < static_cast<T>(0) ? -value : value; }
 ***************************************************************************************************************************************************************/
 /** Floor function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Floor(const Float& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
+constexpr Real
+Floor(const Real& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
 
 /** Ceiling function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Ceil(const Float& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
+constexpr Real
+Ceil(const Real& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
 
 /** Rounding function. */
 template<typename integer_T = int64_t>
-constexpr Float
-Round(const Float& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
+constexpr Real
+Round(const Real& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
 
 /***************************************************************************************************************************************************************
 * Mathematical Conversions
 ***************************************************************************************************************************************************************/
 /** Convert degrees to radians. */
-constexpr Float
-DegToRad(const Float& angle_degrees) { return angle_degrees * Pi / 180.0; }
+constexpr Real
+DegToRad(const Real& angle_degrees) { return angle_degrees * Pi / 180.0; }
 
 /** Convert radians to degrees. */
-constexpr Float
-RadToDeg(const Float& angle_radians) { return angle_radians * 180.0 / Pi; }
+constexpr Real
+RadToDeg(const Real& angle_radians) { return angle_radians * 180.0 / Pi; }
 
 }

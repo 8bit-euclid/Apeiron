@@ -31,24 +31,22 @@ namespace aprn::vis {
 
 class ModelFactory
 {
- protected:
+ private:
    ModelFactory() = default;
 
  public:
-   /** 1D models
+   /** 1D parts
    ************************************************************************************************************************************************************/
    static Model Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
 
    template<class... svectors>
    static Model SegmentChain(const svectors&... vs);
 
-   static Model Arrow(const SVector3<GLfloat>& start, const SVector3<GLfloat>& end);
-
-   /** 2D models
+   /** 2D parts
    ************************************************************************************************************************************************************/
    static Model Triangle(GLfloat length);
 
-   static Model Triangle(GLfloat length, GLfloat height, GLfloat _apex_ratio);
+   static Model Triangle(GLfloat length, GLfloat height, GLfloat apex_ratio);
 
    static Model Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2);
 
@@ -71,7 +69,7 @@ class ModelFactory
 
    static Model Ellipse(GLfloat radius_x, GLfloat radius_y);
 
-   /** 3D models
+   /** 3D parts
    ************************************************************************************************************************************************************/
    static Model Tetrahedron(GLfloat length);
 

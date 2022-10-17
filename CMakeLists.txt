@@ -90,7 +90,7 @@ endif(NOT TBB_FOUND)
 #***************************************************************************************************************************************************************
 
 # Compile ImGui as static library
-set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/dependencies/imgui)
+set(IMGUI_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/external/imgui)
 file(GLOB IMGUI_SOURCE_FILES ${IMGUI_INCLUDE_DIRS}/*.cpp ${IMGUI_INCLUDE_DIRS}/backends/*.cpp)
 add_library(ImGui STATIC ${IMGUI_SOURCE_FILES})
 target_include_directories(ImGui SYSTEM PUBLIC ${IMGUI_INCLUDE_DIRS})

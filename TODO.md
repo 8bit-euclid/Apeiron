@@ -18,12 +18,16 @@
 - [x] ImGui re-integration
 - [ ] Add GUI switches for post-processing effects
 - [ ] LaTeX text/math rendering
+- [ ] Deprecate String
 - [ ] Background texture embedding onto text
 - [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Resurrect line shader
+- [ ] Enable copy constructors of all buffer objects
 - [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
 - [ ] RenderDoc debugger
+- [ ] Convert LaTeX textures into SDFs
+- [ ] SDF text rendering
 - [ ] Perlin noise generator
 - [ ] Curl noise generator
 - [ ] Implement MSAA frame buffers for directional/point shadow maps
@@ -32,7 +36,7 @@
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR
 - [ ] GDB debugger
-- [ ] Model loading using Assimp
+- [ ] ModelGroup loading using Assimp
 - [ ] Depth of field
 - [ ] Vulkan integration
 - [ ] Ray-tracing
@@ -45,7 +49,10 @@
 - [x] Check for possible double Gamma correction between HDR and blur shaders
 - [x] Investigate Texture move constructor/assignment bug
 - [x] Fix border shrinking bug during off-screen rendering
+- [ ] Fix shadows
+- [ ] Remove shader's point/spot light count reliance.
 - [ ] Investigate possible bug causing asymmetry in point light sources
+- [ ] Investigate single triangle and cube render weird issues.
 - [ ] Fix parallax occlusion bug
 
 **Minor**

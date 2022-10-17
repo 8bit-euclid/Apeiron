@@ -36,13 +36,15 @@ class Window
 
    void Open(GLint width, GLint height);
 
+   void InitOpenGL();
+
    bool isOpen() const;
 
    void Close();
 
    void Terminate();
 
-   bool isViewportModified();
+   bool ViewportModified();
 
    void ResetViewport() const;
 
@@ -56,15 +58,15 @@ class Window
 
    void ComputeFrameRate();
 
-   Float DeltaTime() const;
+   Real DeltaTime() const;
 
-   Float CurrentTime() const;
+   Real CurrentTime() const;
 
    GLfloat ViewportAspectRatio() const;
 
-   SVectorF2 CursorDisplacement();
+   SVectorR2 CursorDisplacement();
 
-   SVectorF2 WheelDisplacement();
+   SVectorR2 WheelDisplacement();
 
  private:
    friend class Visualiser;
@@ -83,31 +85,29 @@ class Window
    static void
    HandleMouseWheel(GLFWwindow* p_window, const GLdouble x_offset, const GLdouble y_offset);
 
-   static void APIENTRY
-   glDebugOutput(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const char* message, const void* userParam);
+   constexpr static UInt nKeys {1024};
 
-   std::string            _Title;
-   Float                  _CurrentTime{};
-   Float                  _PreviousTime{};
-   Float                  _DeltaTime{};
-   SVectorF2              _PreviousCursorPosition;
-   SVectorF2              _CursorDisplacement;
-   SVectorF2              _WheelDisplacement;
-   SVector2<GLint>        _WindowDimensions;
-   SVector2<GLint>        _ViewportDimensions;
-   constexpr static GLint _KeyCount{1024};
-   SArrayB<_KeyCount>     _Keys;
-   GLFWwindow*            _GlfwWindow;
-   Float                  _PreviousFrameTime{};
-   size_t                 _FrameCounter;
-   bool                   _isFirstCursorMotion;
+   std::string     Title_;
+   Real            CurrentTime_{};
+   Real            PreviousTime_{};
+   Real            PreviousFpsTime_{};
+   Real            DeltaTime_{};
+   SVectorR2       PreviousCursorPosition_;
+   SVectorR2       CursorDisplacement_;
+   SVectorR2       WheelDisplacement_;
+   SVector2<GLint> WindowDimensions_;
+   SVector2<GLint> ViewportDimensions_;
+   SArrayB<nKeys>  Keys_;
+   GLFWwindow*     GLFWWindow_;
+   UInt8           FrameCounter_;
+   bool            FirstCursorMotion_;
 };
 
 inline void ClearFrameBuffer()
 {
    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f))
    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
-   GLCall(glEnable(GL_DEPTH_TEST));
+   GLCall(glEnable(GL_DEPTH_TEST))
 }
 
 }

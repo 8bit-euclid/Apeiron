@@ -69,36 +69,36 @@ class Texture
 
    void Delete();
 
-   inline UInt ID() const { return _ID; }
-
-   inline int Width() const { return _Width; }
-
-   inline int Height() const { return _Height; }
-
-   inline const std::optional<Float>& MapScale() const { return _MapScale; }
-
-   inline void SetMapScale(const Float scale) { _MapScale.emplace(scale); }
-
    Texture& operator=(const Texture& texture) = delete;
 
    Texture& operator=(Texture&& texture) noexcept;
 
+   inline auto ID() const { return ID_; }
+
+   inline auto Width() const { return Width_; }
+
+   inline auto Height() const { return Height_; }
+
+   inline auto MapScale() const { return MapScale_.has_value() ? MapScale_.value() : throw "Attempting to access a map scale that has not been set."; }
+
+   inline void SetMapScale(const Real scale) { MapScale_ = scale; }
+
  private:
-   friend class Model;
+   friend class ModelGroup;
    friend class Shadow;
 
    GLint OpenGLType() const;
 
-   UInt                 _ID;
-   int                  _Width;
-   int                  _Height;
-   int                  _ChannelCount;
-   UPtr<UChar>          _LocalBuffer;
-   std::optional<Float> _MapScale;
-   TextureType          _Type;
-   size_t               _SampleCount;
-   bool                 _isMultiSampled;
-   bool                 _isFBOAttachment;
+   UInt                ID_{};
+   TextureType         Type_;
+   UPtr<UChar>         LocalBuffer_{};
+   int                 Width_;
+   int                 Height_;
+   int                 ChannelCount_;
+   std::optional<Real> MapScale_;
+   size_t              SampleCount_;
+   bool                MultiSampled_;
+   bool                FBOAttachment_;
 };
 
 /***************************************************************************************************************************************************************

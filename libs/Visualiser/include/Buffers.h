@@ -46,7 +46,7 @@ namespace detail {
 template<BufferType T>
 class Buffer
 {
-   typedef BufferType BT;
+   using BT = BufferType;
 
  protected:
    Buffer() = default;
@@ -70,10 +70,10 @@ class Buffer
 
    Buffer& operator=(Buffer<T>&& buffer) noexcept;
 
-   inline GLuint ID() const { return _ID; }
+   inline GLuint ID() const { return ID_; }
 
  protected:
-   GLuint _ID{};
+   GLuint ID_{};
 
  private:
    void Bind(const GLuint id) const;
@@ -86,9 +86,9 @@ class Buffer
 ***************************************************************************************************************************************************************/
 struct VertexBuffer : public detail::Buffer<BufferType::VBO>
 {
-   void Init(const DynamicArray<Vertex>& vertices);
+   void Init(const DArray<Vertex>& vertices);
 
-   void Load(const DynamicArray<Vertex>& vertices) const;
+   void Load(const DArray<Vertex>& vertices) const;
 };
 
 /***************************************************************************************************************************************************************
@@ -104,14 +104,14 @@ struct VertexArray : public detail::Buffer<BufferType::VAO>
 ***************************************************************************************************************************************************************/
 struct IndexBuffer : public detail::Buffer<BufferType::EBO>
 {
-   void Init(const DynamicArray<GLuint>& indices);
+   void Init(const DArray<GLuint>& indices);
 
-   void Load(const DynamicArray<GLuint>& indices);
+   void Load(const DArray<GLuint>& indices);
 
-   inline size_t IndexCount() const { return _IndexCount; }
+   inline size_t IndexCount() const { return IndexCount_; }
 
  protected:
-   size_t _IndexCount;
+   size_t IndexCount_;
 };
 
 /***************************************************************************************************************************************************************
@@ -119,7 +119,7 @@ struct IndexBuffer : public detail::Buffer<BufferType::EBO>
 ***************************************************************************************************************************************************************/
 struct FrameBuffer : public detail::Buffer<BufferType::FBO>
 {
-   void Init(bool is_multi_sampled = false);
+   void Init(bool multi_sampled = false);
 
    void AttachTexture(GLenum attachement, GLuint texture_id) const;
 
@@ -136,7 +136,7 @@ struct FrameBuffer : public detail::Buffer<BufferType::FBO>
    void Read(GLenum attachment) const;
 
  private:
-   bool _isMultiSampled;
+   bool MultiSampled_;
 };
 
 /***************************************************************************************************************************************************************
@@ -149,8 +149,8 @@ struct RenderBuffer : public detail::Buffer<BufferType::RBO>
    void Allocate(const GLenum format, const GLsizei width, const GLsizei height);
 
  private:
-   size_t _SampleCount;
-   bool   _isMultiSampled;
+   size_t SampleCount_;
+   bool   MultiSampled_;
 };
 
 /***************************************************************************************************************************************************************
@@ -158,11 +158,11 @@ struct RenderBuffer : public detail::Buffer<BufferType::RBO>
 ***************************************************************************************************************************************************************/
 struct ShaderStorageBuffer : public detail::Buffer<BufferType::SSBO>
 {
-   void Init(DynamicArray<glm::vec4>& data);
+   void Init(DArray<glm::vec4>& data);
 
    void BindBase() const;
 
-   void Load(DynamicArray<glm::vec4>& data) const;
+   void Load(DArray<glm::vec4>& data) const;
 };
 
 }

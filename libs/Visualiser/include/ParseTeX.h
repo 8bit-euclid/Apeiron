@@ -16,7 +16,8 @@
 
 #include "../../../include/Global.h"
 #include "DataContainer/include/Array.h"
-#include "Glyph.h"
+#include "TeXGlyph.h"
+#include "TeXObject.h"
 
 #include <string>
 
@@ -25,52 +26,47 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXString(Iter& current, const Iter last, const bool is_math_mode = false);
+SPtr<TeXGlyph> ParseTeXChar(const char c);
 
-Glyph ParseTeXChar(const char c);
+DArray<SPtr<TeXObject>> ParseTeXString(const std::string& str);
 
-template<CharIterator Iter>
-Glyph ParseTeXGlyph(Iter& current, const Iter last, const bool is_math_mode = false);
+template<CharIterator It>
+DArray<SPtr<TeXObject>> ParseTeXString(It& current, const It last, const bool is_math_mode = false);
 
-template<CharIterator Iter>
-Glyph ParseTeXCommand(Iter& current, const Iter last, const bool is_math_mode = false);
+template<CharIterator It>
+SPtr<TeXObject> ParseTeXObject(It& current, const It last, const bool is_math_mode = false);
 
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXMath(Iter& current, const Iter last);
+template<CharIterator It>
+SPtr<TeXObject> ParseTeXCommand(It& current, const It last, const bool is_math_mode = false);
 
-template<CharIterator Iter>
-std::pair<DArray<Glyph>, std::string>
-ParseAllTeXScriptText(Iter& current, const Iter last);
+template<CharIterator It>
+DArray<SPtr<TeXObject>> ParseTeXMath(It& current, const It last);
+
+template<CharIterator It>
+std::pair<DArray<SPtr<TeXObject>>, std::string> ParseAllTeXScriptText(It& current, const It last);
 
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
 bool isGlyphString(const std::string_view& tex_str);
 
-template<CharIterator Iter>
-bool isTeXCommandEnd(const Iter current, const Iter last);
+template<CharIterator It>
+bool isTeXCommandEnd(const It current, const It last);
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXCharCommand(const Iter first, const Iter last);
+template<CharIterator It>
+std::pair<bool, It> isTeXCharCommand(const It first, const It last);
 
-template<CharIterator Iter>
-std::pair<bool, Iter>
-isTeXWordCommand(const Iter first, const Iter last);
+template<CharIterator It>
+std::pair<bool, It> isTeXWordCommand(const It first, const It last);
 
-template<CharIterator Iter>
-std::tuple<Iter, bool, bool>
-GetTeXCommandInfo(const Iter current, const Iter last);
+template<CharIterator It>
+std::tuple<It, bool, bool> GetTeXCommandInfo(const It current, const It last);
 
-template<CharIterator Iter>
-DArray<Glyph>
-ParseTeXScriptText(Iter& current, const Iter last);
+template<CharIterator It>
+DArray<SPtr<TeXObject>> ParseTeXScriptText(It& current, const It last);
 
-template<CharIterator Iter>
-Iter GetTeXCommandPrefixEnd(const Iter first, const Iter last, const bool is_char_cmd);
+template<CharIterator It>
+It GetTeXCommandPrefixEnd(const It first, const It last, const bool is_char_cmd);
 
 }
 

@@ -20,94 +20,94 @@ Camera::Camera()
   : Camera(glm::vec3(0.0f, 0.0f, 0.0), 0.0f, 0.0f) {}
 
 Camera::Camera(const glm::vec3& position, GLfloat pitch, GLfloat yaw)
-  : _Position(position), _Front(glm::vec3(0.0f, 0.0f, -1.0f)), _Pitch(pitch), _Yaw(yaw), _AspectRatio(0.0), _FieldOfView(45.0), _NearPlane(0.0),
-    _FarPlane(0.0) { SetOrientation(_Position, _Pitch, _Yaw); }
+  : Position_(position), Front_(glm::vec3(0.0f, 0.0f, -1.0f)), Pitch_(pitch), Yaw_(yaw), AspectRatio_(0.0), FieldOfView_(45.0), NearPlane_(0.0),
+    FarPlane_(0.0) { SetOrientation(Position_, Pitch_, Yaw_); }
 
 void Camera::SetOrientation(const glm::vec3& position, GLfloat pitch, GLfloat yaw)
 {
-   _Position = position;
+   Position_ = position;
 
    pitch = glm::radians(pitch);
    yaw   = glm::radians(yaw);
 
-   _Front.x = glm::cos(yaw) * glm::cos(pitch);
-   _Front.y = glm::sin(pitch);
-   _Front.z = glm::sin(yaw) * glm::cos(pitch);
-   _Front   = glm::normalize(_Front);
+   Front_.x = glm::cos(yaw) * glm::cos(pitch);
+   Front_.y = glm::sin(pitch);
+   Front_.z = glm::sin(yaw) * glm::cos(pitch);
+   Front_   = glm::normalize(Front_);
 
-   _Right = glm::normalize(glm::cross(_Front, _WorldUp));
-   _Up    = glm::normalize(glm::cross(_Right, _Front));
+   Right_ = glm::normalize(glm::cross(Front_, WorldUp_));
+   Up_    = glm::normalize(glm::cross(Right_, Front_));
 }
 
 void Camera::SetViewFrustum(const GLfloat& aspect_ratio, const GLfloat& field_of_view, const GLfloat& near_plane, const GLfloat& far_plane)
 {
-   _AspectRatio = aspect_ratio;
+   AspectRatio_ = aspect_ratio;
    if(field_of_view > 0.0)
    {
-      _FieldOfView = field_of_view;
-      _NearPlane   = near_plane;
-      _FarPlane    = far_plane;
+      FieldOfView_ = field_of_view;
+      NearPlane_   = near_plane;
+      FarPlane_    = far_plane;
    }
 }
 
 void Camera::KeyControl(const StaticArray<Bool, KeyCount>& keys, const GLfloat& delta_time)
 {
-   GLfloat displacement = _MotionSensitivity * delta_time;
+   const auto displacement = MotionSensitivity_ * delta_time;
 
    // Position control
-   if(keys[GLFW_KEY_W]) _Position += displacement * _Front;
-   if(keys[GLFW_KEY_S]) _Position -= displacement * _Front;
-   if(keys[GLFW_KEY_A]) _Position -= displacement * _Right;
-   if(keys[GLFW_KEY_D]) _Position += displacement * _Right;
-   if(keys[GLFW_KEY_Q]) _Position += displacement * _WorldUp;
-   if(keys[GLFW_KEY_E]) _Position -= displacement * _WorldUp;
+   if(keys[GLFW_KEY_W]) Position_ += displacement * Front_;
+   if(keys[GLFW_KEY_S]) Position_ -= displacement * Front_;
+   if(keys[GLFW_KEY_A]) Position_ -= displacement * Right_;
+   if(keys[GLFW_KEY_D]) Position_ += displacement * Right_;
+   if(keys[GLFW_KEY_Q]) Position_ += displacement * WorldUp_;
+   if(keys[GLFW_KEY_E]) Position_ -= displacement * WorldUp_;
 
    // Pitch control
    if(keys[GLFW_KEY_UP])
    {
-      _Pitch += _RotationSensitivity * displacement;
+      Pitch_ += RotationSensitivity_ * displacement;
       ClipPitch();
    }
    if(keys[GLFW_KEY_DOWN])
    {
-      _Pitch -= _RotationSensitivity * displacement;
+      Pitch_ -= RotationSensitivity_ * displacement;
       ClipPitch();
    }
 
    // Yaw control
-   if(keys[GLFW_KEY_LEFT])  _Yaw -= _RotationSensitivity * displacement;
-   if(keys[GLFW_KEY_RIGHT]) _Yaw += _RotationSensitivity * displacement;
+   if(keys[GLFW_KEY_LEFT])  Yaw_ -= RotationSensitivity_ * displacement;
+   if(keys[GLFW_KEY_RIGHT]) Yaw_ += RotationSensitivity_ * displacement;
 
    // Update camera orientation
-   SetOrientation(_Position, _Pitch, _Yaw);
+   SetOrientation(Position_, Pitch_, Yaw_);
 }
 
-void Camera::CursorControl(const SVectorF2& cursor_displacement)
+void Camera::CursorControl(const SVectorR2& cursor_displacement)
 {
    // Update yaw and pitch. Ensure that the pitch is in the range [-90, 90]
-   _Yaw   += _MouseCursorSensitivity * cursor_displacement[0];
-   _Pitch -= _MouseCursorSensitivity * cursor_displacement[1];
+   Yaw_   += CursorSensitivity_ * cursor_displacement[0];
+   Pitch_ -= CursorSensitivity_ * cursor_displacement[1];
    ClipPitch();
 
    // Update camera orientation
-   SetOrientation(_Position, _Pitch, _Yaw);
+   SetOrientation(Position_, Pitch_, Yaw_);
 }
 
-void Camera::WheelControl(const SVectorF2& wheel_displacement)
+void Camera::WheelControl(const SVectorR2& wheel_displacement)
 {
-   GLfloat displacement = _MouseWheelSensitivity * wheel_displacement[1];
-   _Position += displacement * _Front;
+   GLfloat displacement = WheelSensitivity_ * wheel_displacement[1];
+   Position_ += displacement * Front_;
 }
 
 void Camera::UpdateViewMatrix()
 {
 //  ViewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), WorldUp);
-   _ViewMatrix = glm::lookAt(_Position, _Position + _Front, _WorldUp);
+   ViewMatrix_ = glm::lookAt(Position_, Position_ + Front_, WorldUp_);
 }
 
 void Camera::UpdateProjMatrix()
 {
-   _ProjMatrix = glm::perspective(glm::radians(_FieldOfView), _AspectRatio, _NearPlane, _FarPlane);
+   ProjMatrix_ = glm::perspective(glm::radians(FieldOfView_), AspectRatio_, NearPlane_, FarPlane_);
 //  ProjectionMatrix = glm::ortho(-AspectRatio, AspectRatio, -1.0f, 1.0f, -10.0f, 10.0f);
 }
 

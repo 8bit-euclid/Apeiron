@@ -26,7 +26,7 @@ namespace aprn{
 #define FILE_LINE(file, line) "\n FILE: " + ToString(file) + "\n LINE: " + ToString(line) + "\n"
 
 /** Print a Ping from the current file and line. */
-#define PING usleep(100); Print("\nPing from file:", __FILE__, "at line number:", __LINE__); Flush();
+#define PING usleep(100); Print("Ping from file:", __FILE__, "at line number:", __LINE__, "\n"); Flush();
 
 /** Throw error without exiting from a given file and line. */
 #define ERROR_FROM(type, file, line, args...)\

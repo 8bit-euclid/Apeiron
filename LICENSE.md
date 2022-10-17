@@ -112,7 +112,7 @@ menu, a prominent item in the list meets this criterion.
   1. Source Code.
 
   The "source code" for a work means the preferred form of the work
-for making modifications to it.  "Object code" means any non-source
+for making modifications to it.  "RenderObject code" means any non-source
 form of a work.
 
   A "Standard Interface" means an interface that either is an official
@@ -122,11 +122,11 @@ is widely used among developers working in that language.
 
   The "System Libraries" of an executable work include anything, other
 than the work as a whole, that (a) is included in the normal form of
-packaging a Major Component, but which is not part of that Major
-Component, and (b) serves only to enable use of the work with that
-Major Component, or to implement a Standard Interface for which an
+packaging a Major Model, but which is not part of that Major
+Model, and (b) serves only to enable use of the work with that
+Major Model, or to implement a Standard Interface for which an
 implementation is available to the public in source code form.  A
-"Major Component", in this context, means a major essential component
+"Major Model", in this context, means a major essential component
 (kernel, window system, and so on) of the specific operating system
 (if any) on which the executable work runs, or a compiler used to
 produce the work, or an object code interpreter used to run it.

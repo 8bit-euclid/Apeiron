@@ -23,33 +23,33 @@ namespace aprn {
 ***************************************************************************************************************************************************************/
 
 /** Size and index range-checking */
-template<typename T, class derived>
+template<typename T, class D>
 constexpr void
-MultiArray<T, derived>::MultiIndexBoundCheck(const std::convertible_to<size_t> auto... _multi_index) const
+MultiArray<T, D>::MultiIndexBoundCheck(const std::convertible_to<size_t> auto... multi_index) const
 {
 #ifdef DEBUG_MODE
-  ASSERT(areSizesEqual(sizeof...(_multi_index), Derived().Dimensions.size()), "Multi-index size mismatch.")
+  ASSERT(areSizesEqual(sizeof...(multi_index), Derived().Dimensions.size()), "Multi-index size mismatch.")
 
   auto& dims = Derived().Dimensions;
-  const size_t multi_index[] = {static_cast<size_t>(_multi_index)...};
-  FOR(i, dims.size()) ASSERT(multi_index[i] < dims[i], "Multi index component ", multi_index[i], " must be lesser than ", dims[i], ".")
+  const size_t indices[] = {static_cast<size_t>(multi_index)...};
+  FOR(i, dims.size()) ASSERT(indices[i] < dims[i], "Multi index component ", indices[i], " must be lesser than ", dims[i], ".")
 #endif
 }
 
 /** Multi-dimensional subscript index toggling */
-template<typename T, class derived>
+template<typename T, class D>
 constexpr size_t
-MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<size_t> auto... _multi_index) const
+MultiArray<T, D>::ComputeLinearIndex(const std::convertible_to<size_t> auto... multi_index) const
 {
-  MultiIndexBoundCheck(_multi_index...);
+  MultiIndexBoundCheck(multi_index...);
 
   auto& dims = Derived().Dimensions;
-  const size_t multi_index[] = {static_cast<size_t>(_multi_index)...};
+  const size_t indices[] = {static_cast<size_t>(multi_index)...};
 
   size_t index(0), factor(1);
   FOR(i, dims.size())
   {
-    index += factor * multi_index[i];
+    index += factor * indices[i];
     factor *= dims[i];
   }
 //  this->IndexBoundCheck(index);
@@ -57,9 +57,9 @@ MultiArray<T, derived>::ComputeLinearIndex(const std::convertible_to<size_t> aut
   return index;
 }
 
-template<typename T, class derived>
+template<typename T, class D>
 constexpr auto
-MultiArray<T, derived>::ComputeMultiIndex(size_t index) const
+MultiArray<T, D>::ComputeMultiIndex(size_t index) const
 {
   EXIT("Yet to complete.")
 
@@ -82,25 +82,25 @@ MultiArray<T, derived>::ComputeMultiIndex(size_t index) const
 }
 
 /** Operator overloads. */
-template<typename T, class derived>
+template<typename T, class D>
 constexpr T&
-MultiArray<T, derived>::operator()(std::convertible_to<size_t> auto... _multi_index)
+MultiArray<T, D>::operator()(std::convertible_to<size_t> auto... multi_index)
 {
-  return Derived().Entries[ComputeLinearIndex(_multi_index...)];
+  return Derived().Entries[ComputeLinearIndex(multi_index...)];
 }
 
-template<typename T, class derived>
+template<typename T, class D>
 constexpr const T&
-MultiArray<T, derived>::operator()(const std::convertible_to<size_t> auto... _multi_index) const
+MultiArray<T, D>::operator()(const std::convertible_to<size_t> auto... multi_index) const
 {
-  return Derived().Entries[ComputeLinearIndex(_multi_index...)];
+  return Derived().Entries[ComputeLinearIndex(multi_index...)];
 }
 
-template<typename T, class derived>
-constexpr derived&
-MultiArray<T, derived>::operator=(const std::initializer_list<T>& _value_array) noexcept
+template<typename T, class D>
+constexpr D&
+MultiArray<T, D>::operator=(const std::initializer_list<T>& _value_array) noexcept
 {
-  derived& derived_class = Derived();
+  D& derived_class = Derived();
 
   SizeCheck(derived_class.Dimensions.size(), 1);
   SizeCheck(_value_array.size(), derived_class.Dimensions[0].size());
@@ -109,11 +109,11 @@ MultiArray<T, derived>::operator=(const std::initializer_list<T>& _value_array) 
   return derived_class;
 }
 
-template<typename T, class derived>
-constexpr derived&
-MultiArray<T, derived>::operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept
+template<typename T, class D>
+constexpr D&
+MultiArray<T, D>::operator=(const std::initializer_list<std::initializer_list<T>>& _value_matrix) noexcept
 {
-  derived& derived_class = Derived();
+  D& derived_class = Derived();
 
   SizeCheck(derived_class.Dimensions.size(), 2);
   SizeCheck(_value_matrix.size(), derived_class.Dimensions[0].size());
@@ -132,7 +132,7 @@ MultiArray<T, derived>::operator=(const std::initializer_list<std::initializer_l
 ***************************************************************************************************************************************************************/
 template<typename T, size_t... dims>
 constexpr StaticMultiArray<T, dims...>::StaticMultiArray()
-  : StaticMultiArray(GetStaticInitValue<T>()) {}
+  : StaticMultiArray(StaticInitValue<T>()) {}
 
 template<typename T, size_t ...dims>
 constexpr StaticMultiArray<T, dims...>::StaticMultiArray(const T value)
@@ -152,7 +152,7 @@ DynamicMultiArray<T>::DynamicMultiArray()
 
 template<typename T>
 DynamicMultiArray<T>::DynamicMultiArray(const std::convertible_to<size_t> auto... _dimensions)
-  : Dimensions{static_cast<size_t>(_dimensions)...}, nEntries(Product(_dimensions...)), Entries(nEntries, GetDynamicInitValue<T>()) {}
+  : Dimensions{static_cast<size_t>(_dimensions)...}, nEntries(Product(_dimensions...)), Entries(nEntries, DynamicInitValue<T>()) {}
 
 /** Multi-array Resize Functions */
 template<typename T>
@@ -160,7 +160,7 @@ void DynamicMultiArray<T>::Resize(const std::convertible_to<size_t> auto... _dim
 {
   Dimensions = {_dimensions...};
   nEntries = Product(_dimensions...);
-  Entries.resize(nEntries, GetDynamicInitValue<T>());
+  Entries.resize(nEntries, DynamicInitValue<T>());
 }
 
 }

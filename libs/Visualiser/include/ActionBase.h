@@ -30,13 +30,15 @@ namespace aprn::vis {
 
 /** Reparametriser/Ramp Functors
 ***************************************************************************************************************************************************************/
-constexpr auto Identity = [](Float t){ return One; };
-constexpr auto Linear   = [](Float t){ return func::Linear(t, One, Zero); };
+using Reparametriser = std::function<Real(Real)>;
 
-//constexpr auto Sigmoid = [](Float t){ return t; };
+constexpr auto Identity = [](Real t){ return One; };
+constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
+
+//constexpr auto Sigmoid = [](Real t){ return t; };
 //
 //template<size_t shape, size_t location>
-//constexpr auto SigmoidMod = [](Float t)
+//constexpr auto SigmoidMod = [](Real t)
 //                            {
 //                               static_assert(isBounded<true, true, true>(location, 0ul, 100ul), "The sigmoid centre location must be a percentage.");
 //                               return t;
@@ -44,7 +46,7 @@ constexpr auto Linear   = [](Float t){ return func::Linear(t, One, Zero); };
 
 /** Action Types and Sub-Types
 ***************************************************************************************************************************************************************/
-enum class ActionType // NOTE: The order is important - higher-up actions must be performed first.
+enum class ActionType // NOTE: The order here is important - higher-up actions must be performed first.
 {
    /** Model centroid invariant actions. */
    RampUp,
@@ -75,6 +77,38 @@ enum class ActionType // NOTE: The order is important - higher-up actions must b
    Blink
 };
 
+inline std::string
+ActionTypeString(const ActionType type)
+{
+   using AT = ActionType;
+   switch(type)
+   {
+      case AT::RampUp:                     return "RampUp";
+      case ActionType::RampDown:           return "RampDown";
+      case ActionType::Scale:              return "Scale";
+      case ActionType::OffsetOrientation:  return "OffsetOrientation";
+      case ActionType::RotateBy:           return "RotateBy";
+      case ActionType::RotateAt:           return "RotateAt";
+      case ActionType::OffsetPosition:     return "OffsetPosition";
+      case ActionType::Reflect:            return "Reflect";
+      case ActionType::RevolveBy:          return "RevolveBy";
+      case ActionType::RevolveAt:          return "RevolveAt";
+      case ActionType::MoveBy:             return "MoveBy";
+      case ActionType::MoveTo:             return "MoveTo";
+      case ActionType::MoveAt:             return "MoveAt";
+      case ActionType::Trace:              return "Trace";
+      case ActionType::TrackPositionOf:    return "TrackPositionOf";
+      case ActionType::TrackOrientationOf: return "TrackOrientationOf";
+      case ActionType::MorphTo:            return "MorphTo";
+      case ActionType::MorphFrom:          return "MorphFrom";
+      case ActionType::SetStrokeColour:    return "SetStrokeColour";
+      case ActionType::SetFillColour:      return "SetFillColour";
+      case ActionType::Glow:               return "Glow";
+      case ActionType::Blink:              return "Blink";
+      default:                             throw "Unrecognised action type.";
+   }
+}
+
 enum class RampType { Trace, Scale, Fade, Blur };
 enum class BlinkType { Sine, Triangle, Square };
 
@@ -86,6 +120,7 @@ bool isTimeParametrised(ActionType type);
 /** Action Concepts
 ***************************************************************************************************************************************************************/
 typedef ActionType AT;
+
 template<AT type> concept Ramp        = isEnumSame<type, AT::RampUp>() ||
                                         isEnumSame<type, AT::RampDown>();
 template<AT type> concept Scale       = isEnumSame<type, AT::Scale>();
@@ -111,35 +146,31 @@ class Model;
 class ActionBase
 {
  public:
-   ActionBase(Model& model, ActionType _action_type);
+   ActionBase(Model& model, ActionType action_type);
 
-   ActionBase(Model& model, ActionType _action_type, Float start_time, Float end_time, std::function<Float(Float)> reparam = Linear);
+   ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   ActionBase(Model& model, ActionType _action_type, Float start_time, std::function<Float(Float)> ramp = Identity);
+   ActionBase(Model& model, ActionType action_type, Real start_time, Reparametriser ramp = Identity);
 
-   virtual void
-   Do(const Float global_time) = 0;
+   virtual void Do(Real global_time) = 0;
 
-   inline ActionType
-   GetType() const { return Type; }
+   inline auto Type() const { return Type_; }
 
-   inline bool
-   isComplete() const { return Status; }
+   inline bool Done() const { return Done_; }
 
  protected:
    friend class Model;
 
-   std::optional<Float>
-   ComputeParameter(const Float global_time);
+   std::optional<Real> ComputeParameter(Real global_time);
 
-   RWpr<Model>                 Actor;
-   ActionType                  Type;
-   const Float                 StartTime;
-   const Float                 EndTime;
-   Float                       ParameterNormaliser;
-   std::function<Float(Float)> Reparametriser;
-   std::function<Float(Float)> Ramp;
-   bool                        Status{false};
+   Model*                    Actor_;
+   ActionType                Type_;
+   const Real                StartTime_;
+   const Real                EndTime_;
+   Real                      ParamNormaliser_;
+   std::function<Real(Real)> Reparametriser_;
+   std::function<Real(Real)> Ramp_;
+   bool                      Done_{false};
 };
 
 }

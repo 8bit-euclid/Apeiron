@@ -30,15 +30,15 @@ template<typename T, TypeCategory cat = GetTypeCategory<T>()>
 class RandomBase
 {
 protected:
-  RandomBase() : Generator(Device()) {}
+  RandomBase() : Generator_(Device_()) {}
 
 public:
   /** Subscript operator overload to generate a random number. */
   virtual T operator()() = 0;
 
 protected:
-  std::random_device Device;
-  std::mt19937 Generator;
+  std::random_device Device_;
+  std::mt19937       Generator_;
 };
 
 /** Forward declaration of Random class and template deduction guide. */
@@ -52,13 +52,13 @@ template<typename T>
 class Random<T, TypeCategory::Boolean> : public RandomBase<T, TypeCategory::Boolean>
 {
 public:
-  Random() : Distribution(0, 1) {}
+  Random() : Distribution_(0, 1) {}
 
   /** Overloaded subscript operator to generate a random boolean. */
-  inline T operator()() override { return Distribution(this->Generator); }
+  inline T operator()() override { return Distribution_(this->Generator_); }
 
 private:
-  std::uniform_int_distribution<UChar> Distribution;
+  std::uniform_int_distribution<UChar> Distribution_;
 };
 
 /***************************************************************************************************************************************************************
@@ -68,18 +68,18 @@ template<typename T>
 class Random<T, TypeCategory::Integral> : public RandomBase<T, TypeCategory::Integral>
 {
 public:
-  Random() : Distribution(-1, 1) {}
+  Random() : Distribution_(-1, 1) {}
 
-  Random(const T min, const T max) :  Distribution(min, max) {}
+  Random(const T min, const T max) : Distribution_(min, max) {}
 
   /** Overloaded subscript operator to generate a random integer. */
-  inline T operator()() override { return Distribution(this->Generator); }
+  inline T operator()() override { return Distribution_(this->Generator_); }
 
   /** Reset min/max bounds for the distribution. */
-  void Reset(const T min, const T max) { Distribution = std::uniform_int_distribution<T>(min, max); }
+  void Reset(const T min, const T max) { Distribution_ = std::uniform_int_distribution<T>(min, max); }
 
 private:
-  std::uniform_int_distribution<T> Distribution;
+  std::uniform_int_distribution<T> Distribution_;
 };
 
 /***************************************************************************************************************************************************************
@@ -89,18 +89,18 @@ template<typename T>
 class Random<T, TypeCategory::FloatingPoint> : public RandomBase<T, TypeCategory::FloatingPoint>
 {
 public:
-  Random() : Distribution(-One, One) {}
+  Random() : Distribution_(-One, One) {}
 
-  Random(const T min, const T max) : Distribution(min, max) {}
+  Random(const T min, const T max) : Distribution_(min, max) {}
 
   /** Overloaded subscript operator to generate a random floating-point value. */
-  inline T operator()() override { return Distribution(this->Generator); }
+  inline T operator()() override { return Distribution_(this->Generator_); }
 
   /** Reset min/max bounds for the distribution. */
-  void Reset(const T min, const T max) { Distribution = std::uniform_real_distribution<T>(min, max); }
+  void Reset(const T min, const T max) { Distribution_ = std::uniform_real_distribution<T>(min, max); }
 
 private:
-  std::uniform_real_distribution<T> Distribution;
+  std::uniform_real_distribution<T> Distribution_;
 };
 
 }

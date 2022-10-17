@@ -21,9 +21,8 @@
 #include "Camera.h"
 #include "GlyphSheet.h"
 #include "GUI.h"
-#include "ModelFactory.h"
 #include "Light.h"
-#include "Model.h"
+#include "ModelGroup.h"
 #include "Material.h"
 #include "Scene.h"
 #include "PostProcessor.h"
@@ -46,11 +45,13 @@ class Visualiser
 
    Visualiser(GLint window_width, GLint window_height);
 
-   void Add(Scene& scene, const std::string& name = "");
+   void Add(Scene& scene);
 
-   void Add(Camera& camera, const std::string& name = "");
+   void Add(const Camera& camera);
 
-   void Add(Camera&& camera, const std::string& name = "");
+   void Add(Scene&& scene);
+
+   void Add(Camera&& camera);
 
    void Animate();
 
@@ -58,8 +59,6 @@ class Visualiser
    void Init();
 
    void InitWindow();
-
-   void InitOpenGL();
 
    void InitGUI();
 
@@ -93,19 +92,19 @@ class Visualiser
 
    void Terminate();
 
-   template<class type> using UMap = std::unordered_map<std::string, type>;
+   template<class T> using UMap = std::unordered_map<std::string, T>;
 
-   Window              _Window;
-   UMap<Scene>         _Scenes;
-   UMap<Camera>        _Cameras;
-   UMap<Shader>        _Shaders;
-   UMap<UMap<Texture>> _Textures;
-   PostProcessor       _PostProcessor;
-   Camera*             _ActiveCamera;
-   Scene*              _CurrentScene;
-   GUI                 _GUI;
-   bool                _wasViewPortModified{};
-   bool                _HideCursor{false};
+   Window              Window_;
+   DArray<Scene>       Scenes_;
+   DArray<Camera>      Cameras_;
+   UMap<Shader>        Shaders_;
+   UMap<UMap<Texture>> Textures_;
+   PostProcessor       PostProcessor_;
+   Camera*             ActiveCamera_;
+   Scene*              CurrentScene_;
+   GUI                 GUI_;
+   bool                ViewPortModified_{};
+   bool                HideCursor_{false};
 };
 
 }

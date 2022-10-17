@@ -16,12 +16,61 @@
 
 #include "Visualiser/include/Visualiser.h"
 #include "Visualiser/include/Model.h"
+#include "Visualiser/include/ModelGroup.h"
 #include "Visualiser/include/ModelFactory.h"
 #include "Visualiser/include/Scene.h"
 
 using namespace aprn::vis;
 
 namespace aprn::test {
+
+inline void Triangle()
+{
+   Visualiser visualiser;
+   Scene scene;
+   Model model;
+
+   // Triangle
+   model = ModelFactory::Triangle(1.0);
+   model.SetColour({1.0, 1.0, 1.0, 1.0});
+   scene.Add(model);
+
+   // Lighting
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
+
+//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+//   point_light.SetName("Light");
+//   scene.Add(point_light);
+
+   visualiser.Add(scene);
+   visualiser.Animate();
+}
+
+inline void Cube()
+{
+   Visualiser visualiser;
+   Scene scene;
+   Model model;
+
+   // Cube
+   model = ModelFactory::Cube(1.0);
+   model.SetColour({1.0, 1.0, 1.0, 1.0});
+   scene.Add(model);
+
+   // Lighting
+//   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+//   sun.SetName("Sun");
+//   scene.Add(sun);
+
+   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+   point_light.SetName("Light");
+   scene.Add(point_light);
+
+   visualiser.Add(scene);
+   visualiser.Animate();
+}
 
 inline void RotatingCube()
 {
@@ -30,22 +79,27 @@ inline void RotatingCube()
    Model model;
    TeXBox tex_box;
 
-   tex_box.Add(R"(This is a test: $e = mc^2$.)")
+   // TeX-box
+   tex_box.SetName("TeX-box")
+          .Add(R"(This is a test: $e = mc^2$.)")
           .SetPixelDensity(2000)
-          .OffsetPosition({0.0f, 2.0f, 2.0f});
+          .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
+          .OffsetPosition({-2.0f, 2.0f, 2.0f});
    scene.Add(tex_box);
 
    // Cube
    model = ModelFactory::Cube(1.0);
-   model.SetColour({1.0, 1.0, 1.0, 1.0})
+   model.SetName("Cube")
+        .SetColour({1.0, 1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
-        .Trace([](Float t){ return SVectorF3{ Three*std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
-   scene.Add(model, "Cube");
+        .Trace([](Real t){ return SVectorR3{Three * std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
+   scene.Add(model);
 
    // Floor
-   const Float height_scale = 0.08;
+   const Real height_scale = 0.08;
    model = ModelFactory::Square(10.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Floor")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
@@ -53,18 +107,28 @@ inline void RotatingCube()
 
    // Wall 0
    model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Wall 0")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({2.5f, 0.5f, -5.0f});
    scene.Add(model);
 
    // Wall 1
    model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Wall 1")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
-   scene.Add(model)
-        .Add(PointLight(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5}), "Sun");
+   scene.Add(model);
+
+   // Lighting
+   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+   point_light.SetName("Lamp");
+   scene.Add(point_light);
+
+//   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+//   sun.SetName("Sun");
+//   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();
@@ -79,7 +143,7 @@ inline void EuclidsElementsEp1()
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")
           .SetPixelDensity(2000)
-          .OffsetPosition({0.0, 0.0, 0.2});
+          .OffsetPosition({0.0, 0.0, 0.05});
    scene.Add(tex_box);
 
    // Paper sheet
@@ -89,7 +153,13 @@ inline void EuclidsElementsEp1()
    scene.Add(model);
 
    // Lighting
-   scene.Add(PointLight(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5}), "Lamp");
+//   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
+//   point_light.SetName("Lamp");
+//   scene.Add(point_light);
+
+   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+   sun.SetName("Sun");
+   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();

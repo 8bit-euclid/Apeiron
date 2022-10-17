@@ -56,7 +56,7 @@ TEST_F(ApeironTest, Min)
   EXPECT_EQ(Min(integer, integer + 1), integer);
   EXPECT_EQ(Min(integer, integer - 1), integer - 1);
 
-  const Float floating = RandomFloat();
+  const Real floating = RandomReal();
   EXPECT_EQ(Min(floating, floating + One), floating);
   EXPECT_EQ(Min(floating, floating - One), floating - One);
 }
@@ -67,7 +67,7 @@ TEST_F(ApeironTest, Max)
   EXPECT_EQ(Max(integer, integer + 1), integer + 1);
   EXPECT_EQ(Max(integer, integer - 1), integer);
 
-  const Float floating = RandomFloat();
+  const Real floating = RandomReal();
   EXPECT_EQ(Max(floating, floating + One), floating + One);
   EXPECT_EQ(Max(floating, floating - One), floating);
 }
@@ -76,17 +76,17 @@ TEST_F(ApeironTest, MinMax)
 {
   const int minInt = RandomInt();
   const int maxInt = minInt + 1;
-  EXPECT_EQ(MinMax(minInt, maxInt).first, minInt);
+  EXPECT_EQ(MinMax(minInt, maxInt).first , minInt);
   EXPECT_EQ(MinMax(minInt, maxInt).second, maxInt);
-  EXPECT_EQ(MinMax(maxInt, minInt).first, minInt);
+  EXPECT_EQ(MinMax(maxInt, minInt).first , minInt);
   EXPECT_EQ(MinMax(maxInt, minInt).second, maxInt);
 
-  const Float minFloat = RandomFloat();
-  const Float maxFloat = minFloat + One;
-  EXPECT_EQ(MinMax(minFloat, maxFloat).first, minFloat);
-  EXPECT_EQ(MinMax(minFloat, maxFloat).second, maxFloat);
-  EXPECT_EQ(MinMax(maxFloat, minFloat).first, minFloat);
-  EXPECT_EQ(MinMax(maxFloat, minFloat).second, maxFloat);
+  const Real minReal = RandomReal();
+  const Real maxReal = minReal + One;
+  EXPECT_EQ(MinMax(minReal, maxReal).first , minReal);
+  EXPECT_EQ(MinMax(minReal, maxReal).second, maxReal);
+  EXPECT_EQ(MinMax(maxReal, minReal).first , minReal);
+  EXPECT_EQ(MinMax(maxReal, minReal).second, maxReal);
 }
 
 TEST_F(ApeironTest, Clipped)
@@ -97,9 +97,9 @@ TEST_F(ApeironTest, Clipped)
   EXPECT_GE(Clipped(integer, minInt, maxInt), minInt);
   EXPECT_LE(Clipped(integer, minInt, maxInt), maxInt);
 
-  const Float minFloat = -Abs(RandomFloat());
-  const Float maxFloat = Abs(RandomFloat()) + One;
-  const Float floating = RandomFloat();
+  const Real minFloat = -Abs(RandomReal());
+  const Real maxFloat = Abs(RandomReal()) + One;
+  const Real floating = RandomReal();
   EXPECT_GE(Clipped(floating, minFloat, maxFloat), minFloat);
   EXPECT_LE(Clipped(floating, minFloat, maxFloat), maxFloat);
 }
@@ -110,9 +110,9 @@ TEST_F(ApeironTest, MinEntry)
   FOR_EACH(entry, IntArray) minInt = Min(minInt, entry);
   EXPECT_EQ(MinEntry(IntArray.begin(), IntArray.end()), minInt);
 
-  Float minFloat = MaxFloat<>;
-  FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
-  EXPECT_EQ(MinEntry(FloatArray.begin(), FloatArray.end()), minFloat);
+  Real minFloat = MaxFloat<>;
+  FOR_EACH(entry, RealArray) minFloat = Min(minFloat, entry);
+  EXPECT_EQ(MinEntry(RealArray.begin(), RealArray.end()), minFloat);
 }
 
 TEST_F(ApeironTest, MaxEntry)
@@ -121,9 +121,9 @@ TEST_F(ApeironTest, MaxEntry)
   FOR_EACH(entry, IntArray) maxInt = Max(maxInt, entry);
   EXPECT_EQ(MaxEntry(IntArray.begin(), IntArray.end()), maxInt);
 
-  Float maxFloat = MinFloat<>;
-  FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
-  EXPECT_EQ(MaxEntry(FloatArray.begin(), FloatArray.end()), maxFloat);
+  Real maxFloat = MinFloat<>;
+  FOR_EACH(entry, RealArray) maxFloat = Max(maxFloat, entry);
+  EXPECT_EQ(MaxEntry(RealArray.begin(), RealArray.end()), maxFloat);
 }
 
 TEST_F(ApeironTest, MinMaxEntries)
@@ -135,12 +135,12 @@ TEST_F(ApeironTest, MinMaxEntries)
   EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).first, minInt);
   EXPECT_EQ(MinMaxEntries(IntArray.begin(), IntArray.end()).second, maxInt);
 
-  Float minFloat = MaxFloat<>;
-  Float maxFloat = MinFloat<>;
-  FOR_EACH(entry, FloatArray) minFloat = Min(minFloat, entry);
-  FOR_EACH(entry, FloatArray) maxFloat = Max(maxFloat, entry);
-  EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).first, minFloat);
-  EXPECT_EQ(MinMaxEntries(FloatArray.begin(), FloatArray.end()).second, maxFloat);
+  Real minFloat = MaxFloat<>;
+  Real maxFloat = MinFloat<>;
+  FOR_EACH(entry, RealArray) minFloat = Min(minFloat, entry);
+  FOR_EACH(entry, RealArray) maxFloat = Max(maxFloat, entry);
+  EXPECT_EQ(MinMaxEntries(RealArray.begin(), RealArray.end()).first, minFloat);
+  EXPECT_EQ(MinMaxEntries(RealArray.begin(), RealArray.end()).second, maxFloat);
 }
 
 TEST_F(ApeironTest, BoundEntries)
@@ -154,10 +154,10 @@ TEST_F(ApeironTest, BoundEntries)
     EXPECT_LE(entry, maxInt);
   }
 
-  const Float minFloat = -Abs(RandomFloat());
-  const Float maxFloat = Abs(RandomFloat()) + One;
-  BoundEntries(FloatArray.begin(), FloatArray.end(), minFloat, maxFloat);
-  FOR_EACH(entry, FloatArray)
+  const Real minFloat = -Abs(RandomReal());
+  const Real maxFloat = Abs(RandomReal()) + One;
+  BoundEntries(RealArray.begin(), RealArray.end(), minFloat, maxFloat);
+  FOR_EACH(entry, RealArray)
   {
     EXPECT_GE(entry, minFloat);
     EXPECT_LE(entry, maxFloat);
@@ -178,8 +178,8 @@ TEST_F(ApeironTest, Sgn)
   EXPECT_EQ(Sgn(0, 0), 0);
   EXPECT_EQ(Sgn(0, -1), -1);
 
-  const Float negativeFloat = -Abs(RandomFloat()) - One;
-  const Float positiveFloat = Abs(RandomFloat()) + One;
+  const Real negativeFloat = -Abs(RandomReal()) - One;
+  const Real positiveFloat = Abs(RandomReal()) + One;
   EXPECT_EQ(Sgn(negativeFloat), -One);
   EXPECT_EQ(Sgn(positiveFloat), One);
   EXPECT_EQ(Sgn(Zero), One);
@@ -195,8 +195,8 @@ TEST_F(ApeironTest, Abs)
   EXPECT_EQ(Abs(negativeInt), -negativeInt);
   EXPECT_EQ(Abs(positiveInt), positiveInt);
 
-  const Float negativeFloat = -Abs(RandomFloat()) - One;
-  const Float positiveFloat = Abs(RandomFloat()) + One;
+  const Real negativeFloat = -Abs(RandomReal()) - One;
+  const Real positiveFloat = Abs(RandomReal()) + One;
   EXPECT_EQ(Abs(negativeFloat), -negativeFloat);
   EXPECT_EQ(Abs(positiveFloat), positiveFloat);
 }
