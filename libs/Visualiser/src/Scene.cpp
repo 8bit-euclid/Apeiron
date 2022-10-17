@@ -78,7 +78,7 @@ Scene::Init(const Real start_time)
 * Scene Private Interface
 ***************************************************************************************************************************************************************/
 void
-Scene::UpdateModels(const Real current_time) { FOR_EACH(model, Actors_) model->Update(current_time); }
+Scene::UpdateActors(const Real current_time) { FOR_EACH(actor, Actors_) actor->Update(current_time); }
 
 void
 Scene::RenderDirecShadows(Shader& shader)

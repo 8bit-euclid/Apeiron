@@ -269,8 +269,8 @@ Visualiser::UpdateScene()
       CurrentScene_ = CurrentScene_->NextScene_;
    }
 
-   // Update models in current scene
-   CurrentScene_->UpdateModels(current_time);
+   // Update all actors in the current scene.
+   CurrentScene_->UpdateActors(current_time);
 }
 
 void

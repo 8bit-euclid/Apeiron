@@ -57,7 +57,7 @@ class Scene
 
    void Init(Real start_time);
 
-   void UpdateModels(Real current_time);
+   void UpdateActors(const Real current_time);
 
    void RenderDirecShadows(Shader& shader);
 

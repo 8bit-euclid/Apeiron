@@ -34,6 +34,18 @@ ModelGroup::Delete() { FOR_EACH(sub_model, SubModels_) sub_model->Delete(); }
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
 ModelGroup&
+ModelGroup::SetName(const std::string& name)
+{
+   Name_ = name;
+   FOR(i, SubModels_.size())
+   {
+      auto sub_model = SubModels_[i];
+      if(sub_model->Name().empty()) sub_model->SetName(name + "_" + ToString(i));
+   }
+   return *this;
+}
+
+ModelGroup&
 ModelGroup::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
 
 ModelGroup&

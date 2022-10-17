@@ -49,7 +49,10 @@
 - [x] Check for possible double Gamma correction between HDR and blur shaders
 - [x] Investigate Texture move constructor/assignment bug
 - [x] Fix border shrinking bug during off-screen rendering
+- [ ] Fix shadows
+- [ ] Remove shader's point/spot light count reliance.
 - [ ] Investigate possible bug causing asymmetry in point light sources
+- [ ] Investigate single triangle and cube render weird issues.
 - [ ] Fix parallax occlusion bug
 
 **Minor**

@@ -35,64 +35,15 @@ Model::Model(Model&& other) noexcept
 
 Model::~Model() { Delete(); }
 
-void
-Model::Update(const Real global_time)
-{
-   Reset();
-   FOR_EACH(_, action, Actions_) action->Do(global_time);
-}
-
-void
-Model::Render(Shader& shader)
-{
-   constexpr int slot_offset(3); // TODO - currently hard-coded.
-
-   if(Initialised())
-   {
-      if(Material_.has_value()) shader.UseMaterial(Material_.value());
-      if(!Textures_.empty())
-      {
-         size_t texture_index = 0;
-         FOR_EACH(type_string, texture, Textures_)
-         {
-            // Configure respective texture uniform.
-            const auto& uniform_name = TextureUniformString(type_string);
-            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
-            shader.SetUniform1i("u_use_" + uniform_name, 1);
-
-            // Set scale if this is a displacement map.
-            if(GetTextureType(type_string) == TextureType::Displacement)
-            {
-               const auto scale = texture.MapScale();
-               shader.SetUniform1f("u_" + uniform_name + "_scale", scale);
-            }
-         }
-      }
-
-      shader.UseModel(*this);
-      DrawElements();
-
-      // Switch off texture maps and unbind texture.
-      if(TextureRequest_.has_value())
-         FOR_EACH(type_string, texture, Textures_)
-         {
-            shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
-            texture.Unbind();
-         }
-   }
-}
-
-void
-Model::Delete()
-{
-   VBO_.Delete();
-   VAO_.Delete();
-   EBO_.Delete();
-   if(SSBO_.has_value()) SSBO_->Delete();
-}
-
 /** Set Model Attributes
 ***************************************************************************************************************************************************************/
+Model&
+Model::SetName(const std::string& name)
+{
+   Name_ = name;
+   return *this;
+}
+
 Model&
 Model::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
 
@@ -230,6 +181,7 @@ Model::operator=(const Model& model)
    ASSERT(!model.Init_, "Cannot yet copy assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
+   Name_           = model.Name_;
    Mesh_           = model.Mesh_;
    TextureRequest_ = model.TextureRequest_;
    Material_       = model.Material_;
@@ -253,6 +205,7 @@ Model::operator=(Model&& model) noexcept
    ASSERT(!model.Init_, "Cannot yet move assign from a model if it has already been initialised.")
 
    // NOTE: Should NOT overwrite the original buffer IDs of VAO, VBO, and EBO.
+   Name_           = std::move(model.Name_);
    Mesh_           = std::move(model.Mesh_);
    TextureRequest_ = std::move(model.TextureRequest_);
    Material_       = std::move(model.Material_);
@@ -319,7 +272,58 @@ Model::ComputeLifespan()
 }
 
 void
-Model::LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) { Textures_ = texture_map; }
+Model::LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map)
+{
+   Textures_       = texture_map;
+   TextureRequest_ = std::nullopt; // Can nullify as it is no longer required.
+}
+
+void
+Model::Update(const Real global_time)
+{
+   Reset();
+   FOR_EACH(_, action, Actions_) action->Do(global_time);
+}
+
+void
+Model::Render(Shader& shader)
+{
+   constexpr int slot_offset(3); // TODO - currently hard-coded.
+
+   if(Initialised())
+   {
+      if(Material_.has_value()) shader.UseMaterial(Material_.value());
+      if(!Textures_.empty())
+      {
+         size_t texture_index = 0;
+         FOR_EACH(type_string, texture, Textures_)
+         {
+            // Configure respective texture uniform.
+            const auto& uniform_name = TextureUniformString(type_string);
+            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
+            shader.SetUniform1i("u_use_" + uniform_name, 1);
+
+            // Set scale if this is a displacement map.
+            if(GetTextureType(type_string) == TextureType::Displacement)
+            {
+               const auto scale = texture.MapScale();
+               shader.SetUniform1f("u_" + uniform_name + "_scale", scale);
+            }
+         }
+      }
+
+      shader.UseModel(*this);
+      DrawElements();
+
+      // Switch off texture maps and unbind texture.
+      if(!Textures_.empty())
+         FOR_EACH(type_string, texture, Textures_)
+         {
+            shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
+            texture.Unbind();
+         }
+   }
+}
 
 void
 Model::DrawElements() const
@@ -332,6 +336,15 @@ Model::DrawElements() const
       EBO_.Unbind();
       VAO_.Unbind();
    }
+}
+
+void
+Model::Delete()
+{
+   VBO_.Delete();
+   VAO_.Delete();
+   EBO_.Delete();
+   if(SSBO_.has_value()) SSBO_->Delete();
 }
 
 }
