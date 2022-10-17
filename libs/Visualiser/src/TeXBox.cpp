@@ -145,6 +145,13 @@ TeXBox::SetFontSize(const UChar font_size)
 }
 
 TeXBox&
+TeXBox::SetName(const std::string& name)
+{
+   ModelGroup::SetName(name);
+   return *this;
+}
+
+TeXBox&
 TeXBox::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba_colour}); }
 
 TeXBox&

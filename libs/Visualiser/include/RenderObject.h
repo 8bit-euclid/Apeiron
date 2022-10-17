@@ -34,6 +34,14 @@ class RenderObject
  public:
    virtual ~RenderObject() = default;
 
+   virtual void Init() = 0;
+
+   virtual bool Initialised() const = 0;
+
+   virtual void ComputeLifespan() = 0;
+
+   virtual void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) = 0;
+
    virtual void Update(Real global_time) = 0;
 
    virtual void Render(Shader& shader) = 0;
@@ -42,6 +50,8 @@ class RenderObject
 
    /** Set Object Attributes
    ************************************************************************************************************************************************************/
+   virtual RenderObject& SetName(const std::string& name) = 0;
+
    virtual RenderObject& SetColour(const SVectorR4& rgba_colour) = 0;
 
    virtual RenderObject& SetColour(const Colour& colour) = 0;
@@ -86,18 +96,7 @@ class RenderObject
 
    inline const auto& ExitTime() const { return ExitTime_; }
 
-   virtual bool Initialised() const = 0;
-
  protected:
-   friend class ModelGroup;
-   friend class Scene;
-
-   virtual void Init() = 0;
-
-   virtual void ComputeLifespan() = 0;
-
-   virtual void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) = 0;
-
    std::string  Name_;
    Real         EntryTime_{Zero};
    Real         ExitTime_{InfFloat<>};

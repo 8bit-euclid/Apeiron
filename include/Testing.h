@@ -60,13 +60,13 @@ inline void Cube()
    scene.Add(model);
 
    // Lighting
-   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
-   sun.SetName("Sun");
-   scene.Add(sun);
+//   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+//   sun.SetName("Sun");
+//   scene.Add(sun);
 
-//   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
-//   point_light.SetName("Light");
-//   scene.Add(point_light);
+   PointLight point_light(glm::vec3(0.0, -0.5, -2.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5, {0.01, 0.5, 0.5});
+   point_light.SetName("Light");
+   scene.Add(point_light);
 
    visualiser.Add(scene);
    visualiser.Animate();
@@ -77,16 +77,19 @@ inline void RotatingCube()
    Visualiser visualiser;
    Scene scene;
    Model model;
-//   TeXBox tex_box;
+   TeXBox tex_box;
 
-//   tex_box.Add(R"(This is a test: $e = mc^2$.)")
-//          .SetPixelDensity(2000)
-//          .OffsetPosition({0.0f, 2.0f, 2.0f});
-//   scene.Add(tex_box);
+   // TeX-box
+   tex_box.SetName("TeX-box")
+          .Add(R"(This is a test: $e = mc^2$.)")
+          .SetPixelDensity(2000)
+          .OffsetPosition({0.0f, 2.0f, 2.0f});
+   scene.Add(tex_box);
 
    // Cube
    model = ModelFactory::Cube(1.0);
-   model.SetColour({1.0, 1.0, 1.0, 1.0})
+   model.SetName("Cube")
+        .SetColour({1.0, 1.0, 1.0, 1.0})
         .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
         .Trace([](Real t){ return SVectorR3{Three * std::sin(TwoThird * t), Zero, Zero }; }, 2.0);
    scene.Add(model);
@@ -94,7 +97,8 @@ inline void RotatingCube()
    // Floor
    const Real height_scale = 0.08;
    model = ModelFactory::Square(10.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Floor")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({0.0f, -2.0f, 0.0f})
         .OffsetOrientation(-HalfPi, {1.0f, 0.0f, 0.0f});
@@ -102,14 +106,16 @@ inline void RotatingCube()
 
    // Wall 0
    model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Wall 0")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({2.5f, 0.5f, -5.0f});
    scene.Add(model);
 
    // Wall 1
    model = ModelFactory::Square(5.0);
-   model.SetMaterial("Brick", 0.8, 256.0)
+   model.SetName("Wall 1")
+        .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
         .OffsetPosition({-2.5f, 0.5f, -5.0f});
    scene.Add(model);

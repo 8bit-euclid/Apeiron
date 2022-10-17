@@ -53,6 +53,8 @@ class ModelGroup : public RenderObject
 
    /** Set Model Group Attributes
    ************************************************************************************************************************************************************/
+   ModelGroup& SetName(const std::string& name) override;
+
    ModelGroup& SetColour(const SVectorR4& rgba_colour) override;
 
    ModelGroup& SetColour(const Colour& colour) override;

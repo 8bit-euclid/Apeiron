@@ -69,6 +69,8 @@ class TeXBox final : public TeXObject,
 
    TeXBox& SetFontSize(const UChar font_size);
 
+   TeXBox& SetName(const std::string& name) override;
+
    TeXBox& SetColour(const SVectorR4& rgba_colour) override;
 
    TeXBox& SetColour(const Colour& colour) override;

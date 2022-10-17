@@ -43,14 +43,10 @@ class Model : public RenderObject
 
    ~Model();
 
-   void Update(Real global_time) override;
-
-   void Render(Shader& shader) override;
-
-   void Delete() override;
-
    /** Set Model Attributes
    ************************************************************************************************************************************************************/
+   Model& SetName(const std::string& name) override;
+
    Model& SetColour(const SVectorR4& rgba_colour) override;
 
    Model& SetColour(const Colour& colour) override;
@@ -116,7 +112,13 @@ class Model : public RenderObject
 
    void LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_map) override;
 
+   void Update(Real global_time) override;
+
+   void Render(Shader& shader) override;
+
    void DrawElements() const;
+
+   void Delete() override;
 
    inline void Reset() { ModelMatrix_ = glm::mat4(1.0); }
 
