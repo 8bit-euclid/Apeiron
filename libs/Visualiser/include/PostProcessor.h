@@ -68,6 +68,7 @@ class PostProcessor
    Model                     ScreenQuad_;
    UInt                      Width_;
    UInt                      Height_;
+   bool                      Init_{};
    constexpr static UInt     SampleCount_{32}; // For MSAA
    inline static std::string Default_ = "Default";
 };

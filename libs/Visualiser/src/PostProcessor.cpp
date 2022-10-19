@@ -35,6 +35,8 @@ PostProcessor::Init(Pair<GLint> dimensions)
    // Create rectangular screen-filling quad (a square in normalised device coordinates) to draw each texture to.
    ScreenQuad_ = ModelFactory::ScreenQuad();
    ScreenQuad_.Init();
+
+   Init_ = true;
 }
 
 void
@@ -131,6 +133,7 @@ PostProcessor::InitBlurBuffers()
 void
 PostProcessor::StartWrite() const
 {
+   DEBUG_ASSERT(Init_, "The postprocessor has not yet been initialised.")
    MultiSampledImage_.FBO.Bind();
    ClearFrameBuffer();
 }
@@ -138,6 +141,7 @@ PostProcessor::StartWrite() const
 void
 PostProcessor::StopWrite() const
 {
+   DEBUG_ASSERT(Init_, "The postprocessor has not yet been initialised.")
    ResolveFrameBuffer();
    MultiSampledImage_.FBO.Unbind();
 }
@@ -159,13 +163,15 @@ PostProcessor::ResolveFrameBuffer() const
 void
 PostProcessor::Render()
 {
+   DEBUG_ASSERT(Init_, "The postprocessor has not yet been initialised.")
+
    GLCall(glClearColor(1.0f, 1.0f, 1.0f, 1.0f))
    GLCall(glClear(GL_COLOR_BUFFER_BIT))
    GLCall(glDisable(GL_DEPTH_TEST))
 
    // Apply Gaussian blur.
-   DArray<FrameImage*> buffers = {&BlurBuffers_.at("Ping"),
-                                  &BlurBuffers_.at("Pong")};
+   DArray<FrameImage*> buffers = { &BlurBuffers_.at("Ping"),
+                                   &BlurBuffers_.at("Pong") };
    const size_t n_passes = 6;
    bool horizontal = true;
    auto& blur_shader = Shaders_.at("Blur");

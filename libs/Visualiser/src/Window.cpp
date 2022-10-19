@@ -48,6 +48,10 @@ Window::Open(const GLint width, const GLint height)
    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
 
+   // Anti-aliasing properties
+   glfwWindowHint(GLFW_SAMPLES, 32);
+   GLCall(glEnable(GL_MULTISAMPLE))
+
    // Create a window and its OpenGL context.
    WindowDimensions_ = {width, height };
    GLFWWindow_ = glfwCreateWindow(width, height, "Apeiron", nullptr, nullptr);

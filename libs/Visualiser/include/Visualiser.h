@@ -105,6 +105,7 @@ class Visualiser
    GUI                 GUI_;
    bool                ViewPortModified_{};
    bool                HideCursor_{false};
+   bool                PostProcess_{false};
 };
 
 }
