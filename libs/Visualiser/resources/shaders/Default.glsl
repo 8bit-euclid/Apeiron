@@ -162,6 +162,7 @@ void main()
 // Global constants
 const int   Max_Point_Lights = 4;
 const int   Max_Spot_Lights  = 4;
+const float Gamma            = 2.2;
 const vec3  Sample_Offset_Directions[20] = { vec3( 1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
                                              vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
                                              vec3( 1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
@@ -208,6 +209,7 @@ uniform Material         u_material;
 uniform bool      u_use_diffuse_map;
 uniform bool      u_use_normal_map;
 uniform bool      u_use_displacement_map;
+uniform bool      u_use_postprocessor;
 uniform float     u_point_light_far_plane;
 uniform float     u_displacement_map_scale;
 uniform sampler2D u_diffuse_map;
@@ -365,6 +367,8 @@ vec2 CalculateParallax()
    return final_tex_coord;
 }
 
+vec4 GammaCorrect(vec4 colour) { return vec4(pow(colour.rgb, vec3(1.0f / Gamma)), colour.a); }
+
 void main()
 {
    const vec2 texture_coord   = CalculateParallax();
@@ -379,7 +383,13 @@ void main()
    // Blend lighting and material colours.
    fragment_colour = vec4(lighting_colour.rgb * material_colour.rgb, material_colour.a);
 
-   // If the fragment brightness is higher than the threshold, write to bloom colour buffer.
-   float brightness = dot(fragment_colour.rgb, vec3(0.2126, 0.7152, 0.0722));
-   bloom_colour     = brightness > 1.0 ? fragment_colour : vec4(0.0, 0.0, 0.0, 1.0);
+   // Either gamma-correct or post-process.
+   if(!u_use_postprocessor) fragment_colour = GammaCorrect(fragment_colour);
+   else
+   {
+      // If the fragment brightness is higher than the threshold, write to bloom colour buffer.
+      float brightness = dot(fragment_colour.rgb, vec3(0.2126, 0.7152, 0.0722));
+      bloom_colour     = brightness > 1.0 ? fragment_colour : vec4(0.0, 0.0, 0.0, 1.0);
+   }
+
 }

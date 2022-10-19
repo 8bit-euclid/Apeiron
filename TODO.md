@@ -16,34 +16,37 @@
 - [x] Multi-sampled frame buffer attachments
 - [x] Update shadow shaders to account for transparency
 - [x] ImGui re-integration
+- [x] RenderDoc debugger
+- [x] Deprecate String
+- [x] Implement post-processing switch
+- [ ] TeX glyph spacing
+- [ ] Resurrect line shader
+- [ ] Texture coordinate transformation uniforms in shaders
+- [ ] Background texture embedding
 - [ ] Add GUI switches for post-processing effects
 - [ ] LaTeX text/math rendering
-- [ ] Deprecate String
 - [ ] Background texture embedding onto text
-- [ ] Texture coordinate transformation uniforms in shaders
-- [ ] Resurrect line shader
-- [ ] Enable copy constructors of all buffer objects
+- [ ] Implement copy constructors for all buffer objects
 - [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
-- [ ] RenderDoc debugger
 - [ ] Convert LaTeX textures into SDFs
-- [ ] SDF text rendering
-- [ ] Perlin noise generator
-- [ ] Curl noise generator
+- [ ] ModelGroup loading using Assimp
 - [ ] Implement MSAA frame buffers for directional/point shadow maps
 - [ ] Motion blur
 - [ ] Deferred rendering
 - [ ] Screen-space ambient occlusion (SSAO)
-- [ ] PBR
+- [ ] PBR pipeline
 - [ ] GDB debugger
-- [ ] ModelGroup loading using Assimp
+- [ ] SDF text rendering
+- [ ] Perlin noise generator
+- [ ] Curl noise generator
 - [ ] Depth of field
 - [ ] Vulkan integration
-- [ ] Ray-tracing
-- [ ] Gnuplot writer
-- [ ] Pyplot writer
+- [ ] Ray-tracing pipeline
 - [ ] Wireframe vs solid models
 - [ ] Resurrect spotlights
+- [ ] Gnuplot writer
+- [ ] Pyplot writer
 
 **Bugs**
 - [x] Check for possible double Gamma correction between HDR and blur shaders

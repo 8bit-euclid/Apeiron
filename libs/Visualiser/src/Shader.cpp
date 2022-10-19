@@ -124,6 +124,9 @@ Shader::UseLight(const Light& light)
    else EXIT("Cannot yet handle the given light type.")
 }
 
+void
+Shader::UsePostProcessor(bool status) { SetUniform1i("u_use_postprocessor", static_cast<GLint>(status)); }
+
 void Shader::SetDirectionalShadowMap(const UInt slot) { SetUniform1i("u_direct_light.Shadow", slot); }
 
 void Shader::SetPointShadowMap(const size_t i_point_light, const UInt slot) { SetUniform1i("u_point_lights[" + ToString(i_point_light) + "].Shadow", slot); }
