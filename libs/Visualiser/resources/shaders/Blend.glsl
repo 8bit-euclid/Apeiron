@@ -39,7 +39,6 @@ void main()
     vec4 hdr_colour  = texture(u_hdr_texture , v_texture_coordinate);
     vec4 blur_colour = texture(u_blur_texture, v_texture_coordinate);
 
-//    hdr_colour       = ToneMap(hdr_colour + blur_colour); // Additive blending -> tone mapping
-    hdr_colour       = ToneMap(hdr_colour); // Additive blending -> tone mapping
+    hdr_colour       = ToneMap(hdr_colour + blur_colour); // Additive blending -> tone mapping
     fragment_colour  = GammaCorrect(hdr_colour);
 }

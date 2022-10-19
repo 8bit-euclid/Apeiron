@@ -129,12 +129,14 @@ Scene::RenderPointShadows(Shader& shader)
 }
 
 void
-Scene::RenderScene(Shader& shader, Camera& camera)
+Scene::RenderScene(Shader& shader, Camera& camera, const bool post_process)
 {
    ASSERT(DLights_.size() <= 1, "Can currently only handle at most one directional light.")
 
    shader.Bind();
+
    shader.UseCamera(camera);
+   shader.UsePostProcessor(post_process);
 
    if(!DLights_.empty())
    {

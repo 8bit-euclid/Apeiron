@@ -74,6 +74,8 @@ class Shader
 
    void UseLight(const Light& light);
 
+   void UsePostProcessor(bool status);
+
    void SetDirectionalShadowMap(const UInt slot);
 
    void SetPointShadowMap(const size_t i_point_light, const UInt slot);
