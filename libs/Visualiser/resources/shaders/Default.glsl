@@ -373,12 +373,13 @@ void main()
 {
    const vec2 texture_coord   = CalculateParallax();
    const vec4 material_colour = u_use_diffuse_map ? texture(u_diffuse_map, texture_coord) : v_data_in.Colour;
-   const vec4 lighting_colour = CalculateDirectionalLight(texture_coord) +
-                                CalculatePointLights(texture_coord) +
-                                CalculateSpotLights(texture_coord);
 
    // Discard fragment if transparent.
    if(material_colour.a < 0.0001) discard;
+
+   const vec4 lighting_colour = CalculateDirectionalLight(texture_coord) +
+                                CalculatePointLights(texture_coord) +
+                                CalculateSpotLights(texture_coord);
 
    // Blend lighting and material colours.
    fragment_colour = vec4(lighting_colour.rgb * material_colour.rgb, material_colour.a);
