@@ -63,7 +63,7 @@ class Scene
 
    void RenderPointShadows(Shader& shader);
 
-   void RenderScene(Shader& shader, Camera& camera);
+   void RenderScene(Shader& shader, Camera& camera, bool post_process);
 
    void RenderModels(Shader& shader);
 

@@ -237,7 +237,7 @@ Visualiser::InitShaders()
 }
 
 void
-Visualiser::InitPostProcessor() { PostProcessor_.Init(Window_.ViewportDimensions()); }
+Visualiser::InitPostProcessor() { if(PostProcess_) PostProcessor_.Init(Window_.ViewportDimensions()); }
 
 void
 Visualiser::BeginFrame()
@@ -300,17 +300,17 @@ Visualiser::RenderScene()
    Window_.ResetViewport();
 
    // Write to off-screen frame buffer.
-   PostProcessor_.StartWrite();
+   if(PostProcess_) PostProcessor_.StartWrite();
 
    // Render all elements of the current scene.
-   CurrentScene_->RenderScene(Shaders_.at("Default"), *ActiveCamera_);
+   CurrentScene_->RenderScene(Shaders_.at("Default"), *ActiveCamera_, PostProcess_);
 
    // Finalise off-screen render.
-   PostProcessor_.StopWrite();
+   if(PostProcess_) PostProcessor_.StopWrite();
 }
 
 void
-Visualiser::PostProcess() { PostProcessor_.Render(); }
+Visualiser::PostProcess() { if(PostProcess_) PostProcessor_.Render(); }
 
 void
 Visualiser::RenderGUIWindow()
