@@ -34,9 +34,12 @@ TeXGlyph::Set(const std::string& tex_str)
 {
    DEBUG_ASSERT(isGlyphString(tex_str), "The following string does not yet qualify as a glyph: ", tex_str)
 
-   Text_      = tex_str;
-   AddSpacer_ = isSpacerRequired(tex_str);
-   if(AddSpacer_) Text_ += TeXSpacer::Text();
+   Text_ = tex_str;
+   if(TeXSpacer::isRequired(tex_str))
+   {
+      AddSpacer_ = true;
+      Text_ += TeXSpacer::Text();
+   }
 
    return *this;
 }

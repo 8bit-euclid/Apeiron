@@ -25,6 +25,8 @@ struct TeXSpacer
 {
    inline Real Offset(const Real glyph_anchor_x, const bool spacer_after)
    {
+      if(!Enabled_) return Zero;
+
       if(glyph_anchor_x < Threshold_) Offset_ = Zero;
       Threshold_ = glyph_anchor_x;
 
@@ -33,12 +35,17 @@ struct TeXSpacer
       return current_offset;
    }
 
-   static std::string Text() { return "\\hspace{" + std::to_string(Size_) + "pt}"; }
+   inline static std::string Text() { return Enabled_ ? "\\hspace{" + std::to_string(Size_) + "pt}" : ""; }
+
+   inline static bool isRequired(const std::string_view& tex_str) { return Enabled_ && tex_str == OneOf("s"); }
+
+   inline static void Disable() { Enabled_ = false; }
 
  private:
    Real                 Offset_{};
    Real                 Threshold_{-LowestFloat<>};
    constexpr static int Size_{1}; // In LaTeX points (pt)
+   inline static bool   Enabled_{true};
 };
 
 }

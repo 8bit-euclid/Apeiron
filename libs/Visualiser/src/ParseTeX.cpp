@@ -67,7 +67,4 @@ isGlyphString(const std::string_view& tex_str)
    return false;
 }
 
-bool
-isSpacerRequired(const std::string_view& tex_str) { return tex_str == OneOf("s"); }
-
 }
