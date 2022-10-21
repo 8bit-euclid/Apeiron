@@ -24,20 +24,17 @@
 - [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Background texture embedding
 - [ ] Add GUI switches for post-processing effects
-- [ ] LaTeX text/math rendering
-- [ ] Background texture embedding onto text
 - [ ] Implement copy constructors for all buffer objects
 - [ ] Simple visualisation of lights and cameras
 - [ ] Toggles/sliders for all visualiser settings
-- [ ] Convert LaTeX textures into SDFs
+- [ ] Convert LaTeX textures into SDFs for depth effects
 - [ ] ModelGroup loading using Assimp
+- [ ] Get GDB debugger working in CLion
 - [ ] Implement MSAA frame buffers for directional/point shadow maps
 - [ ] Motion blur
 - [ ] Deferred rendering
 - [ ] Screen-space ambient occlusion (SSAO)
 - [ ] PBR pipeline
-- [ ] GDB debugger
-- [ ] SDF text rendering
 - [ ] Perlin noise generator
 - [ ] Curl noise generator
 - [ ] Depth of field

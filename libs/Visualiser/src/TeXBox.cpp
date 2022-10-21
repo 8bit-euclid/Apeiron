@@ -192,19 +192,20 @@ TeXBox::InitTeXBox(const size_t id)
    GlyphSheet_.Init(id, Text_);
    ASSERT(GlyphSheet_.Width() && GlyphSheet_.Height(), "The dimensions of the glyph sheet must be computed before those of the TeXBox.")
 
-   // Compute the world-space dimensions by converting glyph sheet dimensions from scaled point dimensions.
+   // Compute the world-space dimensions from the glyph-sheet dimensions, which are currently expressed in scaled points.
    Dimensions_ = { GlyphSheet_.Width(), GlyphSheet_.Height() };
-   Dimensions_ *= GlyphSheet::FontSizeScale(FontSize_);
+   Dimensions_ *= GlyphSheet::FontSizeScale(FontSize_); // Scaled points -> points -> world-space * font-size.
 
    // Compute the sub-glyph dimensions and their texture coordinates.
-   ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_);
+   TeXSpacer spacer;
+   ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_, spacer);
 }
 
 void
 TeXBox::InitTeXObject(GlyphSheet::IndexT& index_offset)
 {
    // Initialise sub-boxes and add contributions to the TeX-box string, if it has not already been set.
-   auto set_text = Text_.empty();
+   const auto set_text = Text_.empty();
    FOR_EACH(sub_box, SubBoxes_)
    {
       sub_box->InitTeXObject(index_offset);
@@ -213,10 +214,11 @@ TeXBox::InitTeXObject(GlyphSheet::IndexT& index_offset)
 }
 
 void
-TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
+TeXBox::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+                          TeXSpacer& spacer)
 {
    FOR_EACH(sub_box, SubBoxes_)
-      sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions);
+      sub_box->ComputeDimensions(glyph_sheet, font_size, texbox_anchor, texbox_dimensions, spacer);
 }
 
 fm::Path
