@@ -26,7 +26,7 @@ class ParseTeXTest : public testing::Test
    ParseTeXTest() {}
 
    void
-   SetUp() override {}
+   SetUp() override { TeXSpacer::Disable(); }
 };
 
 /***************************************************************************************************************************************************************
