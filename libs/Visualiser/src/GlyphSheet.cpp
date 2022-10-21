@@ -22,7 +22,7 @@ GlyphSheet::Init(size_t id, const std::string& text)
 {
    ASSERT(!text.empty(), "The TeXBox being compiled has no text.")
 
-   // Set the compile directory for this glyph sheet.
+   // Set the compile-directory for this glyph sheet.
    CompileDirectory_ = LaTeXDirectory() / ("texbox" + ToString(id));
 
    // Compile LaTeX and generate image.

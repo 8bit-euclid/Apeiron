@@ -67,16 +67,20 @@ class GlyphSheet
 
    inline void SetPixelDensity(const UInt density) { PixelDensity_ = density; }
 
-   inline static Real FontSizeScale(const UChar font_size) { return FontSize10Scale_ * static_cast<Real>(font_size) / Ten; }
+   constexpr static Real PointSize() { return PointSize_; }
+
+   constexpr static Real ScaledPointsToPointsFactor() { return One / 65536.0; }
+
+   constexpr static Real FontSizeScale(const UChar font_size) { return ScaledPointsToPointsFactor() * PointSize_ * static_cast<Real>(font_size); }
 
  private:
    DArray<GlyphBox>      Boxes_;
    fm::Path              CompileDirectory_;
    fm::Path              TeXFile_;
-   Int64                 Width_{};
-   Int64                 Height_{};
-   UInt16                PixelDensity_{2000};               // Measured in DPI.
-   constexpr static Real FontSize10Scale_ = 0.5 / 655360.0; // Height of a 10pt font size converted from LaTeX scaled points (1pt = 65536sp) to world-space.
+   Int64                 Width_{};            // Width in units of LaTeX scaled points (sp).
+   Int64                 Height_{};           // Height in units of LaTeX scaled points (sp).
+   UInt16                PixelDensity_{3000}; // Measured in DPI.
+   constexpr static Real PointSize_{0.005};   // Height of 1pt (in LaTeX) in world-space.
 };
 
 /***************************************************************************************************************************************************************

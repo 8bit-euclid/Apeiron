@@ -19,6 +19,7 @@
 #include "ModelGroup.h"
 #include "TeXObject.h"
 #include "TeXGlyph.h"
+#include "TeXSpacer.h"
 
 namespace aprn::vis {
 
@@ -86,15 +87,16 @@ class TeXBox final : public TeXObject,
 
    void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+                          TeXSpacer& spacer) override;
 
    fm::Path ImagePath() const;
 
    DArray<SPtr<TeXObject>> SubBoxes_;
    GlyphSheet              GlyphSheet_;
-   SVectorR2               Dimensions_{}; // [width, height] in world-space.
-   SVectorR3               Anchor_{};     // Bottom-left corner in world-space.
-   UChar                   FontSize_{10}; // Defaults to a 10pt font.
+   SVectorR2               Dimensions_{}; // [width, height] in world-space coordinates.
+   SVectorR3               Anchor_{};     // Bottom-left corner in world-space coordinates.
+   UChar                   FontSize_{10}; // In units of LaTeX points (pt).
 
    /** Friendly unit tests */
    friend class ParseTeXTest_ParseTeXObject_Test;
