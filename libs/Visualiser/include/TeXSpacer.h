@@ -15,41 +15,37 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "DataContainer/include/Array.h"
-#include "Colour.h"
 #include "GlyphSheet.h"
-#include "TeXSpacer.h"
 
 #include <string>
 
 namespace aprn::vis {
 
-class TeXObject
+struct TeXSpacer
 {
- public:
-   virtual ~TeXObject() = default;
+   inline Real Offset(const Real glyph_anchor_x, const bool spacer_after)
+   {
+      if(!Enabled_) return Zero;
 
-   virtual TeXObject& SetColour(const SVectorR4& rgba_colour) = 0;
+      if(glyph_anchor_x < Threshold_) Offset_ = Zero;
+      Threshold_ = glyph_anchor_x;
 
-   virtual TeXObject& SetColour(const Colour& colour) = 0;
+      const auto current_offset = -Offset_;
+      if(spacer_after) Offset_ += Size_ * GlyphSheet::PointSize();
+      return current_offset;
+   }
 
-   virtual TeXObject& SetItalic(bool is_italic) = 0;
+   inline static std::string Text() { return Enabled_ ? "\\hspace{" + std::to_string(Size_) + "pt}" : ""; }
 
-   virtual TeXObject& SetBold(bool is_bold) = 0;
+   inline static bool isRequired(const std::string_view& tex_str) { return Enabled_ && tex_str == OneOf("s"); }
 
-   virtual void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
-                                  TeXSpacer& spacer) = 0;
+   inline static void Disable() { Enabled_ = false; }
 
-   virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
-
-   inline void SetText(const std::string& text) { Text_ = text; }
-
-   inline void AddText(const std::string& text) { Text_ += text; }
-
-   inline const auto& Text() const { return Text_; }
-
- protected:
-   std::string Text_;
+ private:
+   Real                 Offset_{};
+   Real                 Threshold_{-LowestFloat<>};
+   constexpr static int Size_{1}; // In LaTeX points (pt)
+   inline static bool   Enabled_{true};
 };
 
 }
