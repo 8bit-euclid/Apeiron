@@ -33,24 +33,11 @@ TeXGlyph&
 TeXGlyph::Set(const std::string& tex_str)
 {
    DEBUG_ASSERT(isGlyphString(tex_str), "The following string does not yet qualify as a glyph: ", tex_str)
-   Text_ = tex_str;
-   return *this;
-}
 
-TeXGlyph&
-TeXGlyph::Add(const char tex_char) { return Add(std::string{tex_char}); }
+   Text_      = tex_str;
+   AddSpacer_ = isSpacerRequired(tex_str);
+   if(AddSpacer_) Text_ += TeXSpacer::Text();
 
-TeXGlyph&
-TeXGlyph::Add(const std::string& str)
-{
-   Text_.append(str);
-   return *this;
-}
-
-TeXGlyph&
-TeXGlyph::Add(std::string&& str)
-{
-   Text_.append(std::move(str));
    return *this;
 }
 
@@ -95,34 +82,44 @@ TeXGlyph::InitTeXObject(GlyphSheet::IndexT& index_offset)
 }
 
 void
-TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions)
+TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+                            TeXSpacer& spacer)
 {
    if(!Rendered()) return;
 
    ASSERT(Init_, "The glyph must be initialise before its dimensions are computed.")
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(Index_);
-   const auto  scale      = GlyphSheet::FontSizeScale(font_size);
-   SVectorR2   dimensions; // Dimensions of the glyph in the xy-plane in world-space coordinates.
-   SVectorR2   anchor;     // Bottom-left corner of the glyph in world-space coordinates.
+   const auto  xy_scale   = GlyphSheet::FontSizeScale(font_size);
+   const auto  y_scale    = 1.01; // Some glyphs slightly exceed the vertical bounds of the bounding box (e.g. m, e, 2).
+   SVectorR2   glyph_dims;        // Dimensions of the glyph in the xy-plane in world-space coordinates.
+   SVectorR2   glyph_anchor;      // Bottom-left corner of the glyph in world-space coordinates.
 
-   dimensions.x() = scale * static_cast<Real>(glyph_info.Width);
-   dimensions.y() = scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
-   anchor         = scale * SVectorR2{ glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
+   // Compute the scaled glyph dimensions.
+   glyph_dims.x()    = xy_scale * static_cast<Real>(glyph_info.Width);
+   glyph_dims.y()    = xy_scale * y_scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   glyph_anchor      = xy_scale * SVectorR2{glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
+
+   // Ensure the glyph's vertical bounds haven't exceeded that of the tex-box after scaling.
+   if(glyph_anchor.y() + glyph_dims.y() > texbox_dimensions.y()) Clip(glyph_dims.y(), Zero, texbox_dimensions.y() - glyph_anchor.y());
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
-   Mesh_ = ModelFactory::Rectangle(dimensions.x(), dimensions.y()).ModelMesh();
-   auto set_tex_coor = [&](const size_t i, const SVectorR2& point) { Mesh_.Vertices_[i].TextureCoordinates =
-                                                                     glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
-   set_tex_coor(0, anchor);
-   set_tex_coor(1, anchor + SVectorR2{ dimensions.x(), Zero });
-   set_tex_coor(2, anchor + dimensions);
-   set_tex_coor(3, anchor + SVectorR2{ Zero, dimensions.y() });
+   Mesh_ = ModelFactory::Rectangle(glyph_dims.x(), glyph_dims.y()).ModelMesh();
+   auto set_tex_coor = [&](const size_t i, const SVectorR2& point)
+      { Mesh_.Vertices_[i].TextureCoordinates = glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
+   set_tex_coor(0, glyph_anchor);
+   set_tex_coor(1, glyph_anchor + SVectorR2{glyph_dims.x(), Zero });
+   set_tex_coor(2, glyph_anchor + glyph_dims);
+   set_tex_coor(3, glyph_anchor + SVectorR2{Zero, glyph_dims.y() });
+
+   // Apply cumulative spacer offsets scaled by the font size. Note: it is very important that this be added after texture coordinates are computed, since the
+   // positive offsets (following characters requiring spacers) in the texture itself still remain.
+   glyph_anchor.x() += font_size * spacer.Offset(glyph_anchor.x(), AddSpacer_);
 
    // Offset the glyph w.r.t. the parent tex-box's anchor. Also need to offset by half the glyph's dimensions as the glyph's rectangle is centred on the origin.
-   anchor += Half * SVectorR2{ dimensions.x(), dimensions.y() };
-   anchor += SVectorR2{ texbox_anchor.x(), texbox_anchor.y() };
-   OffsetPosition(ToVector<3>(anchor));
+   glyph_anchor += Half * SVectorR2{glyph_dims.x(), glyph_dims.y() };
+   glyph_anchor += SVectorR2{texbox_anchor.x(), texbox_anchor.y() };
+   OffsetPosition(ToVector<3>(glyph_anchor));
 
    // Initialise underlying model.
    Model::Init();

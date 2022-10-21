@@ -19,7 +19,8 @@ namespace aprn::vis {
 /***************************************************************************************************************************************************************
 * TeX Parsing Functions
 ***************************************************************************************************************************************************************/
-SPtr<TeXGlyph> ParseTeXChar(const char c)
+SPtr<TeXGlyph>
+ParseTeXChar(const char c)
 {
    auto glyph = std::make_shared<TeXGlyph>(c);
    if(c == OneOf(' ', '\t', '\n', '$')) glyph->DoNotRender();
@@ -36,7 +37,8 @@ ParseTeXString(const std::string& str)
 /***************************************************************************************************************************************************************
 * TeX Parsing Helper Functions
 ***************************************************************************************************************************************************************/
-bool isGlyphString(const std::string_view& tex_str)
+bool
+isGlyphString(const std::string_view& tex_str)
 {
    if(tex_str.empty()) return false;
 
@@ -64,5 +66,8 @@ bool isGlyphString(const std::string_view& tex_str)
    }
    return false;
 }
+
+bool
+isSpacerRequired(const std::string_view& tex_str) { return tex_str == OneOf("s"); }
 
 }

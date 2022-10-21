@@ -20,6 +20,7 @@
 #include "Model.h"
 #include "GlyphSheet.h"
 #include "TeXObject.h"
+#include "TeXSpacer.h"
 
 #include <optional>
 
@@ -31,19 +32,13 @@ class TeXGlyph final : public TeXObject,
  public:
    TeXGlyph() = default;
 
-   explicit TeXGlyph(const char tex_char);
+   explicit TeXGlyph(char tex_char);
 
    explicit TeXGlyph(const std::string& tex_str);
 
-   TeXGlyph& Set(const char tex_char);
+   TeXGlyph& Set(char tex_char);
 
    TeXGlyph& Set(const std::string& tex_str);
-
-   TeXGlyph& Add(const char tex_char);
-
-   TeXGlyph& Add(const std::string& str);
-
-   TeXGlyph& Add(std::string&& str);
 
    TeXGlyph& SetColour(const SVectorR4& rgba_colour) override;
 
@@ -58,18 +53,18 @@ class TeXGlyph final : public TeXObject,
    inline bool Rendered() const { return Render_; }
 
  private:
-   friend class TeXBox;
-
    void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions) override;
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+                          TeXSpacer& spacer) override;
 
-   GlyphSheet::IndexT    Index_{MaxInt<GlyphSheet::IndexT>};
-   std::optional<Colour> Colour_;
-   std::optional<bool>   isItalic_;
-   std::optional<bool>   isBold_;
-   bool                  Render_{true};
-   bool                  Init_{false};
+   GlyphSheet::IndexT        Index_{MaxInt<GlyphSheet::IndexT>};
+   std::optional<Colour>     Colour_;
+   std::optional<bool>       isItalic_;
+   std::optional<bool>       isBold_;
+   bool                      Render_{true};
+   bool                      AddSpacer_{false};
+   bool                      Init_{false};
 };
 
 }

@@ -50,6 +50,8 @@ std::pair<DArray<SPtr<TeXObject>>, std::string> ParseAllTeXScriptText(It& curren
 ***************************************************************************************************************************************************************/
 bool isGlyphString(const std::string_view& tex_str);
 
+bool isSpacerRequired(const std::string_view& tex_str);
+
 template<CharIterator It>
 bool isTeXCommandEnd(const It current, const It last);
 

@@ -15,41 +15,30 @@
 #pragma once
 
 #include "../../../include/Global.h"
-#include "DataContainer/include/Array.h"
-#include "Colour.h"
 #include "GlyphSheet.h"
-#include "TeXSpacer.h"
 
 #include <string>
 
 namespace aprn::vis {
 
-class TeXObject
+struct TeXSpacer
 {
- public:
-   virtual ~TeXObject() = default;
+   inline Real Offset(const Real glyph_anchor_x, const bool spacer_after)
+   {
+      if(glyph_anchor_x < Threshold_) Offset_ = Zero;
+      Threshold_ = glyph_anchor_x;
 
-   virtual TeXObject& SetColour(const SVectorR4& rgba_colour) = 0;
+      const auto current_offset = -Offset_;
+      if(spacer_after) Offset_ += Size_ * GlyphSheet::PointSize();
+      return current_offset;
+   }
 
-   virtual TeXObject& SetColour(const Colour& colour) = 0;
+   static std::string Text() { return "\\hspace{" + std::to_string(Size_) + "pt}"; }
 
-   virtual TeXObject& SetItalic(bool is_italic) = 0;
-
-   virtual TeXObject& SetBold(bool is_bold) = 0;
-
-   virtual void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
-                                  TeXSpacer& spacer) = 0;
-
-   virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
-
-   inline void SetText(const std::string& text) { Text_ = text; }
-
-   inline void AddText(const std::string& text) { Text_ += text; }
-
-   inline const auto& Text() const { return Text_; }
-
- protected:
-   std::string Text_;
+ private:
+   Real                 Offset_{};
+   Real                 Threshold_{-LowestFloat<>};
+   constexpr static int Size_{1}; // In LaTeX points (pt)
 };
 
 }
