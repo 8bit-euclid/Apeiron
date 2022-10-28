@@ -108,7 +108,7 @@ struct IndexBuffer : public detail::Buffer<BufferType::EBO>
 
    void Load(const DArray<GLuint>& indices);
 
-   inline size_t IndexCount() const { return IndexCount_; }
+   inline auto IndexCount() const { return IndexCount_; }
 
  protected:
    size_t IndexCount_;
@@ -151,18 +151,6 @@ struct RenderBuffer : public detail::Buffer<BufferType::RBO>
  private:
    size_t SampleCount_;
    bool   MultiSampled_;
-};
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-struct ShaderStorageBuffer : public detail::Buffer<BufferType::SSBO>
-{
-   void Init(DArray<glm::vec4>& data);
-
-   void BindBase() const;
-
-   void Load(DArray<glm::vec4>& data) const;
 };
 
 }

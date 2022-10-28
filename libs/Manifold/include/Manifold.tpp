@@ -26,42 +26,42 @@ Manifold<D, manifold_dim, ambient_dim>::Manifold()
 
 template<class D, size_t manifold_dim, size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Manifold<D, manifold_dim, ambient_dim>::Point(const std::convertible_to<Real> auto... _params)
+Manifold<D, manifold_dim, ambient_dim>::Point(const std::convertible_to<Real> auto... params)
 {
-   ParamCountCheck(_params...);
-   return ComputePoint(SVectorR<manifold_dim>{_params...});
+   ParamCountCheck(params...);
+   return ComputePoint(SVectorR<manifold_dim>{params...});
 }
 
 template<class D, size_t manifold_dim, size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Manifold<D, manifold_dim, ambient_dim>::Tangent(const std::convertible_to<Real> auto... _params)
+Manifold<D, manifold_dim, ambient_dim>::Tangent(const std::convertible_to<Real> auto... params)
 {
-   ParamCountCheck(_params...);
-   return ComputeTangent(SVectorR<manifold_dim>{_params...});
+   ParamCountCheck(params...);
+   return ComputeTangent(SVectorR<manifold_dim>{params...});
 }
 
 template<class D, size_t manifold_dim, size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Manifold<D, manifold_dim, ambient_dim>::Bitangent(const std::convertible_to<Real> auto... _params)
+Manifold<D, manifold_dim, ambient_dim>::Bitangent(const std::convertible_to<Real> auto... params)
 {
-   ParamCountCheck(_params...);
-   return ComputeBitangent(SVectorR<manifold_dim>{_params...});
+   ParamCountCheck(params...);
+   return ComputeBitangent(SVectorR<manifold_dim>{params...});
 }
 
 template<class D, size_t manifold_dim, size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Manifold<D, manifold_dim, ambient_dim>::Normal(const std::convertible_to<Real> auto... _params)
+Manifold<D, manifold_dim, ambient_dim>::Normal(const std::convertible_to<Real> auto... params)
 {
-   ParamCountCheck(_params...);
-   return ComputeNormal(SVectorR<manifold_dim>{_params...});
+   ParamCountCheck(params...);
+   return ComputeNormal(SVectorR<manifold_dim>{params...});
 }
 
 template<class D, size_t manifold_dim, size_t ambient_dim>
 constexpr void
-Manifold<D, manifold_dim, ambient_dim>::ParamCountCheck(const std::convertible_to<Real> auto... _params) const
+Manifold<D, manifold_dim, ambient_dim>::ParamCountCheck(const std::convertible_to<Real> auto... params) const
 {
-   STATIC_ASSERT(sizeof...(_params) == manifold_dim,
-                "Expected ", manifold_dim, " parameter/s from a ", manifold_dim, "-manifold, but got ", sizeof...(_params), ".")
+   STATIC_ASSERT(sizeof...(params) == manifold_dim,
+                "Expected ", manifold_dim, " parameter/s from a ", manifold_dim, "-manifold, but got ", sizeof...(params), ".")
 }
 
 }

@@ -48,7 +48,7 @@ constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 ***************************************************************************************************************************************************************/
 enum class ActionType // NOTE: The order here is important - higher-up actions must be performed first.
 {
-   /** Model centroid invariant actions. */
+   /** Model centroid-invariant actions. */
    RampUp,
    RampDown,
    Scale,
@@ -56,7 +56,7 @@ enum class ActionType // NOTE: The order here is important - higher-up actions m
    RotateBy,
    RotateAt,
 
-   /** Model centroid variant actions. */
+   /** Model centroid-variant actions. */
    OffsetPosition,
    Reflect,
    RevolveBy,
@@ -76,6 +76,9 @@ enum class ActionType // NOTE: The order here is important - higher-up actions m
    Glow,
    Blink
 };
+
+enum class RampType  { Trace, Scale, Fade, Blur };
+enum class BlinkType { Sine, Triangle, Square };
 
 inline std::string
 ActionTypeString(const ActionType type)
@@ -108,9 +111,6 @@ ActionTypeString(const ActionType type)
       default:                             throw "Unrecognised action type.";
    }
 }
-
-enum class RampType { Trace, Scale, Fade, Blur };
-enum class BlinkType { Sine, Triangle, Square };
 
 /** NOTE: This custom comparator must order the above actions in reverse order, as OpenGL post-multiplies the model matrix for each new action. */
 struct ActionTypeComparator { bool operator()(const ActionType& a, const ActionType& b) const { return static_cast<size_t>(a) > static_cast<size_t>(b); } };
@@ -161,7 +161,7 @@ class ActionBase
  protected:
    friend class Model;
 
-   std::optional<Real> ComputeParameter(Real global_time);
+   Option<Real> ComputeParameter(Real global_time);
 
    Model*                    Actor_;
    ActionType                Type_;

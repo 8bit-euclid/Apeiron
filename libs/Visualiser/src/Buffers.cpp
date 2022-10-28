@@ -34,10 +34,10 @@ Buffer<T>::Init()
 {
    ASSERT(glfwGetCurrentContext(), "Cannot intialise buffer without an OpenGL context.")
 
-   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &ID_)) }
-   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &ID_)) }
-   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &ID_)) }
-   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &ID_)) }
+   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) GLCall(glGenBuffers(1, &ID_))
+   else if(T == BT::VAO)                                GLCall(glGenVertexArrays(1, &ID_))
+   else if(T == BT::FBO)                                GLCall(glGenFramebuffers(1, &ID_))
+   else if(T == BT::RBO)                                GLCall(glGenRenderbuffers(1, &ID_))
    else throw "Cannot initialise buffer - unrecognised buffer type.";
 }
 
@@ -234,27 +234,6 @@ RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei h
    if(MultiSampled_) GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, SampleCount_, format, width, height))
    else              GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height))
    Unbind();
-}
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-void
-ShaderStorageBuffer::Init(DArray<glm::vec4>& data)
-{
-   Buffer::Init();
-   Bind();
-   Load(data);
-   Unbind();
-}
-
-void
-ShaderStorageBuffer::BindBase() const { GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ID_)) }
-
-void
-ShaderStorageBuffer::Load(DArray<glm::vec4>& data) const
-{
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW))
 }
 
 }

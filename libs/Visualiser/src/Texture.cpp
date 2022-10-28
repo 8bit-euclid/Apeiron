@@ -213,7 +213,7 @@ TextureUniformString(const std::string& type_string) { return TextureUniformStri
 std::string
 TextureDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
 
-std::optional<std::string>
+Option<std::string>
 TexturePath(const std::string& file_directory, const TextureType type)
 {
    const auto& texture_str = TextureTypeString(type);
@@ -226,7 +226,7 @@ TexturePath(const std::string& file_directory, const TextureType type)
          if(flmgr::FileExists(file_path + ext))
          {
             file_path.append(ext);
-            return std::make_optional<std::string>(file_path);
+            return std::make_optional(file_path);
          }
       return std::nullopt;
    }

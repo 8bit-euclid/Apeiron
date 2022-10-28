@@ -18,6 +18,7 @@ set(SOURCE_FILES
         include/ModelGroup.h
         include/ParseTeX.h
         include/ParseTeX.tpp
+        include/PathTracer.h
         include/PostProcessor.h
         include/RenderObject.h
         include/Scene.h

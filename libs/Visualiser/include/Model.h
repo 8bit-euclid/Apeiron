@@ -132,20 +132,19 @@ class Model : public RenderObject
    template<class T> using UMap = std::unordered_map<std::string, T>;
    using ActionMap = std::multimap<ActionType, SPtr<ActionBase>, ActionTypeComparator>;
 
-   Mesh                                   Mesh_;
-   VertexArray                            VAO_;
-   VertexBuffer                           VBO_;
-   IndexBuffer                            EBO_;
-   std::optional<ShaderStorageBuffer>     SSBO_;
-   ActionMap                              Actions_;
-   std::optional<Pair<std::string, Real>> TextureRequest_; // [texture name, displacement map scale]
-   UMap<Texture&>                         Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
-   std::optional<Material>                Material_;
-   Colour                                 StrokeColour_;
-   Colour                                 FillColour_;
-   glm::vec3                              Centroid_;
-   glm::mat4                              ModelMatrix_{1.0f};
-   glm::mat4                              PastActions_{1.0f};
+   Mesh                            Mesh_;
+   VertexArray                     VAO_;
+   VertexBuffer                    VBO_;
+   IndexBuffer                     EBO_;
+   ActionMap                       Actions_;
+   Option<Material>                Material_;
+   Option<Pair<std::string, Real>> TextureRequest_; // [texture name, displacement map scale]
+   UMap<Texture&>                  Textures_;       // Textures (diffuse, height, normal, etc.) used by this model.
+   Colour                          StrokeColour_;
+   Colour                          FillColour_;
+   glm::vec3                       Centroid_;
+   glm::mat4                       ModelMatrix_{1.0f};
+   glm::mat4                       PastActions_{1.0f};
 };
 
 }

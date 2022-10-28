@@ -31,7 +31,7 @@ inline void Triangle()
    Model model;
 
    // Triangle
-   model = ModelFactory::Triangle(1.0);
+   model = ModelFactory::Triangle(1.0, false);
    model.SetColour({1.0, 1.0, 1.0, 1.0});
    scene.Add(model);
 
@@ -98,7 +98,7 @@ inline void RotatingCube()
 
    // Floor
    const Real height_scale = 0.08;
-   model = ModelFactory::Square(10.0);
+   model = ModelFactory::Square(10.0, false);
    model.SetName("Floor")
         .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
@@ -107,7 +107,7 @@ inline void RotatingCube()
    scene.Add(model);
 
    // Wall 0
-   model = ModelFactory::Square(5.0);
+   model = ModelFactory::Square(5.0, false);
    model.SetName("Wall 0")
         .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
@@ -115,7 +115,7 @@ inline void RotatingCube()
    scene.Add(model);
 
    // Wall 1
-   model = ModelFactory::Square(5.0);
+   model = ModelFactory::Square(5.0, false);
    model.SetName("Wall 1")
         .SetMaterial("Brick", 0.8, 256.0)
         .SetTexture("Brick", "Wall", 1, 2, height_scale)
@@ -148,7 +148,7 @@ inline void EuclidsElementsEp1()
    scene.Add(tex_box);
 
    // Paper sheet
-   model = ModelFactory::Square(10.0);
+   model = ModelFactory::Square(10.0, false);
    model.SetMaterial("Paper", 0.1, 64.0)
         .SetTexture("Paper", 2, 4, 0.02);
    scene.Add(model);

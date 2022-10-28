@@ -79,7 +79,7 @@ bool
 BaseFile<wide>::isReadable() const
 {
    DEBUG_ASSERT(isOpen(), "The file is not yet open.")
-   if(!Readable_.has_value()) Readable_ = Mode::Read == OneOf(Modes_);
+   if(!Readable_) Readable_ = Mode::Read == OneOf(Modes_);
    return Readable_.value();
 }
 
@@ -88,7 +88,7 @@ bool
 BaseFile<wide>::isWritable() const
 {
    DEBUG_ASSERT(isOpen(), "The file is not yet open.")
-   if(!Writable_.has_value()) Writable_ = std::any_of(Modes_.begin(), Modes_.end(), [](auto m){ return m == OneOf(Mode::Write, Mode::Append, Mode::Truncate); });
+   if(!Writable_) Writable_ = std::any_of(Modes_.begin(), Modes_.end(), [](auto m){ return m == OneOf(Mode::Write, Mode::Append, Mode::Truncate); });
    return Writable_.value();
 }
 

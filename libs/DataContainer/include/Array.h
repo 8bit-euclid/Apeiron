@@ -153,6 +153,18 @@ using DArrayU = DArray<size_t>;
 using DArrayI = DArray<int>;
 using DArrayF = DArray<Real>;
 
+/***************************************************************************************************************************************************************
+* Static Array Conversion
+***************************************************************************************************************************************************************/
+template<size_t N, size_t M, typename T>
+constexpr SArray<T, N>
+ToArray(const SArray<T, M>& from)
+{
+   SArray<T, N> to;
+   std::copy(from.begin(), (from.begin() + Min(M, N)), to.begin());
+   return to;
+}
+
 }
 
 #include "Array.tpp"

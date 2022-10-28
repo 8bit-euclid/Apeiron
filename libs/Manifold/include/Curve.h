@@ -32,32 +32,31 @@ using Curve = Manifold<D, 1, ambient_dim>;
 template<size_t ambient_dim = 2>
 class Line : public Curve<Line<ambient_dim>, ambient_dim>
 {
- public:
-   constexpr Line(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& coordinate = SVectorR<ambient_dim>{});
+   using Vector     = SVectorR<ambient_dim>;
+   using Coordinate = Vector;
+   using Parameter  = SVectorR1;
 
-   constexpr void
-   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
+ public:
+   constexpr Line(const Vector& direction, const Coordinate& coordinate = Coordinate{});
+
+   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  protected:
    friend Curve<Line<ambient_dim>, ambient_dim>;
 
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeTangent(const SVectorR1& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeBitangent(const SVectorR1& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeNormal(const SVectorR1& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   SVectorR<ambient_dim> Direction;
-   SVectorR<ambient_dim> Coordinate0;
-   Real DirectionMagnitude;
-   Real Normaliser;
-   bool isUnitSpeed{false};
+   Vector     Direction;
+   Coordinate Start;
+   Real       DirectionNorm;
+   Real       Normaliser;
+   bool       UnitSpeed{false};
 };
 
 /** Ray
@@ -65,12 +64,15 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Ray final : public Line<ambient_dim>
 {
+   using Vector     = SVectorR<ambient_dim>;
+   using Coordinate = Vector;
+   using Parameter  = SVectorR1;
+
  public:
-   constexpr Ray(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& _start = SVectorR<ambient_dim>{});
+   constexpr Ray(const Vector& direction, const Coordinate& start = Coordinate{});
 
  private:
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
 };
 
 /** Segment
@@ -78,16 +80,18 @@ class Ray final : public Line<ambient_dim>
 template<size_t ambient_dim = 2>
 class Segment final : public Line<ambient_dim>
 {
- public:
-   constexpr Segment(const SVectorR<ambient_dim>& _start, const SVectorR<ambient_dim>& _end);
+   using Coordinate = SVectorR<ambient_dim>;
+   using Parameter  = SVectorR1;
 
-   constexpr Real Length() const noexcept { return this->DirectionMagnitude; }
+ public:
+   constexpr Segment(const Coordinate& start, const Coordinate& end);
+
+   constexpr Real Length() const noexcept { return this->DirectionNorm; }
 
  private:
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
-
    template<size_t dim> friend class SegmentChain;
+
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
 };
 
 /** Segment Chain
@@ -95,31 +99,30 @@ class Segment final : public Line<ambient_dim>
 template<size_t ambient_dim = 2>
 class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 {
+   using Vector     = SVectorR<ambient_dim>;
+   using Coordinate = Vector;
+   using Parameter  = SVectorR1;
+
  public:
    template<class D>
-   SegmentChain(const Array<SVectorR<ambient_dim>, D>& vertices, const bool _is_closed = false);
+   SegmentChain(const Array<Coordinate, D>& vertices, bool is_closed = false);
 
-   constexpr void
-   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
+   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeTangent(const SVectorR1& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeBitangent(const SVectorR1& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeNormal(const SVectorR1& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   DynamicArray<Segment<ambient_dim>> Segments;
-   DynamicArray<Real> CumulativeLengths;
-   Real ChainLength;
-   bool isClosed;
-   bool isUnitSpeed{false};
+   DArray<Segment<ambient_dim>> Segments;
+   DArray<Real>                 CumulativeLengths;
+   Real                         ChainLength;
+   bool                         Closed;
+   bool                         UnitSpeed{false};
 };
 
 /***************************************************************************************************************************************************************
@@ -131,31 +134,30 @@ class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 {
- public:
-   Circle(const Real radius, const SVectorR<ambient_dim>& _centre = SVectorR<ambient_dim>{});
+   using Vector     = SVectorR<ambient_dim>;
+   using Coordinate = Vector;
+   using Parameter  = SVectorR1;
 
-   constexpr void
-   SetIfUnitSpeed(const bool is_unit_speed) noexcept { isUnitSpeed = is_unit_speed; }
+ public:
+   Circle(const Real radius, const Coordinate& centre = Coordinate{});
+
+   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
-
-   constexpr SVectorR<ambient_dim>
-   ComputeTangent(const SVectorR1& t) override;
-
-   constexpr SVectorR<ambient_dim>
-   ComputeBitangent(const SVectorR1& t) override;
-
-   constexpr SVectorR<ambient_dim>
-   ComputeNormal(const SVectorR1& t) override;
-
-   SVectorR<ambient_dim> Centre;
-   Real Radius;
-   Real Normaliser;
-   bool isUnitSpeed{false};
-
    friend Curve<Circle<ambient_dim>, ambient_dim>;
+
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
+
+   constexpr Vector ComputeTangent(const Parameter& t) override;
+
+   constexpr Vector ComputeBitangent(const Parameter& t) override;
+
+   constexpr Vector ComputeNormal(const Parameter& t) override;
+
+   Coordinate Centre;
+   Real       Radius;
+   Real       Normaliser;
+   bool       UnitSpeed{false};
 };
 
 /** Ellipse
@@ -163,27 +165,27 @@ class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
 {
+   using Vector     = SVectorR<ambient_dim>;
+   using Coordinate = Vector;
+   using Parameter  = SVectorR1;
+
  public:
-   Ellipse(const Real _x_radius, const Real _y_radius, const SVectorR<ambient_dim>& _centre = SVectorR<ambient_dim>{});
+   Ellipse(const Real x_radius, const Real y_radius, const Coordinate& centre = Coordinate{});
 
  private:
    friend Curve<Ellipse<ambient_dim>, ambient_dim>;
 
-   SVectorR<ambient_dim> Centre;
-   Real RadiusX;
-   Real RadiusY;
+   constexpr Coordinate ComputePoint(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputePoint(const SVectorR1& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeTangent(const SVectorR1& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeBitangent(const SVectorR1& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   constexpr SVectorR<ambient_dim>
-   ComputeNormal(const SVectorR1& t) override;
+   Coordinate Centre;
+   Real       RadiusX;
+   Real       RadiusY;
 };
 
 /***************************************************************************************************************************************************************

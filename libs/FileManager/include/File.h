@@ -80,11 +80,11 @@ class BaseFile
    bool isWritable() const;
 
    using FileStream = std::basic_fstream<ConditionalType<char, wchar_t>>;
-   Path                        Path_;
-   FileStream                  Stream_;
-   DArray<Mode>                Modes_;
-   mutable std::optional<bool> Readable_;
-   mutable std::optional<bool> Writable_;
+   Path                 Path_;
+   FileStream           Stream_;
+   DArray<Mode>         Modes_;
+   mutable Option<bool> Readable_;
+   mutable Option<bool> Writable_;
 };
 
 typedef BaseFile<false> File;
