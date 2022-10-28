@@ -164,11 +164,6 @@ Scene::RenderScene(Shader& shader, Camera& camera, const bool post_process)
 void
 Scene::RenderModels(Shader& shader)
 {
-   // Line segment
-//    shader_storage_buffer.BindBase();
-//    GLsizei N2 = (GLsizei)varray.size() - 2;
-//    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
-
    shader.SetUniform1i("u_use_diffuse_map"     , 0);
    shader.SetUniform1i("u_use_normal_map"      , 0);
    shader.SetUniform1i("u_use_displacement_map", 0);

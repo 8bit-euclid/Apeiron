@@ -181,7 +181,7 @@ Visualiser::InitTextures()
    FOR_EACH(scene, Scenes_)
       FOR_EACH_CONST(actor, scene.Actors_)
          if(auto model = std::dynamic_pointer_cast<Model>(actor))
-            if(model->TextureRequest().has_value())
+            if(model->TextureRequest())
             {
                const auto& texture_info = model->TextureRequest().value();
                const auto& texture_name = texture_info.first;
@@ -196,7 +196,7 @@ Visualiser::InitTextures()
                   FOR_EACH_CONST(texture_type, texture_list)
                   {
                      const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
-                     if(path.has_value())
+                     if(path)
                      {
                         texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
                         if(texture_type == TextureType::Displacement)

@@ -40,18 +40,18 @@ ActionBase::ActionBase(Model& model, const ActionType action_type, const Real st
 ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Reparametriser ramp)
    : Actor_(&model), Type_(action_type), StartTime_(start_time), EndTime_(InfFloat<>), Ramp_(ramp) {}
 
-std::optional<Real>
+Option<Real>
 ActionBase::ComputeParameter(const Real global_time)
 {
    const auto local_time = global_time - StartTime_;
 
-   if(isTimeParametrised(Type_)) return std::optional(isNegative(local_time) ? -One : local_time);
+   if(isTimeParametrised(Type_)) return std::make_optional(isNegative(local_time) ? -One : local_time);
    else
    {
       const auto param =
-         global_time <= EndTime_ ? std::optional(isNegative(local_time) ? -One : Reparametriser_(ParamNormaliser_ * local_time)) : std::nullopt;
+         global_time <= EndTime_ ? std::make_optional(isNegative(local_time) ? -One : Reparametriser_(ParamNormaliser_ * local_time)) : std::nullopt;
 
-      if(param.has_value() && isPositive(param.value()))
+      if(param && isPositive(param.value()))
       ASSERT((isBounded<true, true, true>(param.value(), Zero, One)), "The parameter must be in the [0, 1] range.")
       return param;
    }

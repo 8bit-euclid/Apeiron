@@ -37,33 +37,33 @@ class Manifold
    constexpr Manifold();
 
    constexpr Vect
-   Point(const std::convertible_to<Real> auto... _params);
+   Point(const std::convertible_to<Real> auto... params);
 
    constexpr Vect
-   Tangent(const std::convertible_to<Real> auto... _params);
+   Tangent(const std::convertible_to<Real> auto... params);
 
    constexpr Vect
-   Bitangent(const std::convertible_to<Real> auto... _params);
+   Bitangent(const std::convertible_to<Real> auto... params);
 
    constexpr Vect
-   Normal(const std::convertible_to<Real> auto... _params);
+   Normal(const std::convertible_to<Real> auto... params);
 
  protected:
    virtual constexpr Vect
-   ComputePoint(const Param& _params) = 0;
+   ComputePoint(const Param& params) = 0;
 
    virtual constexpr Vect
-   ComputeTangent(const Param& _params) = 0;
+   ComputeTangent(const Param& params) = 0;
 
    virtual constexpr Vect
-   ComputeBitangent(const Param& _params) = 0;
+   ComputeBitangent(const Param& params) = 0;
 
    virtual constexpr Vect
-   ComputeNormal(const Param& _params) = 0;
+   ComputeNormal(const Param& params) = 0;
 
  private:
    constexpr void
-   ParamCountCheck(const std::convertible_to<Real> auto... _params) const;
+   ParamCountCheck(const std::convertible_to<Real> auto... params) const;
 
    /** Derived Class Access */
    constexpr D&

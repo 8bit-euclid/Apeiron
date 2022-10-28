@@ -50,21 +50,21 @@ TeXGlyph::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba
 TeXGlyph&
 TeXGlyph::SetColour(const Colour& colour)
 {
-   if(!Colour_.has_value()) Colour_ = colour;
+   if(!Colour_) Colour_ = colour;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetItalic(const bool is_italic)
 {
-   if(!isItalic_.has_value()) isItalic_ = is_italic;
+   if(!Italic_) Italic_ = is_italic;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetBold(const bool is_bold)
 {
-   if(!isBold_.has_value()) isBold_ = is_bold;
+   if(!Bold_) Bold_ = is_bold;
    return *this;
 }
 
@@ -107,7 +107,7 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
    if(glyph_anchor.y() + glyph_dims.y() > texbox_dimensions.y()) Clip(glyph_dims.y(), Zero, texbox_dimensions.y() - glyph_anchor.y());
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
-   Mesh_ = ModelFactory::Rectangle(glyph_dims.x(), glyph_dims.y()).ModelMesh();
+   Mesh_ = ModelFactory::Rectangle(glyph_dims.x(), glyph_dims.y(), false).ModelMesh();
    auto set_tex_coor = [&](const size_t i, const SVectorR2& point)
       { Mesh_.Vertices_[i].TextureCoordinates = glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
    set_tex_coor(0, glyph_anchor);

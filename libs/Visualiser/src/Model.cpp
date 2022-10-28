@@ -251,7 +251,7 @@ Model::Init()
 
    // Add vertex buffer to vertex array object.
    VAO_.Bind();
-   VAO_.AddBuffer(VBO_, Mesh_.GetVertexLayout());
+   VAO_.AddBuffer(VBO_, Mesh_.VertexLayout());
    VAO_.Unbind();
 
    Init_ = true;
@@ -292,7 +292,7 @@ Model::Render(Shader& shader)
 
    if(Initialised())
    {
-      if(Material_.has_value()) shader.UseMaterial(Material_.value());
+      if(Material_) shader.UseMaterial(Material_.value());
       if(!Textures_.empty())
       {
          size_t texture_index = 0;
@@ -330,6 +330,7 @@ Model::DrawElements() const
 {
    if(Init_)
    {
+      // Model main body
       VAO_.Bind();
       EBO_.Bind();
       GLCall(glDrawElements(GL_TRIANGLES, EBO_.IndexCount(), GL_UNSIGNED_INT, nullptr))
@@ -344,7 +345,6 @@ Model::Delete()
    VBO_.Delete();
    VAO_.Delete();
    EBO_.Delete();
-   if(SSBO_.has_value()) SSBO_->Delete();
 }
 
 }

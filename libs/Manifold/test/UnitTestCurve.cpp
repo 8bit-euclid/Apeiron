@@ -63,7 +63,7 @@ TEST_F(CurveTest, Line)
   FOR(i, 3) EXPECT_DOUBLE_EQ(p[i], centre[i] - direction[i]);
 
   // Unit speed parametrised
-  line.SetIfUnitSpeed(true);
+  line.MakeUnitSpeed();
   const Real random = RandomReal();
   p = line.Point(random);
   FOR(i, 3) EXPECT_NEAR(p[i], centre[i] + random * norm_direction[i], Two * Small);
@@ -93,7 +93,7 @@ TEST_F(CurveTest, Ray)
   EXPECT_THROW(ray.Point(-Small), std::domain_error);
 
   // Unit speed parametrised
-  ray.SetIfUnitSpeed(true);
+  ray.MakeUnitSpeed();
   RandomReal.Reset(Zero, Ten);
   const Real random = RandomReal();
   p = ray.Point(random);
@@ -126,7 +126,7 @@ TEST_F(CurveTest, Segment)
   EXPECT_THROW(segment.Point(One + Ten * Small), std::domain_error);
 
   // Unit speed parametrised
-  segment.SetIfUnitSpeed(true);
+  segment.MakeUnitSpeed();
   RandomReal.Reset(Zero, magnitude);
   const Real random = RandomReal();
   p = segment.Point(random);
@@ -195,7 +195,7 @@ TEST_F(CurveTest, SegmentChain)
   EXPECT_THROW(chain.Point(One + Small), std::domain_error);
 
   // Unit speed parametrised
-  chain.SetIfUnitSpeed(true);
+  chain.MakeUnitSpeed();
   RandomReal.Reset(Zero, chain_length);
   random = RandomReal();
   p = chain.Point(Zero);
@@ -262,7 +262,7 @@ TEST_F(CurveTest, Circle)
   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] - radius * yAxis2[i]);
 
   // Unit speed parametrised
-  circle.SetIfUnitSpeed(true);
+  circle.MakeUnitSpeed();
   RandomReal.Reset(-Ten, Ten);
   const Real random = RandomReal();
   p = circle.Point(random);

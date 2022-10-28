@@ -58,13 +58,13 @@ class TeXGlyph final : public TeXObject,
    void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
                           TeXSpacer& spacer) override;
 
-   GlyphSheet::IndexT        Index_{MaxInt<GlyphSheet::IndexT>};
-   std::optional<Colour>     Colour_;
-   std::optional<bool>       isItalic_;
-   std::optional<bool>       isBold_;
-   bool                      Render_{true};
-   bool                      AddSpacer_{false};
-   bool                      Init_{false};
+   GlyphSheet::IndexT Index_{MaxInt<GlyphSheet::IndexT>};
+   Option<Colour>     Colour_;
+   Option<bool>       Italic_;
+   Option<bool>       Bold_;
+   bool               Render_{true};
+   bool               AddSpacer_{false};
+   bool               Init_{false};
 };
 
 }

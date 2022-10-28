@@ -31,67 +31,69 @@ namespace aprn::vis {
 
 class ModelFactory
 {
- private:
+   using Vector = SVector3<float>;
+   using Point  = SVector3<float>;
+
    ModelFactory() = default;
 
  public:
    /** 1D parts
    ************************************************************************************************************************************************************/
-   static Model Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1);
+   static Model Segment(const Point& p0, const Point& p1, float line_width = 0.1);
 
-   template<class... svectors>
-   static Model SegmentChain(const svectors&... vs);
+   static Model SegmentChain(const DArray<Point>& points, float line_width = 0.1);
+
+   static Model SegmentChain(const DArray<Point>& points, const Vector& miter0, const Vector& miter1, float line_width = 0.1);
+
+   static Model Arc(float radius, float angle, float line_width = Zero);
 
    /** 2D parts
    ************************************************************************************************************************************************************/
-   static Model Triangle(GLfloat length);
+   static Model Triangle(float length, float border_width = Zero);
 
-   static Model Triangle(GLfloat length, GLfloat height, GLfloat apex_ratio);
+   static Model Triangle(float length, float height, float apex_ratio, float border_width = Zero);
 
-   static Model Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2);
+   static Model Triangle(const SArray3<Point>& points, float border_width = Zero);
 
-   static Model Square(GLfloat length);
+   static Model Square(float length, float border_width = Zero);
 
-   static Model Rectangle(GLfloat length, GLfloat height);
+   static Model Rectangle(float length, float height, float border_width = Zero);
+
+   static Model Quadrilateral(const SArray4<Point>& points, float border_width = Zero);
+
+   static Model Polygon(const DArray<Point>& points, float border_width = Zero);
+
+   static Model Sector(float radius, float angle, float border_width = Zero);
+
+   static Model Circle(float radius, float border_width = Zero);
+
+   static Model Ellipse(float radius_x, float radius_y, float border_width = Zero);
 
    static Model ScreenQuad();
 
-   static Model Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
-
-   template<class... svectors>
-   static Model Polygon(const svectors&... vs);
-
-   static Model Arc(GLfloat radius, GLfloat angle);
-
-   static Model Sector(GLfloat radius, GLfloat angle);
-
-   static Model Circle(GLfloat radius);
-
-   static Model Ellipse(GLfloat radius_x, GLfloat radius_y);
-
    /** 3D parts
    ************************************************************************************************************************************************************/
-   static Model Tetrahedron(GLfloat length);
+   static Model Tetrahedron(float length);
 
-   static Model Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3);
+   static Model Tetrahedron(const SArray4<Point>& points);
 
-   static Model Cube(GLfloat length);
+   static Model Cube(float length);
 
-   static Model Cuboid(GLfloat length, GLfloat width, GLfloat height);
+   static Model Cuboid(float length, float width, float height);
 
-   static Model Octahedron(GLfloat length);
+   static Model Octahedron(float length);
 
-   static Model Dodecahedron(GLfloat length);
+   static Model Dodecahedron(float length);
 
-   static Model Icosahedron(GLfloat length);
+   static Model Icosahedron(float length);
 
-   static Model Sphere(GLfloat radius);
+   static Model Sphere(float radius);
 
-   static Model Ellipsoid(GLfloat radius_x, GLfloat radius_y, GLfloat radius_z);
+   static Model Ellipsoid(float radius_x, float radius_y, float radius_z);
 
-   static Model Cylinder(GLfloat radius, GLfloat height);
+   static Model Cylinder(float radius, float height);
 
-   static Model Cone(GLfloat radius, GLfloat height);
+   static Model Cone(float radius, float height);
 };
 
 }

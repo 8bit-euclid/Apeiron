@@ -18,6 +18,7 @@
 #include <concepts>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 namespace aprn {
@@ -130,6 +131,7 @@ template<class T> using SPtr = std::shared_ptr<T>;
 template<class T> using WPtr = std::weak_ptr<T>;
 template<class T> using RWpr = std::reference_wrapper<T>;
 
+template<class T> using Option = std::optional<T>;
 template<class T1, class T2 = T1> using Pair = std::pair<T1, T2>;
 
 /***************************************************************************************************************************************************************
