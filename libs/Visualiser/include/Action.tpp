@@ -73,7 +73,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param && isPositive(param.value())) Actor_->Scale(static_cast<float>(param.value()) * Scales);
+   if(param && Positive(param.value())) Actor_->Scale(static_cast<float>(param.value()) * Scales);
    else {} // Remove action
 }
 
@@ -126,7 +126,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param && isPositive(param.value())) Actor_->Translate(this->Displacement(param.value()));
+   if(param && Positive(param.value())) Actor_->Translate(this->Displacement(param.value()));
    else {} // Remove action
 }
 
@@ -161,7 +161,7 @@ void
 Action<type>::Do(const Real global_time)
 {
    const auto param = this->ComputeParameter(global_time);
-   if(param && isPositive(param.value()))
+   if(param && Positive(param.value()))
    {
       const bool is_revolution = type == ActionType::RevolveBy || type == ActionType::RevolveAt;
       if(is_revolution) Actor_->Translate(-Reference);

@@ -37,7 +37,7 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
    using Parameter  = SVectorR1;
 
  public:
-   constexpr Line(const Vector& direction, const Coordinate& coordinate = Coordinate{});
+   constexpr Line(const Vector& direction, const Coordinate& point = Coordinate{});
 
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
