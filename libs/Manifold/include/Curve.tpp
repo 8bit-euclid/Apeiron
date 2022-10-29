@@ -24,20 +24,20 @@ namespace aprn::mnfld {
 /** Line
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-constexpr Line<ambient_dim>::Line(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& point)
+constexpr Line<ambient_dim>::Line(const Vector& direction, const Vector& point)
    : Direction(direction), Start(point), DirectionNorm(Magnitude(Direction)), Normaliser(One / DirectionNorm) {}
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputePoint(const SVectorR1& t) { return Start + t[0] * (UnitSpeed ? Normaliser : One) * Direction; }
+Line<ambient_dim>::ComputePoint(const Parameter& t) { return Start + t[0] * (UnitSpeed ? Normaliser : One) * Direction; }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeTangent(const SVectorR1& t) { return (UnitSpeed ? Normaliser : One) * Direction; }
+Line<ambient_dim>::ComputeTangent([[maybe_unused]] const Parameter& t) { return (UnitSpeed ? Normaliser : One) * Direction; }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+Line<ambient_dim>::ComputeBitangent(const Parameter& t)
 {
    EXIT("TODO")
    return Direction;
@@ -45,7 +45,7 @@ Line<ambient_dim>::ComputeBitangent(const SVectorR1& t)
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeNormal(const SVectorR1& t)
+Line<ambient_dim>::ComputeNormal(const Parameter& t)
 {
    EXIT("TODO")
    return Direction;
@@ -54,12 +54,12 @@ Line<ambient_dim>::ComputeNormal(const SVectorR1& t)
 /** Ray
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-constexpr Ray<ambient_dim>::Ray(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& start)
+constexpr Ray<ambient_dim>::Ray(const Vector& direction, const Vector& start)
    : Line<ambient_dim>::Line(direction, start) {}
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Ray<ambient_dim>::ComputePoint(const SVectorR1& t)
+Ray<ambient_dim>::ComputePoint(const Parameter& t)
 {
    return Positive(t[0]) ? Line<ambient_dim>::ComputePoint(t) : throw std::domain_error("The parameter must be positive for rays.");
 }
@@ -67,23 +67,23 @@ Ray<ambient_dim>::ComputePoint(const SVectorR1& t)
 /** Segment
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-constexpr Segment<ambient_dim>::Segment(const SVectorR<ambient_dim>& start, const SVectorR<ambient_dim>& end)
+constexpr Segment<ambient_dim>::Segment(const Vector& start, const Vector& end)
    : Line<ambient_dim>::Line(end - start, start) {}
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Segment<ambient_dim>::ComputePoint(const SVectorR1& t)
+Segment<ambient_dim>::ComputePoint(const Parameter& t)
 {
-   const Real maxBound = this->UnitSpeed ? this->DirectionNorm : One;
-   return isBounded<true, true>(t[0], Zero, maxBound) ? Line<ambient_dim>::ComputePoint(t) :
-          throw std::domain_error("The parameter must be in the range [0, " + ToString(maxBound) + "] for this segment.");
+   const Real max_bound = this->UnitSpeed ? this->DirectionNorm : One;
+   return isBounded<true, true>(t[0], Zero, max_bound) ? Line<ambient_dim>::ComputePoint(t) :
+          throw std::domain_error("The parameter must be in the range [0, " + ToString(max_bound) + "] for this segment.");
 }
 
 /** SegmentChain
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
 template<class D>
-SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorR<ambient_dim>, D>& vertex_list, const bool is_closed)
+SegmentChain<ambient_dim>::SegmentChain(const Array<Vector, D>& vertex_list, const bool is_closed)
    : Closed(is_closed)
 {
    const auto& vertices = vertex_list.Derived();
@@ -91,7 +91,7 @@ SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorR<ambient_dim>, D>& v
    CumulativeLengths.reserve(vertices.size());
    ChainLength = Zero;
 
-   FOR(i, vertices.size() - static_cast<int>(!Closed))
+   FOR(i, vertices.size() - static_cast<size_t>(!Closed))
    {
       Segments.emplace_back(vertices[i], vertices[(i + 1) % vertices.size()]);
       Segments.back().MakeUnitSpeed();
@@ -103,12 +103,12 @@ SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorR<ambient_dim>, D>& v
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputePoint(const SVectorR1& t)
+SegmentChain<ambient_dim>::ComputePoint(const Parameter& t)
 {
-   const Real upper_bound = UnitSpeed ? ChainLength : One;
+   const Real upper_bound  = UnitSpeed ? ChainLength : One;
    const Real param_length = isBounded<true, true, true>(t[0], Zero, upper_bound) ? t[0] * (UnitSpeed ? One : ChainLength) :
                              throw std::domain_error("The parameter must be in the range [0, " + ToString(upper_bound) + "] for this segment.");
-   const auto iter = std::find_if(CumulativeLengths.begin(), CumulativeLengths.end(), [param_length](auto _l){ return param_length <= _l; });
+   const auto iter  = std::find_if(CumulativeLengths.begin(), CumulativeLengths.end(), [param_length](auto _l){ return param_length <= _l; });
    const auto index = std::distance(CumulativeLengths.begin(), iter);
    const Real param = param_length - (index != 0 ? CumulativeLengths[index - 1] : Zero);
 
@@ -118,21 +118,21 @@ SegmentChain<ambient_dim>::ComputePoint(const SVectorR1& t)
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeTangent(const SVectorR1& t)
+SegmentChain<ambient_dim>::ComputeTangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+SegmentChain<ambient_dim>::ComputeBitangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeNormal(const SVectorR1& t)
+SegmentChain<ambient_dim>::ComputeNormal(const Parameter& t)
 {
    EXIT("TODO")
 }
@@ -144,12 +144,12 @@ SegmentChain<ambient_dim>::ComputeNormal(const SVectorR1& t)
 /** Circle
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-Circle<ambient_dim>::Circle(const Real radius, const SVectorR<ambient_dim>& centre)
+Circle<ambient_dim>::Circle(const Real radius, const Vector& centre)
    : Centre(centre), Radius(radius), Normaliser(One/Radius) { ASSERT(Positive(radius), "A circle's radius cannot be negative.") }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputePoint(const SVectorR1& t)
+Circle<ambient_dim>::ComputePoint(const Parameter& t)
 {
    const auto s = t[0] * (UnitSpeed ? Normaliser : One);
    return ToVector<ambient_dim>(SVectorR3{Radius * Cos(s), Radius * Sin(s), Zero}) + Centre;
@@ -157,21 +157,21 @@ Circle<ambient_dim>::ComputePoint(const SVectorR1& t)
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeTangent(const SVectorR1& t)
+Circle<ambient_dim>::ComputeTangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+Circle<ambient_dim>::ComputeBitangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeNormal(const SVectorR1& t)
+Circle<ambient_dim>::ComputeNormal(const Parameter& t)
 {
    EXIT("TODO")
 }
@@ -179,33 +179,33 @@ Circle<ambient_dim>::ComputeNormal(const SVectorR1& t)
 /** Ellipse
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-Ellipse<ambient_dim>::Ellipse(const Real x_radius, const Real y_radius, const SVectorR<ambient_dim>& centre)
+Ellipse<ambient_dim>::Ellipse(const Real x_radius, const Real y_radius, const Vector& centre)
    : Centre(centre), RadiusX(x_radius), RadiusY(y_radius) { ASSERT(Positive(x_radius) && Positive(y_radius), "An ellipse's radii cannot be negative.") }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputePoint(const SVectorR1& t)
+Ellipse<ambient_dim>::ComputePoint(const Parameter& t)
 {
    return ToVector<ambient_dim>(SVectorR3{RadiusX * Cos(t[0]), RadiusY * Sin(t[0]), Zero}) + Centre;
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeTangent(const SVectorR1& t)
+Ellipse<ambient_dim>::ComputeTangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+Ellipse<ambient_dim>::ComputeBitangent(const Parameter& t)
 {
    EXIT("TODO")
 }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeNormal(const SVectorR1& t)
+Ellipse<ambient_dim>::ComputeNormal(const Parameter& t)
 {
    EXIT("TODO")
 }

@@ -57,9 +57,9 @@ template<bool is_left_incl = true, bool is_right_incl = false, bool exact_precis
 requires Arithmetic<T>
 constexpr bool isBounded(const T& a, const T& min, const T& max, const T& relative_tol = RelativeTolerance, const Real& zero_tol = ZeroTolerance)
 {
-  if constexpr(!isTypeSame<T, Real>()) return (is_left_incl ? min <= a : min < a) && (is_right_incl ? a <= max : a < max);
-  else return (is_left_incl  ? isLessEqual<exact_precision>(min, a, relative_tol, zero_tol) : isLess<exact_precision>(min, a, relative_tol, zero_tol)) &&
-              (is_right_incl ? isLessEqual<exact_precision>(a, max, relative_tol, zero_tol) : isLess<exact_precision>(a, max, relative_tol, zero_tol));
+   if constexpr(!isTypeSame<T, Real>()) return (is_left_incl ? min <= a : min < a) && (is_right_incl ? a <= max : a < max);
+   else return (is_left_incl  ? isLessEqual<exact_precision>(min, a, relative_tol, zero_tol) : isLess<exact_precision>(min, a, relative_tol, zero_tol)) &&
+               (is_right_incl ? isLessEqual<exact_precision>(a, max, relative_tol, zero_tol) : isLess<exact_precision>(a, max, relative_tol, zero_tol));
 }
 
 }

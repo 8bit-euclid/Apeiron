@@ -23,6 +23,8 @@ namespace aprn::mnfld {
 template<class D, size_t ambient_dim>
 using Curve = Manifold<D, 1, ambient_dim>;
 
+using Parameter = SVectorR1;
+
 /***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Curves
 ***************************************************************************************************************************************************************/
@@ -32,19 +34,17 @@ using Curve = Manifold<D, 1, ambient_dim>;
 template<size_t ambient_dim = 2>
 class Line : public Curve<Line<ambient_dim>, ambient_dim>
 {
-   using Vector     = SVectorR<ambient_dim>;
-   using Coordinate = Vector;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
-   constexpr Line(const Vector& direction, const Coordinate& point = Coordinate{});
+   constexpr Line(const Vector& direction, const Vector& point = Vector{});
 
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  protected:
    friend Curve<Line<ambient_dim>, ambient_dim>;
 
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
 
@@ -52,11 +52,11 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
 
    constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   Vector     Direction;
-   Coordinate Start;
-   Real       DirectionNorm;
-   Real       Normaliser;
-   bool       UnitSpeed{false};
+   Vector Direction;
+   Vector Start;
+   Real   DirectionNorm;
+   Real   Normaliser;
+   bool   UnitSpeed{false};
 };
 
 /** Ray
@@ -64,15 +64,13 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Ray final : public Line<ambient_dim>
 {
-   using Vector     = SVectorR<ambient_dim>;
-   using Coordinate = Vector;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
-   constexpr Ray(const Vector& direction, const Coordinate& start = Coordinate{});
+   constexpr Ray(const Vector& direction, const Vector& start = Vector{});
 
  private:
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 };
 
 /** Segment
@@ -80,18 +78,17 @@ class Ray final : public Line<ambient_dim>
 template<size_t ambient_dim = 2>
 class Segment final : public Line<ambient_dim>
 {
-   using Coordinate = SVectorR<ambient_dim>;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
-   constexpr Segment(const Coordinate& start, const Coordinate& end);
+   constexpr Segment(const Vector& start, const Vector& end);
 
    constexpr Real Length() const noexcept { return this->DirectionNorm; }
 
  private:
    template<size_t dim> friend class SegmentChain;
 
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 };
 
 /** Segment Chain
@@ -99,18 +96,16 @@ class Segment final : public Line<ambient_dim>
 template<size_t ambient_dim = 2>
 class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 {
-   using Vector     = SVectorR<ambient_dim>;
-   using Coordinate = Vector;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
    template<class D>
-   SegmentChain(const Array<Coordinate, D>& vertices, bool is_closed = false);
+   SegmentChain(const Array<Vector, D>& vertices, bool is_closed = false);
 
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
 
@@ -134,19 +129,17 @@ class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 {
-   using Vector     = SVectorR<ambient_dim>;
-   using Coordinate = Vector;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
-   Circle(const Real radius, const Coordinate& centre = Coordinate{});
+   Circle(const Real radius, const Vector& centre = Vector{});
 
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
    friend Curve<Circle<ambient_dim>, ambient_dim>;
 
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
 
@@ -154,10 +147,10 @@ class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 
    constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   Coordinate Centre;
-   Real       Radius;
-   Real       Normaliser;
-   bool       UnitSpeed{false};
+   Vector Centre;
+   Real   Radius;
+   Real   Normaliser;
+   bool   UnitSpeed{false};
 };
 
 /** Ellipse
@@ -165,17 +158,15 @@ class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 template<size_t ambient_dim = 2>
 class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
 {
-   using Vector     = SVectorR<ambient_dim>;
-   using Coordinate = Vector;
-   using Parameter  = SVectorR1;
+   using Vector = SVectorR<ambient_dim>;
 
  public:
-   Ellipse(const Real x_radius, const Real y_radius, const Coordinate& centre = Coordinate{});
+   Ellipse(const Real x_radius, const Real y_radius, const Vector& centre = Vector{});
 
  private:
    friend Curve<Ellipse<ambient_dim>, ambient_dim>;
 
-   constexpr Coordinate ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
 
@@ -183,9 +174,9 @@ class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
 
    constexpr Vector ComputeNormal(const Parameter& t) override;
 
-   Coordinate Centre;
-   Real       RadiusX;
-   Real       RadiusY;
+   Vector Centre;
+   Real   RadiusX;
+   Real   RadiusY;
 };
 
 /***************************************************************************************************************************************************************
