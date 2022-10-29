@@ -24,8 +24,8 @@ namespace aprn::mnfld {
 /** Line
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
-constexpr Line<ambient_dim>::Line(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& coordinate)
-   : Direction(direction), Start(coordinate), DirectionNorm(Magnitude(Direction)), Normaliser(One / DirectionNorm) {}
+constexpr Line<ambient_dim>::Line(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& point)
+   : Direction(direction), Start(point), DirectionNorm(Magnitude(Direction)), Normaliser(One / DirectionNorm) {}
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
@@ -61,7 +61,7 @@ template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
 Ray<ambient_dim>::ComputePoint(const SVectorR1& t)
 {
-   return isPositive(t[0]) ? Line<ambient_dim>::ComputePoint(t) : throw std::domain_error("The parameter must be positive for rays.");
+   return Positive(t[0]) ? Line<ambient_dim>::ComputePoint(t) : throw std::domain_error("The parameter must be positive for rays.");
 }
 
 /** Segment
@@ -145,7 +145,7 @@ SegmentChain<ambient_dim>::ComputeNormal(const SVectorR1& t)
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
 Circle<ambient_dim>::Circle(const Real radius, const SVectorR<ambient_dim>& centre)
-   : Centre(centre), Radius(radius), Normaliser(One/Radius) { ASSERT(isPositive(radius), "A circle's radius cannot be negative.") }
+   : Centre(centre), Radius(radius), Normaliser(One/Radius) { ASSERT(Positive(radius), "A circle's radius cannot be negative.") }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>
@@ -180,7 +180,7 @@ Circle<ambient_dim>::ComputeNormal(const SVectorR1& t)
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim>
 Ellipse<ambient_dim>::Ellipse(const Real x_radius, const Real y_radius, const SVectorR<ambient_dim>& centre)
-   : Centre(centre), RadiusX(x_radius), RadiusY(y_radius) { ASSERT(isPositive(x_radius) && isPositive(y_radius), "An ellipse's radii cannot be negative.") }
+   : Centre(centre), RadiusX(x_radius), RadiusY(y_radius) { ASSERT(Positive(x_radius) && Positive(y_radius), "An ellipse's radii cannot be negative.") }
 
 template<size_t ambient_dim>
 constexpr SVectorR<ambient_dim>

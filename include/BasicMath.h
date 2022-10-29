@@ -118,7 +118,7 @@ Sgn(const T& value, const int zero_sign = 1)
 /** Check if a value is positive. */
 template<typename T>
 constexpr bool
-isPositive(const T& value, const int zero_sign = 1)
+Positive(const T& value, const int zero_sign = 1)
 {
    return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
@@ -126,7 +126,7 @@ isPositive(const T& value, const int zero_sign = 1)
 /** Check if a value is negative. */
 template<typename T>
 constexpr bool
-isNegative(const T& value, const int zero_sign = 1)
+Negative(const T& value, const int zero_sign = 1)
 {
    return zero_sign != 0 ? Sgn(value, zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
