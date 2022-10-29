@@ -56,9 +56,9 @@ LpNorm(const Vector<T, D>& v)
    const auto& vector = v.Derived();
    switch(p)
    {
-     case 1: return Sum(vector.begin(), vector.end());
-     case 2: return Sqrt(InnerProduct(vector, vector));
-     case 3: throw("TODO");
+      case 1: return Sum(vector.begin(), vector.end());
+      case 2: return Sqrt(InnerProduct(vector, vector));
+      case 3: throw("TODO");
    }
 }
 
@@ -86,8 +86,8 @@ template<typename T, class D>
 constexpr D
 Normalise(const Vector<T, D>& v)
 {
-  const auto magn = Magnitude(v);
-  return !isEqual(magn, Zero) ? v / magn : throw std::invalid_argument("Cannot normalise a vector of zero magnitude.");
+   const auto magn = Magnitude(v);
+   return !isEqual(magn, Zero) ? v / magn : throw std::invalid_argument("Cannot normalise a vector of zero magnitude.");
 }
 
 /***************************************************************************************************************************************************************
@@ -95,34 +95,36 @@ Normalise(const Vector<T, D>& v)
 ***************************************************************************************************************************************************************/
 template<bool orientangle = false, typename T, class D>
 constexpr Real
-ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorR3& _orient = zAxis3)
+ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorR3& orient = zAxis3)
 {
-  const auto smallangle = Arccos(InnerProduct(Normalise(v0), Normalise(v1)));
-  if constexpr(!orientangle) return smallangle;
-  else return Sgn(InnerProduct(CrossProduct(v0, v1), _orient)) * smallangle;
+   const auto smallangle = Arccos(InnerProduct(Normalise(v0), Normalise(v1)));
+   if constexpr(!orientangle) return smallangle;
+   else return Sgn(InnerProduct(CrossProduct(v0, v1), orient)) * smallangle;
 }
 
 template<typename T, class D>
 constexpr bool
 isAligned(const Vector<T, D>& v0, const Vector<T, D>& v1, const Real angle_thresh = TwelfthPi)
 {
-  const auto angle = ComputeAngle(v0, v1);
-  return isBounded(angle_thresh, Zero, HalfPi) ? angle < angle_thresh || angle > (Pi - angle_thresh) :
-                                                  throw std::domain_error("Angle threshold is out of bounds.");
+   const auto angle = ComputeAngle(v0, v1);
+   return isBounded(angle_thresh, Zero, HalfPi) ? angle < angle_thresh || angle > (Pi - angle_thresh) :
+                                                 throw std::domain_error("Angle threshold is out of bounds.");
 }
 
 template<typename T, class D>
 constexpr D
 RotateAbout(const Vector<T, D>& vector, const Real& angle, const SVectorR3& axis = zAxis3)
 {
-  return D{};
+   EXIT("TODO")
+   return D{};
 }
 
 template<typename T, class D>
 constexpr D
 RotateTowards(const Vector<T, D>& vector, const Real& angle, const Vector<T, D>& reference)
 {
-  return D{};
+   EXIT("TODO")
+   return D{};
 }
 
 }
