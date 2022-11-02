@@ -20,8 +20,8 @@
 namespace aprn::mnfld {
 
 /** Curve Alias Template */
-template<class D, size_t ambient_dim>
-using Curve = Manifold<D, 1, ambient_dim>;
+template<size_t ambient_dim>
+using Curve = Manifold<1, ambient_dim>;
 
 using Parameter = SVectorR1;
 
@@ -32,7 +32,7 @@ using Parameter = SVectorR1;
 /** Line
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Line : public Curve<Line<ambient_dim>, ambient_dim>
+class Line : public Curve<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
@@ -42,8 +42,6 @@ class Line : public Curve<Line<ambient_dim>, ambient_dim>
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  protected:
-   friend Curve<Line<ambient_dim>, ambient_dim>;
-
    constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
@@ -94,7 +92,7 @@ class Segment final : public Line<ambient_dim>
 /** Segment Chain
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
+class SegmentChain final : public Curve<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
@@ -127,7 +125,7 @@ class SegmentChain final : public Curve<SegmentChain<ambient_dim>, ambient_dim>
 /** Circle
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
+class Circle final : public Curve<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
@@ -137,8 +135,6 @@ class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   friend Curve<Circle<ambient_dim>, ambient_dim>;
-
    constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;
@@ -156,7 +152,7 @@ class Circle final : public Curve<Circle<ambient_dim>, ambient_dim>
 /** Ellipse
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
+class Ellipse final : public Curve<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
@@ -164,8 +160,6 @@ class Ellipse final : public Curve<Ellipse<ambient_dim>, ambient_dim>
    Ellipse(const Real x_radius, const Real y_radius, const Vector& centre = Vector{});
 
  private:
-   friend Curve<Ellipse<ambient_dim>, ambient_dim>;
-
    constexpr Vector ComputePoint(const Parameter& t) override;
 
    constexpr Vector ComputeTangent(const Parameter& t) override;

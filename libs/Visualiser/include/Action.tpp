@@ -94,29 +94,10 @@ Action<type>::Action(Model& model, const glm::vec3& disp_or_posi, Real start_tim
 
 template<ActionType type>
 requires Translation<type>
-Action<type>::Action(Model& model, StaticArray<Reparametriser, 3> path, Real start_time, Real end_time)
-   : ActionBase(model, type, start_time, end_time, [](Real){return Zero;})
-{
-   if(type == ActionType::Trace) this->Displacement = [path](Real t){ return glm::vec3(path[0](t), path[1](t), path[2](t)); };
-   else throw std::invalid_argument("Unrecognised action type.");
-}
-
-template<ActionType type>
-requires Translation<type>
 Action<type>::Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time)
    : ActionBase(model, type, start_time, end_time, [](Real){return Zero;})
 {
    if(type == ActionType::Trace) this->Displacement = [path](Real t){ return SVectorToGlmVec(path(t)); };
-   else throw std::invalid_argument("Unrecognised action type.");
-}
-
-template<ActionType type>
-requires Translation<type>
-template<class D>
-Action<type>::Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, Reparametriser reparam)
-   : ActionBase(model, type, start_time, end_time, reparam)
-{
-   if(type == ActionType::Trace) this->Displacement = [centroid = model.Centroid_, path](Real t){ return path.Point(t) - centroid; };
    else throw std::invalid_argument("Unrecognised action type.");
 }
 

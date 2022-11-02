@@ -21,56 +21,35 @@
 
 namespace aprn::mnfld {
 
-/***************************************************************************************************************************************************************
-* Manifold Abstract Base Class
-***************************************************************************************************************************************************************/
-template<class D, size_t manifold_dim, size_t ambient_dim = 3>
+template<size_t manifold_dim, size_t ambient_dim = 3>
 class Manifold
 {
    static_assert(manifold_dim <= ambient_dim, "The dimension of a manifold cannot be larger than that of the ambient space in which it is embedded.");
-
- protected:
-   using Vect  = SVectorR<ambient_dim>;
-   using Param = SVectorR<manifold_dim>;
+   using Vector    = SVectorR<ambient_dim>;
+   using Parameter = SVectorR<manifold_dim>;
 
  public:
    constexpr Manifold();
 
-   constexpr Vect
-   Point(const std::convertible_to<Real> auto... params);
+   constexpr Vector Point(const std::convertible_to<Real> auto... params) const;
 
-   constexpr Vect
-   Tangent(const std::convertible_to<Real> auto... params);
+   constexpr Vector Tangent(const std::convertible_to<Real> auto... params) const;
 
-   constexpr Vect
-   Bitangent(const std::convertible_to<Real> auto... params);
+   constexpr Vector Bitangent(const std::convertible_to<Real> auto... params) const;
 
-   constexpr Vect
-   Normal(const std::convertible_to<Real> auto... params);
+   constexpr Vector Normal(const std::convertible_to<Real> auto... params) const;
 
  protected:
-   virtual constexpr Vect
-   ComputePoint(const Param& params) = 0;
+   virtual constexpr Vector ComputePoint(const Parameter& params) = 0;
 
-   virtual constexpr Vect
-   ComputeTangent(const Param& params) = 0;
+   virtual constexpr Vector ComputeTangent(const Parameter& params) = 0;
 
-   virtual constexpr Vect
-   ComputeBitangent(const Param& params) = 0;
+   virtual constexpr Vector ComputeBitangent(const Parameter& params) = 0;
 
-   virtual constexpr Vect
-   ComputeNormal(const Param& params) = 0;
+   virtual constexpr Vector ComputeNormal(const Parameter& params) = 0;
 
  private:
-   constexpr void
-   ParamCountCheck(const std::convertible_to<Real> auto... params) const;
-
-   /** Derived Class Access */
-   constexpr D&
-   Derived() noexcept { return static_cast<D&>(*this); }
-
-   constexpr const D&
-   Derived() const noexcept { return static_cast<const D&>(*this); }
+   constexpr void CheckParamCount(const std::convertible_to<Real> auto... params) const;
 };
 
 }

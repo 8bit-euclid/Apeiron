@@ -20,11 +20,9 @@
 
 namespace aprn {
 
-class PathTracer
+class BoundaryMesh
 {
-   PathTracer() = default;
-
-//   PathTracer();
+   BoundaryMesh() = default;
 };
 
 }

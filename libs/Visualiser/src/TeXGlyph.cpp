@@ -94,7 +94,7 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(Index_);
    const auto  xy_scale   = GlyphSheet::FontSizeScale(font_size);
-   const auto  y_scale    = 1.01; // Some glyphs slightly exceed the vertical bounds of the bounding box (e.g. m, e, 2).
+   const auto  y_scale    = 1.02; // Some glyphs slightly exceed the vertical bounds of the bounding box (e.g. m, e, 2), so need to vertically scale a bit.
    SVectorR2   glyph_dims;        // Dimensions of the glyph in the xy-plane in world-space coordinates.
    SVectorR2   glyph_anchor;      // Bottom-left corner of the glyph in world-space coordinates.
 

@@ -49,9 +49,6 @@ template<bool exact_precision = false>
 constexpr bool isLargerEqual(const Real& a, const Real& b, const Real& relative_tol = RelativeTolerance, const Real& zero_tol = ZeroTolerance)
 { return !isLess<exact_precision>(a, b, relative_tol, zero_tol); }
 
-/** Container size equality check. */
-constexpr bool areSizesEqual(const size_t _size0, const size_t _size1) { return _size0 == _size1; }
-
 /** Floating-point toleranced/exact boundedness check. */
 template<bool is_left_incl = true, bool is_right_incl = false, bool exact_precision = false, typename T>
 requires Arithmetic<T>
