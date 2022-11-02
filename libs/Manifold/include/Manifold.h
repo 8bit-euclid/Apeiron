@@ -40,13 +40,13 @@ class Manifold
    constexpr Vector Normal(const std::convertible_to<Real> auto... params) const;
 
  protected:
-   virtual constexpr Vector ComputePoint(const Parameter& params) = 0;
+   virtual constexpr Vector ComputePoint(const Parameter& params) const = 0;
 
-   virtual constexpr Vector ComputeTangent(const Parameter& params) = 0;
+   virtual constexpr Vector ComputeTangent(const Parameter& params) const = 0;
 
-   virtual constexpr Vector ComputeBitangent(const Parameter& params) = 0;
+   virtual constexpr Vector ComputeBitangent(const Parameter& params) const = 0;
 
-   virtual constexpr Vector ComputeNormal(const Parameter& params) = 0;
+   virtual constexpr Vector ComputeNormal(const Parameter& params) const = 0;
 
  private:
    constexpr void CheckParamCount(const std::convertible_to<Real> auto... params) const;

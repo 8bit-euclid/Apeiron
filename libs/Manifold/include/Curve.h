@@ -42,13 +42,13 @@ class Line : public Curve<ambient_dim>
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  protected:
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 
-   constexpr Vector ComputeTangent(const Parameter& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeBitangent(const Parameter& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeNormal(const Parameter& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) const override;
 
    Vector Direction;
    Vector Start;
@@ -68,7 +68,7 @@ class Ray final : public Line<ambient_dim>
    constexpr Ray(const Vector& direction, const Vector& start = Vector{});
 
  private:
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 };
 
 /** Segment
@@ -86,7 +86,7 @@ class Segment final : public Line<ambient_dim>
  private:
    template<size_t dim> friend class SegmentChain;
 
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 };
 
 /** Segment Chain
@@ -103,13 +103,13 @@ class SegmentChain final : public Curve<ambient_dim>
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 
-   constexpr Vector ComputeTangent(const Parameter& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeBitangent(const Parameter& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeNormal(const Parameter& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) const override;
 
    DArray<Segment<ambient_dim>> Segments;
    DArray<Real>                 CumulativeLengths;
@@ -135,13 +135,13 @@ class Circle final : public Curve<ambient_dim>
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 
-   constexpr Vector ComputeTangent(const Parameter& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeBitangent(const Parameter& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeNormal(const Parameter& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) const override;
 
    Vector Centre;
    Real   Radius;
@@ -160,13 +160,13 @@ class Ellipse final : public Curve<ambient_dim>
    Ellipse(const Real x_radius, const Real y_radius, const Vector& centre = Vector{});
 
  private:
-   constexpr Vector ComputePoint(const Parameter& t) override;
+   constexpr Vector ComputePoint(const Parameter& t) const override;
 
-   constexpr Vector ComputeTangent(const Parameter& t) override;
+   constexpr Vector ComputeTangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeBitangent(const Parameter& t) override;
+   constexpr Vector ComputeBitangent(const Parameter& t) const override;
 
-   constexpr Vector ComputeNormal(const Parameter& t) override;
+   constexpr Vector ComputeNormal(const Parameter& t) const override;
 
    Vector Centre;
    Real   RadiusX;
