@@ -16,7 +16,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
-#include "PathTracer.h"
+#include "BoundaryMesh.h"
 
 #include <optional>
 #include <GL/glew.h>
@@ -75,8 +75,7 @@ class Mesh
    VertexAttributeLayout VertexLayout_;
    DArray<Vertex>        Vertices_;
    DArray<GLuint>        Indices_;
-   Option<PathTracer>    InnerBoundary_;
-   Option<PathTracer>    OuterBoundary_;
+   Option<BoundaryMesh>  BoundaryMesh_;
    ShadingType           Shading_{ShadingType::Flat};
 };
 

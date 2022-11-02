@@ -16,23 +16,17 @@
 
 #include "Manifold.h"
 
-namespace aprn {
-namespace mnfld {
+namespace aprn::mnfld {
 
-/***************************************************************************************************************************************************************
-* Curve Alias Template
-***************************************************************************************************************************************************************/
-template<class D>
-using Surface = Manifold<D, 2, 3>;
+using Surface = Manifold<2, 3>;
 
 /***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Surfaces
 ***************************************************************************************************************************************************************/
-class Plane : public Surface<Plane>
+class Plane : public Surface
 {
-public:
-  Plane(const SVectorR3& _unit_normal, const SVectorR3& _point = {Zero, Zero, Zero});
+ public:
+   Plane(const SVectorR3& unit_normal, const SVectorR3& point = {Zero, Zero, Zero});
 };
 
-}
 }

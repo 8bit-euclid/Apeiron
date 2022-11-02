@@ -104,12 +104,7 @@ class Action<T> final : public ActionBase
  public:
    Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, StaticArray<Reparametriser, 3> path, Real start_time, Real end_time);
-
    Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time);
-
-   template<class D>
-   Action(Model& model, const mnfld::Curve<D, 3>& path, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
    void Do(const Real global_time) override;
 
