@@ -23,6 +23,9 @@ namespace aprn {
 class BoundaryMesh
 {
    BoundaryMesh() = default;
+
+// private:
+//   UPtr<mnfld::Curve<3>> Boundary;
 };
 
 }

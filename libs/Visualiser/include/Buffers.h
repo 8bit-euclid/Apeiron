@@ -66,6 +66,8 @@ class Buffer
 
    void Delete();
 
+   constexpr GLenum Target() const;
+
    Buffer& operator=(const Buffer<T>& buffer) = delete;
 
    Buffer& operator=(Buffer<T>&& buffer) noexcept;
@@ -88,7 +90,12 @@ struct VertexBuffer : public detail::Buffer<BufferType::VBO>
 {
    void Init(const DArray<Vertex>& vertices);
 
-   void Load(const DArray<Vertex>& vertices) const;
+   void Load(const DArray<Vertex>& vertices);
+
+   void Update(const DArray<Vertex>& vertices);
+
+ private:
+   size_t VertexCount_;
 };
 
 /***************************************************************************************************************************************************************
