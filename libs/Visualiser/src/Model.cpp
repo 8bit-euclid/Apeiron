@@ -281,62 +281,66 @@ Model::LoadTextureMap(const std::unordered_map<std::string, Texture&>& texture_m
 void
 Model::Update(const Real global_time)
 {
+   if(!Init_) return;
+
+   // Perform all actions and compute the model matrix for this frame.
    Reset();
    FOR_EACH(_, action, Actions_) action->Do(global_time);
+
+   // Update the vertex buffer if the mesh has been modified.
+   VBO_.Update(Mesh_.Vertices_);
 }
 
 void
 Model::Render(Shader& shader)
 {
+   if(!Init_) return;
+
    constexpr int slot_offset(3); // TODO - currently hard-coded.
 
-   if(Initialised())
+   if(Material_) shader.UseMaterial(Material_.value());
+   if(!Textures_.empty())
    {
-      if(Material_) shader.UseMaterial(Material_.value());
-      if(!Textures_.empty())
+      size_t texture_index = 0;
+      FOR_EACH(type_string, texture, Textures_)
       {
-         size_t texture_index = 0;
-         FOR_EACH(type_string, texture, Textures_)
-         {
-            // Configure respective texture uniform.
-            const auto& uniform_name = TextureUniformString(type_string);
-            shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
-            shader.SetUniform1i("u_use_" + uniform_name, 1);
+         // Configure respective texture uniform.
+         const auto& uniform_name = TextureUniformString(type_string);
+         shader.UseTexture(texture, "u_" + uniform_name, slot_offset + texture_index++);
+         shader.SetUniform1i("u_use_" + uniform_name, 1);
 
-            // Set scale if this is a displacement map.
-            if(GetTextureType(type_string) == TextureType::Displacement)
-            {
-               const auto scale = texture.MapScale();
-               shader.SetUniform1f("u_" + uniform_name + "_scale", scale);
-            }
+         // Set scale if this is a displacement map.
+         if(GetTextureType(type_string) == TextureType::Displacement)
+         {
+            const auto scale = texture.MapScale();
+            shader.SetUniform1f("u_" + uniform_name + "_scale", scale);
          }
       }
-
-      shader.UseModel(*this);
-      DrawElements();
-
-      // Switch off texture maps and unbind texture.
-      if(!Textures_.empty())
-         FOR_EACH(type_string, texture, Textures_)
-         {
-            shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
-            texture.Unbind();
-         }
    }
+
+   shader.UseModel(*this);
+   DrawElements();
+
+   // Switch off texture maps and unbind texture.
+   if(!Textures_.empty())
+      FOR_EACH(type_string, texture, Textures_)
+      {
+         shader.SetUniform1i("u_use_" + TextureUniformString(type_string), 0);
+         texture.Unbind();
+      }
 }
 
 void
 Model::DrawElements() const
 {
-   if(Init_)
-   {
-      // Model main body
-      VAO_.Bind();
-      EBO_.Bind();
-      GLCall(glDrawElements(GL_TRIANGLES, EBO_.IndexCount(), GL_UNSIGNED_INT, nullptr))
-      EBO_.Unbind();
-      VAO_.Unbind();
-   }
+   if(!Init_) return;
+
+   // Model main body
+   VAO_.Bind();
+   EBO_.Bind();
+   GLCall(glDrawElements(GL_TRIANGLES, EBO_.IndexCount(), GL_UNSIGNED_INT, nullptr))
+   EBO_.Unbind();
+   VAO_.Unbind();
 }
 
 void

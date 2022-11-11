@@ -99,9 +99,9 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
    SVectorR2   glyph_anchor;      // Bottom-left corner of the glyph in world-space coordinates.
 
    // Compute the scaled glyph dimensions.
-   glyph_dims.x()    = xy_scale * static_cast<Real>(glyph_info.Width);
-   glyph_dims.y()    = xy_scale * y_scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
-   glyph_anchor      = xy_scale * SVectorR2{glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
+   glyph_dims.x() = xy_scale * static_cast<Real>(glyph_info.Width);
+   glyph_dims.y() = xy_scale * y_scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   glyph_anchor   = xy_scale * SVectorR2{glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
 
    // Ensure the glyph's vertical bounds haven't exceeded that of the tex-box after scaling.
    if(glyph_anchor.y() + glyph_dims.y() > texbox_dimensions.y()) Clip(glyph_dims.y(), Zero, texbox_dimensions.y() - glyph_anchor.y());
