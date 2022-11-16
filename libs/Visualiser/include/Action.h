@@ -30,7 +30,7 @@
 
 namespace aprn::vis {
 
-class Model;
+class Animator;
 
 /***************************************************************************************************************************************************************
 * Action Class Full Specialisations
@@ -39,7 +39,8 @@ template<ActionType T>
 class Action : public ActionBase
 {
  public:
-   Action(Model& model) : ActionBase(model, T, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
+   Action(Animator& animator)
+      : ActionBase(animator, T, Zero, Zero, nullptr) { EXIT("The given action has not yet been implemented.") }
 
    void Do(const Real global_time) override {}
 };
@@ -51,7 +52,7 @@ class Action : public ActionBase
 //class Action<T> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, RampType _ramp_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+//   Action(Animator& animator, RampType _ramp_type, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void Do(const Real global_time) override;
 //
@@ -66,9 +67,9 @@ requires Offset<T>
 class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, const glm::vec3& position_offset);
+   Action(Animator& animator, const glm::vec3& position_offset);
 
-   Action(Model& model, Real angle_offset, const glm::vec3& axis);
+   Action(Animator& animator, Real angle_offset, const glm::vec3& axis);
 
    void Do(const Real global_time) override;
 
@@ -85,9 +86,9 @@ requires Scale<T>
 class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, Real scale, Real start_time, Real end_time, Reparametriser reparam = Linear);
+   Action(Animator& animator, Real scale, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, const glm::vec3& scales, Real start_time, Real end_time, Reparametriser reparam = Linear);
+   Action(Animator& animator, const glm::vec3& scales, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
    void Do(const Real global_time) override;
 
@@ -102,9 +103,9 @@ requires Translation<T>
 class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, const glm::vec3& disp_or_posi, Real start_time, Real end_time, Reparametriser reparam = Linear);
+   Action(Animator& animator, const glm::vec3& disp_or_posi, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, std::function<SVectorR3(Real)> path, Real start_time, Real end_time);
+   Action(Animator& animator, std::function<SVectorR3(Real)> path, Real start_time, Real end_time);
 
    void Do(const Real global_time) override;
 
@@ -119,12 +120,12 @@ requires Rotation<T>
 class Action<T> final : public ActionBase
 {
  public:
-   Action(Model& model, Real angle, const glm::vec3& axis, Real start_time, Real end_time, Reparametriser reparam = Linear);
+   Action(Animator& animator, Real angle, const glm::vec3& axis, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   Action(Model& model, Real angle, const glm::vec3& axis, const glm::vec3& ref_point, Real start_time, Real end_time,
+   Action(Animator& animator, Real angle, const glm::vec3& axis, const glm::vec3& ref_point, Real start_time, Real end_time,
           Reparametriser reparam = Linear);
 
-   Action(Model& model, const glm::vec3& angular_velocity, Real start_time = Zero, Reparametriser ramp = Identity);
+   Action(Animator& animator, const glm::vec3& angular_velocity, Real start_time = Zero, Reparametriser ramp = Identity);
 
    void Do(const Real global_time) override;
 
@@ -142,7 +143,7 @@ class Action<T> final : public ActionBase
 //class Action<T> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+//   Action(Animator& animator, const SVectorF3& _normal, const SVectorF3& ref_point, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -161,7 +162,7 @@ class Action<T> final : public ActionBase
 //class Action<T> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, const Model& _other_actor, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+//   Action(Animator& animator, const Model& _other_actor, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void Do() override;
 //
@@ -179,7 +180,7 @@ class Action<T> final : public ActionBase
 //class Action<T> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+//   Action(Animator& animator, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void
 //   Do() override;
@@ -196,7 +197,7 @@ class Action<T> final : public ActionBase
 //class Action<T> final : public ActionBase
 //{
 // public:
-//   Action(Model& model, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
+//   Action(Animator& animator, Real _new_colour, Real start_time, Real end_time, std::function<Real(Real)> reparam = Linear);
 //
 //   void
 //   Do() override;
