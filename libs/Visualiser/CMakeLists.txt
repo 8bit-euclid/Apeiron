@@ -3,6 +3,7 @@ include_directories(${PROJECT_SOURCE_DIR}/libs/Visualiser)
 set(SOURCE_FILES
         include/Action.h
         include/ActionBase.h
+        include/Animator.h
         include/Buffers.h
         include/Camera.h
         include/Colour.h
@@ -18,7 +19,6 @@ set(SOURCE_FILES
         include/ModelGroup.h
         include/ParseTeX.h
         include/ParseTeX.tpp
-        include/BoundaryMesh.h
         include/PostProcessor.h
         include/RenderObject.h
         include/Scene.h
@@ -35,6 +35,7 @@ set(SOURCE_FILES
         ../../external/stb_image/stb_image.h
         include/Action.tpp
         src/ActionBase.cpp
+        src/Animator.cpp
         src/Buffers.cpp
         src/Camera.cpp
         src/GlyphSheet.cpp

@@ -16,7 +16,7 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
-#include "BoundaryMesh.h"
+#include "Animator.h"
 
 #include <optional>
 #include <GL/glew.h>
@@ -75,7 +75,6 @@ class Mesh
    VertexAttributeLayout VertexLayout_;
    DArray<Vertex>        Vertices_;
    DArray<GLuint>        Indices_;
-   Option<BoundaryMesh>  BoundaryMesh_;
    ShadingType           Shading_{ShadingType::Flat};
 };
 
