@@ -19,11 +19,23 @@
 
 namespace aprn::mnfld {
 
-/** Curve Alias Template */
-template<size_t ambient_dim>
-using Curve = Manifold<1, ambient_dim>;
+/***************************************************************************************************************************************************************
+* Curve Class Definition
+***************************************************************************************************************************************************************/
+template<size_t ambient_dim = 3>
+class Curve
+{
+   using Vector = SVectorR<ambient_dim>;
 
-using Parameter = SVectorR1;
+ public:
+   virtual constexpr Vector Point(const Real param) const = 0;
+
+   virtual constexpr Vector Tangent(const Real param) const = 0;
+
+   virtual constexpr Vector Normal(const Real param) const = 0;
+
+   constexpr Vector Binormal(const Vector& tangent, const Vector& normal) const;
+};
 
 /***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Curves
@@ -39,17 +51,15 @@ class Line : public Curve<ambient_dim>
  public:
    constexpr Line(const Vector& direction, const Vector& point = Vector{});
 
+   constexpr Vector Point(const Real t) const override;
+
+   constexpr Vector Tangent(const Real t) const override;
+
+   constexpr Vector Normal(const Real t) const override;
+
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  protected:
-   constexpr Vector ComputePoint(const Parameter& t) const override;
-
-   constexpr Vector ComputeTangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeBitangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeNormal(const Parameter& t) const override;
-
    Vector Direction;
    Vector Start;
    Real   DirectionNorm;
@@ -67,8 +77,7 @@ class Ray final : public Line<ambient_dim>
  public:
    constexpr Ray(const Vector& direction, const Vector& start = Vector{});
 
- private:
-   constexpr Vector ComputePoint(const Parameter& t) const override;
+   constexpr Vector Point(const Real t) const override;
 };
 
 /** Segment
@@ -81,12 +90,9 @@ class Segment final : public Line<ambient_dim>
  public:
    constexpr Segment(const Vector& start, const Vector& end);
 
+   constexpr Vector Point(const Real t) const override;
+
    constexpr Real Length() const noexcept { return this->DirectionNorm; }
-
- private:
-   template<size_t dim> friend class SegmentChain;
-
-   constexpr Vector ComputePoint(const Parameter& t) const override;
 };
 
 /** Segment Chain
@@ -102,15 +108,13 @@ class SegmentChain final : public Curve<ambient_dim>
 
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
+   constexpr Vector Point(const Real t) const override;
+
+   constexpr Vector Tangent(const Real t) const override;
+
+   constexpr Vector Normal(const Real t) const override;
+
  private:
-   constexpr Vector ComputePoint(const Parameter& t) const override;
-
-   constexpr Vector ComputeTangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeBitangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeNormal(const Parameter& t) const override;
-
    DArray<Segment<ambient_dim>> Segments;
    DArray<Real>                 CumulativeLengths;
    Real                         ChainLength;
@@ -132,17 +136,15 @@ class Circle final : public Curve<ambient_dim>
  public:
    Circle(const Real radius, const Vector& centre = Vector{});
 
+   constexpr Vector Point(const Real t) const override;
+
+   constexpr Vector Tangent(const Real t) const override;
+
+   constexpr Vector Normal(const Real t) const override;
+
    constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
 
  private:
-   constexpr Vector ComputePoint(const Parameter& t) const override;
-
-   constexpr Vector ComputeTangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeBitangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeNormal(const Parameter& t) const override;
-
    Vector Centre;
    Real   Radius;
    Real   Normaliser;
@@ -159,15 +161,13 @@ class Ellipse final : public Curve<ambient_dim>
  public:
    Ellipse(const Real x_radius, const Real y_radius, const Vector& centre = Vector{});
 
+   constexpr Vector Point(const Real t) const override;
+
+   constexpr Vector Tangent(const Real t) const override;
+
+   constexpr Vector Normal(const Real t) const override;
+
  private:
-   constexpr Vector ComputePoint(const Parameter& t) const override;
-
-   constexpr Vector ComputeTangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeBitangent(const Parameter& t) const override;
-
-   constexpr Vector ComputeNormal(const Parameter& t) const override;
-
    Vector Centre;
    Real   RadiusX;
    Real   RadiusY;
@@ -191,6 +191,35 @@ class Ellipse final : public Curve<ambient_dim>
 /***************************************************************************************************************************************************************
 * Other Parametric Curves
 ***************************************************************************************************************************************************************/
+
+///** Curve Chain
+//***************************************************************************************************************************************************************/
+//template<size_t ambient_dim = 2>
+//class CurveChain final : public Curve<ambient_dim>
+//{
+//   using Vector = SVectorR<ambient_dim>;
+//
+// public:
+//   template<class D>
+//   CurveChain(const Array<Vector, D>& vertices, bool is_closed = false);
+//
+//   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
+//
+// private:
+//   constexpr Vector ComputePoint(const Parameter& t) const override;
+//
+//   constexpr Vector ComputeTangent(const Parameter& t) const override;
+//
+//   constexpr Vector ComputeBitangent(const Parameter& t) const override;
+//
+//   constexpr Vector ComputeNormal(const Parameter& t) const override;
+//
+//   DArray<Curve<ambient_dim>> Curves;
+//   DArray<Real>               CumulativeLengths;
+//   Real                       ChainLength;
+//   bool                       Closed;
+//   bool                       UnitSpeed{false};
+//};
 
 }
 
