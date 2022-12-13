@@ -72,23 +72,6 @@ TEST_F(ApeironTest, Max)
   EXPECT_EQ(Max(floating, floating - One), floating);
 }
 
-TEST_F(ApeironTest, MinMax)
-{
-  const int minInt = RandomInt();
-  const int maxInt = minInt + 1;
-  EXPECT_EQ(MinMax(minInt, maxInt).first , minInt);
-  EXPECT_EQ(MinMax(minInt, maxInt).second, maxInt);
-  EXPECT_EQ(MinMax(maxInt, minInt).first , minInt);
-  EXPECT_EQ(MinMax(maxInt, minInt).second, maxInt);
-
-  const Real minReal = RandomReal();
-  const Real maxReal = minReal + One;
-  EXPECT_EQ(MinMax(minReal, maxReal).first , minReal);
-  EXPECT_EQ(MinMax(minReal, maxReal).second, maxReal);
-  EXPECT_EQ(MinMax(maxReal, minReal).first , minReal);
-  EXPECT_EQ(MinMax(maxReal, minReal).second, maxReal);
-}
-
 TEST_F(ApeironTest, Clipped)
 {
   const int minInt = -Abs(RandomInt());

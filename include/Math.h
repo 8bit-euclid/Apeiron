@@ -33,40 +33,12 @@ namespace detail {
 /** Modulo function for integer types. */
 template<typename T>
 constexpr T
-Modulo(const T _numerator, const T _denominator, std::true_type, std::false_type) { return _numerator % _denominator; }
+Modulo(const T numerator, const T denominator, std::true_type, std::false_type) { return numerator % denominator; }
 
 /** Modulo function for floating-point types. */
 template<typename T>
 constexpr T
-Modulo(const T _numerator, const T _denominator, std::false_type, std::true_type) { return std::fmod(_numerator, _denominator); }
-
-/** Newton-Raphson for constexpr Sqrt function. */
-constexpr Real
-SqrtNewtonRaphson(const Real _x, const Real _curr, const Real _prev)
-{ return isEqual<true>(_curr, _prev) ? _curr : SqrtNewtonRaphson(_x, Half * (_curr + _x / _curr), _curr); }
-
-/** Newton-Raphson for constexpr Cbrt function. */
-constexpr Real
-CbrtNewtonRaphson(const Real _x, const Real _curr, const Real _prev)
-{ return isEqual<true>(_curr, _prev) ? _curr : CbrtNewtonRaphson(_x, Third * (Two * _curr + _x / (_curr * _curr)), _curr); }
-
-/** Taylor expansion for constexpr Exp function. */
-constexpr Real
-Exp(const Real _x, const Real _sum, const Real n, const int _iteration, const Real _delta)
-{ return isEqual<true>(_delta/n, Zero) ? _sum : Exp(_x, _sum + _delta / n, n * _iteration, _iteration + 1, _delta * _x); }
-
-template<typename T>
-constexpr Real
-TrigonometricSeries(const T x, const T sum, const T n, const int i, const int s, const T t)
-{ return isEqual<true>(t*s/n, Zero) ? sum : TrigonometricSeries(x, sum + t * s / n, n * i * (i + 1), i + 2, -s, t * x * x); }
-
-template<typename T>
-constexpr Real
-InverseTrigonometricSeries(const T x, const T sum, const int n, const T t)
-{
-  return isEqual<true>(sum, sum + t * static_cast<Real>(n) / (n + 2.0)) ? sum :
-         InverseTrigonometricSeries(x, sum + t * static_cast<Real>(n) / (n + 2.0), n + 2, t * x * x * static_cast<Real>(n) / (n + 3.0));
-}
+Modulo(const T numerator, const T denominator, std::false_type, std::true_type) { return std::fmod(numerator, denominator); }
 
 }
 
@@ -161,80 +133,24 @@ Choose(const unsigned int _n, const unsigned int _r) {
 /***************************************************************************************************************************************************************
 * Power Functions
 ***************************************************************************************************************************************************************/
-/** Constexpr power function with integral exponents. */
+/** Constexpr power function with integral exponents [significantly faster than std::pow(x, i)]. */
 template<typename T>
 constexpr T
-iPow(const T _x, const unsigned int _exponent)
+iPow(const T x, const unsigned int exponent)
 {
-  return _exponent <= 30 ? (_exponent == 0 ? static_cast<T>(1) : _x*iPow(_x, _exponent - 1)) :
+  return exponent <= 30 ? (exponent == 0 ? static_cast<T>(1) : x * iPow(x, exponent - 1)) :
          throw std::logic_error("Cannot currently compute the power with an exponent larger than 30.");
 }
 
-/** Square of a value. */
+/** Square of a value [significantly faster than std::pow(x, 2)]. */
 template<typename T>
 constexpr T
-Square(const T _x) { return iPow(_x, 2); }
+Square(const T x) { return iPow(x, 2); }
 
-/** Cube of a value. */
+/** Cube of a value [significantly faster than std::pow(x, 3)]. */
 template<typename T>
 constexpr T
-Cube(const T _x) { return iPow(_x, 3); }
-
-/** Constexpr version of std::sqrt. */
-constexpr Real
-Sqrt(const Real _x) { return isBounded<true, false, true>(_x, Zero, InfFloat<>) ? detail::SqrtNewtonRaphson(_x, _x, Zero) : QuietNaN<>; }
-
-/** Constexpr version of std::cbrt. */
-constexpr Real
-Cbrt(const Real _x) { return detail::CbrtNewtonRaphson(_x, One, Zero); }
-
-/** Constexpr version of std::hypot. */
-constexpr Real
-Hypot(const Real _x, const Real _y) { return Sqrt(Square(_x) + Square(_y)); }
-
-/** Constexpr version of std::exp. */
-constexpr Real
-Exp(const Real _x) { return detail::Exp(_x, 1.0, 1.0, 2, _x); }
-
-/***************************************************************************************************************************************************************
-* Trigonometric/Inverse-Trigonometric Functions
-***************************************************************************************************************************************************************/
-/** Constexpr sine function. */
-constexpr Real
-Sin(const Real _x) { return detail::TrigonometricSeries(_x, _x, static_cast<Real>(6), 4, -1, iPow(_x, 3)); }
-
-/** Constexpr cosine function. */
-constexpr Real
-Cos(const Real _x) { return Sin(_x + HalfPi); }
-
-/** Constexpr tan function. */
-constexpr Real
-Tan(const Real _x)
-{
-  const auto denom = Cos(_x);
-  return !isEqual(denom, Zero) ? Sin(_x) / denom : throw std::domain_error("Cannot compute tan(x) as cos(x) is 0.");
-}
-
-/** Constexpr arcsine function. */
-constexpr Real
-Arcsin(const Real _x)
-{
-  return isBounded<false, false, true>(static_cast<Real>(_x), -1.0, 1.0) ?
-         detail::InverseTrigonometricSeries(_x, _x, 1, _x * _x * _x / 2.0) :
-         Abs(_x) == 1.0 ? Sgn(_x) * HalfPi : throw std::domain_error("The value " + ToString(_x) + " is out of the arcsin domain bounds.");
-}
-
-/** Constexpr arccos function. */
-constexpr Real
-Arccos(const Real _x)
-{
-  return isBounded<false, false, true>(static_cast<Real>(_x), -1.0, 1.0) ? HalfPi - Arcsin(_x) : isEqual(_x, -1.0) ? Pi : isEqual(_x, 1.0) ? Zero :
-                                                                                                                          throw std::domain_error("The value " + ToString(_x) + " is out of the arccos domain bounds.");
-}
-
-/***************************************************************************************************************************************************************
-* Hyperbolic/Inverse-Hyperbolic Functions
-***************************************************************************************************************************************************************/
+Cube(const T x) { return iPow(x, 3); }
 
 }//aprn
 

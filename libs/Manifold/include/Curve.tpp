@@ -33,15 +33,15 @@ Curve<D>::Binormal(const Vector& tangent, const Vector& normal) const { return C
 ***************************************************************************************************************************************************************/
 template<size_t D>
 constexpr Line<D>::Line(const Vector& direction, const Vector& point)
-   : Direction(direction), Start(point), DirectionNorm(Magnitude(Direction)), Normaliser(One / DirectionNorm) {}
+   : Direction(direction), Start(point), DirectionNorm_(Magnitude(Direction)), Normaliser_(One / DirectionNorm_) {}
 
 template<size_t D>
 constexpr SVectorR<D>
-Line<D>::Point(const Real t) const { return Start + t * (UnitSpeed ? Normaliser : One) * Direction; }
+Line<D>::Point(const Real t) const { return Start + t * (this->UnitSpeed_ ? Normaliser_ : One) * Direction; }
 
 template<size_t D>
 constexpr SVectorR<D>
-Line<D>::Tangent([[maybe_unused]] const Real t) const { return (UnitSpeed ? Normaliser : One) * Direction; }
+Line<D>::Tangent([[maybe_unused]] const Real t) const { return (this->UnitSpeed_ ? Normaliser_ : One) * Direction; }
 
 template<size_t D>
 constexpr SVectorR<D>
@@ -67,14 +67,14 @@ Ray<D>::Point(const Real t) const
 /** Segment
 ***************************************************************************************************************************************************************/
 template<size_t D>
-constexpr Segment<D>::Segment(const Vector& start, const Vector& end)
+constexpr LineSegment<D>::LineSegment(const Vector& start, const Vector& end)
    : Line<D>::Line(end - start, start) {}
 
 template<size_t D>
 constexpr SVectorR<D>
-Segment<D>::Point(const Real t) const
+LineSegment<D>::Point(const Real t) const
 {
-   const Real max_bound = this->UnitSpeed ? this->DirectionNorm : One;
+   const Real max_bound = this->UnitSpeed_ ? Length() : One;
    return isBounded<true, true>(t, Zero, max_bound) ? Line<D>::Point(t) :
           throw std::domain_error("The parameter must be in the range [0, " + ToString(max_bound) + "] for this segment.");
 }
@@ -83,50 +83,50 @@ Segment<D>::Point(const Real t) const
 ***************************************************************************************************************************************************************/
 template<size_t Dim>
 template<class D>
-SegmentChain<Dim>::SegmentChain(const Array<Vector, D>& vertex_list, const bool is_closed)
-   : Closed(is_closed)
+LineSegmentChain<Dim>::LineSegmentChain(const Array<Vector, D>& vertex_list, const bool is_closed)
+   : Closed_(is_closed)
 {
    const auto& vertices = vertex_list.Derived();
 
-   Segments.reserve(vertices.size());
-   CumulativeLengths.reserve(vertices.size());
-   ChainLength = Zero;
+   Segments_.reserve(vertices.size());
+   CumulativeLengths_.reserve(vertices.size());
+   ChainLength_ = Zero;
 
-   FOR(i, vertices.size() - static_cast<size_t>(!Closed))
+   FOR(i, vertices.size() - static_cast<size_t>(!Closed_))
    {
-      Segments.emplace_back(vertices[i], vertices[(i + 1) % vertices.size()]);
-      Segments.back().MakeUnitSpeed();
+      Segments_.emplace_back(vertices[i], vertices[(i + 1) % vertices.size()]);
+      Segments_.back().MakeUnitSpeed();
 
-      ChainLength += Segments.back().Length();
-      CumulativeLengths.emplace_back(ChainLength);
+      ChainLength_ += Segments_.back().Length();
+      CumulativeLengths_.emplace_back(ChainLength_);
    }
 }
 
 template<size_t D>
 constexpr SVectorR<D>
-SegmentChain<D>::Point(const Real t) const
+LineSegmentChain<D>::Point(const Real t) const
 {
-   const Real upper_bound  = UnitSpeed ? ChainLength : One;
-   const Real param_length = isBounded<true, true, true>(t, Zero, upper_bound) ? t * (UnitSpeed ? One : ChainLength) :
+   const Real upper_bound  = this->UnitSpeed_ ? ChainLength_ : One;
+   const Real param_length = isBounded<true, true, true>(t, Zero, upper_bound) ? t * (this->UnitSpeed_ ? One : ChainLength_) :
                              throw std::domain_error("The parameter must be in the range [0, " + ToString(upper_bound) + "] for this segment.");
-   const auto iter  = std::find_if(CumulativeLengths.begin(), CumulativeLengths.end(), [param_length](auto _l){ return param_length <= _l; });
-   const auto index = std::distance(CumulativeLengths.begin(), iter);
-   const Real param = param_length - (index != 0 ? CumulativeLengths[index - 1] : Zero);
+   const auto iter  = std::find_if(CumulativeLengths_.begin(), CumulativeLengths_.end(), [param_length](auto l){ return param_length <= l; });
+   const auto index = std::distance(CumulativeLengths_.begin(), iter);
+   const Real param = param_length - (index != 0 ? CumulativeLengths_[index - 1] : Zero);
 
-   return isBounded<true, true>(param, Zero, Segments[index].Length()) ? Segments[index].Point(param) :
+   return isBounded<true, true>(param, Zero, Segments_[index].Length()) ? Segments_[index].Point(param) :
           throw std::domain_error("The parameter for segment " + ToString(index) + " in the chain is out of bounds.");
 }
 
 template<size_t D>
 constexpr SVectorR<D>
-SegmentChain<D>::Tangent(const Real t) const
+LineSegmentChain<D>::Tangent(const Real t) const
 {
    EXIT("TODO")
 }
 
 template<size_t D>
 constexpr SVectorR<D>
-SegmentChain<D>::Normal(const Real t) const
+LineSegmentChain<D>::Normal(const Real t) const
 {
    EXIT("TODO")
 }
@@ -139,41 +139,103 @@ SegmentChain<D>::Normal(const Real t) const
 ***************************************************************************************************************************************************************/
 template<size_t D>
 Circle<D>::Circle(const Real radius, const Vector& centre)
-   : Centre(centre), Radius(radius), Normaliser(One/Radius) { ASSERT(Positive(radius), "A circle's radius cannot be negative.") }
+   : Circle(radius, Zero, centre) {}
+
+template<size_t D>
+Circle<D>::Circle(const Real radius, const Real start_angle, const Vector& centre)
+   : Centre_(centre), Radius_(radius), StartAngle_(start_angle), Normaliser_(One / Radius_) { ASSERT(Positive(radius), "A circle's radius cannot be negative.") }
 
 template<size_t D>
 constexpr SVectorR<D>
 Circle<D>::Point(const Real t) const
 {
-   const auto s = t * (UnitSpeed ? Normaliser : One);
-   return ToVector<D>(SVectorR3{Radius * Cos(s), Radius * Sin(s), Zero}) + Centre;
+   const Real max_bound = this->UnitSpeed_ ? TwoPi * Radius_ : One;
+   ASSERT((isBounded<true, true>(t, Zero, max_bound)), "The parameter exceeds the expected bounds.")
+
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{Radius_ * std::cos(theta), Radius_ * std::sin(theta), Zero}) + Centre_;
 }
 
 template<size_t D>
 constexpr SVectorR<D>
 Circle<D>::Tangent(const Real t) const
 {
-   EXIT("TODO")
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{-Radius_ * std::sin(theta), Radius_ * std::cos(theta), Zero});
 }
 
 template<size_t D>
 constexpr SVectorR<D>
 Circle<D>::Normal(const Real t) const
 {
-   EXIT("TODO")
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{-Radius_ * std::cos(theta), -Radius_ * std::sin(theta), Zero});
+}
+
+template<size_t D>
+constexpr Real
+Circle<D>::Angle(const Real t) const { return StartAngle_ + t * (this->UnitSpeed_ ? Normaliser_ : TwoPi); }
+
+/** Circular Arc
+***************************************************************************************************************************************************************/
+template<size_t D>
+Arc<D>::Arc(const Real radius, const Real angle, const Vector& centre)
+   : Arc(radius, Zero, angle, centre) {}
+
+template<size_t D>
+Arc<D>::Arc(const Real radius, const Real start_angle, const Real end_angle, const Vector& centre)
+   : Circle<D>(radius, start_angle, centre), EndAngle_(end_angle)
+{
+   ASSERT(Positive(radius), "An arc's radius cannot be negative.")
+   ASSERT((isBounded<true, true>(start_angle, Zero, TwoPi)), "An arc's start angle must be in the range [0, 2*PI].")
+   ASSERT((isBounded<true, true>(end_angle, Zero, TwoPi)), "An arc's end angle must be in the range [0, 2*PI].")
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Point(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Point(t);
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Tangent(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Tangent(t);
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Normal(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Normal(t);
+}
+
+template<size_t D>
+constexpr void
+Arc<D>::CheckAngle(const Real t) const
+{
+   const auto theta = this->Angle(t);
+   const auto min_max = std::minmax(this->StartAngle_, EndAngle_);
+
+   ASSERT((isBounded<true, true>(theta, min_max.first, min_max.second)), "The computed angle lies outside the min/max angle range of the arc.", theta, " ", min_max.first, " ", min_max.second)
 }
 
 /** Ellipse
 ***************************************************************************************************************************************************************/
 template<size_t D>
-Ellipse<D>::Ellipse(const Real x_radius, const Real y_radius, const Vector& centre)
-   : Centre(centre), RadiusX(x_radius), RadiusY(y_radius) { ASSERT(Positive(x_radius) && Positive(y_radius), "An ellipse's radii cannot be negative.") }
+Ellipse<D>::Ellipse(const Real radius_x, const Real radius_y, const Vector& centre)
+   : Centre_(centre), RadiusX_(radius_x), RadiusY_(radius_y) { ASSERT(Positive(radius_x) && Positive(radius_y), "An ellipse's radii cannot be negative.") }
 
 template<size_t D>
 constexpr SVectorR<D>
 Ellipse<D>::Point(const Real t) const
 {
-   return ToVector<D>(SVectorR3{RadiusX * Cos(t), RadiusY * Sin(t), Zero}) + Centre;
+   return ToVector<D>(SVectorR3{RadiusX_ * std::cos(t), RadiusY_ * std::sin(t), Zero}) + Centre_;
 }
 
 template<size_t D>

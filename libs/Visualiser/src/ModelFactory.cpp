@@ -46,7 +46,7 @@ ModelFactory::Arc(const float radius, const float angle, const float line_width)
 /** 2D models
 ***************************************************************************************************************************************************************/
 Model
-ModelFactory::Triangle(const float length, const float border_width) { return Triangle(length, length * Sin(ThirdPi), Half, border_width); }
+ModelFactory::Triangle(const float length, const float border_width) { return Triangle(length, length * std::sin(ThirdPi), Half, border_width); }
 
 Model
 ModelFactory::Triangle(const float length, const float height, const float apex_ratio, const float border_width)
@@ -141,8 +141,8 @@ ModelFactory::ScreenQuad() { return Square(Two, false); }
 Model
 ModelFactory::Tetrahedron(const float length)
 {
-   const float width  = static_cast<float>(length) * Sin(ThirdPi);
-   const float height = Sqrt(iPow(length, 2) - iPow(TwoThird * width, 2));
+   const float width  = static_cast<float>(length) * std::sin(ThirdPi);
+   const float height = std::sqrt(iPow(length, 2) - iPow(TwoThird * width, 2));
 
    return Tetrahedron({Point{-0.5f * length, 0.0f, width / 3.0f},
                        Point{0.5f * length, 0.0f, width / 3.0f},

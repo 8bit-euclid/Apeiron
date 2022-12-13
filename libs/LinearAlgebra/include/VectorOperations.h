@@ -57,7 +57,7 @@ LpNorm(const Vector<T, D>& v)
    switch(p)
    {
       case 1: return Sum(vector.begin(), vector.end());
-      case 2: return Sqrt(InnerProduct(vector, vector));
+      case 2: return std::sqrt(InnerProduct(vector, vector));
       case 3: throw("TODO");
    }
 }
@@ -97,7 +97,7 @@ template<bool orientangle = false, typename T, class D>
 constexpr Real
 ComputeAngle(const Vector<T, D>& v0, const Vector<T, D>& v1, const SVectorR3& orient = zAxis3)
 {
-   const auto smallangle = Arccos(InnerProduct(Normalise(v0), Normalise(v1)));
+   const auto smallangle = std::acos(InnerProduct(Normalise(v0), Normalise(v1)));
    if constexpr(!orientangle) return smallangle;
    else return Sgn(InnerProduct(CrossProduct(v0, v1), orient)) * smallangle;
 }

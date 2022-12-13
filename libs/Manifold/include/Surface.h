@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "Manifold.h"
+#include "LinearAlgebra/include/Vector.h"
 
 namespace aprn::mnfld {
 
@@ -32,7 +32,7 @@ class Surface
 
    virtual constexpr Vector Normal(const Parameter& params) const = 0;
 
-   constexpr Vector Tangent(const Vector& normal, const Vector& tangent) const;
+   constexpr Vector Bitangent(const Vector& normal, const Vector& tangent) const;
 };
 
 /***************************************************************************************************************************************************************
