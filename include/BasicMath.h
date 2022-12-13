@@ -57,11 +57,6 @@ template<typename T>
 constexpr void
 Maximise(T& value, const T& other) { value = Max(value, other); }
 
-/** Min/Max values in a pair of values. */
-template<typename T>
-[[nodiscard]] constexpr std::pair<T, T>
-MinMax(const T& a, const T& b) { return std::minmax(a, b); }
-
 /** Get the clipped value between a minimum and a maximum. */
 template<typename T>
 [[nodiscard]] constexpr T

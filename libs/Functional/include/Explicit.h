@@ -35,7 +35,7 @@ Cubic(const Real x, const Real c0, const Real c1, const Real c2, const Real c3) 
 * Functions from R -> R^n
 ***************************************************************************************************************************************************************/
 constexpr SVectorR2
-Ellipse(const SVectorR2& radii, const Real theta) { return {radii[0] * Cos(theta), radii[1] * Sin(theta)}; }
+Ellipse(const SVectorR2& radii, const Real theta) { return {radii[0] * std::cos(theta), radii[1] * std::sin(theta)}; }
 
 constexpr SVectorR2
 Circle(const Real radius, const Real theta) { return Ellipse({radius, radius}, theta); }
@@ -43,7 +43,7 @@ Circle(const Real radius, const Real theta) { return Ellipse({radius, radius}, t
 constexpr SVectorR3
 Ellipsoid(const SVectorR3& _radii, const Real _theta, const Real _phi)
 {
-   return { _radii[0]*Cos(_theta)*Sin(_phi), _radii[1]*Sin(_theta)*Sin(_phi), _radii[2]*Cos(_phi) };
+   return { _radii[0] * std::cos(_theta) * std::sin(_phi), _radii[1] * std::sin(_theta) * std::sin(_phi), _radii[2] * std::cos(_phi) };
 }
 
 constexpr SVectorR3

@@ -420,7 +420,7 @@ TEST_F(VectorTest, InnerProduct)
   SVectorR3 random0, random1;
   random0.Randomise();
   random1.Randomise();
-  EXPECT_NEAR(InnerProduct(random0, random1), L2Norm(random0) * L2Norm(random1) * Cos(ComputeAngle(random0, random1)), Two*Small);
+  EXPECT_NEAR(InnerProduct(random0, random1), L2Norm(random0) * L2Norm(random1) * std::cos(ComputeAngle(random0, random1)), Two*Small);
 }
 
 TEST_F(VectorTest, CrossProduct)
@@ -454,7 +454,7 @@ TEST_F(VectorTest, CrossProduct)
   // Arbitrary test
   SVectorR3 random1;
   random1.Randomise();
-  EXPECT_NEAR(Magnitude(CrossProduct(random0, random1)), Magnitude(random0)*Magnitude(random1)*Sin(ComputeAngle(random0, random1)), Two*Small);
+  EXPECT_NEAR(Magnitude(CrossProduct(random0, random1)), Magnitude(random0) * Magnitude(random1) * std::sin(ComputeAngle(random0, random1)), Two*Small);
 }
 
 TEST_F(VectorTest, L1Norm)
@@ -467,11 +467,11 @@ TEST_F(VectorTest, L2Norm)
 {
   Real inner_prod{};
   FOR_EACH(entry, RealStaticVector) inner_prod += iPow(entry, 2);
-  EXPECT_DOUBLE_EQ(L2Norm(RealStaticVector), Sqrt(inner_prod));
+  EXPECT_DOUBLE_EQ(L2Norm(RealStaticVector), std::sqrt(inner_prod));
 
   inner_prod = Zero;
   FOR_EACH(entry, IntStaticVector) inner_prod += iPow(entry, 2);
-  EXPECT_DOUBLE_EQ(L2Norm(IntStaticVector), Sqrt(inner_prod));
+  EXPECT_DOUBLE_EQ(L2Norm(IntStaticVector), std::sqrt(inner_prod));
 }
 
 TEST_F(VectorTest, LInfNorm)
@@ -492,7 +492,7 @@ TEST_F(VectorTest, Normalise)
    RealStaticVector = Normalise(RealStaticVector);
   Real inner_prod{};
   FOR_EACH(entry, RealStaticVector) inner_prod += iPow(entry, 2);
-  EXPECT_DOUBLE_EQ(Sqrt(inner_prod), One);
+  EXPECT_DOUBLE_EQ(std::sqrt(inner_prod), One);
 }
 
 TEST_F(VectorTest, ComputeAngle)
@@ -500,33 +500,33 @@ TEST_F(VectorTest, ComputeAngle)
   // Non-oriented tests
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, xAxis2), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, -xAxis2), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{One, One}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{One, One}, xAxis2), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{-One, One}), ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{-One, One}, xAxis2), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{One, One}), QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{One, One}, xAxis2), QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis2, SVectorR2{-One, One}), ThreeQuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(SVectorR2{-One, One}, xAxis2), ThreeQuarterPi);
 
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, xAxis3), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, -xAxis3), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{One, One, Zero}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{-One, One, Zero}), ThreeQuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{One, One, Zero}), QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, SVectorR3{-One, One, Zero}), ThreeQuarterPi);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, yAxis3), HalfPi);
   EXPECT_DOUBLE_EQ(ComputeAngle(xAxis3, -yAxis3), HalfPi);
 
   // Oriented tests
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, xAxis2), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, -xAxis2), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{One, One}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}), ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}, -zAxis3), -ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, -One}), -ThreeQuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2), -QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2, -zAxis3), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{One, One}), QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}), ThreeQuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, One}, -zAxis3), -ThreeQuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis2, SVectorR2{-One, -One}), -ThreeQuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2), -QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR2{One, One}, xAxis2, -zAxis3), QuarterPi);
 
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, xAxis3), Zero);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, -xAxis3), Pi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, SVectorR3{One, One, Zero}), QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3), -QuartPi);
-  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3, -zAxis3), QuartPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, SVectorR3{One, One, Zero}), QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3), -QuarterPi);
+  EXPECT_DOUBLE_EQ(ComputeAngle<true>(SVectorR3{One, One, Zero}, xAxis3, -zAxis3), QuarterPi);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, yAxis3), HalfPi);
   EXPECT_DOUBLE_EQ(ComputeAngle<true>(xAxis3, -yAxis3), -HalfPi);
 }

@@ -14,8 +14,7 @@
 
 #pragma once
 
-#include "Manifold.h"
-#include "../../LinearAlgebra/include/Vector.h"
+#include "LinearAlgebra/include/Vector.h"
 
 namespace aprn::mnfld {
 
@@ -34,7 +33,14 @@ class Curve
 
    virtual constexpr Vector Normal(const Real param) const = 0;
 
+   virtual constexpr Real Length() const = 0;
+
    constexpr Vector Binormal(const Vector& tangent, const Vector& normal) const;
+
+   constexpr void MakeUnitSpeed() noexcept { UnitSpeed_ = true; }
+
+ protected:
+   bool UnitSpeed_{false};
 };
 
 /***************************************************************************************************************************************************************
@@ -57,14 +63,13 @@ class Line : public Curve<ambient_dim>
 
    constexpr Vector Normal(const Real t) const override;
 
-   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
+   constexpr Real Length() const override { return InfFloat<>; }
 
  protected:
    Vector Direction;
    Vector Start;
-   Real   DirectionNorm;
-   Real   Normaliser;
-   bool   UnitSpeed{false};
+   Real   DirectionNorm_;
+   Real   Normaliser_;
 };
 
 /** Ray
@@ -78,48 +83,50 @@ class Ray final : public Line<ambient_dim>
    constexpr Ray(const Vector& direction, const Vector& start = Vector{});
 
    constexpr Vector Point(const Real t) const override;
+
+   constexpr Real Length() const override { return InfFloat<>; }
 };
 
-/** Segment
+/** Line Segment
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Segment final : public Line<ambient_dim>
+class LineSegment final : public Line<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
  public:
-   constexpr Segment(const Vector& start, const Vector& end);
+   constexpr LineSegment(const Vector& start, const Vector& end);
 
    constexpr Vector Point(const Real t) const override;
 
-   constexpr Real Length() const noexcept { return this->DirectionNorm; }
+   constexpr Real Length() const override { return this->DirectionNorm_; }
 };
 
-/** Segment Chain
+/** Line Segment Chain
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class SegmentChain final : public Curve<ambient_dim>
+class LineSegmentChain final : public Curve<ambient_dim>
 {
-   using Vector = SVectorR<ambient_dim>;
+   using Vector  = SVectorR<ambient_dim>;
+   using Segment = LineSegment<ambient_dim>;
 
  public:
    template<class D>
-   SegmentChain(const Array<Vector, D>& vertices, bool is_closed = false);
+   LineSegmentChain(const Array<Vector, D>& vertices, bool is_closed = false);
 
-   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
-
-   constexpr Vector Point(const Real t) const override;
+   constexpr Vector Point(const Real l) const override;
 
    constexpr Vector Tangent(const Real t) const override;
 
    constexpr Vector Normal(const Real t) const override;
 
+   constexpr Real Length() const override { return ChainLength_; }
+
  private:
-   DArray<Segment<ambient_dim>> Segments;
-   DArray<Real>                 CumulativeLengths;
-   Real                         ChainLength;
-   bool                         Closed;
-   bool                         UnitSpeed{false};
+   DArray<Segment> Segments_;
+   DArray<Real>    CumulativeLengths_;
+   Real            ChainLength_;
+   bool            Closed_;
 };
 
 /***************************************************************************************************************************************************************
@@ -129,12 +136,14 @@ class SegmentChain final : public Curve<ambient_dim>
 /** Circle
 ***************************************************************************************************************************************************************/
 template<size_t ambient_dim = 2>
-class Circle final : public Curve<ambient_dim>
+class Circle : public Curve<ambient_dim>
 {
    using Vector = SVectorR<ambient_dim>;
 
  public:
    Circle(const Real radius, const Vector& centre = Vector{});
+
+   Circle(const Real radius, const Real start_angle, const Vector& centre = Vector{});
 
    constexpr Vector Point(const Real t) const override;
 
@@ -142,13 +151,40 @@ class Circle final : public Curve<ambient_dim>
 
    constexpr Vector Normal(const Real t) const override;
 
-   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
+   constexpr Real Length() const override { return Length_; }
+
+ protected:
+   constexpr Real Angle(const Real t) const;
+
+   Vector Centre_;
+   Real   Radius_;
+   Real   StartAngle_{Zero};
+   Real   Normaliser_;
+   Real   Length_;
+};
+
+/** Circular Arc
+***************************************************************************************************************************************************************/
+template<size_t ambient_dim = 2>
+class Arc final : public Circle<ambient_dim>
+{
+   using Vector = SVectorR<ambient_dim>;
+
+ public:
+   Arc(const Real radius, const Real angle, const Vector& centre = Vector{});
+
+   Arc(const Real radius, const Real start_angle, const Real end_angle, const Vector& centre = Vector{});
+
+   constexpr Vector Point(const Real t) const override;
+
+   constexpr Vector Tangent(const Real t) const override;
+
+   constexpr Vector Normal(const Real t) const override;
+
+   constexpr void CheckAngle(const Real t) const;
 
  private:
-   Vector Centre;
-   Real   Radius;
-   Real   Normaliser;
-   bool   UnitSpeed{false};
+   Real EndAngle_;
 };
 
 /** Ellipse
@@ -159,7 +195,7 @@ class Ellipse final : public Curve<ambient_dim>
    using Vector = SVectorR<ambient_dim>;
 
  public:
-   Ellipse(const Real x_radius, const Real y_radius, const Vector& centre = Vector{});
+   Ellipse(const Real radius_x, const Real radius_y, const Vector& centre = Vector{});
 
    constexpr Vector Point(const Real t) const override;
 
@@ -167,10 +203,14 @@ class Ellipse final : public Curve<ambient_dim>
 
    constexpr Vector Normal(const Real t) const override;
 
+   constexpr Real Length() const override { return Length_; }
+
  private:
-   Vector Centre;
-   Real   RadiusX;
-   Real   RadiusY;
+   Vector Centre_;
+   Real   RadiusX_;
+   Real   RadiusY_;
+   Real   Length_;
+
 };
 
 /***************************************************************************************************************************************************************
@@ -203,7 +243,7 @@ class Ellipse final : public Curve<ambient_dim>
 //   template<class D>
 //   CurveChain(const Array<Vector, D>& vertices, bool is_closed = false);
 //
-//   constexpr void MakeUnitSpeed() noexcept { UnitSpeed = true; }
+//   constexpr void MakeUnitSpeed() noexcept { UnitSpeed_ = true; }
 //
 // private:
 //   constexpr Vector ComputePoint(const Parameter& t) const override;
@@ -215,10 +255,10 @@ class Ellipse final : public Curve<ambient_dim>
 //   constexpr Vector ComputeNormal(const Parameter& t) const override;
 //
 //   DArray<Curve<ambient_dim>> Curves;
-//   DArray<Real>               CumulativeLengths;
-//   Real                       ChainLength;
-//   bool                       Closed;
-//   bool                       UnitSpeed{false};
+//   DArray<Real>               CumulativeLengths_;
+//   Real                       ChainLength_;
+//   bool                       Closed_;
+//   bool                       UnitSpeed_{false};
 //};
 
 }
