@@ -90,6 +90,8 @@ class TeXBox final : public TeXObject,
    void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
                           TeXSpacer& spacer) override;
 
+   void OffsetAlongZ(Real& cumu_offset) override;
+
    fm::Path ImagePath() const;
 
    DArray<SPtr<TeXObject>> SubBoxes_;

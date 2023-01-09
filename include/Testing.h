@@ -83,7 +83,7 @@ inline void RotatingCube()
    tex_box.SetName("TeX-box")
           .Add(R"(This is a test: $e = mc^2$.)")
 //          .Add(R"(This is a test: $e = mc^2$.\\This is another test: $F = ma$.)")
-          .SetPixelDensity(4000)
+          .SetPixelDensity(11000)
           .RotateAt({0.0f, 0.0f, 1.0f}, 2.0)
           .OffsetPosition({-2.0f, 2.0f, 2.0f});
    scene.Add(tex_box);
@@ -143,7 +143,7 @@ inline void EuclidsElementsEp1()
    TeXBox tex_box;
 
    tex_box.Add(R"(This is a test: $e = mc^2$.)")
-          .SetPixelDensity(2000)
+          .SetPixelDensity(11000)
           .OffsetPosition({0.0, 0.0, 0.05});
    scene.Add(tex_box);
 
@@ -154,13 +154,13 @@ inline void EuclidsElementsEp1()
    scene.Add(model);
 
    // Lighting
-//   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
-//   point_light.SetName("Lamp");
-//   scene.Add(point_light);
+   PointLight point_light(glm::vec3(0.0, 0.0, 2.6), glm::vec4(1.0, 197.0/255.0, 143.0/255.0, 1.0), 5.0, 1.0, {0.1, 0.5, 0.5});
+   point_light.SetName("Lamp");
+   scene.Add(point_light);
 
-   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
-   sun.SetName("Sun");
-   scene.Add(sun);
+//   DirectLight sun({-1.0, -1.0, -1.0}, glm::vec4(1.0, 1.0, 1.0, 1.0), 20.0, 2.5);
+//   sun.SetName("Sun");
+//   scene.Add(sun);
 
    visualiser.Add(scene);
    visualiser.Animate();

@@ -89,9 +89,9 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
      {
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type))
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
-        GLCall(glTexImage2D(gl_type, 0, internal_format, Width_, Height_, 0, format, data_type, LocalBuffer_.get()));
+        GLCall(glTexImage2D(gl_type, 0, internal_format, Width_, Height_, 0, format, data_type, LocalBuffer_.get()))
      }
-     else GLCall(glTexImage2DMultisample(gl_type, SampleCount_, internal_format, Width_, Height_, GL_TRUE));
+     else GLCall(glTexImage2DMultisample(gl_type, SampleCount_, internal_format, Width_, Height_, GL_TRUE))
    }
    else if(gl_type == GL_TEXTURE_CUBE_MAP)
    {

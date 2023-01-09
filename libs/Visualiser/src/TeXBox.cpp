@@ -199,6 +199,10 @@ TeXBox::InitTeXBox(const size_t id)
    // Compute the sub-glyph dimensions and their texture coordinates.
    TeXSpacer spacer;
    ComputeDimensions(GlyphSheet_, FontSize_, Anchor_, Dimensions_, spacer);
+
+   // Offset along the z-axis to avoid z-fighting.
+   Real offset{};
+   OffsetAlongZ(offset);
 }
 
 void
@@ -227,6 +231,13 @@ TeXBox::ImagePath() const
    const auto compile_dir = GlyphSheet_.CompileDirectory();
    ASSERT(!compile_dir.empty(), "The compile directory has not yet been set for this TeXBox.")
    return compile_dir / LaTeXTemplate().filename().replace_extension(".png");
+}
+
+void
+TeXBox::OffsetAlongZ(Real& cumu_offset)
+{
+   FOR_EACH(sub_box, SubBoxes_)
+      sub_box->OffsetAlongZ(cumu_offset);
 }
 
 }
