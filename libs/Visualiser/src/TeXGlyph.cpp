@@ -35,7 +35,7 @@ TeXGlyph::Set(const std::string& tex_str)
    DEBUG_ASSERT(isGlyphString(tex_str), "The following string does not yet qualify as a glyph: ", tex_str)
 
    Text_ = tex_str;
-   if(TeXSpacer::isRequired(tex_str))
+   if(TeXSpacer::Required(tex_str))
    {
       AddSpacer_ = true;
       Text_ += TeXSpacer::Text();
@@ -50,21 +50,21 @@ TeXGlyph::SetColour(const SVectorR4& rgba_colour) { return SetColour(Colour{rgba
 TeXGlyph&
 TeXGlyph::SetColour(const Colour& colour)
 {
-   if(!Colour_.has_value()) Colour_ = colour;
+   if(!Colour_) Colour_ = colour;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetItalic(const bool is_italic)
 {
-   if(!isItalic_.has_value()) isItalic_ = is_italic;
+   if(!Italic_) Italic_ = is_italic;
    return *this;
 }
 
 TeXGlyph&
 TeXGlyph::SetBold(const bool is_bold)
 {
-   if(!isBold_.has_value()) isBold_ = is_bold;
+   if(!Bold_) Bold_ = is_bold;
    return *this;
 }
 
@@ -85,7 +85,7 @@ TeXGlyph::InitTeXObject(GlyphSheet::IndexT& index_offset)
 }
 
 void
-TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dims,
                             TeXSpacer& spacer)
 {
    if(!Rendered()) return;
@@ -94,22 +94,22 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
 
    const auto& glyph_info = glyph_sheet.GlyphInfo(Index_);
    const auto  xy_scale   = GlyphSheet::FontSizeScale(font_size);
-   const auto  y_scale    = 1.01; // Some glyphs slightly exceed the vertical bounds of the bounding box (e.g. m, e, 2).
+   const auto  y_scale    = 1.02; // Some glyphs slightly exceed the vertical bounds of the bounding box (e.g. m, e, 2), so need to vertically scale a bit.
    SVectorR2   glyph_dims;        // Dimensions of the glyph in the xy-plane in world-space coordinates.
    SVectorR2   glyph_anchor;      // Bottom-left corner of the glyph in world-space coordinates.
 
    // Compute the scaled glyph dimensions.
-   glyph_dims.x()    = xy_scale * static_cast<Real>(glyph_info.Width);
-   glyph_dims.y()    = xy_scale * y_scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
-   glyph_anchor      = xy_scale * SVectorR2{glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
+   glyph_dims.x() = xy_scale * static_cast<Real>(glyph_info.Width);
+   glyph_dims.y() = xy_scale * y_scale * static_cast<Real>(glyph_info.Height + glyph_info.Depth);
+   glyph_anchor   = xy_scale * SVectorR2{glyph_info.Position.x(), glyph_info.Position.y() - glyph_info.Depth }; // Anchor in TeXBox local coordinate system.
 
    // Ensure the glyph's vertical bounds haven't exceeded that of the tex-box after scaling.
-   if(glyph_anchor.y() + glyph_dims.y() > texbox_dimensions.y()) Clip(glyph_dims.y(), Zero, texbox_dimensions.y() - glyph_anchor.y());
+   if(glyph_anchor.y() + glyph_dims.y() > texbox_dims.y()) Clip(glyph_dims.y(), Zero, texbox_dims.y() - glyph_anchor.y());
 
    // Set texture coordinates based on the glyph's dimensions w.r.t. the tex-box's dimensions.
-   Mesh_ = ModelFactory::Rectangle(glyph_dims.x(), glyph_dims.y()).ModelMesh();
+   Mesh_ = ModelFactory::Rectangle(glyph_dims.x(), glyph_dims.y(), false).ModelMesh();
    auto set_tex_coor = [&](const size_t i, const SVectorR2& point)
-      { Mesh_.Vertices_[i].TextureCoordinates = glm::vec2(point.x() / texbox_dimensions.x(), point.y() / texbox_dimensions.y()); };
+      { Mesh_.Vertices_[i].TextureCoordinates = glm::vec2(point.x() / texbox_dims.x(), point.y() / texbox_dims.y()); };
    set_tex_coor(0, glyph_anchor);
    set_tex_coor(1, glyph_anchor + SVectorR2{glyph_dims.x(), Zero });
    set_tex_coor(2, glyph_anchor + glyph_dims);
@@ -126,6 +126,13 @@ TeXGlyph::ComputeDimensions(const GlyphSheet& glyph_sheet, const UChar font_size
 
    // Initialise underlying model.
    Model::Init();
+}
+
+void
+TeXGlyph::OffsetAlongZ(Real& cumu_offset)
+{
+   this->OffsetPosition({0.0, 0.0, cumu_offset});
+   cumu_offset += OffsetZ_;
 }
 
 }

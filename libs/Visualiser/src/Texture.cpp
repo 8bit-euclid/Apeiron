@@ -89,9 +89,9 @@ Texture::Init(const GLuint width, const GLuint height, const GLint internal_form
      {
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_S, wrap_type))
         GLCall(glTexParameteri(gl_type, GL_TEXTURE_WRAP_T, wrap_type))
-        GLCall(glTexImage2D(gl_type, 0, internal_format, Width_, Height_, 0, format, data_type, LocalBuffer_.get()));
+        GLCall(glTexImage2D(gl_type, 0, internal_format, Width_, Height_, 0, format, data_type, LocalBuffer_.get()))
      }
-     else GLCall(glTexImage2DMultisample(gl_type, SampleCount_, internal_format, Width_, Height_, GL_TRUE));
+     else GLCall(glTexImage2DMultisample(gl_type, SampleCount_, internal_format, Width_, Height_, GL_TRUE))
    }
    else if(gl_type == GL_TEXTURE_CUBE_MAP)
    {
@@ -213,7 +213,7 @@ TextureUniformString(const std::string& type_string) { return TextureUniformStri
 std::string
 TextureDirectory(const std::string& name) { return "libs/Visualiser/resources/textures/" + name + "/"; }
 
-std::optional<std::string>
+Option<std::string>
 TexturePath(const std::string& file_directory, const TextureType type)
 {
    const auto& texture_str = TextureTypeString(type);
@@ -226,7 +226,7 @@ TexturePath(const std::string& file_directory, const TextureType type)
          if(flmgr::FileExists(file_path + ext))
          {
             file_path.append(ext);
-            return std::make_optional<std::string>(file_path);
+            return std::make_optional(file_path);
          }
       return std::nullopt;
    }

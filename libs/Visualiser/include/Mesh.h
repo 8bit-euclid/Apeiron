@@ -16,7 +16,9 @@
 
 #include "../../../include/Global.h"
 #include "../../DataContainer/include/Array.h"
+#include "Animator.h"
 
+#include <optional>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -63,7 +65,7 @@ class Mesh
 
    inline bool Loaded() const { return !Vertices_.empty(); }
 
-   inline const auto& GetVertexLayout() const { return VertexLayout_; }
+   inline const auto& VertexLayout() const { return VertexLayout_; }
 
  private:
    friend class Model;

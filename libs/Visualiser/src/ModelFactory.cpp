@@ -19,14 +19,28 @@ namespace aprn::vis {
 /** 1D models
 ***************************************************************************************************************************************************************/
 Model
-ModelFactory::Segment(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1)
+ModelFactory::Segment(const Point& p0, const Point& p1, const float line_width)
 {
    return Model();
 }
 
-template<class... svectors>
 Model
-ModelFactory::SegmentChain(const svectors&... vs)
+ModelFactory::Segment(const Point& p0, const Point& p1, const Vector& miter0, const Vector& miter1, const float line_width)
+{
+   return Model();
+}
+
+Model
+ModelFactory::SegmentChain(const DArray<Point>& points, const float line_width)
+{
+   return Model();
+}
+
+Model
+ModelFactory::Arc(const float radius, const float angle, const float line_width) { return Arc(radius, Zero, angle, line_width); }
+
+Model
+ModelFactory::Arc(float radius, float start_angle, float end_angle, float line_width)
 {
    return Model();
 }
@@ -34,45 +48,38 @@ ModelFactory::SegmentChain(const svectors&... vs)
 /** 2D models
 ***************************************************************************************************************************************************************/
 Model
-ModelFactory::Triangle(const GLfloat length) { return Triangle(length, length * Sin(ThirdPi), Half); }
+ModelFactory::Triangle(const float length, const float border_width) { return Triangle(length, length * std::sin(ThirdPi), Half, border_width); }
 
 Model
-ModelFactory::Triangle(const GLfloat length, const GLfloat height, const GLfloat apex_ratio)
+ModelFactory::Triangle(const float length, const float height, const float apex_ratio, const float border_width)
 {
-   const GLfloat x = Half * static_cast<Real>(length);
-   const GLfloat y = static_cast<Real>(height);
-   const GLfloat apex_x = x * (Two * apex_ratio - One);
+   const float x = Half * static_cast<float>(length);
+   const float y = static_cast<float>(height);
+   const float apex_x = x * (Two * apex_ratio - One);
 
-   return Triangle(SVector3<GLfloat>{-x, 0.0f, 0.0f}, SVector3<GLfloat>{x, 0.0f, 0.0f}, SVector3<GLfloat>{apex_x, y, 0.0f});
+   return Triangle({Point{-x, 0.0f, 0.0f}, Point{x, 0.0f, 0.0f}, Point{apex_x, y, 0.0f}}, border_width);
 }
 
 Model
-ModelFactory::Triangle(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2) { return Polygon(v0, v1, v2); }
+ModelFactory::Triangle(const SArray3<Point>& points, const float border_width) { return Polygon({points[0], points[1], points[2]}, border_width); }
 
 Model
-ModelFactory::Square(const GLfloat length) { return Rectangle(length, length); }
+ModelFactory::Square(const float length, const float border_width) { return Rectangle(length, length, border_width); }
 
 Model
-ModelFactory::Rectangle(const GLfloat length, const GLfloat height)
+ModelFactory::Rectangle(const float length, const float height, const float border_width)
 {
-   const GLfloat x = Half * length;
-   const GLfloat y = Half * height;
+   const float x = Half * length;
+   const float y = Half * height;
 
-   return Quadrilateral(SVector3<GLfloat>{-x, -y, 0.0f},
-                        SVector3<GLfloat>{ x, -y, 0.0f},
-                        SVector3<GLfloat>{ x,  y, 0.0f},
-                        SVector3<GLfloat>{-x,  y, 0.0f});
+   return Quadrilateral({Point{-x, -y, 0.0f}, Point{x, -y, 0.0f}, Point{x,  y, 0.0f}, Point{-x,  y, 0.0f}}, border_width);
 }
 
 Model
-ModelFactory::ScreenQuad() { return Square(Two); }
-
-Model
-ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
+ModelFactory::Quadrilateral(const SArray4<Point>& points, const float border_width)
 {
-   Model part = Polygon(v0, v1, v2, v3);
-
-   auto& mesh = part.Mesh_;
+   Model quad = Polygon(DArray<Point>(points.begin(), points.end()), border_width);
+   auto& mesh = quad.Mesh_;
 
    // Set tangents
    FOR_EACH(vertex, mesh.Vertices_) vertex.Tangent = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -83,70 +90,76 @@ ModelFactory::Quadrilateral(const SVector3<GLfloat>& v0, const SVector3<GLfloat>
    mesh.Vertices_[2].TextureCoordinates = glm::vec2(1.0f, 1.0f);
    mesh.Vertices_[3].TextureCoordinates = glm::vec2(0.0f, 1.0f);
 
-   return part;
+   return quad;
 }
 
-template<class... svectors>
 Model
-ModelFactory::Polygon(const svectors&... vs)
+ModelFactory::Polygon(const DArray<Point>& points, const float border_width)
 {
-   Model part;
-   part.Mesh_.Shading_ = ShadingType::Flat;
+   Model poly;
+   poly.Mesh_.Shading_ = ShadingType::Flat;
 
-   auto& vertices = part.Mesh_.Vertices_;
-   auto& indices  = part.Mesh_.Indices_;
+   auto& vertices = poly.Mesh_.Vertices_;
+   auto& indices  = poly.Mesh_.Indices_;
 
-   constexpr size_t n_vertices = sizeof...(svectors);
-   vertices.resize(n_vertices);
-   size_t i = 0;
-   ((vertices[i++].Position = SVectorToGlmVec(vs)), ...);
+   const auto n_points = points.size();
+   vertices.resize(n_points);
+   FOR(i, n_points) vertices[i].Position = SVectorToGlmVec(points[i]);
 
    // TODO - extend to non-convex polygons as well!
-   indices.resize(3 * (n_vertices - 2));
-   FOR(i, n_vertices - 2)
+   indices.resize(3 * (n_points - 2));
+   FOR(i, n_points - 2)
    {
       indices[3 * i] = 0;
       FOR(j, 1, 3) indices[j + 3 * i] = i + j;
    }
 
-   return part;
+   return poly;
 }
 
 Model
-ModelFactory::Arc(const GLfloat radius, const GLfloat angle)
+ModelFactory::Sector(const float radius, const float angle, const float border_width) { return Sector(radius, Zero, angle, border_width); }
+
+Model
+ModelFactory::Sector(float radius, float start_angle, float end_angle, float border_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::Sector(const GLfloat radius, const GLfloat angle)
+ModelFactory::Circle(const float radius, const float border_width) { return Circle(radius, Zero, border_width); }
+
+Model
+ModelFactory::Circle(float radius, float start_angle, float border_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::Circle(const GLfloat radius)
+ModelFactory::Ellipse(const float radius_x, const float radius_y, const float border_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::Ellipse(const GLfloat radius_x, const GLfloat radius_y)
+ModelFactory::ScreenQuad() { return Square(Two, false); }
+
+/** 3D models
+***************************************************************************************************************************************************************/
+Model
+ModelFactory::Tetrahedron(const float length)
 {
-   return Model();
+   const float width  = static_cast<float>(length) * std::sin(ThirdPi);
+   const float height = std::sqrt(iPow(length, 2) - iPow(TwoThird * width, 2));
+
+   return Tetrahedron({Point{-0.5f * length, 0.0f, width / 3.0f},
+                       Point{0.5f * length, 0.0f, width / 3.0f},
+                       Point{0.0f, 0.0f, -2.0f * width / 3.0f},
+                       Point{0.0f, height, 0.0f}});
 }
 
 Model
-ModelFactory::Tetrahedron(const GLfloat length)
-{
-   const GLfloat width  = static_cast<Real>(length) * Sin(ThirdPi);
-   const GLfloat height = Sqrt(iPow(length, 2) - iPow(TwoThird * width, 2));
-
-   return Tetrahedron({-0.5f * length, 0.0f, width / 3.0f}, {0.5f * length, 0.0f, width / 3.0f}, {0.0f, 0.0f, -2.0f * width / 3.0f}, {0.0f, height, 0.0f});
-}
-
-Model
-ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& v1, const SVector3<GLfloat>& v2, const SVector3<GLfloat>& v3)
+ModelFactory::Tetrahedron(const SArray4<Point>& points)
 {
    Model part;
    part.Mesh_.Shading_ = ShadingType::Flat;
@@ -155,12 +168,9 @@ ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& 
    auto& indices  = part.Mesh_.Indices_;
 
    vertices.resize(4);
-   vertices[0].Position = SVectorToGlmVec(v0);
-   vertices[1].Position = SVectorToGlmVec(v1);
-   vertices[2].Position = SVectorToGlmVec(v2);
-   vertices[3].Position = SVectorToGlmVec(v3);
-
    indices.resize(12);
+   FOR(i, 4) vertices[i].Position = SVectorToGlmVec(points[i]);
+
    // Face 0
    indices[0] = 0;
    indices[1] = 2;
@@ -185,23 +195,23 @@ ModelFactory::Tetrahedron(const SVector3<GLfloat>& v0, const SVector3<GLfloat>& 
 }
 
 Model
-ModelFactory::Cube(const GLfloat length) { return Cuboid(length, length, length); }
+ModelFactory::Cube(const float length) { return Cuboid(length, length, length); }
 
 Model
-ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat height)
+ModelFactory::Cuboid(const float length, const float width, const float height)
 {
-   const GLfloat x = Half * static_cast<Real>(length);
-   const GLfloat y = Half * static_cast<Real>(width);
-   const GLfloat z = Half * static_cast<Real>(height);
+   const float x = Half * static_cast<float>(length);
+   const float y = Half * static_cast<float>(width);
+   const float z = Half * static_cast<float>(height);
 
-   SVector3<GLfloat> v0{-x, -y,  z};
-   SVector3<GLfloat> v1{ x, -y,  z};
-   SVector3<GLfloat> v2{-x, -y, -z};
-   SVector3<GLfloat> v3{ x, -y, -z};
-   SVector3<GLfloat> v4{-x,  y,  z};
-   SVector3<GLfloat> v5{ x,  y,  z};
-   SVector3<GLfloat> v6{-x,  y, -z};
-   SVector3<GLfloat> v7{ x,  y, -z};
+   SVector3<float> v0{-x, -y,  z};
+   SVector3<float> v1{ x, -y,  z};
+   SVector3<float> v2{-x, -y, -z};
+   SVector3<float> v3{ x, -y, -z};
+   SVector3<float> v4{-x,  y,  z};
+   SVector3<float> v5{ x,  y,  z};
+   SVector3<float> v6{-x,  y, -z};
+   SVector3<float> v7{ x,  y, -z};
 
    Model part;
    part.Mesh_.Shading_ = ShadingType::Flat;
@@ -234,7 +244,7 @@ ModelFactory::Cuboid(const GLfloat length, const GLfloat width, const GLfloat he
    indices[7] = 2;
    indices[8] = 6;
 
-   indices[9] = 3;
+   indices[9]  = 3;
    indices[10] = 6;
    indices[11] = 7;
 

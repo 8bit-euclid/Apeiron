@@ -28,7 +28,9 @@ namespace aprn::vis {
 * Public Interface
 ***************************************************************************************************************************************************************/
 Visualiser::Visualiser()
-   : Visualiser(1920, 1080) {}
+//   : Visualiser(1920, 1080) {}
+//   : Visualiser(2560, 1440) {}
+   : Visualiser(3840, 2160) {}
 
 Visualiser::Visualiser(const GLint window_width, const GLint window_height)
    : Window_(window_width, window_height), Cameras_{Camera()}, ActiveCamera_(&Cameras_.front()) {}
@@ -181,7 +183,7 @@ Visualiser::InitTextures()
    FOR_EACH(scene, Scenes_)
       FOR_EACH_CONST(actor, scene.Actors_)
          if(auto model = std::dynamic_pointer_cast<Model>(actor))
-            if(model->TextureRequest().has_value())
+            if(model->TextureRequest())
             {
                const auto& texture_info = model->TextureRequest().value();
                const auto& texture_name = texture_info.first;
@@ -196,7 +198,7 @@ Visualiser::InitTextures()
                   FOR_EACH_CONST(texture_type, texture_list)
                   {
                      const auto path = TexturePath(TextureDirectory(texture_name), texture_type);
-                     if(path.has_value())
+                     if(path)
                      {
                         texture_files.emplace(TextureTypeString(texture_type), Texture(texture_type, path.value()));
                         if(texture_type == TextureType::Displacement)
@@ -210,7 +212,6 @@ Visualiser::InitTextures()
 
                   // Add texture files to the list of textures
                   Textures_.emplace(texture_name, std::move(texture_files));
-
                }
 
                // Point to the textures from the model.
@@ -400,7 +401,6 @@ void
 Visualiser::Terminate()
 {
 #ifdef DEBUG_MODE
-   // Terminate GUI, if debugging.
    GUI_.Terminate();
 #endif
    Window_.Terminate();

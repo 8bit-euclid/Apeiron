@@ -18,123 +18,117 @@
 namespace aprn::mnfld {
 
 /***************************************************************************************************************************************************************
+* Curve Class Implementation
+***************************************************************************************************************************************************************/
+
+template<size_t D>
+constexpr SVectorR<D>
+Curve<D>::Binormal(const Vector& tangent, const Vector& normal) const { return CrossProduct(tangent, normal); }
+
+/***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Curves
 ***************************************************************************************************************************************************************/
 
 /** Line
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
-constexpr Line<ambient_dim>::Line(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& coordinate)
-   : Direction(direction), Coordinate0(coordinate), DirectionMagnitude(Magnitude(Direction)), Normaliser(One/DirectionMagnitude) {}
+template<size_t D>
+constexpr Line<D>::Line(const Vector& direction, const Vector& point)
+   : Direction(direction), Start(point), DirectionNorm_(Magnitude(Direction)), Normaliser_(One / DirectionNorm_) {}
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputePoint(const SVectorR1& t) { return Coordinate0 + t[0] * (isUnitSpeed ? Normaliser : One) * Direction; }
+template<size_t D>
+constexpr SVectorR<D>
+Line<D>::Point(const Real t) const { return Start + t * (this->UnitSpeed_ ? Normaliser_ : One) * Direction; }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeTangent(const SVectorR1& t) { return (isUnitSpeed ? Normaliser : One) * Direction; }
+template<size_t D>
+constexpr SVectorR<D>
+Line<D>::Tangent([[maybe_unused]] const Real t) const { return (this->UnitSpeed_ ? Normaliser_ : One) * Direction; }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Line<D>::Normal(const Real t) const
 {
-  throw("TODO");
-//  return Direction;
-}
-
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Line<ambient_dim>::ComputeNormal(const SVectorR1& t)
-{
-  throw("TODO");
-//  return Direction;
+   EXIT("TODO")
+   return Direction;
 }
 
 /** Ray
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
-constexpr Ray<ambient_dim>::Ray(const SVectorR<ambient_dim>& direction, const SVectorR<ambient_dim>& _start)
-  : Line<ambient_dim>::Line(direction, _start) {}
+template<size_t D>
+constexpr Ray<D>::Ray(const Vector& direction, const Vector& start)
+   : Line<D>::Line(direction, start) {}
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Ray<ambient_dim>::ComputePoint(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Ray<D>::Point(const Real t) const
 {
-  return isPositive(t[0]) ? Line<ambient_dim>::ComputePoint(t) : throw std::domain_error("The parameter must be positive for rays.");
+   return Positive(t) ? Line<D>::Point(t) : throw std::domain_error("The parameter must be positive for rays.");
 }
 
 /** Segment
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
-constexpr Segment<ambient_dim>::Segment(const SVectorR<ambient_dim>& _start, const SVectorR<ambient_dim>& _end)
-  : Line<ambient_dim>::Line(_end - _start, _start) {}
+template<size_t D>
+constexpr LineSegment<D>::LineSegment(const Vector& start, const Vector& end)
+   : Line<D>::Line(end - start, start) {}
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Segment<ambient_dim>::ComputePoint(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+LineSegment<D>::Point(const Real t) const
 {
-  const Real maxBound = this->isUnitSpeed ? this->DirectionMagnitude : One;
-  return isBounded<true, true>(t[0], Zero, maxBound) ? Line<ambient_dim>::ComputePoint(t) :
-         throw std::domain_error("The parameter must be in the range [0, " + ToString(maxBound) + "] for this segment.");
+   const Real max_bound = this->UnitSpeed_ ? Length() : One;
+   return isBounded<true, true>(t, Zero, max_bound) ? Line<D>::Point(t) :
+          throw std::domain_error("The parameter must be in the range [0, " + ToString(max_bound) + "] for this segment.");
 }
 
 /** SegmentChain
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
+template<size_t Dim>
 template<class D>
-SegmentChain<ambient_dim>::SegmentChain(const Array<SVectorR<ambient_dim>, D>& vertex_list, const bool _is_closed)
-  : isClosed(_is_closed)
+LineSegmentChain<Dim>::LineSegmentChain(const Array<Vector, D>& vertex_list, const bool is_closed)
+   : Closed_(is_closed)
 {
-  const auto& vertices = vertex_list.Derived();
-  Segments.reserve(vertices.size());
-  CumulativeLengths.reserve(vertices.size());
-  ChainLength = Zero;
+   const auto& vertices = vertex_list.Derived();
 
-  FOR(i, vertices.size() - static_cast<int>(!isClosed))
-  {
-    Segments.emplace_back(vertices[i], vertices[(i + 1) % vertices.size()]);
-    Segments.back().SetIfUnitSpeed(true);
+   Segments_.reserve(vertices.size());
+   CumulativeLengths_.reserve(vertices.size());
+   ChainLength_ = Zero;
 
-    ChainLength += Segments.back().Length();
-    CumulativeLengths.emplace_back(ChainLength);
-  }
+   FOR(i, vertices.size() - static_cast<size_t>(!Closed_))
+   {
+      Segments_.emplace_back(vertices[i], vertices[(i + 1) % vertices.size()]);
+      Segments_.back().MakeUnitSpeed();
+
+      ChainLength_ += Segments_.back().Length();
+      CumulativeLengths_.emplace_back(ChainLength_);
+   }
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputePoint(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+LineSegmentChain<D>::Point(const Real t) const
 {
-  const Real upper_bound = isUnitSpeed ? ChainLength : One;
-  const Real param_length = isBounded<true, true, true>(t[0], Zero, upper_bound) ? t[0] * (isUnitSpeed ? One : ChainLength) :
-                            throw std::domain_error("The parameter must be in the range [0, " + ToString(upper_bound) + "] for this segment.");
-  const auto iter = std::find_if(CumulativeLengths.begin(), CumulativeLengths.end(), [param_length](auto _l){ return param_length <= _l; });
-  const auto index = std::distance(CumulativeLengths.begin(), iter);
-  const Real param = param_length - (index != 0 ? CumulativeLengths[index - 1] : Zero);
+   const Real upper_bound  = this->UnitSpeed_ ? ChainLength_ : One;
+   const Real param_length = isBounded<true, true, true>(t, Zero, upper_bound) ? t * (this->UnitSpeed_ ? One : ChainLength_) :
+                             throw std::domain_error("The parameter must be in the range [0, " + ToString(upper_bound) + "] for this segment.");
+   const auto iter  = std::find_if(CumulativeLengths_.begin(), CumulativeLengths_.end(), [param_length](auto l){ return param_length <= l; });
+   const auto index = std::distance(CumulativeLengths_.begin(), iter);
+   const Real param = param_length - (index != 0 ? CumulativeLengths_[index - 1] : Zero);
 
-  return isBounded<true, true>(param, Zero, Segments[index].Length()) ? Segments[index].ComputePoint({param}) :
-         throw std::domain_error("The parameter for segment " + ToString(index) + " in the chain is out of bounds.");
+   return isBounded<true, true>(param, Zero, Segments_[index].Length()) ? Segments_[index].Point(param) :
+          throw std::domain_error("The parameter for segment " + ToString(index) + " in the chain is out of bounds.");
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeTangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+LineSegmentChain<D>::Tangent(const Real t) const
 {
-  throw("TODO");
+   EXIT("TODO")
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+LineSegmentChain<D>::Normal(const Real t) const
 {
-  throw("TODO");
-}
-
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-SegmentChain<ambient_dim>::ComputeNormal(const SVectorR1& t)
-{
-  throw("TODO");
+   EXIT("TODO")
 }
 
 /***************************************************************************************************************************************************************
@@ -143,71 +137,119 @@ SegmentChain<ambient_dim>::ComputeNormal(const SVectorR1& t)
 
 /** Circle
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
-Circle<ambient_dim>::Circle(const Real radius, const SVectorR<ambient_dim>& _centre)
-  : Centre(_centre), Radius(radius), Normaliser(One/Radius) { ASSERT(isPositive(radius), "A circle's radius cannot be negative.") }
+template<size_t D>
+Circle<D>::Circle(const Real radius, const Vector& centre)
+   : Circle(radius, Zero, centre) {}
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputePoint(const SVectorR1& t)
+template<size_t D>
+Circle<D>::Circle(const Real radius, const Real start_angle, const Vector& centre)
+   : Centre_(centre), Radius_(radius), StartAngle_(start_angle), Normaliser_(One / Radius_) { ASSERT(Positive(radius), "A circle's radius cannot be negative.") }
+
+template<size_t D>
+constexpr SVectorR<D>
+Circle<D>::Point(const Real t) const
 {
-  const auto s = t[0] * (isUnitSpeed ? Normaliser : One);
-  return ToVector<ambient_dim>(SVectorR3{Radius * Cos(s), Radius * Sin(s), Zero}) + Centre;
+   const Real max_bound = this->UnitSpeed_ ? TwoPi * Radius_ : One;
+   ASSERT((isBounded<true, true>(t, Zero, max_bound)), "The parameter exceeds the expected bounds.")
+
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{Radius_ * std::cos(theta), Radius_ * std::sin(theta), Zero}) + Centre_;
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeTangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Circle<D>::Tangent(const Real t) const
 {
-  throw("TODO");
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{-Radius_ * std::sin(theta), Radius_ * std::cos(theta), Zero});
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Circle<D>::Normal(const Real t) const
 {
-  throw("TODO");
+   const auto theta = Angle(t);
+   return ToVector<D>(SVectorR3{-Radius_ * std::cos(theta), -Radius_ * std::sin(theta), Zero});
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Circle<ambient_dim>::ComputeNormal(const SVectorR1& t)
+template<size_t D>
+constexpr Real
+Circle<D>::Angle(const Real t) const { return StartAngle_ + t * (this->UnitSpeed_ ? Normaliser_ : TwoPi); }
+
+/** Circular Arc
+***************************************************************************************************************************************************************/
+template<size_t D>
+Arc<D>::Arc(const Real radius, const Real angle, const Vector& centre)
+   : Arc(radius, Zero, angle, centre) {}
+
+template<size_t D>
+Arc<D>::Arc(const Real radius, const Real start_angle, const Real end_angle, const Vector& centre)
+   : Circle<D>(radius, start_angle, centre), EndAngle_(end_angle)
 {
-  throw("TODO");
+   ASSERT(Positive(radius), "An arc's radius cannot be negative.")
+   ASSERT((isBounded<true, true>(start_angle, Zero, TwoPi)), "An arc's start angle must be in the range [0, 2*PI].")
+   ASSERT((isBounded<true, true>(end_angle, Zero, TwoPi)), "An arc's end angle must be in the range [0, 2*PI].")
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Point(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Point(t);
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Tangent(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Tangent(t);
+}
+
+template<size_t D>
+constexpr SVectorR<D>
+Arc<D>::Normal(const Real t) const
+{
+   CheckAngle(t);
+   return Circle<D>::Normal(t);
+}
+
+template<size_t D>
+constexpr void
+Arc<D>::CheckAngle(const Real t) const
+{
+   const auto theta = this->Angle(t);
+   const auto min_max = std::minmax(this->StartAngle_, EndAngle_);
+
+   ASSERT((isBounded<true, true>(theta, min_max.first, min_max.second)), "The computed angle lies outside the min/max angle range of the arc.", theta, " ", min_max.first, " ", min_max.second)
 }
 
 /** Ellipse
 ***************************************************************************************************************************************************************/
-template<size_t ambient_dim>
-Ellipse<ambient_dim>::Ellipse(const Real _x_radius, const Real _y_radius, const SVectorR<ambient_dim>& _centre)
-  : Centre(_centre), RadiusX(_x_radius), RadiusY(_y_radius) { ASSERT(isPositive(_x_radius) && isPositive(_y_radius), "An ellipse's radii cannot be negative.") }
+template<size_t D>
+Ellipse<D>::Ellipse(const Real radius_x, const Real radius_y, const Vector& centre)
+   : Centre_(centre), RadiusX_(radius_x), RadiusY_(radius_y) { ASSERT(Positive(radius_x) && Positive(radius_y), "An ellipse's radii cannot be negative.") }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputePoint(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Ellipse<D>::Point(const Real t) const
 {
-  return ToVector<ambient_dim>(SVectorR3{RadiusX * Cos(t[0]), RadiusY * Sin(t[0]), Zero}) + Centre;
+   return ToVector<D>(SVectorR3{RadiusX_ * std::cos(t), RadiusY_ * std::sin(t), Zero}) + Centre_;
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeTangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Ellipse<D>::Tangent(const Real t) const
 {
-  throw("TODO");
+   EXIT("TODO")
 }
 
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeBitangent(const SVectorR1& t)
+template<size_t D>
+constexpr SVectorR<D>
+Ellipse<D>::Normal(const Real t) const
 {
-  throw("TODO");
-}
-
-template<size_t ambient_dim>
-constexpr SVectorR<ambient_dim>
-Ellipse<ambient_dim>::ComputeNormal(const SVectorR1& t)
-{
-  throw("TODO");
+   EXIT("TODO")
 }
 
 }

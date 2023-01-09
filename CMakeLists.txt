@@ -76,14 +76,14 @@ if(NOT glm_FOUND)
     message("Error: GLM not found")
 endif(NOT glm_FOUND)
 
-# Find and link TBB.
-find_package(TBB REQUIRED)
-include_directories(${TBB_INCLUDE_DIRS})
-link_directories(${TBB_LIBRARY_DIRS})
-add_definitions(${TBB_DEFINITIONS})
-if(NOT TBB_FOUND)
-    message("Error: TBB not found")
-endif(NOT TBB_FOUND)
+## Find and link TBB.
+#find_package(TBB REQUIRED)
+#include_directories(${TBB_INCLUDE_DIRS})
+#link_directories(${TBB_LIBRARY_DIRS})
+#add_definitions(${TBB_DEFINITIONS})
+#if(NOT TBB_FOUND)
+#    message("Error: TBB not found")
+#endif(NOT TBB_FOUND)
 
 #***************************************************************************************************************************************************************
 # Build instructions for ImGui and its dependencies.
@@ -152,8 +152,8 @@ target_link_libraries(${PROJECT_NAME}
         ${GLEW_LIBRARIES}
         ${GLFW_LIBRARIES}
         ${GLM_LIBRARIES}
-        ImGui
-        tbb)
+        ImGui)
+#        tbb)
 
 #***************************************************************************************************************************************************************
 # GoogleTest build instructions.

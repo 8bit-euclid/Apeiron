@@ -42,6 +42,8 @@ class TeXObject
 
    virtual void InitTeXObject(GlyphSheet::IndexT& index_offset) = 0;
 
+   virtual void OffsetAlongZ(Real& cumu_offset) = 0;
+
    inline void SetText(const std::string& text) { Text_ = text; }
 
    inline void AddText(const std::string& text) { Text_ += text; }

@@ -14,25 +14,34 @@
 
 #pragma once
 
-#include "Manifold.h"
+#include "LinearAlgebra/include/Vector.h"
 
-namespace aprn {
-namespace mnfld {
+namespace aprn::mnfld {
 
-/***************************************************************************************************************************************************************
-* Curve Alias Template
-***************************************************************************************************************************************************************/
-template<class D>
-using Surface = Manifold<D, 2, 3>;
+class Surface
+{
+   using Vector    = SVectorR<3>;
+   using Parameter = SVectorR<2>;
+
+ public:
+   constexpr Surface();
+
+   virtual constexpr Vector Point(const Parameter& params) const = 0;
+
+   virtual constexpr Vector Tangent(const Parameter& params) const = 0;
+
+   virtual constexpr Vector Normal(const Parameter& params) const = 0;
+
+   constexpr Vector Bitangent(const Vector& normal, const Vector& tangent) const;
+};
 
 /***************************************************************************************************************************************************************
 * Linear/Piecewise Linear Surfaces
 ***************************************************************************************************************************************************************/
-class Plane : public Surface<Plane>
-{
-public:
-  Plane(const SVectorR3& _unit_normal, const SVectorR3& _point = {Zero, Zero, Zero});
-};
+//class Plane : public Surface
+//{
+// public:
+//   Plane(const SVectorR3& unit_normal, const SVectorR3& point = {Zero, Zero, Zero});
+//};
 
-}
 }

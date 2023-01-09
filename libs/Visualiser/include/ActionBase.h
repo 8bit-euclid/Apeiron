@@ -17,7 +17,6 @@
 #include "../../../include/Global.h"
 #include "Functional/include/Explicit.h"
 #include "Manifold/include/Curve.h"
-//#include "Model.h"
 
 #include <functional>
 #include <memory>
@@ -27,6 +26,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace aprn::vis {
+
+class Animator;
 
 /** Reparametriser/Ramp Functors
 ***************************************************************************************************************************************************************/
@@ -48,7 +49,7 @@ constexpr auto Linear   = [](Real t){ return func::Linear(t, One, Zero); };
 ***************************************************************************************************************************************************************/
 enum class ActionType // NOTE: The order here is important - higher-up actions must be performed first.
 {
-   /** Model centroid invariant actions. */
+   /** Model centroid-invariant actions. */
    RampUp,
    RampDown,
    Scale,
@@ -56,7 +57,7 @@ enum class ActionType // NOTE: The order here is important - higher-up actions m
    RotateBy,
    RotateAt,
 
-   /** Model centroid variant actions. */
+   /** Model centroid-variant actions. */
    OffsetPosition,
    Reflect,
    RevolveBy,
@@ -77,40 +78,40 @@ enum class ActionType // NOTE: The order here is important - higher-up actions m
    Blink
 };
 
+enum class RampType  { Trace, Scale, Fade, Blur };
+enum class BlinkType { Sine, Triangle, Square };
+
 inline std::string
 ActionTypeString(const ActionType type)
 {
    using AT = ActionType;
    switch(type)
    {
-      case AT::RampUp:                     return "RampUp";
-      case ActionType::RampDown:           return "RampDown";
-      case ActionType::Scale:              return "Scale";
-      case ActionType::OffsetOrientation:  return "OffsetOrientation";
-      case ActionType::RotateBy:           return "RotateBy";
-      case ActionType::RotateAt:           return "RotateAt";
-      case ActionType::OffsetPosition:     return "OffsetPosition";
-      case ActionType::Reflect:            return "Reflect";
-      case ActionType::RevolveBy:          return "RevolveBy";
-      case ActionType::RevolveAt:          return "RevolveAt";
-      case ActionType::MoveBy:             return "MoveBy";
-      case ActionType::MoveTo:             return "MoveTo";
-      case ActionType::MoveAt:             return "MoveAt";
-      case ActionType::Trace:              return "Trace";
-      case ActionType::TrackPositionOf:    return "TrackPositionOf";
-      case ActionType::TrackOrientationOf: return "TrackOrientationOf";
-      case ActionType::MorphTo:            return "MorphTo";
-      case ActionType::MorphFrom:          return "MorphFrom";
-      case ActionType::SetStrokeColour:    return "SetStrokeColour";
-      case ActionType::SetFillColour:      return "SetFillColour";
-      case ActionType::Glow:               return "Glow";
-      case ActionType::Blink:              return "Blink";
-      default:                             throw "Unrecognised action type.";
+      case AT::RampUp:             return "RampUp";
+      case AT::RampDown:           return "RampDown";
+      case AT::Scale:              return "Scale";
+      case AT::OffsetOrientation:  return "OffsetOrientation";
+      case AT::RotateBy:           return "RotateBy";
+      case AT::RotateAt:           return "RotateAt";
+      case AT::OffsetPosition:     return "OffsetPosition";
+      case AT::Reflect:            return "Reflect";
+      case AT::RevolveBy:          return "RevolveBy";
+      case AT::RevolveAt:          return "RevolveAt";
+      case AT::MoveBy:             return "MoveBy";
+      case AT::MoveTo:             return "MoveTo";
+      case AT::MoveAt:             return "MoveAt";
+      case AT::Trace:              return "Trace";
+      case AT::TrackPositionOf:    return "TrackPositionOf";
+      case AT::TrackOrientationOf: return "TrackOrientationOf";
+      case AT::MorphTo:            return "MorphTo";
+      case AT::MorphFrom:          return "MorphFrom";
+      case AT::SetStrokeColour:    return "SetStrokeColour";
+      case AT::SetFillColour:      return "SetFillColour";
+      case AT::Glow:               return "Glow";
+      case AT::Blink:              return "Blink";
+      default:                     throw std::invalid_argument("Unrecognised action type.");
    }
 }
-
-enum class RampType { Trace, Scale, Fade, Blur };
-enum class BlinkType { Sine, Triangle, Square };
 
 /** NOTE: This custom comparator must order the above actions in reverse order, as OpenGL post-multiplies the model matrix for each new action. */
 struct ActionTypeComparator { bool operator()(const ActionType& a, const ActionType& b) const { return static_cast<size_t>(a) > static_cast<size_t>(b); } };
@@ -142,15 +143,14 @@ template<AT type> concept SetColour   = isEnumSame<type, AT::SetStrokeColour>() 
 
 /** Abstract Action Base Class
 ***************************************************************************************************************************************************************/
-class Model;
 class ActionBase
 {
  public:
-   ActionBase(Model& model, ActionType action_type);
+   ActionBase(Animator& animator, ActionType action_type);
 
-   ActionBase(Model& model, ActionType action_type, Real start_time, Real end_time, Reparametriser reparam = Linear);
+   ActionBase(Animator& animator, ActionType action_type, Real start_time, Real end_time, Reparametriser reparam = Linear);
 
-   ActionBase(Model& model, ActionType action_type, Real start_time, Reparametriser ramp = Identity);
+   ActionBase(Animator& animator, ActionType action_type, Real start_time, Reparametriser ramp = Identity);
 
    virtual void Do(Real global_time) = 0;
 
@@ -159,11 +159,11 @@ class ActionBase
    inline bool Done() const { return Done_; }
 
  protected:
-   friend class Model;
+   friend class Animator;
 
-   std::optional<Real> ComputeParameter(Real global_time);
+   Option<Real> ComputeParameter(Real global_time);
 
-   Model*                    Actor_;
+   Animator*                 Animator_;
    ActionType                Type_;
    const Real                StartTime_;
    const Real                EndTime_;

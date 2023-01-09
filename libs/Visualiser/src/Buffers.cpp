@@ -14,6 +14,7 @@
 
 #include "../include/Buffers.h"
 #include <GLFW/glfw3.h>
+#include <cstring>
 
 namespace aprn::vis {
 
@@ -34,10 +35,10 @@ Buffer<T>::Init()
 {
    ASSERT(glfwGetCurrentContext(), "Cannot intialise buffer without an OpenGL context.")
 
-   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) { GLCall(glGenBuffers(1, &ID_)) }
-   else if(T == BT::VAO) { GLCall(glGenVertexArrays(1, &ID_)) }
-   else if(T == BT::FBO) { GLCall(glGenFramebuffers(1, &ID_)) }
-   else if(T == BT::RBO) { GLCall(glGenRenderbuffers(1, &ID_)) }
+   if constexpr(T == OneOf(BT::VBO, BT::EBO, BT::SSBO)) GLCall(glGenBuffers(1, &ID_))
+   else if(T == BT::VAO)                                GLCall(glGenVertexArrays(1, &ID_))
+   else if(T == BT::FBO)                                GLCall(glGenFramebuffers(1, &ID_))
+   else if(T == BT::RBO)                                GLCall(glGenRenderbuffers(1, &ID_))
    else throw "Cannot initialise buffer - unrecognised buffer type.";
 }
 
@@ -65,6 +66,18 @@ Buffer<T>::Delete()
 }
 
 template<BufferType T>
+constexpr GLenum
+Buffer<T>::Target() const
+{
+   if constexpr     (T == BT::VBO)  return GL_ARRAY_BUFFER;
+   else if constexpr(T == BT::EBO)  return GL_ELEMENT_ARRAY_BUFFER;
+   else if constexpr(T == BT::SSBO) return GL_SHADER_STORAGE_BUFFER;
+   else if constexpr(T == BT::FBO)  return GL_FRAMEBUFFER;
+   else if constexpr(T == BT::RBO)  return GL_RENDERBUFFER;
+   else throw "No target for the given buffer type.";
+}
+
+template<BufferType T>
 Buffer<T>&
 Buffer<T>::operator=(Buffer<T>&& buffer) noexcept
 {
@@ -78,11 +91,11 @@ template<BufferType T>
 void
 Buffer<T>::Bind(const GLuint id) const
 {
-   if constexpr(T == BT::VBO)       GLCall(glBindBuffer(GL_ARRAY_BUFFER         , id))
-   else if constexpr(T == BT::EBO)  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER , id))
-   else if constexpr(T == BT::SSBO) GLCall(glBindBuffer(GL_SHADER_STORAGE_BUFFER, id))
-   else if constexpr(T == BT::FBO)  GLCall(glBindFramebuffer(GL_FRAMEBUFFER     , id))
-   else if constexpr(T == BT::RBO)  GLCall(glBindRenderbuffer(GL_RENDERBUFFER   , id))
+   if constexpr(T == BT::VBO)       GLCall(glBindBuffer(Target(), id))
+   else if constexpr(T == BT::EBO)  GLCall(glBindBuffer(Target(), id))
+   else if constexpr(T == BT::SSBO) GLCall(glBindBuffer(Target(), id))
+   else if constexpr(T == BT::FBO)  GLCall(glBindFramebuffer(Target() , id))
+   else if constexpr(T == BT::RBO)  GLCall(glBindRenderbuffer(Target(), id))
    else if constexpr(T == BT::VAO)  GLCall(glBindVertexArray(id))
    else throw "Cannot bind/unbind buffer - unrecognised buffer type.";
 }
@@ -109,9 +122,28 @@ VertexBuffer::Init(const DArray<Vertex>& vertices)
 }
 
 void
-VertexBuffer::Load(const DArray<Vertex>& vertices) const
+VertexBuffer::Load(const DArray<Vertex>& vertices)
 {
-   GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW))
+   VertexCount_ = vertices.size();
+   GLCall(glBufferData(GL_ARRAY_BUFFER, VertexCount_ * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW))
+}
+
+void
+VertexBuffer::Update(const DArray<Vertex>& vertices)
+{
+   Bind();
+
+   // Get vertex buffer data.
+   const auto target = Target();
+   void *ptr = glMapBuffer(target, GL_WRITE_ONLY);
+
+   // Now copy data into memory.
+   std::memcpy(ptr, vertices.data(), VertexCount_ * sizeof(Vertex));
+
+   // Tell OpenGL that we're done with the pointer.
+   GLCall(glUnmapBuffer(target))
+
+   Unbind();
 }
 
 /***************************************************************************************************************************************************************
@@ -234,27 +266,6 @@ RenderBuffer::Allocate(const GLenum format, const GLsizei width, const GLsizei h
    if(MultiSampled_) GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, SampleCount_, format, width, height))
    else              GLCall(glRenderbufferStorage(GL_RENDERBUFFER, format, width, height))
    Unbind();
-}
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-void
-ShaderStorageBuffer::Init(DArray<glm::vec4>& data)
-{
-   Buffer::Init();
-   Bind();
-   Load(data);
-   Unbind();
-}
-
-void
-ShaderStorageBuffer::BindBase() const { GLCall(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ID_)) }
-
-void
-ShaderStorageBuffer::Load(DArray<glm::vec4>& data) const
-{
-   GLCall(glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(glm::vec4), data.data(), GL_STATIC_DRAW))
 }
 
 }

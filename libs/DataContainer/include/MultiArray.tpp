@@ -28,7 +28,7 @@ constexpr void
 MultiArray<T, D>::MultiIndexBoundCheck(const std::convertible_to<size_t> auto... multi_index) const
 {
 #ifdef DEBUG_MODE
-  ASSERT(areSizesEqual(sizeof...(multi_index), Derived().Dimensions.size()), "Multi-index size mismatch.")
+  ASSERT(sizeof...(multi_index) == Derived().Dimensions.size(), "Multi-index size mismatch.")
 
   auto& dims = Derived().Dimensions;
   const size_t indices[] = {static_cast<size_t>(multi_index)...};

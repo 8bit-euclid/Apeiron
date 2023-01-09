@@ -35,7 +35,7 @@ class Array
    /** Size and Index Range-checking */
    constexpr void IndexBoundCheck(const size_t index) const;
 
-   constexpr void SizeCheck(const size_t _size0, const size_t _size1) const;
+   constexpr void SizeCheck(const size_t size0, const size_t size1) const;
 
    /** Subscript Operator Overloads */
    constexpr T& operator[](const size_t index);
@@ -152,6 +152,18 @@ using DArrayB = DArray<Bool>;
 using DArrayU = DArray<size_t>;
 using DArrayI = DArray<int>;
 using DArrayF = DArray<Real>;
+
+/***************************************************************************************************************************************************************
+* Static Array Conversion
+***************************************************************************************************************************************************************/
+template<size_t N, size_t M, typename T>
+constexpr SArray<T, N>
+ToArray(const SArray<T, M>& from)
+{
+   SArray<T, N> to;
+   std::copy(from.begin(), (from.begin() + Min(M, N)), to.begin());
+   return to;
+}
 
 }
 
