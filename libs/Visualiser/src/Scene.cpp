@@ -25,7 +25,7 @@ Scene::Scene()
 Scene::Scene(const Real duration, const bool adjust_duration)
    : Duration_(duration), AdjustDuration_(adjust_duration)
 {
-   ASSERT(isPositive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
+   ASSERT(Positive(duration) || adjust_duration, "Cannot have a negative duration for a scene unless the final duration is to be computed.")
    ASSERT(SingleScene_, "This constructor should only be called for the first scene.")
 
    SingleScene_ = false;
@@ -60,8 +60,8 @@ Scene::Init(const Real start_time)
    {
       Real duration = -One;
       FOR_EACH_CONST(model, Actors_) if(model->ExitTime() < max_duration) Maximise(duration, model->ExitTime());
-      Duration_ = isPositive(duration) ? duration : Duration_;
-      ASSERT(isPositive(Duration_), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", Title_)
+      Duration_ = Positive(duration) ? duration : Duration_;
+      ASSERT(Positive(Duration_), "Could not adjust the scene duration based on model lifetimes. Please specify the duration for scene: ", Title_)
    }
    else
    {
@@ -164,11 +164,6 @@ Scene::RenderScene(Shader& shader, Camera& camera, const bool post_process)
 void
 Scene::RenderModels(Shader& shader)
 {
-   // Line segment
-//    shader_storage_buffer.BindBase();
-//    GLsizei N2 = (GLsizei)varray.size() - 2;
-//    glDrawArrays(GL_TRIANGLES, 0, 6*(N2 - 1));
-
    shader.SetUniform1i("u_use_diffuse_map"     , 0);
    shader.SetUniform1i("u_use_normal_map"      , 0);
    shader.SetUniform1i("u_use_displacement_map", 0);

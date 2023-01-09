@@ -23,7 +23,8 @@ namespace aprn{
 * Counting Functions
 ***************************************************************************************************************************************************************/
 /** Count the number of digits in a natural number. */
-constexpr size_t nDigits(std::convertible_to<size_t> auto number)
+[[nodiscard]] constexpr size_t
+nDigits(std::convertible_to<size_t> auto number)
 {
    // Zero will have 1 digit.
    if(!number) return 1;
@@ -38,12 +39,12 @@ constexpr size_t nDigits(std::convertible_to<size_t> auto number)
 ***************************************************************************************************************************************************************/
 /** Get minimum value. */
 template<typename T>
-constexpr T
+[[nodiscard]] constexpr T
 Min(const T& a, const T& b) { return std::min(a, b); }
 
 /** Get maximum value. */
 template<typename T>
-constexpr T
+[[nodiscard]] constexpr T
 Max(const T& a, const T& b) { return std::max(a, b); }
 
 /** Minimise value. */
@@ -56,14 +57,9 @@ template<typename T>
 constexpr void
 Maximise(T& value, const T& other) { value = Max(value, other); }
 
-/** Min/Max values in a pair of values. */
-template<typename T>
-constexpr std::pair<T, T>
-MinMax(const T& a, const T& b) { return std::minmax(a, b); }
-
 /** Get the clipped value between a minimum and a maximum. */
 template<typename T>
-constexpr T
+[[nodiscard]] constexpr T
 Clipped(const T& value, const T& min, const T& max)
 {
    return min < max ? std::clamp(value, min, max) : throw std::invalid_argument("The minimum bound must be lesser than the maximum bound.");
@@ -76,21 +72,21 @@ Clip(T& value, const T& min, const T& max) { value = Clipped(value, min, max); }
 
 /** Min value, given a first and last iterator. */
 template<class It>
-constexpr IterType<It>
+[[nodiscard]] constexpr IterType<It>
 MinEntry(const It first, const It last) { return *std::min_element(first, last); }
 
 /** Max value, given a first and last iterator. */
 template<class It>
-constexpr IterType<It>
+[[nodiscard]] constexpr IterType<It>
 MaxEntry(const It first, const It last) { return *std::max_element(first, last); }
 
 /** Minmax values in a pair, given a first and last iterator. */
 template<class It>
-constexpr Pair<IterType<It>>
+[[nodiscard]] constexpr Pair<IterType<It>>
 MinMaxEntries(const It first, const It last)
 {
-  auto [min_iter, max_iter] = std::minmax_element(first, last);
-  return { *min_iter, *max_iter };
+   auto [min_iter, max_iter] = std::minmax_element(first, last);
+   return { *min_iter, *max_iter };
 }
 
 /** Clipped values from a first to a last iterator between a minimum and a maximum. */
@@ -103,37 +99,37 @@ BoundEntries(It first, It last, const T& min, const T& max) { FOR_ITER(it, first
 ***************************************************************************************************************************************************************/
 /** Signum function. */
 template<typename T>
-constexpr T
+[[nodiscard]] constexpr T
 Sgn(const T& value, const int zero_sign = 1)
 {
-  switch(zero_sign)
-  {
-    case -1: return value > static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
-    case  0: return (static_cast<T>(0) < value) - (value < static_cast<T>(0));
-    case  1: return value >= static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
-    default: EXIT("Unrecognised sign for zero.")
-  }
+   switch(zero_sign)
+   {
+      case -1: return value > static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
+      case  0: return (static_cast<T>(0) < value) - (value < static_cast<T>(0));
+      case  1: return value >= static_cast<T>(0) ? static_cast<T>(1) : static_cast<T>(-1);
+      default: EXIT("Unrecognised sign for zero.")
+   }
 }
 
 /** Check if a value is positive. */
 template<typename T>
-constexpr bool
-isPositive(const T& value, const int zero_sign = 1)
+[[nodiscard]] constexpr bool
+Positive(const T& value, const int zero_sign = 1)
 {
    return zero_sign != 0 ? Sgn(value, zero_sign) > 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
 
 /** Check if a value is negative. */
 template<typename T>
-constexpr bool
-isNegative(const T& value, const int zero_sign = 1)
+[[nodiscard]] constexpr bool
+Negative(const T& value, const int zero_sign = 1)
 {
    return zero_sign != 0 ? Sgn(value, zero_sign) < 0 : throw std::invalid_argument("Zero must be either positive or negative.");
 }
 
 /** Absolute value. */
 template<typename T>
-constexpr T
+[[nodiscard]] constexpr T
 Abs(const T& value) { return value < static_cast<T>(0) ? -value : value; }
 
 /***************************************************************************************************************************************************************
@@ -141,28 +137,28 @@ Abs(const T& value) { return value < static_cast<T>(0) ? -value : value; }
 ***************************************************************************************************************************************************************/
 /** Floor function. */
 template<typename integer_T = int64_t>
-constexpr Real
+[[nodiscard]] constexpr Real
 Floor(const Real& value) { return static_cast<integer_T>(value) - (static_cast<integer_T>(value) > value); }
 
 /** Ceiling function. */
 template<typename integer_T = int64_t>
-constexpr Real
+[[nodiscard]] constexpr Real
 Ceil(const Real& value) { return static_cast<integer_T>(value) + (static_cast<integer_T>(value) < value); }
 
 /** Rounding function. */
 template<typename integer_T = int64_t>
-constexpr Real
+[[nodiscard]] constexpr Real
 Round(const Real& value) { return value < Floor(value) + Half ? Floor(value) : Ceil(value); }
 
 /***************************************************************************************************************************************************************
 * Mathematical Conversions
 ***************************************************************************************************************************************************************/
 /** Convert degrees to radians. */
-constexpr Real
+[[nodiscard]] constexpr Real
 DegToRad(const Real& angle_degrees) { return angle_degrees * Pi / 180.0; }
 
 /** Convert radians to degrees. */
-constexpr Real
+[[nodiscard]] constexpr Real
 RadToDeg(const Real& angle_radians) { return angle_radians * 180.0 / Pi; }
 
 }

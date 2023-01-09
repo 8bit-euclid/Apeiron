@@ -66,6 +66,8 @@ class Buffer
 
    void Delete();
 
+   constexpr GLenum Target() const;
+
    Buffer& operator=(const Buffer<T>& buffer) = delete;
 
    Buffer& operator=(Buffer<T>&& buffer) noexcept;
@@ -88,7 +90,12 @@ struct VertexBuffer : public detail::Buffer<BufferType::VBO>
 {
    void Init(const DArray<Vertex>& vertices);
 
-   void Load(const DArray<Vertex>& vertices) const;
+   void Load(const DArray<Vertex>& vertices);
+
+   void Update(const DArray<Vertex>& vertices);
+
+ private:
+   size_t VertexCount_;
 };
 
 /***************************************************************************************************************************************************************
@@ -108,7 +115,7 @@ struct IndexBuffer : public detail::Buffer<BufferType::EBO>
 
    void Load(const DArray<GLuint>& indices);
 
-   inline size_t IndexCount() const { return IndexCount_; }
+   inline auto IndexCount() const { return IndexCount_; }
 
  protected:
    size_t IndexCount_;
@@ -151,18 +158,6 @@ struct RenderBuffer : public detail::Buffer<BufferType::RBO>
  private:
    size_t SampleCount_;
    bool   MultiSampled_;
-};
-
-/***************************************************************************************************************************************************************
-* Shader Storage Buffer Class
-***************************************************************************************************************************************************************/
-struct ShaderStorageBuffer : public detail::Buffer<BufferType::SSBO>
-{
-   void Init(DArray<glm::vec4>& data);
-
-   void BindBase() const;
-
-   void Load(DArray<glm::vec4>& data) const;
 };
 
 }

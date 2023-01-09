@@ -63,7 +63,7 @@ TEST_F(CurveTest, Line)
   FOR(i, 3) EXPECT_DOUBLE_EQ(p[i], centre[i] - direction[i]);
 
   // Unit speed parametrised
-  line.SetIfUnitSpeed(true);
+  line.MakeUnitSpeed();
   const Real random = RandomReal();
   p = line.Point(random);
   FOR(i, 3) EXPECT_NEAR(p[i], centre[i] + random * norm_direction[i], Two * Small);
@@ -93,7 +93,7 @@ TEST_F(CurveTest, Ray)
   EXPECT_THROW(ray.Point(-Small), std::domain_error);
 
   // Unit speed parametrised
-  ray.SetIfUnitSpeed(true);
+  ray.MakeUnitSpeed();
   RandomReal.Reset(Zero, Ten);
   const Real random = RandomReal();
   p = ray.Point(random);
@@ -102,7 +102,7 @@ TEST_F(CurveTest, Ray)
   EXPECT_THROW(ray.Point(-Small), std::domain_error);
 }
 
-TEST_F(CurveTest, Segment)
+TEST_F(CurveTest, LineSegment)
 {
   SVectorR3 p, start, end, direction, norm_direction;
   start.Randomise();
@@ -110,7 +110,7 @@ TEST_F(CurveTest, Segment)
   direction = end - start;
   norm_direction = Normalise(direction);
   const Real magnitude = Magnitude(direction);
-  Segment segment(start, end);
+  LineSegment segment(start, end);
 
   // Not unit speed parametrised
   p = segment.Point(Zero);
@@ -126,7 +126,7 @@ TEST_F(CurveTest, Segment)
   EXPECT_THROW(segment.Point(One + Ten * Small), std::domain_error);
 
   // Unit speed parametrised
-  segment.SetIfUnitSpeed(true);
+  segment.MakeUnitSpeed();
   RandomReal.Reset(Zero, magnitude);
   const Real random = RandomReal();
   p = segment.Point(random);
@@ -136,7 +136,7 @@ TEST_F(CurveTest, Segment)
   EXPECT_THROW(segment.Point(magnitude + Ten * Small), std::domain_error);
 }
 
-TEST_F(CurveTest, SegmentChain)
+TEST_F(CurveTest, LineSegmentChain)
 {
   RandomInt.Reset(3, 12);
   const size_t n_vertices = RandomInt();
@@ -159,7 +159,7 @@ TEST_F(CurveTest, SegmentChain)
     }
   }
 
-  SegmentChain chain(vertices);
+  LineSegmentChain chain(vertices);
   SVectorR3 p;
 
   // Not unit speed parametrised
@@ -195,7 +195,7 @@ TEST_F(CurveTest, SegmentChain)
   EXPECT_THROW(chain.Point(One + Small), std::domain_error);
 
   // Unit speed parametrised
-  chain.SetIfUnitSpeed(true);
+  chain.MakeUnitSpeed();
   RandomReal.Reset(Zero, chain_length);
   random = RandomReal();
   p = chain.Point(Zero);
@@ -229,7 +229,7 @@ TEST_F(CurveTest, SegmentChain)
   EXPECT_THROW(chain.Point(chain_length + Ten * Small), std::domain_error);
 
   // Test closed chain
-  chain = SegmentChain(vertices, true);
+  chain = LineSegmentChain(vertices, true);
   p = chain.Point(Zero);
   FOR(i, 3) EXPECT_DOUBLE_EQ(p[i], vertices.front()[i]);
 
@@ -242,37 +242,75 @@ TEST_F(CurveTest, SegmentChain)
 ***************************************************************************************************************************************************************/
 TEST_F(CurveTest, Circle)
 {
-  RandomReal.Reset(One, Ten);
-  const Real radius = RandomReal();
-  SVectorR2 p, p_check, centre;
-  centre.Randomise();
-  Circle circle(radius, centre);
+   RandomReal.Reset(One, Ten);
+   const Real radius = RandomReal();
+   SVectorR2 p, p_check, centre;
+   centre.Randomise();
+   Circle circle(radius, centre);
 
-  // Not unit speed parametrised
-  p = circle.Point(Zero);
-  FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] + radius * xAxis2[i]);
+   // Not unit speed parametrised
+   p = circle.Point(Zero);
+   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] + radius * xAxis2[i]);
 
-  p = circle.Point(QuartPi);
-  FOR(i, 2) EXPECT_NEAR(p[i], centre[i] + radius / Sqrt(Two), Two * Small);
+   p = circle.Point(Eighth);
+   FOR(i, 2) EXPECT_NEAR(p[i], centre[i] + radius / std::sqrt(Two), Two * Small);
 
-  p = circle.Point(HalfPi);
-  FOR(i, 2) EXPECT_NEAR(p[i], centre[i] + radius * yAxis2[i], Two * Small);
+   p = circle.Point(Quarter);
+   FOR(i, 2) EXPECT_NEAR(p[i], centre[i] + radius * yAxis2[i], Two * Small);
 
-  p = circle.Point(-HalfPi);
-  FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] - radius * yAxis2[i]);
+   EXPECT_DEATH(circle.Point(-HalfPi), "");
 
-  // Unit speed parametrised
-  circle.SetIfUnitSpeed(true);
-  RandomReal.Reset(-Ten, Ten);
-  const Real random = RandomReal();
-  p = circle.Point(random);
-  Real theta = random / radius;
-  p_check = centre + radius * SVectorR2{Cos(theta), Sin(theta)};
-  FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
+   // Unit speed parametrised
+   circle.MakeUnitSpeed();
+   RandomReal.Reset(Zero, TwoPi * radius);
+   const Real random = RandomReal();
+   p = circle.Point(random);
+   const Real theta = random / radius;
+   p_check = centre + radius * SVectorR2{std::cos(theta), std::sin(theta)};
+   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
 
-  p = circle.Point(-random);
-  p_check = centre + radius * SVectorR2{Cos(theta), -Sin(theta)};
-  FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
+   EXPECT_DEATH(circle.Point(TwoPi * radius + 0.01), "");
+   EXPECT_DEATH(circle.Point(-0.01), "");
+}
+
+TEST_F(CurveTest, Arc)
+{
+   // Set random radius.
+   RandomReal.Reset(One, Ten);
+   const Real radius = RandomReal();
+
+   // Set random start and end angles.
+   RandomReal.Reset(Zero, TwoPi);
+   const Real start_angle = RandomReal();
+   const Real end_angle   = RandomReal();
+
+   SVectorR2 p, p_check, centre;
+   centre.Randomise();
+   Arc arc(radius, start_angle, end_angle, centre);
+
+   // Not unit speed parametrised
+   p = arc.Point(Zero);
+   p_check = centre + radius * SVectorR2{std::cos(start_angle), std::sin(start_angle)};
+   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], p_check[i]);
+
+//   p = arc.Point(One);
+//   p_check = centre + radius * SVectorR2{std::cos(end_angle), std::sin(end_angle)};
+//   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], p_check[i]);
+
+//   EXPECT_DEATH(arc.Point(1.01), "");
+//   EXPECT_DEATH(arc.Point(-0.01), "");
+//
+//   // Unit speed parametrised
+//   arc.MakeUnitSpeed();
+//   RandomReal.Reset(Zero, Abs(end_angle - start_angle) * radius);
+//   const Real random = RandomReal();
+//   p = arc.Point(random);
+//   const Real theta = start_angle + Sgn(end_angle - start_angle) * random / radius;
+//   p_check = centre + radius * SVectorR2{std::cos(theta), std::sin(theta)};
+//   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], 30.0 * Small);
+//
+//   EXPECT_DEATH(arc.Point(Abs(end_angle - start_angle) * radius + 0.01), "");
+//   EXPECT_DEATH(arc.Point(-0.01), "");
 }
 
 TEST_F(CurveTest, Ellipse)
@@ -288,8 +326,8 @@ TEST_F(CurveTest, Ellipse)
   p = ellipse.Point(Zero);
   FOR(i, 2) EXPECT_DOUBLE_EQ(p[i], centre[i] + radius_x * xAxis2[i]);
 
-  p = ellipse.Point(QuartPi);
-  p_check = centre + SVectorR2{radius_x / Sqrt(Two), radius_y / Sqrt(Two)};
+  p = ellipse.Point(QuarterPi);
+  p_check = centre + SVectorR2{radius_x / std::sqrt(Two), radius_y / std::sqrt(Two)};
   FOR(i, 2) EXPECT_NEAR(p[i], p_check[i], Two * Small);
 
   p = ellipse.Point(HalfPi);

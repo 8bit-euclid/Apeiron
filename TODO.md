@@ -50,6 +50,7 @@
 - [x] Investigate Texture move constructor/assignment bug
 - [x] Fix border shrinking bug during off-screen rendering
 - [ ] Fix shadows
+- [ ] TeXBox multi-line text issue
 - [ ] Remove shader's point/spot light count reliance.
 - [ ] Investigate possible bug causing asymmetry in point light sources
 - [ ] Investigate single triangle and cube render weird issues.

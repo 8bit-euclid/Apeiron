@@ -28,30 +28,31 @@ isTimeParametrised(ActionType type)
 /***************************************************************************************************************************************************************
 * Abstract Action Base Class
 ***************************************************************************************************************************************************************/
-ActionBase::ActionBase(Model& model, const ActionType action_type)
-   : ActionBase(model, action_type, -One, -One, nullptr)
+ActionBase::ActionBase(Animator& animator, const ActionType action_type)
+   : ActionBase(animator, action_type, -One, -One, nullptr)
 {
    ASSERT(action_type == ActionType::OffsetOrientation || action_type == ActionType::OffsetPosition, "This contructor only accepts static actions.")
 }
 
-ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Real end_time, const Reparametriser reparam)
-   : Actor_(&model), Type_(action_type), StartTime_(start_time), EndTime_(end_time), ParamNormaliser_(One / (EndTime_ - StartTime_)), Reparametriser_(reparam) {}
+ActionBase::ActionBase(Animator& animator, const ActionType action_type, const Real start_time, const Real end_time, const Reparametriser reparam)
+   : Animator_(&animator), Type_(action_type), StartTime_(start_time), EndTime_(end_time),
+     ParamNormaliser_(One / (EndTime_ - StartTime_)), Reparametriser_(reparam) {}
 
-ActionBase::ActionBase(Model& model, const ActionType action_type, const Real start_time, const Reparametriser ramp)
-   : Actor_(&model), Type_(action_type), StartTime_(start_time), EndTime_(InfFloat<>), Ramp_(ramp) {}
+ActionBase::ActionBase(Animator& animator, const ActionType action_type, const Real start_time, const Reparametriser ramp)
+   : Animator_(&animator), Type_(action_type), StartTime_(start_time), EndTime_(InfFloat<>), Ramp_(ramp) {}
 
-std::optional<Real>
+Option<Real>
 ActionBase::ComputeParameter(const Real global_time)
 {
    const auto local_time = global_time - StartTime_;
 
-   if(isTimeParametrised(Type_)) return std::optional(isNegative(local_time) ? -One : local_time);
+   if(isTimeParametrised(Type_)) return std::make_optional(Negative(local_time) ? -One : local_time);
    else
    {
       const auto param =
-         global_time <= EndTime_ ? std::optional(isNegative(local_time) ? -One : Reparametriser_(ParamNormaliser_ * local_time)) : std::nullopt;
+         global_time <= EndTime_ ? std::make_optional(Negative(local_time) ? -One : Reparametriser_(ParamNormaliser_ * local_time)) : std::nullopt;
 
-      if(param.has_value() && isPositive(param.value()))
+      if(param && Positive(param.value()))
       ASSERT((isBounded<true, true, true>(param.value(), Zero, One)), "The parameter must be in the [0, 1] range.")
       return param;
    }

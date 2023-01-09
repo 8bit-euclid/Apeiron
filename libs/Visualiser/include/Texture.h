@@ -79,7 +79,7 @@ class Texture
 
    inline auto Height() const { return Height_; }
 
-   inline auto MapScale() const { return MapScale_.has_value() ? MapScale_.value() : throw "Attempting to access a map scale that has not been set."; }
+   inline auto MapScale() const { return MapScale_ ? MapScale_.value() : throw "Attempting to access a map scale that has not been set."; }
 
    inline void SetMapScale(const Real scale) { MapScale_ = scale; }
 
@@ -89,16 +89,16 @@ class Texture
 
    GLint OpenGLType() const;
 
-   UInt                ID_{};
-   TextureType         Type_;
-   UPtr<UChar>         LocalBuffer_{};
-   int                 Width_;
-   int                 Height_;
-   int                 ChannelCount_;
-   std::optional<Real> MapScale_;
-   size_t              SampleCount_;
-   bool                MultiSampled_;
-   bool                FBOAttachment_;
+   UInt         ID_{};
+   TextureType  Type_;
+   UPtr<UChar>  LocalBuffer_{};
+   Option<Real> MapScale_;
+   int          Width_;
+   int          Height_;
+   int          ChannelCount_;
+   size_t       SampleCount_;
+   bool         MultiSampled_;
+   bool         FBOAttachment_;
 };
 
 /***************************************************************************************************************************************************************
@@ -122,7 +122,7 @@ TextureUniformString(const std::string& type_string);
 std::string
 TextureDirectory(const std::string& name);
 
-std::optional<std::string>
+Option<std::string>
 TexturePath(const std::string& file_directory, TextureType type);
 
 }

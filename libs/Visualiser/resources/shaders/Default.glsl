@@ -328,13 +328,15 @@ vec4 CalculateSpotLights(const vec2 texture_coordinate)
    return total_colour;
 }
 
+float CalculateHeight(const vec2 texture_coordinate) { return 1.0 - texture(u_displacement_map, texture_coordinate).r; }
+
 vec2 CalculateParallax()
 {
    if(!UseHeightMap()) return v_data_in.TextureCoordinate;
 
    const vec3 fragment_to_camera = normalize(v_data_in.CameraPosition - v_data_in.FragmentPosition);
-   const float min_layers        = 16.0f;
-   const float max_layers        = 64.0f;
+   const float min_layers        = 64.0f;
+   const float max_layers        = 128.0f;
    const float n_layers          = mix(max_layers, min_layers, max(dot(vec3(0.0, 0.0, 1.0), fragment_to_camera), 0.0));
    const float layer_height      = 1.0 / n_layers;
    const vec2  view_dir          = -fragment_to_camera.xy;
@@ -343,21 +345,21 @@ vec2 CalculateParallax()
 
    // Perform steep parallax mapping
    vec2 current_texture_coordinate = v_data_in.TextureCoordinate;
-   float current_height            = texture(u_displacement_map, current_texture_coordinate).r;
+   float current_height            = CalculateHeight(current_texture_coordinate);
    float current_layer_height      = 0.0;
-   const float sign                = 1.0f;
-//   const float sign                = -1.0f;
+//   const float sign                = 1.0f;
+   const float sign                = -1.0f;
    while(current_layer_height < current_height)
    {
       current_texture_coordinate -= sign * delta_offset;
-      current_height              = texture(u_displacement_map, current_texture_coordinate).r;
+      current_height              = CalculateHeight(current_texture_coordinate);
       current_layer_height       += layer_height;
    }
 
    // Perform parallax occlusion mapping
    const vec2  prev_tex_coord  = current_texture_coordinate + sign * delta_offset;
    const float after_height    = current_height - current_layer_height;
-   const float before_height   = texture(u_displacement_map, prev_tex_coord).r - current_layer_height + layer_height;
+   const float before_height   = CalculateHeight(prev_tex_coord) - current_layer_height + layer_height;
    const float weight          = after_height / (after_height - before_height);
    const vec2  final_tex_coord = prev_tex_coord * weight + current_texture_coordinate * (1.0 - weight);
 

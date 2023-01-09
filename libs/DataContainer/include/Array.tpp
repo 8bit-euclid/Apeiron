@@ -33,9 +33,9 @@ Array<T, D>::IndexBoundCheck(const size_t index) const
 
 template<typename T, class D>
 constexpr void
-Array<T, D>::SizeCheck(const size_t _size0, const size_t _size1) const
+Array<T, D>::SizeCheck(const size_t size0, const size_t size1) const
 {
-   DEBUG_ASSERT(areSizesEqual(_size0, _size1), "The array sizes ", _size0, " and ", _size1, " must be equal.")
+   DEBUG_ASSERT(size0 == size1, "The array sizes ", size0, " and ", size1, " must be equal.")
 }
 
 /** Subscript Operator Overloads */

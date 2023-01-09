@@ -1,12 +1,9 @@
 include_directories(${PROJECT_SOURCE_DIR}/libs/Manifold)
 
 set(SOURCE_FILES
-        include/Categories.h
         include/Curve.h
-        include/Manifold.h
-        include/Surface.h
         include/Curve.tpp
-        include/Manifold.tpp
+        include/Surface.h
         src/Surface.cpp)
 
 set(LINK_LIBRARIES
