@@ -1,6 +1,6 @@
 # Apeiron
 
-[![CI Build](https://img.shields.io/github/workflow/status/8bit-euclid/Apeiron/CI%20Build/main?label=Build&style=plastic)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/8bit-euclid/Apeiron/.github/workflows/ci.yml?label=Build&style=plastic)](https://github.com/8bit-euclid/Apeiron/actions/workflows/ci.yml)
 [![License: GPL 3.0](https://img.shields.io/github/license/8bit-euclid/Apeiron?color=blue&label=License&style=plastic)](https://www.gnu.org/licenses/gpl-3.0)
 
 
