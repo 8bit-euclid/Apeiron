@@ -19,26 +19,28 @@ namespace aprn::vis {
 /** 1D models
 ***************************************************************************************************************************************************************/
 Model
-ModelFactory::Segment(const ModelFactory::Point& p0, const ModelFactory::Point& p1, const float line_width)
+ModelFactory::Segment(const Point& p0, const Point& p1, const float line_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::SegmentChain(const DArray<ModelFactory::Point>& points, const float line_width)
+ModelFactory::Segment(const Point& p0, const Point& p1, const Vector& miter0, const Vector& miter1, const float line_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::SegmentChain(const DArray<ModelFactory::Point>& points, const ModelFactory::Vector& miter0, const ModelFactory::Vector& miter1,
-                           const float line_width)
+ModelFactory::SegmentChain(const DArray<Point>& points, const float line_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::Arc(const float radius, const float angle, const float line_width)
+ModelFactory::Arc(const float radius, const float angle, const float line_width) { return Arc(radius, Zero, angle, line_width); }
+
+Model
+ModelFactory::Arc(float radius, float start_angle, float end_angle, float line_width)
 {
    return Model();
 }
@@ -116,13 +118,19 @@ ModelFactory::Polygon(const DArray<Point>& points, const float border_width)
 }
 
 Model
-ModelFactory::Sector(const float radius, const float angle, const float border_width)
+ModelFactory::Sector(const float radius, const float angle, const float border_width) { return Sector(radius, Zero, angle, border_width); }
+
+Model
+ModelFactory::Sector(float radius, float start_angle, float end_angle, float border_width)
 {
    return Model();
 }
 
 Model
-ModelFactory::Circle(const float radius, const float border_width)
+ModelFactory::Circle(const float radius, const float border_width) { return Circle(radius, Zero, border_width); }
+
+Model
+ModelFactory::Circle(float radius, float start_angle, float border_width)
 {
    return Model();
 }
@@ -236,7 +244,7 @@ ModelFactory::Cuboid(const float length, const float width, const float height)
    indices[7] = 2;
    indices[8] = 6;
 
-   indices[9] = 3;
+   indices[9]  = 3;
    indices[10] = 6;
    indices[11] = 7;
 

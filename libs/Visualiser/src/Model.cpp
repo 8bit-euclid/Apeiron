@@ -258,7 +258,7 @@ Model::Update(const Real global_time)
 {
    if(!Init_) return;
 
-   // Update the model animator.
+   // Direct the animator to update the model.
    Animator_.Update(global_time);
 
    // Update the vertex buffer if the mesh has been modified.

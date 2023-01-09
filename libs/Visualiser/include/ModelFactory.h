@@ -41,11 +41,13 @@ class ModelFactory
    ************************************************************************************************************************************************************/
    static Model Segment(const Point& p0, const Point& p1, float line_width = 0.1);
 
+   static Model Segment(const Point& p0, const Point& p1, const Vector& miter0, const Vector& miter1, float line_width = 0.1);
+
    static Model SegmentChain(const DArray<Point>& points, float line_width = 0.1);
 
-   static Model SegmentChain(const DArray<Point>& points, const Vector& miter0, const Vector& miter1, float line_width = 0.1);
-
    static Model Arc(float radius, float angle, float line_width = Zero);
+
+   static Model Arc(float radius, float start_angle, float end_angle, float line_width = Zero);
 
    /** 2D parts
    ************************************************************************************************************************************************************/
@@ -65,7 +67,11 @@ class ModelFactory
 
    static Model Sector(float radius, float angle, float border_width = Zero);
 
+   static Model Sector(float radius, float start_angle, float end_angle, float border_width = Zero);
+
    static Model Circle(float radius, float border_width = Zero);
+
+   static Model Circle(float radius, float start_angle, float border_width = Zero);
 
    static Model Ellipse(float radius_x, float radius_y, float border_width = Zero);
 

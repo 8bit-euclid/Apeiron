@@ -55,16 +55,21 @@ class TeXGlyph final : public TeXObject,
  private:
    void InitTeXObject(GlyphSheet::IndexT& index_offset) override;
 
-   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dimensions,
+   void ComputeDimensions(const GlyphSheet& glyph_sheet, UChar font_size, const SVectorR3& texbox_anchor, const SVectorR2& texbox_dims,
                           TeXSpacer& spacer) override;
 
-   GlyphSheet::IndexT Index_{MaxInt<GlyphSheet::IndexT>};
-   Option<Colour>     Colour_;
-   Option<bool>       Italic_;
-   Option<bool>       Bold_;
-   bool               Render_{true};
-   bool               AddSpacer_{false};
-   bool               Init_{false};
+   void OffsetAlongZ(Real& cumu_offset) override;
+
+ private:
+
+   GlyphSheet::IndexT    Index_{MaxInt<GlyphSheet::IndexT>};
+   Option<Colour>        Colour_;
+   Option<bool>          Italic_;
+   Option<bool>          Bold_;
+   bool                  Render_{true};
+   bool                  AddSpacer_{false};
+   bool                  Init_{false};
+   constexpr static Real OffsetZ_{1.0e-6};
 };
 
 }
