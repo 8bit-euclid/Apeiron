@@ -1,14 +1,27 @@
-**General**
+**New Features**
 - [x] GitHub actions / CI
-- [ ] Pre-compiled headers
+- [ ] Unreal Engine 5.2 integration
+- [ ] Boost, CGAL, and OpenVDB integration
 - [ ] C++ Modules integration
 - [ ] Stack frame write-out
 - [ ] Installation/setup (Readme file)
 - [ ] Dependency list (Readme file)
-- [ ] Use chronos duration for time units
-- [ ] Use pure virtual interfaces where possible
 
-**New Features**
+**Bugs**
+- [x] Check for possible double Gamma correction between HDR and blur shaders
+- [x] Investigate Texture move constructor/assignment bug
+- [x] Fix border shrinking bug during off-screen rendering
+- [ ] Fix shadows
+- [ ] TeXBox multi-line text issue
+- [ ] Remove shader's point/spotlight count reliance.
+- [ ] Investigate a possible bug causing asymmetry in point light sources
+- [ ] Investigate single triangle and cube render weird issues.
+- [ ] Fix parallax occlusion bug
+
+**Minor**
+- [ ] Fix segmentation fault when exiting glfw context
+
+**Deprecated**
 - [x] Off-screen rendering
 - [x] HDR
 - [x] Bloom
@@ -19,7 +32,7 @@
 - [x] RenderDoc debugger
 - [x] Deprecate String
 - [x] Implement post-processing switch
-- [ ] TeX glyph spacing
+- [x] TeX glyph spacing
 - [ ] Resurrect line shader
 - [ ] Texture coordinate transformation uniforms in shaders
 - [ ] Background texture embedding
@@ -44,17 +57,3 @@
 - [ ] Resurrect spotlights
 - [ ] Gnuplot writer
 - [ ] Pyplot writer
-
-**Bugs**
-- [x] Check for possible double Gamma correction between HDR and blur shaders
-- [x] Investigate Texture move constructor/assignment bug
-- [x] Fix border shrinking bug during off-screen rendering
-- [ ] Fix shadows
-- [ ] TeXBox multi-line text issue
-- [ ] Remove shader's point/spot light count reliance.
-- [ ] Investigate possible bug causing asymmetry in point light sources
-- [ ] Investigate single triangle and cube render weird issues.
-- [ ] Fix parallax occlusion bug
-
-**Minor**
-- [ ] Fix segmentation fault when exiting glfw context
